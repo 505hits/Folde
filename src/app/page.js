@@ -19,7 +19,7 @@ const carouselItems = [
 ];
 
 const testimonials = [
-  { name: "Sophie & James", text: "Our Day created something truly magical for our wedding. The digital invitation was beyond anything we imagined — elegant, immersive, and so easy for our guests.", rating: 5 },
+  { name: "Sophie & James", text: "Our Day created something truly magical for our wedding. The digital invitation was beyond anything we imagined �$� elegant, immersive, and so easy for our guests.", rating: 5 },
   { name: "Amara & Ethan", text: "We received countless compliments on our invitation. The attention to detail and the personalized experience made it feel incredibly special.", rating: 5 },
   { name: "Clara & Thomas", text: "From start to finish, the process was seamless. The team understood our vision perfectly and delivered an invitation that felt authentically us.", rating: 5 },
   { name: "Léa & Marc", text: "The RSVP dashboard alone was worth it. We could track everything in real-time without chasing anyone. Absolute game-changer.", rating: 5 },
@@ -27,7 +27,7 @@ const testimonials = [
 
 const faqs = [
   { q: "How long does it take to receive my invitation?", a: "After our initial consultation and once you provide all your details, your invitation is typically ready within 5 to 7 business days, including revisions." },
-  { q: "Can I modify the invitation after it's been sent?", a: "Absolutely. Your invitation is a living link — you can update details like schedule, venue, or accommodations anytime without resending it." },
+  { q: "Can I modify the invitation after it's been sent?", a: "Absolutely. Your invitation is a living link �$� you can update details like schedule, venue, or accommodations anytime without resending it." },
   { q: "Is there a limit to the number of guests?", a: "No. Both our Essential and Signature packages include unlimited guests at no additional cost." },
   { q: "What if I need the invitation in multiple languages?", a: "Our Signature package includes multilingual support. For the Essential package, additional languages can be added as an option." },
   { q: "How do guests RSVP?", a: "Each invitation includes an integrated RSVP form. Guests simply tap a button to confirm, decline, or provide additional details like dietary preferences." },
@@ -73,7 +73,7 @@ export default function Home() {
               A Digital Invitation Crafted with Elegance
             </h1>
             <p className="text-lg animate-fade-in-up delay-2">
-              We design with you an elegant, personalized, and unforgettable digital invitation — crafted to simplify your event planning and delight every guest.
+              We design with you an elegant, personalized, and unforgettable digital invitation �$� crafted to simplify your event planning and delight every guest.
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
               <Link href="/templates" className="btn-primary">Start My Project</Link>
@@ -82,7 +82,7 @@ export default function Home() {
             <div className={`${styles.heroFeatures} animate-fade-in-up delay-4`}>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>From €189</span>
+                <span>From $189</span>
               </div>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -184,7 +184,7 @@ export default function Home() {
           <div className={styles.methodGrid}>
             {[
               { num: '01', title: 'Schedule a Consultation', desc: 'A discovery session to understand your vision, your style, and answer all your questions.' },
-              { num: '02', title: 'Share Your Details', desc: 'Dates, schedule, photos, accommodations, RSVP — we guide you through each step.' },
+              { num: '02', title: 'Share Your Details', desc: 'Dates, schedule, photos, accommodations, RSVP �$� we guide you through each step.' },
               { num: '03', title: 'We Craft Your Invitation', desc: 'We design your invitation and refine every detail based on your feedback.' },
               { num: '04', title: 'Share Your Link', desc: 'Receive your finalized invitation, ready to be effortlessly shared with all your guests.' },
             ].map((step, i) => (
@@ -211,7 +211,7 @@ export default function Home() {
               <div>
                 <h3 className="heading-md">Essential</h3>
                 <p className="text-sm" style={{ marginTop: '0.5rem' }}>The essentials for an elegant, fully supported invitation.</p>
-                <div className={styles.pricingPrice}>€189</div>
+                <div className={styles.pricingPrice}>$189</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> Guided preparation</li>
                   <li><span className={styles.checkIcon}>✓</span> Choice of design universe</li>
@@ -230,7 +230,7 @@ export default function Home() {
               <div>
                 <h3 className="heading-md">Signature</h3>
                 <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>A comprehensive experience with advanced customization.</p>
-                <div className={styles.pricingPrice}>€349</div>
+                <div className={styles.pricingPrice}>$349</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> Everything in Essential</li>
                   <li><span className={styles.checkIcon}>✓</span> Custom video cover</li>
@@ -245,7 +245,7 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.pricingAddons}>
-            <p className="text-sm"><strong>Essential add-ons:</strong> Video cover — €19 · Custom music — €19 · Extra language — €19 · Multi-group management — €29</p>
+            <p className="text-sm"><strong>Essential add-ons:</strong> Video cover �$� $19 · Custom music �$� $19 · Extra language �$� $19 · Multi-group management �$� $29</p>
           </div>
         </div>
       </section>
@@ -257,7 +257,7 @@ export default function Home() {
             <div className={styles.dashboardText}>
               <span className="label">RSVP Management</span>
               <h2 className="heading-lg" style={{ marginTop: '1rem' }}>A Dashboard to Track Your Guest Responses</h2>
-              <p className="text-lg" style={{ marginTop: '1rem' }}>Visualize confirmations, declines, and pending responses from a clean interface — no endless follow-ups or messy spreadsheets.</p>
+              <p className="text-lg" style={{ marginTop: '1rem' }}>Visualize confirmations, declines, and pending responses from a clean interface �$� no endless follow-ups or messy spreadsheets.</p>
               <div className={styles.dashboardStats}>
                 <div className={styles.statCard}>
                   <span className={styles.statNumber}>127</span>
@@ -353,24 +353,24 @@ export default function Home() {
               <span className="label">Self-Service Option</span>
               <h2 className="heading-lg" style={{ marginTop: '1rem' }}>Prefer to Prepare Your Invitation at Your Own Pace?</h2>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                The Our Day Studio lets you fill in your details, choose your universe, and prepare your project independently — before or after a call with our team.
+                The Our Day Studio lets you fill in your details, choose your universe, and prepare your project independently �$� before or after a call with our team.
               </p>
               <ul className={styles.autonomousFeatures}>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Guided preparation — details, schedule, RSVP, accommodations
+                  Guided preparation �$� details, schedule, RSVP, accommodations
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Our Day Universes — select a visual direction from our gallery
+                  Our Day Universes �$� select a visual direction from our gallery
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  RSVP & dashboard — track confirmations from your space
+                  RSVP & dashboard �$� track confirmations from your space
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  At your own pace — come back and edit whenever you like
+                  At your own pace �$� come back and edit whenever you like
                 </li>
               </ul>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
@@ -388,7 +388,7 @@ export default function Home() {
           <div className="section-header">
             <span className="label">FAQ</span>
             <h2 className="heading-lg">Frequently Asked Questions</h2>
-            <p className="text-lg">The essentials, answered — before you get started.</p>
+            <p className="text-lg">The essentials, answered �$� before you get started.</p>
           </div>
           <div className={styles.faqList}>
             {faqs.map((faq, i) => (
@@ -405,7 +405,7 @@ export default function Home() {
       <section className={styles.finalCta}>
         <div className="container" style={{ textAlign: 'center' }}>
           <h2 className="heading-lg">Create Your Invitation</h2>
-          <p className="text-lg" style={{ marginTop: '0.5rem' }}>Starting from €189</p>
+          <p className="text-lg" style={{ marginTop: '0.5rem' }}>Starting from $189</p>
           <Link href="/templates" className="btn-primary" style={{ marginTop: '2rem' }}>Start Your Project</Link>
         </div>
       </section>
@@ -423,7 +423,8 @@ export default function Home() {
           padding: '1rem 1.8rem', borderRadius: '40px',
           boxShadow: '0 8px 30px rgba(107, 54, 62, 0.35), 0 4px 10px rgba(0,0,0,0.1)',
           textDecoration: 'none', fontWeight: 600, fontSize: '1rem',
-          fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.1)'
+          fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.1)',
+          whiteSpace: 'nowrap'
         }}>
           Start your invitation →
         </Link>

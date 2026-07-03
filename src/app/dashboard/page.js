@@ -202,8 +202,8 @@ export default function Dashboard() {
       { time: "04:00", title: "End" }
     ],
     accommodations: [
-      { name: "Hotel Costa", price: "410€" },
-      { name: "Hotel Love", price: "120€" }
+      { name: "Hotel Costa", price: "410$" },
+      { name: "Hotel Love", price: "120$" }
     ],
     menu: [
       { course: "Starter", dish: "Caviar" },
@@ -540,7 +540,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_imperial_light', name: 'Imperial Light', url: '/videos/imperial-light.mp4', color: '#f3e5d8', desc: 'An opening sculpted by light.' },
     { id: 'env_golden_palace', name: 'Golden Palace', url: '/videos/golden-palace.mp4', color: '#d4af37', desc: 'A precious glow, like a promise.' },
     { id: 'env_oriental_palace', name: 'Oriental Palace', url: '/videos/oriental-palace.mp4', color: '#c7b299', desc: 'An entrance sculpted from heritage and light.' },
-    { id: 'env_celestial_veil', name: 'Celestial Veil', url: '/videos/celestial-veil.mp4', color: '#e0e5ec', desc: 'A veil of air… and the world calms.' },
+    { id: 'env_celestial_veil', name: 'Celestial Veil', url: '/videos/celestial-veil.mp4', color: '#e0e5ec', desc: 'A veil of air�$� and the world calms.' },
     { id: 'env_ivory_veil', name: 'Ivory Veil', url: '/videos/ivory-veil.mp4', color: '#f8f5f0', desc: 'A caress of light, in silence.' },
     { id: 'env_rose_veil', name: 'Rosé Veil', url: '/videos/rose-veil.mp4', color: '#f4e1e1', desc: 'A rosy whisper, like the start of a dream.' },
     { id: 'env_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own envelope video' },

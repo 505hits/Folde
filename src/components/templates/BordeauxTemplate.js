@@ -155,8 +155,8 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   ];
 
   const accommodations = t.accommodations || [
-    { name: "Hotel Costa", price: "410€" },
-    { name: "Hotel Love", price: "120€" }
+    { name: "Hotel Costa", price: "410$" },
+    { name: "Hotel Love", price: "120$" }
   ];
 
   const menu = t.menu || [
@@ -599,7 +599,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                   <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)' }}>Galerie Photos</h1>
                   <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem' }}>
-                    Partagez vos photos et vidéos du mariage — avant, pendant et après la fête.
+                    Partagez vos photos et vidéos du mariage �$� avant, pendant et après la fête.
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>

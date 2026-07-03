@@ -176,8 +176,8 @@ export default function CheckoutClient() {
           )}
         </div>
         <div style={{ fontSize: '1rem' }}>
-          <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}€</span>
-          <span style={{ fontWeight: 700 }}>{total}€</span>
+          <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}$</span>
+          <span style={{ fontWeight: 700 }}>{total}$</span>
         </div>
       </div>
 
@@ -208,8 +208,8 @@ export default function CheckoutClient() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <h3 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>{p.name}</h3>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '0.9rem', textDecoration: 'line-through', color: '#aaa' }}>{p.originalPrice}€</div>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#6b363e' }}>{p.price}€</div>
+                        <div style={{ fontSize: '0.9rem', textDecoration: 'line-through', color: '#aaa' }}>{p.originalPrice}$</div>
+                        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#6b363e' }}>{p.price}$</div>
                       </div>
                     </div>
                     <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.75rem', lineHeight: 1.5 }}>{p.desc}</p>
@@ -269,7 +269,7 @@ export default function CheckoutClient() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>PLAN</span>
                   <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
-                  <span style={{ fontWeight: 600 }}>{selectedPackage.price}€</span>
+                  <span style={{ fontWeight: 600 }}>{selectedPackage.price}$</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>STYLE</span>
@@ -280,7 +280,7 @@ export default function CheckoutClient() {
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <span style={{ fontSize: '1rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase' }}>TOTAL</span>
-                <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#6b363e' }}>{total}€</span>
+                <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#6b363e' }}>{total}$</span>
               </div>
 
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem' }}>
@@ -306,7 +306,7 @@ export default function CheckoutClient() {
 
           <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
             <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b363e', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}€</span>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b363e', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
             <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
           </div>
         </div>
@@ -323,10 +323,12 @@ export default function CheckoutClient() {
             <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>
               ←
             </button>
-            <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
-              {step === 3 ? 'PAY & START' : 'CONTINUE'} 
-              <span style={{ textDecoration: 'line-through', opacity: 0.6, marginLeft: '0.5rem', fontSize: '0.9rem' }}>{originalTotal}€</span> 
-              <span>{total}€ →</span>
+            <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
+              <span>{step === 3 ? 'PAY & START' : 'CONTINUE'}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
+                <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span> 
+                <span>{total}$ →</span>
+              </div>
             </button>
           </div>
           

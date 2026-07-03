@@ -76,7 +76,7 @@ export default function AdminDashboard() {
                       <td style={{ padding: '1rem 1.5rem', fontWeight: 500, fontSize: '0.9rem' }}>{order.id}</td>
                       <td style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>{order.couple}</td>
                       <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', color: '#475569' }}>{order.plan}</td>
-                      <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{order.price}€</td>
+                      <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{order.price}$</td>
                       <td style={{ padding: '1rem 1.5rem' }}>
                         <span style={{ 
                           padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600,

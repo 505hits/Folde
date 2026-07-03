@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./method.module.css";
 
 export const metadata = {
-  title: "Our Method | Our Day Studio ‚Äî How We Create Your Digital Wedding Invitation",
+  title: "Our Method | Our Day Studio ‚$î How We Create Your Digital Wedding Invitation",
   description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
 };
 
@@ -21,7 +21,7 @@ const steps = [
   {
     num: '02',
     title: 'Provide Your Event Details',
-    desc: 'Once we align on the direction, you share the essential information for your invitation. We provide a guided framework so nothing gets overlooked ‚Äî from your ceremony schedule to accommodation options for out-of-town guests.',
+    desc: 'Once we align on the direction, you share the essential information for your invitation. We provide a guided framework so nothing gets overlooked ‚$î from your ceremony schedule to accommodation options for out-of-town guests.',
     details: [
       'Wedding date, venue, and ceremony schedule',
       'Photos of the couple for the cover design',
@@ -43,9 +43,9 @@ const steps = [
   {
     num: '04',
     title: 'Share With Your Guests',
-    desc: 'Your finalized invitation is delivered as a single, elegant link. Share it via WhatsApp, email, or any messaging platform. Your guests simply tap to open an immersive, interactive experience ‚Äî and RSVP directly from their phone.',
+    desc: 'Your finalized invitation is delivered as a single, elegant link. Share it via WhatsApp, email, or any messaging platform. Your guests simply tap to open an immersive, interactive experience ‚$î and RSVP directly from their phone.',
     details: [
-      'One link for all your guests ‚Äî no app required',
+      'One link for all your guests ‚$î no app required',
       'Share via WhatsApp, iMessage, email, or social media',
       'Real-time RSVP tracking on your personal dashboard',
       'Update details anytime without resending',
@@ -65,7 +65,7 @@ export default function Method() {
             A Guided Experience, Designed Around You
           </h1>
           <p className="text-lg animate-fade-in-up delay-2">
-            Creating your digital wedding invitation should feel effortless. Our streamlined process ensures every detail is handled with care ‚Äî so you can focus on what truly matters.
+            Creating your digital wedding invitation should feel effortless. Our streamlined process ensures every detail is handled with care ‚$î so you can focus on what truly matters.
           </p>
         </section>
 
@@ -97,7 +97,7 @@ export default function Method() {
           <div className={styles.promiseGrid}>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>‚è±</div>
-              <h3 className="heading-sm">Ready in 5‚Äì7 Days</h3>
+              <h3 className="heading-sm">Ready in 5‚$ì7 Days</h3>
               <p className="text-sm" style={{ marginTop: '0.5rem' }}>From first call to final link, your invitation is delivered within one week, including all revisions.</p>
             </div>
             <div className={styles.promiseCard}>
