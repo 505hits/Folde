@@ -77,7 +77,7 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_rose_veil', name: 'Rosé Veil' },
   { id: 'env_rose_bow', name: 'Rose Bow' },
   { id: 'env_majestic', name: 'Majestic' },
-  { id: 'env_custom', name: 'I\'ll provide my own' },
+  { id: 'env_custom', name: "I'll provide my own" },
 ];
 
 const HERO_VIDEO_OPTIONS = [
@@ -89,7 +89,7 @@ const HERO_VIDEO_OPTIONS = [
   { id: 'hero_royal', name: 'Royal Heritage' },
   { id: 'hero_sea_anim', name: 'Sea Animation' },
   { id: 'hero_sea_balcony', name: 'Seaview Balcony' },
-  { id: 'hero_custom', name: 'I\'ll provide my own' },
+  { id: 'hero_custom', name: "I'll provide my own" },
 ];
 
 const SECTION_OPTIONS = [
@@ -137,22 +137,19 @@ export default function CheckoutClient() {
   const router = useRouter();
   const { currentUser, register, login, createOrder } = useDatabase();
 
+  // Essential flow: 1=Package, 2=Details, 3=Summary → pay → /success
+  // Premium/Excellence: 1=Package, 2=Details, 3=Summary → pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
-  // Essential: Step 1 Package, Step 2 Details, Step 3 Summary
-  // Premium/Excellence: Step 1 Package, Step 2 Wedding Form, Step 3 Summary → send email
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
 
-  // Essential form
+  // Account details (shared by all)
   const [account, setAccount] = useState({ name: '', partnerName: '', email: '', password: '' });
   const [authError, setAuthError] = useState('');
 
-  // Premium/Excellence form
+  // Premium/Excellence wedding form (shown AFTER payment)
   const [premiumForm, setPremiumForm] = useState({
-    name: '',
-    partnerName: '',
-    email: '',
     phone: '',
     weddingDate: '',
     weddingVenue: '',
@@ -169,6 +166,7 @@ export default function CheckoutClient() {
 
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const isPremiumOrExcellence = selectedPackage.id === 'premium' || selectedPackage.id === 'excellence';
 
@@ -190,52 +188,30 @@ export default function CheckoutClient() {
     }
   }, []);
 
-  const calculateTotal = () => selectedPackage.price;
-  const calculateOriginalTotal = () => selectedPackage.originalPrice;
-
-  const total = calculateTotal();
-  const originalTotal = calculateOriginalTotal();
+  const total = selectedPackage.price;
+  const originalTotal = selectedPackage.originalPrice;
+  const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
 
   const handleNextStep = async () => {
     setAuthError('');
-
-    if (isPremiumOrExcellence) {
-      if (step === 1) {
-        setStep(2);
-        window.scrollTo(0, 0);
+    if (step === 1 && currentUser) {
+      setStep(3); // Skip details → Summary
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (step === 2) {
+      if (!account.name || !account.partnerName || !account.email || !account.password) {
+        setAuthError('Please fill in all fields.');
         return;
       }
-      if (step === 2) {
-        // Validate premium form
-        if (!premiumForm.name || !premiumForm.partnerName || !premiumForm.email) {
-          setAuthError('Please fill in at least your names and email.');
-          return;
-        }
-        setStep(3);
-        window.scrollTo(0, 0);
-        return;
-      }
-    } else {
-      // Essential flow
-      if (step === 1 && currentUser) {
-        setStep(3);
-        window.scrollTo(0, 0);
-        return;
-      }
-      if (step === 2) {
-        if (!account.name || !account.partnerName || !account.email || !account.password) {
-          setAuthError('Please fill in all fields.');
-          return;
-        }
-        if (!currentUser) {
-          const result = register(account.email, account.password, account.name, account.partnerName);
-          if (!result.success) {
-            if (result.error === 'Email already exists') {
-              const loginRes = login(account.email, account.password);
-              if (!loginRes.success) { setAuthError('Email exists. Incorrect password to login.'); return; }
-            } else {
-              setAuthError(result.error); return;
-            }
+      if (!currentUser) {
+        const result = register(account.email, account.password, account.name, account.partnerName);
+        if (!result.success) {
+          if (result.error === 'Email already exists') {
+            const loginRes = login(account.email, account.password);
+            if (!loginRes.success) { setAuthError('Email exists. Incorrect password to login.'); return; }
+          } else {
+            setAuthError(result.error); return;
           }
         }
       }
@@ -245,7 +221,8 @@ export default function CheckoutClient() {
   };
 
   const handleBack = () => {
-    if (step === 3 && currentUser && !isPremiumOrExcellence) {
+    if (step === 4) return; // Can't go back from wedding form after payment
+    if (step === 3 && currentUser) {
       setStep(1);
     } else if (step > 1) {
       setStep(step - 1);
@@ -256,30 +233,36 @@ export default function CheckoutClient() {
   };
 
   const handlePayment = () => {
-    if (isPremiumOrExcellence) {
-      handleSendOrder();
-    } else {
-      createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
-      router.push('/success');
-    }
+    setPaymentProcessing(true);
+    createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
+
+    // Simulate payment processing
+    setTimeout(() => {
+      setPaymentProcessing(false);
+      if (isPremiumOrExcellence) {
+        setStep(4); // Go to wedding form
+        window.scrollTo(0, 0);
+      } else {
+        router.push('/success');
+      }
+    }, 2000);
   };
 
   const handleSendOrder = async () => {
     setSending(true);
     try {
-      const themeName = themes.find(t => t.id === selectedTheme)?.name || selectedTheme;
-      const envName = ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice)?.name || premiumForm.envelopeChoice;
-      const heroName = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice)?.name || premiumForm.heroVideoChoice;
+      const envName = ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice)?.name || premiumForm.envelopeChoice || 'Not specified';
+      const heroName = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice)?.name || premiumForm.heroVideoChoice || 'Not specified';
 
-      const res = await fetch('/api/send-order', {
+      await fetch('/api/send-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           packageName: selectedPackage.name,
           price: total,
-          name: premiumForm.name,
-          partnerName: premiumForm.partnerName,
-          email: premiumForm.email,
+          name: account.name,
+          partnerName: account.partnerName,
+          email: account.email,
           phone: premiumForm.phone,
           weddingDate: premiumForm.weddingDate,
           weddingVenue: premiumForm.weddingVenue,
@@ -297,17 +280,10 @@ export default function CheckoutClient() {
           ),
         }),
       });
-      
-      const data = await res.json();
-      if (data.success) {
-        setSent(true);
-        setTimeout(() => router.push('/success'), 1500);
-      }
+      setSent(true);
     } catch (err) {
       console.error(err);
-      // Still redirect - the order was likely logged
-      setSent(true);
-      setTimeout(() => router.push('/success'), 1500);
+      setSent(true); // Still mark as sent
     } finally {
       setSending(false);
     }
@@ -322,7 +298,19 @@ export default function CheckoutClient() {
     }));
   };
 
-  const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
+  // ─── STEP 4: Payment processing overlay ───
+  if (paymentProcessing) {
+    return (
+      <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '3px solid #f0ede9', borderTopColor: '#6b363e', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <h1 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Processing Payment</h1>
+          <p style={{ color: '#888', fontSize: '0.95rem' }}>Please wait while we secure your order...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', position: 'relative' }}>
@@ -336,33 +324,35 @@ export default function CheckoutClient() {
           input, select, textarea { width: 100% !important; box-sizing: border-box; }
         }
       `}</style>
-      
-      {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, backgroundColor: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
-        <button onClick={handleBack} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#555', fontSize: '0.85rem', fontFamily: 'inherit' }}>
-          ← {step === 1 ? 'Templates' : 'Back'}
-        </button>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontWeight: 600, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            ✨ {selectedPackage.name}
-          </div>
-          {step > 1 && (
-            <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-              {[2,3].map(s => (
-                <div key={s} style={{ width: '32px', height: '3px', borderRadius: '2px', backgroundColor: step >= s ? '#6b363e' : '#e0dcd7' }}></div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div style={{ fontSize: '1rem' }}>
-          <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}$</span>
-          <span style={{ fontWeight: 700 }}>{total}$</span>
-        </div>
-      </div>
 
-      <div className="checkout-container" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem 1.5rem 120px' }}>
+      {/* ─── Top Header ─── */}
+      {step <= 3 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, backgroundColor: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
+          <button onClick={handleBack} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#555', fontSize: '0.85rem', fontFamily: 'inherit' }}>
+            ← {step === 1 ? 'Templates' : 'Back'}
+          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontWeight: 600, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              ✨ {selectedPackage.name}
+            </div>
+            {step > 1 && (
+              <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+                {[2,3].map(s => (
+                  <div key={s} style={{ width: '32px', height: '3px', borderRadius: '2px', backgroundColor: step >= s ? '#6b363e' : '#e0dcd7' }}></div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ fontSize: '1rem' }}>
+            <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}$</span>
+            <span style={{ fontWeight: 700 }}>{total}$</span>
+          </div>
+        </div>
+      )}
+
+      <div className="checkout-container" style={{ maxWidth: '600px', margin: '0 auto', padding: step === 4 ? '0' : '3rem 1.5rem 120px' }}>
         
-        {/* STEP 1: PACKAGE SELECTION */}
+        {/* ═══ STEP 1: PACKAGE ═══ */}
         {step === 1 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -379,9 +369,8 @@ export default function CheckoutClient() {
                     transition: 'all 0.2s ease', position: 'relative'
                   }}>
                   {selectedPackage.id === p.id && (
-                     <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#6b363e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
+                    <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#6b363e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
                   )}
-                  
                   <div style={{ marginBottom: '1.5rem' }}>
                     <div style={{ fontSize: '0.75rem', color: '#888', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Your plan</div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -393,7 +382,6 @@ export default function CheckoutClient() {
                     </div>
                     <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.75rem', lineHeight: 1.5 }}>{p.desc}</p>
                   </div>
-                  
                   <div style={{ borderTop: '1px solid #f0ede9', paddingTop: '1.5rem' }}>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       {p.features.map((f, i) => (
@@ -404,16 +392,14 @@ export default function CheckoutClient() {
                       ))}
                     </ul>
                   </div>
-
                   {(p.id === 'premium' || p.id === 'excellence') && selectedPackage.id === p.id && (
                     <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#faf5f0', borderRadius: '10px', border: '1px solid #e8ddd4', fontSize: '0.8rem', color: '#8b6e5a', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
                       <span style={{ fontSize: '1rem' }}>🎨</span>
-                      <span>We handle everything for you! Fill in your wedding details in the next step and our design team will craft your invitation.</span>
+                      <span>We handle everything for you! After payment, you'll fill in your wedding details and our design team will craft your invitation.</span>
                     </div>
                   )}
                 </div>
               ))}
-              
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginTop: '1rem', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ fontSize: '1.2rem', color: '#6b363e' }}>🤍</div>
                 <div>
@@ -425,8 +411,8 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* STEP 2: ESSENTIAL DETAILS */}
-        {step === 2 && !isPremiumOrExcellence && (
+        {/* ═══ STEP 2: DETAILS (same for all packages) ═══ */}
+        {step === 2 && (
           <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <h1 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#6b363e' }}>Your details</h1>
@@ -442,149 +428,7 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* STEP 2: PREMIUM/EXCELLENCE DETAILED FORM */}
-        {step === 2 && isPremiumOrExcellence && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-              <h1 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#6b363e' }}>Tell us about your wedding</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>We'll craft everything for you based on these details</p>
-            </div>
-
-            {/* Your Info */}
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>👤 Your Information</div>
-              <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>Your name *</label>
-                  <input type="text" placeholder="Your name" value={premiumForm.name} onChange={e => setPremiumForm({...premiumForm, name: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Partner's name *</label>
-                  <input type="text" placeholder="Partner's name" value={premiumForm.partnerName} onChange={e => setPremiumForm({...premiumForm, partnerName: e.target.value})} style={inputStyle} />
-                </div>
-              </div>
-              <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>Email *</label>
-                  <input type="email" placeholder="your@email.com" value={premiumForm.email} onChange={e => setPremiumForm({...premiumForm, email: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Phone</label>
-                  <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({...premiumForm, phone: e.target.value})} style={inputStyle} />
-                </div>
-              </div>
-            </div>
-
-            {/* Wedding Details */}
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💒 Wedding Details</div>
-              <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>Wedding date</label>
-                  <input type="date" value={premiumForm.weddingDate} onChange={e => setPremiumForm({...premiumForm, weddingDate: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Guest count</label>
-                  <input type="text" placeholder="e.g. 120" value={premiumForm.guestCount} onChange={e => setPremiumForm({...premiumForm, guestCount: e.target.value})} style={inputStyle} />
-                </div>
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={labelStyle}>Venue name</label>
-                <input type="text" placeholder="e.g. Château de Versailles" value={premiumForm.weddingVenue} onChange={e => setPremiumForm({...premiumForm, weddingVenue: e.target.value})} style={inputStyle} />
-              </div>
-              <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>City / Country</label>
-                  <input type="text" placeholder="e.g. Paris, France" value={premiumForm.weddingCity} onChange={e => setPremiumForm({...premiumForm, weddingCity: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Languages</label>
-                  <input type="text" placeholder="e.g. French, English" value={premiumForm.languages} onChange={e => setPremiumForm({...premiumForm, languages: e.target.value})} style={inputStyle} />
-                </div>
-              </div>
-            </div>
-
-            {/* Design Preferences */}
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎨 Design Preferences</div>
-              
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={labelStyle}>Preferred template style</label>
-                <select value={selectedTheme} onChange={e => setSelectedTheme(e.target.value)} style={selectStyle}>
-                  {themes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
-              </div>
-
-              <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>Envelope animation</label>
-                  <select value={premiumForm.envelopeChoice} onChange={e => setPremiumForm({...premiumForm, envelopeChoice: e.target.value})} style={selectStyle}>
-                    <option value="">Choose...</option>
-                    {ENVELOPE_OPTIONS.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Hero video</label>
-                  <select value={premiumForm.heroVideoChoice} onChange={e => setPremiumForm({...premiumForm, heroVideoChoice: e.target.value})} style={selectStyle}>
-                    <option value="">Choose...</option>
-                    {HERO_VIDEO_OPTIONS.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={labelStyle}>Color preferences</label>
-                <input type="text" placeholder="e.g. Blush pink, gold, ivory" value={premiumForm.colorPreferences} onChange={e => setPremiumForm({...premiumForm, colorPreferences: e.target.value})} style={inputStyle} />
-              </div>
-            </div>
-
-            {/* Sections */}
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📋 Invitation Sections</div>
-              <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Select the sections you want in your invitation</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                {SECTION_OPTIONS.map(s => (
-                  <div key={s.key} onClick={() => toggleSection(s.key)}
-                    style={{
-                      padding: '0.85rem 1rem',
-                      borderRadius: '12px',
-                      border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #6b363e' : '1px solid #e0dcd7',
-                      backgroundColor: premiumForm.sectionsWanted.includes(s.key) ? '#fbf5f6' : '#faf8f5',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      transition: 'all 0.15s ease',
-                    }}>
-                    <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#6b363e' : '#ccc', fontSize: '0.9rem' }}>
-                      {premiumForm.sectionsWanted.includes(s.key) ? '✓' : '○'}
-                    </span>
-                    {s.label}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Extra Notes */}
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💬 Additional Details</div>
-              
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={labelStyle}>Inspiration links</label>
-                <textarea placeholder="Share any Pinterest boards, Instagram posts, or websites you love..." value={premiumForm.inspirationLinks} onChange={e => setPremiumForm({...premiumForm, inspirationLinks: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
-              </div>
-              <div>
-                <label style={labelStyle}>Special requests</label>
-                <textarea placeholder="Anything else you'd like us to know..." value={premiumForm.specialRequests} onChange={e => setPremiumForm({...premiumForm, specialRequests: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
-              </div>
-            </div>
-
-            {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', textAlign: 'center' }}>{authError}</div>}
-          </div>
-        )}
-
-        {/* STEP 3: SUMMARY */}
+        {/* ═══ STEP 3: SUMMARY ═══ */}
         {step === 3 && (
           <div>
             <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
@@ -592,7 +436,6 @@ export default function CheckoutClient() {
                 <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>YOUR INVITATION</div>
                 <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', color: '#6b363e', fontStyle: 'italic' }}>{selectedPackage.name}</h2>
               </div>
-              
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '2rem', marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>PLAN</span>
@@ -604,46 +447,20 @@ export default function CheckoutClient() {
                   <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
                   <span style={{ fontWeight: 600 }}>{themeName}</span>
                 </div>
-                {isPremiumOrExcellence && (
-                  <>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>COUPLE</span>
-                      <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
-                      <span style={{ fontWeight: 600 }}>{premiumForm.name} & {premiumForm.partnerName}</span>
-                    </div>
-                    {premiumForm.weddingDate && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>DATE</span>
-                        <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
-                        <span style={{ fontWeight: 600 }}>{new Date(premiumForm.weddingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                      </div>
-                    )}
-                    {premiumForm.weddingVenue && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>VENUE</span>
-                        <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
-                        <span style={{ fontWeight: 600 }}>{premiumForm.weddingVenue}</span>
-                      </div>
-                    )}
-                  </>
-                )}
               </div>
-              
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <span style={{ fontSize: '1rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase' }}>TOTAL</span>
                 <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#6b363e' }}>{total}$</span>
               </div>
-
               {isPremiumOrExcellence && (
                 <div style={{ backgroundColor: '#faf5f0', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', border: '1px solid #e8ddd4' }}>
                   <div style={{ fontSize: '1.2rem' }}>🎨</div>
                   <div>
                     <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#8b6e5a', marginBottom: '0.25rem' }}>HANDCRAFTED BY OUR TEAM</div>
-                    <div style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.5 }}>Your details will be sent directly to our design team. We'll start crafting your invitation and contact you within 24 hours.</div>
+                    <div style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.5 }}>After payment, you'll share your wedding details with us. We'll start crafting your invitation and contact you within 24h.</div>
                   </div>
                 </div>
               )}
-
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem' }}>
                 <div style={{ fontSize: '1.2rem', color: '#6b363e' }}>🤍</div>
                 <div>
@@ -655,77 +472,189 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* Trust Badges moved from bottom bar */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem', paddingBottom: '6rem' }}>
-          <div className="mobile-hide" style={{ display: 'flex', gap: '1rem', color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>
-            <span>✓ Secure payment</span>
-            <span>·</span>
-            <span>✓ Instant confirmation</span>
-            <span>·</span>
-            <span>✓ Designer-made</span>
-          </div>
+        {/* ═══ STEP 4: WEDDING FORM (after payment, Premium/Excellence only) ═══ */}
+        {step === 4 && (
+          <div style={{ padding: '2rem 1.5rem 3rem' }}>
 
-          <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b363e', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
-            <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-          </div>
-        </div>
+            {/* Success banner */}
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem', padding: '2rem' }}>
+              <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#6b363e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(107,54,62,0.2)' }}>✓</div>
+              <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Payment Confirmed!</h1>
+              <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                Now tell us about your wedding so we can start crafting your invitation.
+              </p>
+            </div>
 
+            {sent ? (
+              <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#2d8a4e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 16px rgba(45,138,78,0.2)' }}>✓</div>
+                <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '1rem' }}>Details Sent!</h2>
+                <p style={{ color: '#666', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+                  Thank you! Our design team has received your wedding details. We'll get in touch within 24 hours to start bringing your vision to life.
+                </p>
+                <button onClick={() => router.push('/')} style={{ backgroundColor: '#6b363e', color: '#fff', border: 'none', padding: '1rem 2.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px' }}>
+                  BACK TO HOME
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                {/* Wedding Details */}
+                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💒 Wedding Details</div>
+                  <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div>
+                      <label style={labelStyle}>Wedding date</label>
+                      <input type="date" value={premiumForm.weddingDate} onChange={e => setPremiumForm({...premiumForm, weddingDate: e.target.value})} style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Guest count</label>
+                      <input type="text" placeholder="e.g. 120" value={premiumForm.guestCount} onChange={e => setPremiumForm({...premiumForm, guestCount: e.target.value})} style={inputStyle} />
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={labelStyle}>Venue name</label>
+                    <input type="text" placeholder="e.g. Château de Versailles" value={premiumForm.weddingVenue} onChange={e => setPremiumForm({...premiumForm, weddingVenue: e.target.value})} style={inputStyle} />
+                  </div>
+                  <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <label style={labelStyle}>City / Country</label>
+                      <input type="text" placeholder="e.g. Paris, France" value={premiumForm.weddingCity} onChange={e => setPremiumForm({...premiumForm, weddingCity: e.target.value})} style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Languages</label>
+                      <input type="text" placeholder="e.g. French, English" value={premiumForm.languages} onChange={e => setPremiumForm({...premiumForm, languages: e.target.value})} style={inputStyle} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Phone */}
+                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📱 Contact</div>
+                  <label style={labelStyle}>Phone number (for WhatsApp or call)</label>
+                  <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({...premiumForm, phone: e.target.value})} style={inputStyle} />
+                </div>
+
+                {/* Design Preferences */}
+                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎨 Design Preferences</div>
+                  <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div>
+                      <label style={labelStyle}>Envelope animation</label>
+                      <select value={premiumForm.envelopeChoice} onChange={e => setPremiumForm({...premiumForm, envelopeChoice: e.target.value})} style={selectStyle}>
+                        <option value="">Choose...</option>
+                        {ENVELOPE_OPTIONS.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Hero video</label>
+                      <select value={premiumForm.heroVideoChoice} onChange={e => setPremiumForm({...premiumForm, heroVideoChoice: e.target.value})} style={selectStyle}>
+                        <option value="">Choose...</option>
+                        {HERO_VIDEO_OPTIONS.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Color preferences</label>
+                    <input type="text" placeholder="e.g. Blush pink, gold, ivory" value={premiumForm.colorPreferences} onChange={e => setPremiumForm({...premiumForm, colorPreferences: e.target.value})} style={inputStyle} />
+                  </div>
+                </div>
+
+                {/* Sections */}
+                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📋 Invitation Sections</div>
+                  <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Select the sections you want</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    {SECTION_OPTIONS.map(s => (
+                      <div key={s.key} onClick={() => toggleSection(s.key)}
+                        style={{
+                          padding: '0.85rem 1rem', borderRadius: '12px',
+                          border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #6b363e' : '1px solid #e0dcd7',
+                          backgroundColor: premiumForm.sectionsWanted.includes(s.key) ? '#fbf5f6' : '#faf8f5',
+                          cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.15s ease',
+                        }}>
+                        <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#6b363e' : '#ccc', fontSize: '0.9rem' }}>
+                          {premiumForm.sectionsWanted.includes(s.key) ? '✓' : '○'}
+                        </span>
+                        {s.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Extra Notes */}
+                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💬 Additional Details</div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={labelStyle}>Inspiration links</label>
+                    <textarea placeholder="Share any Pinterest boards, Instagram posts, or websites you love..." value={premiumForm.inspirationLinks} onChange={e => setPremiumForm({...premiumForm, inspirationLinks: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Special requests</label>
+                    <textarea placeholder="Anything else you'd like us to know..." value={premiumForm.specialRequests} onChange={e => setPremiumForm({...premiumForm, specialRequests: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+                  </div>
+                </div>
+
+                {/* Submit button */}
+                <button
+                  onClick={handleSendOrder}
+                  disabled={sending}
+                  style={{
+                    width: '100%', padding: '1.2rem', borderRadius: '16px', border: 'none',
+                    backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600,
+                    cursor: sending ? 'wait' : 'pointer', fontFamily: 'inherit', letterSpacing: '1px',
+                    opacity: sending ? 0.7 : 1, transition: 'all 0.3s',
+                  }}>
+                  {sending ? 'SENDING...' : 'SEND MY DETAILS →'}
+                </button>
+                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#aaa' }}>
+                  Our team will contact you within 24 hours ✨
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Trust Badges */}
+        {step <= 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem', paddingBottom: '6rem' }}>
+            <div className="mobile-hide" style={{ display: 'flex', gap: '1rem', color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              <span>✓ Secure payment</span><span>·</span><span>✓ Instant confirmation</span><span>·</span><span>✓ Designer-made</span>
+            </div>
+            <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b363e', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
+              <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
-        {/* Gradient shadow */}
-        <div style={{ height: '30px', background: 'linear-gradient(to top, #faf8f5, transparent)' }}></div>
-        <div style={{ backgroundColor: '#faf8f5', padding: '0 1.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-
-          <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '600px' }}>
-            <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>
-              ←
-            </button>
-            <button 
-              onClick={step === 3 ? handlePayment : handleNextStep} 
-              disabled={sending || sent}
-              style={{ 
-                flex: 1, height: '60px', borderRadius: '16px', border: 'none', 
-                backgroundColor: sent ? '#2d8a4e' : '#6b363e', 
-                color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: sending ? 'wait' : 'pointer', 
-                fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                padding: '0 1.2rem', transition: 'all 0.3s', letterSpacing: '1px',
-                opacity: sending ? 0.7 : 1,
-              }}>
-              <span>
-                {sent ? '✓ SENT!' : sending ? 'SENDING...' : step === 3 ? (isPremiumOrExcellence ? 'SUBMIT ORDER' : 'PAY & START') : 'CONTINUE'}
-              </span>
-              {!sent && !sending && (
+      {/* ─── Bottom Bar (steps 1-3 only) ─── */}
+      {step <= 3 && (
+        <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
+          <div style={{ height: '30px', background: 'linear-gradient(to top, #faf8f5, transparent)' }}></div>
+          <div style={{ backgroundColor: '#faf8f5', padding: '0 1.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '600px' }}>
+              <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>←</button>
+              <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
+                <span>{step === 3 ? 'PAY & START' : 'CONTINUE'}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
-                  <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span> 
+                  <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span>
                   <span>{total}$ →</span>
                 </div>
-              )}
-            </button>
-          </div>
-          
-          {!isPremiumOrExcellence && (
+              </button>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '0.75rem', color: '#888' }}>
-              1 tap with 
+              1 tap with
               <div style={{ display: 'flex', gap: '4px' }}>
                 <span style={{ background: '#000', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.6rem' }}>Pay</span>
                 <span style={{ background: '#fff', color: '#555', border: '1px solid #ddd', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.6rem' }}>G Pay</span>
               </div>
             </div>
-          )}
-
-          {isPremiumOrExcellence && step === 3 && (
-            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
-              Your order details will be sent to our design team
-            </div>
-          )}
-
+          </div>
         </div>
-      </div>
-
+      )}
     </div>
   );
 }
