@@ -14,7 +14,7 @@ export default function Header() {
       <header className="header">
         <div className="header-logo">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'inherit' }}>
-            <img src="/images/logo.png" alt="Our Day Studio Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/images/logo.png" alt="Our Day Studio Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
             <span>Our Day Studio</span>
           </Link>
         </div>
