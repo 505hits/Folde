@@ -2,7 +2,7 @@ import Link from "next/link";
 import InteractiveVideo from "../../components/InteractiveVideo";
 
 export const metadata = {
-  title: "Gallery | Our Day Studio â$” Explore Our Universes",
+  title: "Gallery | Our Day Studio â€” Explore Our Universes",
   description: "Browse our collection of premium digital wedding invitations. Each universe is uniquely designed with elegant animations and customizable details.",
 };
 
@@ -26,7 +26,7 @@ const doors = [
 ];
 
 const veils = [
-  { id: 'celestial-veil', name: 'Celestial Veil', desc: 'A veil of airâ$¦ and the world calms.', video: '/videos/celestial-veil.mp4' },
+  { id: 'celestial-veil', name: 'Celestial Veil', desc: 'A veil of airâ€¦ and the world calms.', video: '/videos/celestial-veil.mp4' },
   { id: 'ivory-veil', name: 'Ivory Veil', desc: 'A caress of light, in silence.', video: '/videos/ivory-veil.mp4' },
   { id: 'rose-veil', name: 'RosÃ© Veil', desc: 'A rosy whisper, like the start of a dream.', video: '/videos/rose-veil.mp4' }
 ];

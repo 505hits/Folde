@@ -2,8 +2,8 @@ import Link from "next/link";
 import styles from "./offers.module.css";
 
 export const metadata = {
-  title: "Our Offers | Our Day Studio �$� Premium Digital Wedding Invitation Packages",
-  description: "Choose from our curated digital wedding invitation packages. Essential �$� includes unlimited guests, integrated RSVP, and personalized guidance.",
+  title: "Our Offers | Our Day Studio — Premium Digital Wedding Invitation Packages",
+  description: "Choose from our curated digital wedding invitation packages. Essential — includes unlimited guests, integrated RSVP, and personalized guidance.",
 };
 
 export default function Offers() {
@@ -130,7 +130,7 @@ export default function Offers() {
           </div>
           <div className={styles.includesGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
             {[
-              { icon: '📱', title: 'Mobile-First Design', desc: 'Your invitation is optimized for every device �$� smartphones, tablets, and desktops �$� ensuring a flawless experience for every guest.' },
+              { icon: '📱', title: 'Mobile-First Design', desc: 'Your invitation is optimized for every device — smartphones, tablets, and desktops — ensuring a flawless experience for every guest.' },
               { icon: '💌', title: 'Integrated RSVP', desc: 'Guests confirm, decline, or provide details directly from the invitation. No external tools, no friction.' },
               { icon: '📊', title: 'Real-Time Dashboard', desc: 'Track confirmations, pending responses, and declines from a clean, intuitive interface. Export your guest list to Excel anytime.' },
               { icon: '🔗', title: 'One Link, Unlimited Guests', desc: 'Share a single elegant link via WhatsApp, email, or social media. Every guest receives the same premium experience.' },

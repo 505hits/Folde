@@ -3,7 +3,7 @@ import Image from "next/image";
 import styles from "./vision.module.css";
 
 export const metadata = {
-  title: "Our Vision | Our Day Studio â$” Redefining the Digital Wedding Invitation",
+  title: "Our Vision | Our Day Studio â€” Redefining the Digital Wedding Invitation",
   description: "Discover the philosophy behind Our Day Studio. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
 };
 
@@ -19,7 +19,7 @@ export default function Vision() {
             Your Invitation Should Be as Memorable as Your Day
           </h1>
           <p className="text-lg animate-fade-in-up delay-2" style={{ maxWidth: '650px' }}>
-            We founded Our Day Studio with a simple conviction: a wedding invitation is more than logistics â$” it&apos;s the very first chapter of your celebration. It deserves beauty, intention, and soul.
+            We founded Our Day Studio with a simple conviction: a wedding invitation is more than logistics â€” it&apos;s the very first chapter of your celebration. It deserves beauty, intention, and soul.
           </p>
         </div>
       </section>
@@ -41,10 +41,10 @@ export default function Vision() {
               <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>Why We Exist</span>
               <h2 className="heading-lg">Born from a Desire to Elevate</h2>
               <p className="text-lg" style={{ marginTop: '1.5rem' }}>
-                Traditional paper invitations are beautiful â$” but they often get lost, arrive late, or lack the interactive depth that modern celebrations demand. Mass-produced digital alternatives, meanwhile, feel impersonal and disposable.
+                Traditional paper invitations are beautiful â€” but they often get lost, arrive late, or lack the interactive depth that modern celebrations demand. Mass-produced digital alternatives, meanwhile, feel impersonal and disposable.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                Our Day was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology â$” creating immersive, interactive experiences that your guests will remember long after the last dance.
+                Our Day was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology â€” creating immersive, interactive experiences that your guests will remember long after the last dance.
               </p>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function Vision() {
               <div className={styles.valueIcon}>âœ¦</div>
               <h3 className="heading-sm">Elegance Above All</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                Every visual element, every animation, every typographic choice is deliberate. We believe that true luxury lies in the details â$” and we obsess over each one.
+                Every visual element, every animation, every typographic choice is deliberate. We believe that true luxury lies in the details â€” and we obsess over each one.
               </p>
             </div>
             <div className={styles.valueCard}>
@@ -77,14 +77,14 @@ export default function Vision() {
               <div className={styles.valueIcon}>ðŸŒ¿</div>
               <h3 className="heading-sm">Sustainable by Nature</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                A fully digital invitation means zero paper waste, no printing, and no shipping emissions. Elegance and responsibility are not mutually exclusive â$” they enhance each other.
+                A fully digital invitation means zero paper waste, no printing, and no shipping emissions. Elegance and responsibility are not mutually exclusive â€” they enhance each other.
               </p>
             </div>
             <div className={styles.valueCard}>
               <div className={styles.valueIcon}>ðŸ’¡</div>
               <h3 className="heading-sm">Innovation with Soul</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                We harness cutting-edge web technologies â$” immersive animations, interactive RSVP, real-time dashboards â$” but always in service of emotion, never for spectacle alone.
+                We harness cutting-edge web technologies â€” immersive animations, interactive RSVP, real-time dashboards â€” but always in service of emotion, never for spectacle alone.
               </p>
             </div>
           </div>
@@ -97,9 +97,9 @@ export default function Vision() {
           <div className={styles.differenceInner}>
             <div className={styles.differenceText}>
               <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>What Sets Us Apart</span>
-              <h2 className="heading-lg">More Than a Link â$” An Experience</h2>
+              <h2 className="heading-lg">More Than a Link â€” An Experience</h2>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                When your guests tap that link, they don&apos;t just see information. They experience an immersive unveiling â$” an elegant opening animation, curated music, and a journey through every detail of your celebration. From the ceremony schedule to accommodation suggestions, from the photo gallery to the RSVP â$” everything unfolds with intention.
+                When your guests tap that link, they don&apos;t just see information. They experience an immersive unveiling â€” an elegant opening animation, curated music, and a journey through every detail of your celebration. From the ceremony schedule to accommodation suggestions, from the photo gallery to the RSVP â€” everything unfolds with intention.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
                 This is what makes a Our Day invitation different. It&apos;s not a webpage. It&apos;s a moment.
@@ -132,7 +132,7 @@ export default function Vision() {
           </div>
           <div className={styles.commitGrid}>
             {[
-              { title: 'Transparent Pricing', desc: 'No hidden fees, no surprises. You know exactly what you pay for and what you receive â$” from the very first call.' },
+              { title: 'Transparent Pricing', desc: 'No hidden fees, no surprises. You know exactly what you pay for and what you receive â€” from the very first call.' },
               { title: 'Unlimited Revisions', desc: 'We refine and adjust until you are truly delighted. There is no cap on iterations and no extra charge for changes.' },
               { title: 'Lasting Access', desc: 'Your invitation link remains active as long as you need it. Even after the wedding, it becomes a beautiful digital keepsake.' },
             ].map((item, i) => (
