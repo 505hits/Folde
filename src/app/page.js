@@ -413,6 +413,34 @@ export default function Home() {
           <Link href="/templates" className="btn-primary" style={{ marginTop: '2rem' }}>Start Your Project</Link>
         </div>
       </section>
+
+      {/* ===================== CONTACT SECTION ===================== */}
+      <section className={styles.contactSection}>
+        <div className="container" style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+          <div className={styles.contactIcon}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <h2 className="heading-lg" style={{ fontSize: '2rem' }}>Have some questions?</h2>
+          <p className="text-lg" style={{ marginTop: '0.75rem', color: '#888', lineHeight: 1.7 }}>
+            We'd love to hear from you. Whether you have a question about our templates, pricing, or anything else — our team is ready to help.
+          </p>
+          <a href="mailto:contact.ourdaystudio@gmail.com" className={styles.contactEmail}>
+            contact.ourdaystudio@gmail.com
+          </a>
+          <div className={styles.contactDivider}>
+            <div className={styles.contactDividerLine}></div>
+            <span>or</span>
+            <div className={styles.contactDividerLine}></div>
+          </div>
+          <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
+            We typically respond within a few hours ✨
+          </p>
+        </div>
+      </section>
+
       {/* ===================== STICKY SCROLL CTA ===================== */}
       <div style={{
         position: 'fixed', bottom: '2rem', left: '50%', zIndex: 999,
