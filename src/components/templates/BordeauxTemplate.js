@@ -102,7 +102,6 @@ const VenueImage = ({ src }) => {
 
   return (
     <div ref={ref} className={styles.photoRevealContainer}>
-      <div className={`${styles.revealOverlay} ${isVisible ? styles.active : ''}`} />
       <img 
         src={src} 
         alt="Venue" 
