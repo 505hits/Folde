@@ -278,7 +278,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               </AnimatedSection>
 
               <AnimatedSection type="fade" style={{ animationDelay: '0.6s' }}>
-                <p className={styles.heroDate}>{dateStr.toUpperCase()}</p>
+                <p className={styles.heroDate}>SAVE THE DATE</p>
               </AnimatedSection>
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {sections.showSchedule !== false && (
           <section className={styles.schedule}>
           <AnimatedSection type="fade">
-            <h2 className={styles.marbella}>Marbella</h2>
+            <h2 className={styles.marbella}>The Celebration</h2>
           </AnimatedSection>
           
           <AnimatedSection type="fade">
