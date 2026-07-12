@@ -173,7 +173,7 @@ export default function Home() {
           </button>
         </div>
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <Link href="/creations" className="btn-secondary">Discover All Creations</Link>
+          <Link href="/templates" className="btn-secondary">Discover All Creations</Link>
         </div>
       </section>
 
