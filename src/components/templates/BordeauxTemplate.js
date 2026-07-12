@@ -96,6 +96,133 @@ const GalleryCoverflow = ({ images }) => {
   );
 };
 
+// Animated Venue Cover Image Component
+const VenueImage = ({ src }) => {
+  const [ref, isVisible] = useScrollAnimation();
+
+  return (
+    <div ref={ref} className={styles.photoRevealContainer}>
+      <div className={`${styles.revealOverlay} ${isVisible ? styles.active : ''}`} />
+      <img 
+        src={src} 
+        alt="Venue" 
+        className={`${styles.revealImage} ${isVisible ? styles.active : ''}`} 
+      />
+    </div>
+  );
+};
+
+// Interactive Swatches & Custom Styled Dress Code Component
+const DressCodeSection = ({ t, accentColor }) => {
+  const [selectedColor, setSelectedColor] = React.useState(null);
+
+  const colors = [
+    { hex: '#6b363e', name: 'Bordeaux', desc: 'Deep, rich noble tones' },
+    { hex: '#C2A37B', name: 'Champagne', desc: 'Warm metallic elegance' },
+    { hex: '#8C9A86', name: 'Sage Green', desc: 'Earthy, natural pastel' },
+    { hex: '#CFA79F', name: 'Rosy Dust', desc: 'Romantic muted blush pink' },
+    { hex: '#EAE5D8', name: 'Soft Sand', desc: 'Clean, neutral highlights' }
+  ];
+
+  return (
+    <section className={styles.dressCode} style={{ padding: '5rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
+      <AnimatedSection type="fade">
+        <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Dress Code</h2>
+      </AnimatedSection>
+      <AnimatedSection type="fade">
+        <p className={styles.dressSubtitle}>Elegant &amp; Formal</p>
+      </AnimatedSection>
+
+      <AnimatedSection type="zoom">
+        <div className={styles.dressSplit} style={{ margin: '2.5rem 0' }}>
+          <div className={styles.dressCol} style={{ flex: 1 }}>
+            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#999', marginBottom: '0.5rem', fontWeight: 600 }}>Ladies</p>
+            <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.1rem', color: '#2c2c2c', fontStyle: 'italic', margin: 0 }}>Elegant cocktail dress or long gown</p>
+          </div>
+          <div className={styles.dressDivider}></div>
+          <div className={styles.dressCol} style={{ flex: 1 }}>
+            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#999', marginBottom: '0.5rem', fontWeight: 600 }}>Gentlemen</p>
+            <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.1rem', color: '#2c2c2c', fontStyle: 'italic', margin: 0 }}>Classic suit or refined tuxedo</p>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection type="fade">
+        <p className={styles.colorsLabel} style={{ fontWeight: 600, letterSpacing: '0.15em', fontSize: '0.75rem', color: '#888', minHeight: '20px' }}>
+          {selectedColor ? selectedColor.name : 'Hover or tap colors for details'}
+        </p>
+        <div className={styles.colorsRow} style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center', gap: '1.25rem' }}>
+          {colors.map((c, i) => (
+            <div 
+              key={i} 
+              className={styles.colorDot} 
+              style={{ 
+                backgroundColor: c.hex, 
+                cursor: 'pointer',
+                transform: selectedColor?.hex === c.hex ? 'scale(1.2)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                boxShadow: selectedColor?.hex === c.hex ? `0 0 15px ${c.hex}88` : 'none'
+              }}
+              onMouseEnter={() => setSelectedColor(c)}
+              onMouseLeave={() => setSelectedColor(null)}
+              onClick={() => setSelectedColor(selectedColor?.hex === c.hex ? null : c)}
+            />
+          ))}
+        </div>
+      </AnimatedSection>
+
+      {selectedColor && (
+        <div style={{
+          maxWidth: '300px',
+          margin: '-2.5rem auto 2.5rem',
+          padding: '0.8rem 1.5rem',
+          backgroundColor: '#fbfbf9',
+          borderRadius: '20px',
+          border: '1px solid rgba(0,0,0,0.04)',
+          animation: 'fadeIn 0.3s ease forwards',
+        }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>
+            {selectedColor.desc}
+          </p>
+        </div>
+      )}
+
+      <AnimatedSection type="zoom">
+        <div style={{ position: 'relative', width: '100%', maxWidth: '380px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
+          <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code Inspiration" style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s ease' }} 
+               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          />
+          {t.dressCode?.text && (
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '3rem 1.5rem 1.5rem',
+              background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center'
+            }}>
+              <p style={{ 
+                fontFamily: 'var(--font-heading)', 
+                fontSize: '2.2rem', 
+                color: '#ffffff', 
+                margin: 0,
+                textShadow: '0 3px 10px rgba(0,0,0,0.4)',
+                lineHeight: 1.1
+              }}>
+                {t.dressCode.text}
+              </p>
+            </div>
+          )}
+        </div>
+      </AnimatedSection>
+    </section>
+  );
+};
+
 export default function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
@@ -315,14 +442,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           textColor="#fff"
         />        {/* ================= VENUE SECTION ================= */}
         {sections.showVenue !== false && (
-          <ShakeConfetti
-            shakeTitle="Shake Your Phone"
-            shakePrompt="Unlock the Venue details 📍"
-            accentColor="#c5975b"
-            bgColor="#FAF9F6"
-            textColor="#2c2c2c"
-          >
-            <section className={styles.venue}>
+          <section className={styles.venue}>
             <AnimatedSection type="fade">
               <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-5a2 2 0 012-2h2a2 2 0 012 2v5M12 11v.01"></path></svg>
             </AnimatedSection>
@@ -331,20 +451,8 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <h2 className={styles.venueTitle}>Venue</h2>
             </AnimatedSection>
 
-            <AnimatedSection type="zoom" className={styles.mapContainer}>
-               {images.venue ? (
-                 <img src={images.venue} alt="Venue" style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '12px' }} />
-               ) : (
-                 <iframe 
-                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114562.59371060975!2d-80.5218764024827!3d25.467471960244793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9e666a7b73cc3%3A0x600989f66fc108b3!2sHomestead%2C%20FL%2C%20USA!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr" 
-                   width="100%" 
-                   height="250" 
-                   style={{border:0, display:'block'}} 
-                   allowFullScreen="" 
-                   loading="lazy">
-                 </iframe>
-               )}
-            </AnimatedSection>
+            {/* Animated cover photo with reveal animation */}
+            <VenueImage src={images.venue || "https://images.pexels.com/photos/34639710/pexels-photo-34639710.jpeg"} />
 
             <AnimatedSection type="fade">
               <h3 className={styles.venueName}>{ceremonyVenue}</h3>
@@ -355,13 +463,23 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <a href="https://maps.google.com/?q=South+Dixie+Highway,+Homestead" target="_blank" rel="noopener noreferrer" className={styles.btnDirections}>
+              <a href="https://maps.google.com/?q=South+Dixie+Highway,+Homestead" target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 Get directions
               </a>
             </AnimatedSection>
-            </section>
-          </ShakeConfetti>
+
+            <AnimatedSection type="zoom" className={styles.mapContainer}>
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114562.59371060975!2d-80.5218764024827!3d25.467471960244793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9e666a7b73cc3%3A0x600989f66fc108b3!2sHomestead%2C%20FL%2C%20USA!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr" 
+                width="100%" 
+                height="250" 
+                style={{border:0, display:'block'}} 
+                allowFullScreen="" 
+                loading="lazy">
+              </iframe>
+            </AnimatedSection>
+          </section>
         )}
 
         {/* ================= SCHEDULE SECTION ================= */}
@@ -408,40 +526,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
 
         {/* ================= DRESS CODE SECTION ================= */}
         {sections.showDressCode !== false && (
-          <section className={styles.dressCodeSection}>
-            <AnimatedSection type="zoom">
-              <div className={styles.dressCodeContainer} style={{ textAlign: 'center', margin: '4rem 0', padding: '0 2rem' }}>
-                <h2 className={styles.dressCodeTitle} style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '1.5rem' }}>Dress Code</h2>
-                <div style={{ position: 'relative', width: '100%', maxWidth: '400px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
-                  <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code Inspiration" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                  {t.dressCode?.text && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: '3rem 1.5rem 1.5rem',
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                      display: 'flex',
-                      alignItems: 'flex-end',
-                      justifyContent: 'center'
-                    }}>
-                      <p style={{ 
-                        fontFamily: 'var(--font-heading)', 
-                        fontSize: '2.5rem', 
-                        color: '#ffffff', 
-                        margin: 0,
-                        textShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                        lineHeight: 1.1
-                      }}>
-                        {t.dressCode.text}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </AnimatedSection>
-          </section>
+          <DressCodeSection t={t} accentColor="#c5975b" />
         )}
 
         {/* ================= BOARDING PASS ================= */}
