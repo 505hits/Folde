@@ -20,9 +20,12 @@ const Particle = ({ x, y, color, size, delay }) => (
 export default function ShakeConfetti({ 
   message = "You're Invited! 💍",
   subMessage = "We can't wait to celebrate with you",
+  shakeTitle = "Shake Your Phone",
+  shakePrompt = "A little surprise awaits",
   accentColor = '#c5975b', 
   bgColor = '#0f0f0f', 
-  textColor = '#fff' 
+  textColor = '#fff',
+  children
 }) {
   const [shaken, setShaken] = useState(false);
   const [particles, setParticles] = useState([]);
@@ -110,12 +113,12 @@ export default function ShakeConfetti({
         onClick={triggerConfetti}
         style={{
           background: bgColor,
-          padding: '4rem 1.5rem',
+          padding: children && shaken ? '0px' : '4rem 1.5rem',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
-          cursor: 'pointer',
-          minHeight: '280px',
+          cursor: !shaken ? 'pointer' : 'default',
+          minHeight: children && shaken ? 'auto' : '280px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -148,7 +151,7 @@ export default function ShakeConfetti({
               marginBottom: '1rem',
               fontWeight: 500,
             }}>
-              A little surprise awaits
+              {shakePrompt}
             </p>
 
             <h2 style={{
@@ -160,7 +163,7 @@ export default function ShakeConfetti({
               marginBottom: '0.8rem',
               letterSpacing: '1px',
             }}>
-              Shake Your Phone
+              {shakeTitle}
             </h2>
 
             <p style={{
@@ -174,42 +177,52 @@ export default function ShakeConfetti({
           </>
         ) : (
           /* Revealed message */
-          <div style={{
-            animation: 'messageReveal 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
-          }}>
+          children ? (
             <div style={{
-              width: '60px', height: '60px',
-              borderRadius: '50%',
-              background: `linear-gradient(135deg, ${accentColor}, ${accentColor}88)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 1.5rem',
-              boxShadow: `0 0 30px ${accentColor}33`,
+              animation: 'messageReveal 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+              width: '100%',
+              textAlign: 'left'
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
+              {children}
             </div>
-            
-            <h2 style={{
-              fontFamily: "'Harmond', 'Zen Old Mincho', serif",
-              fontSize: '2.2rem',
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: textColor,
-              marginBottom: '0.8rem',
+          ) : (
+            <div style={{
+              animation: 'messageReveal 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
             }}>
-              {message}
-            </h2>
-            
-            <p style={{
-              fontSize: '0.85rem',
-              color: textColor,
-              opacity: 0.6,
-              fontStyle: 'italic',
-            }}>
-              {subMessage}
-            </p>
-          </div>
+              <div style={{
+                width: '60px', height: '60px',
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${accentColor}, ${accentColor}88)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 1.5rem',
+                boxShadow: `0 0 30px ${accentColor}33`,
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </div>
+              
+              <h2 style={{
+                fontFamily: "'Harmond', 'Zen Old Mincho', serif",
+                fontSize: '2.2rem',
+                fontWeight: 400,
+                fontStyle: 'italic',
+                color: textColor,
+                marginBottom: '0.8rem',
+              }}>
+                {message}
+              </h2>
+              
+              <p style={{
+                fontSize: '0.85rem',
+                color: textColor,
+                opacity: 0.6,
+                fontStyle: 'italic',
+              }}>
+                {subMessage}
+              </p>
+            </div>
+          )
         )}
       </div>
     </>

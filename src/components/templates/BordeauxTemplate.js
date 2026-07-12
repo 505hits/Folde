@@ -5,7 +5,6 @@ import Hls from 'hls.js';
 import ScratchReveal from '../ScratchReveal';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
-import MagicRevealCard from '../MagicRevealCard';
 import styles from './BordeauxTemplate.module.css';
 
 // Hook for scroll animations
@@ -314,57 +313,55 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           accentColor="#c5975b"
           bgColor="#1a1a1a"
           textColor="#fff"
-        />
-
-        {/* ================= FLIP COUNTDOWN ================= */}
-        <FlipCountdown
-          targetDate={targetDate}
-          accentColor="#c5975b"
-          bgColor="#0f0f0f"
-          textColor="#fff"
-        />
-
-        {/* ================= VENUE SECTION ================= */}
+        />        {/* ================= VENUE SECTION ================= */}
         {sections.showVenue !== false && (
-          <section className={styles.venue}>
-          <AnimatedSection type="fade">
-            <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-5a2 2 0 012-2h2a2 2 0 012 2v5M12 11v.01"></path></svg>
-          </AnimatedSection>
-          
-          <AnimatedSection type="fade">
-            <h2 className={styles.venueTitle}>Venue</h2>
-          </AnimatedSection>
+          <ShakeConfetti
+            shakeTitle="Shake Your Phone"
+            shakePrompt="Unlock the Venue details 📍"
+            accentColor="#c5975b"
+            bgColor="#FAF9F6"
+            textColor="#2c2c2c"
+          >
+            <section className={styles.venue}>
+            <AnimatedSection type="fade">
+              <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-5a2 2 0 012-2h2a2 2 0 012 2v5M12 11v.01"></path></svg>
+            </AnimatedSection>
+            
+            <AnimatedSection type="fade">
+              <h2 className={styles.venueTitle}>Venue</h2>
+            </AnimatedSection>
 
-          <AnimatedSection type="zoom" className={styles.mapContainer}>
-             {images.venue ? (
-               <img src={images.venue} alt="Venue" style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '12px' }} />
-             ) : (
-               <iframe 
-                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114562.59371060975!2d-80.5218764024827!3d25.467471960244793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9e666a7b73cc3%3A0x600989f66fc108b3!2sHomestead%2C%20FL%2C%20USA!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr" 
-                 width="100%" 
-                 height="250" 
-                 style={{border:0, display:'block'}} 
-                 allowFullScreen="" 
-                 loading="lazy">
-               </iframe>
-             )}
-          </AnimatedSection>
+            <AnimatedSection type="zoom" className={styles.mapContainer}>
+               {images.venue ? (
+                 <img src={images.venue} alt="Venue" style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '12px' }} />
+               ) : (
+                 <iframe 
+                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114562.59371060975!2d-80.5218764024827!3d25.467471960244793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9e666a7b73cc3%3A0x600989f66fc108b3!2sHomestead%2C%20FL%2C%20USA!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr" 
+                   width="100%" 
+                   height="250" 
+                   style={{border:0, display:'block'}} 
+                   allowFullScreen="" 
+                   loading="lazy">
+                 </iframe>
+               )}
+            </AnimatedSection>
 
-          <AnimatedSection type="fade">
-            <h3 className={styles.venueName}>{ceremonyVenue}</h3>
-          </AnimatedSection>
+            <AnimatedSection type="fade">
+              <h3 className={styles.venueName}>{ceremonyVenue}</h3>
+            </AnimatedSection>
 
-          <AnimatedSection type="fade">
-            <p className={styles.venueAddress}>{receptionVenue}</p>
-          </AnimatedSection>
+            <AnimatedSection type="fade">
+              <p className={styles.venueAddress}>{receptionVenue}</p>
+            </AnimatedSection>
 
-          <AnimatedSection type="fade">
-            <a href="https://maps.google.com/?q=South+Dixie+Highway,+Homestead" target="_blank" rel="noopener noreferrer" className={styles.btnDirections}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-              Get directions
-            </a>
-          </AnimatedSection>
-          </section>
+            <AnimatedSection type="fade">
+              <a href="https://maps.google.com/?q=South+Dixie+Highway,+Homestead" target="_blank" rel="noopener noreferrer" className={styles.btnDirections}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                Get directions
+              </a>
+            </AnimatedSection>
+            </section>
+          </ShakeConfetti>
         )}
 
         {/* ================= SCHEDULE SECTION ================= */}
@@ -509,26 +506,6 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                ]} />
           </section>
         )}
-
-        {/* ================= SHAKE CONFETTI ================= */}
-        <ShakeConfetti
-          message={`${partner1} & ${showPartner2 ? partner2 : ''} 💍`}
-          subMessage="We can't wait to celebrate with you"
-          accentColor="#c5975b"
-          bgColor="#0f0f0f"
-          textColor="#fff"
-        />
-
-        {/* ================= MAGIC REVEAL CARD ================= */}
-        <MagicRevealCard
-          frontTitle="Hold to Discover"
-          revealTitle={`${partner1}${showPartner2 ? ` & ${partner2}` : ''}`}
-          revealSubtitle="Request the honor of your presence"
-          revealDate={dateStr}
-          accentColor="#c5975b"
-          bgColor="#1a1a1a"
-          textColor="#fff"
-        />
 
         {/* ================= RSVP SECTION ================= */}
         {sections.showRSVP !== false && (
