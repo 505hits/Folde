@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import ScratchReveal from '../ScratchReveal';
 import styles from './BordeauxTemplate.module.css';
 
 // Hook for scroll animations
@@ -299,6 +300,14 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           </AnimatedSection>
           </section>
         )}
+
+        {/* ================= SCRATCH REVEAL DATE ================= */}
+        <ScratchReveal
+          dateStr={dateStr}
+          accentColor="#c5975b"
+          bgColor="#1a1a1a"
+          textColor="#fff"
+        />
 
         {/* ================= VENUE SECTION ================= */}
         {sections.showVenue !== false && (
