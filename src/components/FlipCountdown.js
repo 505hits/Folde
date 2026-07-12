@@ -1,103 +1,104 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const FlipDigit = ({ value, label, accentColor }) => {
-  const [currentVal, setCurrentVal] = useState(value);
-  const [prevVal, setPrevVal] = useState(value);
+const FlipCard = ({ value, label, accentColor }) => {
+  const display = String(value).padStart(2, '0');
+  const [prev, setPrev] = useState(display);
   const [flipping, setFlipping] = useState(false);
 
   useEffect(() => {
-    if (value !== currentVal) {
-      setPrevVal(currentVal);
+    if (display !== prev) {
       setFlipping(true);
       const t = setTimeout(() => {
-        setCurrentVal(value);
+        setPrev(display);
         setFlipping(false);
-      }, 600);
+      }, 500);
       return () => clearTimeout(t);
     }
-  }, [value, currentVal]);
+  }, [display, prev]);
 
-  const padded = String(currentVal).padStart(2, '0');
-  const paddedPrev = String(prevVal).padStart(2, '0');
+  const cardStyle = {
+    position: 'relative',
+    width: '56px',
+    height: '70px',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+  };
+
+  const digitStyle = {
+    fontSize: '2.6rem',
+    fontWeight: 700,
+    fontFamily: "'Inter', 'SF Mono', monospace",
+    color: '#fff',
+    lineHeight: '70px',
+    textAlign: 'center',
+    width: '100%',
+    position: 'absolute',
+    left: 0,
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-      <div style={{
-        position: 'relative',
-        width: '60px',
-        height: '76px',
-        perspective: '300px',
-      }}>
-        {/* Static bottom half - shows new value */}
-        <div style={{
-          position: 'absolute', top: '50%', left: 0, right: 0, bottom: 0,
-          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%)',
-          borderRadius: '0 0 8px 8px',
-          overflow: 'hidden',
-          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-        }}>
-          <span style={{
-            fontSize: '2.4rem',
-            fontWeight: 700,
-            color: '#fff',
-            lineHeight: '76px',
-            marginTop: '-38px',
-            fontFamily: "'Inter', 'SF Mono', monospace",
-          }}>{padded}</span>
-        </div>
-
-        {/* Static top half - shows old or new value */}
+      <div style={cardStyle}>
+        {/* Top half */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '50%',
-          background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)',
-          borderRadius: '8px 8px 0 0',
+          background: 'linear-gradient(180deg, #2a2a2a, #222)',
           overflow: 'hidden',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-          zIndex: flipping ? 0 : 1,
+          borderBottom: '1px solid rgba(0,0,0,0.3)',
         }}>
-          <span style={{
-            fontSize: '2.4rem',
-            fontWeight: 700,
-            color: '#fff',
-            lineHeight: '76px',
-            fontFamily: "'Inter', 'SF Mono', monospace",
-          }}>{padded}</span>
+          <span style={{ ...digitStyle, top: 0 }}>{display}</span>
+        </div>
+        {/* Bottom half */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%',
+          background: 'linear-gradient(180deg, #1e1e1e, #1a1a1a)',
+          overflow: 'hidden',
+        }}>
+          <span style={{ ...digitStyle, bottom: 0 }}>{display}</span>
         </div>
 
-        {/* Flip animation - top half falling down */}
+        {/* Flip animation overlay */}
         {flipping && (
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, height: '50%',
-            background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)',
-            borderRadius: '8px 8px 0 0',
-            overflow: 'hidden',
-            display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-            zIndex: 3,
-            transformOrigin: 'bottom',
-            animation: 'flipDown 0.6s ease-in forwards',
-            backfaceVisibility: 'hidden',
-          }}>
-            <span style={{
-              fontSize: '2.4rem',
-              fontWeight: 700,
-              color: '#fff',
-              lineHeight: '76px',
-              fontFamily: "'Inter', 'SF Mono', monospace",
-            }}>{paddedPrev}</span>
-          </div>
+          <>
+            {/* Top flap falling (shows old number) */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '50%',
+              background: 'linear-gradient(180deg, #2a2a2a, #222)',
+              overflow: 'hidden',
+              transformOrigin: 'bottom center',
+              animation: 'flipTop 0.5s ease-in forwards',
+              zIndex: 2,
+              borderRadius: '8px 8px 0 0',
+            }}>
+              <span style={{ ...digitStyle, top: 0 }}>{prev}</span>
+            </div>
+            {/* Bottom flap rising (shows new number) */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%',
+              background: 'linear-gradient(180deg, #1e1e1e, #1a1a1a)',
+              overflow: 'hidden',
+              transformOrigin: 'top center',
+              animation: 'flipBottom 0.5s ease-out 0.25s forwards',
+              zIndex: 2,
+              borderRadius: '0 0 8px 8px',
+              transform: 'rotateX(90deg)',
+            }}>
+              <span style={{ ...digitStyle, bottom: 0 }}>{display}</span>
+            </div>
+          </>
         )}
 
-        {/* Side shadow lines */}
+        {/* Center line */}
         <div style={{
           position: 'absolute', top: '50%', left: 0, right: 0, height: '1px',
-          background: 'rgba(0,0,0,0.4)', zIndex: 4,
+          background: 'rgba(0,0,0,0.5)', zIndex: 3, transform: 'translateY(-0.5px)',
         }} />
       </div>
       <span style={{
-        fontSize: '0.6rem',
+        fontSize: '0.55rem',
         letterSpacing: '3px',
         textTransform: 'uppercase',
         fontWeight: 600,
@@ -110,14 +111,22 @@ const FlipDigit = ({ value, label, accentColor }) => {
 
 export default function FlipCountdown({ targetDate = '2026-05-27', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff' }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
     const target = new Date(targetDate + 'T14:00:00');
-    
+
     const update = () => {
       const now = new Date();
-      const diff = Math.max(0, target - now);
-      
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setIsPast(true);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setIsPast(false);
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -134,12 +143,16 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
   return (
     <>
       <style>{`
-        @keyframes flipDown {
+        @keyframes flipTop {
           0% { transform: rotateX(0deg); }
           100% { transform: rotateX(-90deg); }
         }
+        @keyframes flipBottom {
+          0% { transform: rotateX(90deg); }
+          100% { transform: rotateX(0deg); }
+        }
         @keyframes countdownPulse {
-          0%, 100% { opacity: 0.6; }
+          0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
       `}</style>
@@ -166,7 +179,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '0.8rem',
           fontWeight: 500,
         }}>
-          Counting down to
+          {isPast ? 'The day has arrived' : 'Counting down to'}
         </p>
 
         <h2 style={{
@@ -178,36 +191,49 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '2rem',
           letterSpacing: '1px',
         }}>
-          Our Forever
+          {isPast ? '✨ Today is the Day ✨' : 'Our Forever'}
         </h2>
 
-        {/* Flip digits */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '0.6rem',
-          color: textColor,
-        }}>
-          <FlipDigit value={timeLeft.days} label="Days" accentColor={accentColor} />
+        {!isPast && (
           <div style={{
-            display: 'flex', alignItems: 'center', paddingBottom: '1.5rem',
-            fontSize: '1.5rem', color: accentColor, fontWeight: 700,
-            animation: 'countdownPulse 1s ease-in-out infinite',
-          }}>:</div>
-          <FlipDigit value={timeLeft.hours} label="Hours" accentColor={accentColor} />
-          <div style={{
-            display: 'flex', alignItems: 'center', paddingBottom: '1.5rem',
-            fontSize: '1.5rem', color: accentColor, fontWeight: 700,
-            animation: 'countdownPulse 1s ease-in-out infinite',
-          }}>:</div>
-          <FlipDigit value={timeLeft.minutes} label="Min" accentColor={accentColor} />
-          <div style={{
-            display: 'flex', alignItems: 'center', paddingBottom: '1.5rem',
-            fontSize: '1.5rem', color: accentColor, fontWeight: 700,
-            animation: 'countdownPulse 1s ease-in-out infinite',
-          }}>:</div>
-          <FlipDigit value={timeLeft.seconds} label="Sec" accentColor={accentColor} />
-        </div>
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            alignItems: 'flex-start',
+            color: textColor,
+          }}>
+            <FlipCard value={timeLeft.days} label="Days" accentColor={accentColor} />
+            <div style={{
+              display: 'flex', alignItems: 'center', height: '70px',
+              fontSize: '1.5rem', color: accentColor, fontWeight: 700,
+              animation: 'countdownPulse 1s ease-in-out infinite',
+            }}>:</div>
+            <FlipCard value={timeLeft.hours} label="Hours" accentColor={accentColor} />
+            <div style={{
+              display: 'flex', alignItems: 'center', height: '70px',
+              fontSize: '1.5rem', color: accentColor, fontWeight: 700,
+              animation: 'countdownPulse 1s ease-in-out infinite',
+            }}>:</div>
+            <FlipCard value={timeLeft.minutes} label="Min" accentColor={accentColor} />
+            <div style={{
+              display: 'flex', alignItems: 'center', height: '70px',
+              fontSize: '1.5rem', color: accentColor, fontWeight: 700,
+              animation: 'countdownPulse 1s ease-in-out infinite',
+            }}>:</div>
+            <FlipCard value={timeLeft.seconds} label="Sec" accentColor={accentColor} />
+          </div>
+        )}
+
+        {isPast && (
+          <p style={{
+            fontSize: '1rem',
+            color: accentColor,
+            fontStyle: 'italic',
+            fontFamily: "'Harmond', 'Zen Old Mincho', serif",
+          }}>
+            Let the celebration begin 🥂
+          </p>
+        )}
 
         {/* Bottom decorative line */}
         <div style={{
