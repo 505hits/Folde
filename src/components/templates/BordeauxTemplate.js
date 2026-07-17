@@ -338,10 +338,24 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
         if (envelopeVideoRef.current) {
-          envelopeVideoRef.current.play().catch(e => console.log("Video play failed", e));
+          envelopeVideoRef.current.play().catch(e => {
+            console.log("Video play failed in simulation, dismissing envelope", e);
+            setEnvelopeDismissed(true);
+            if (onEnvelopeDismissed) onEnvelopeDismissed();
+          });
         }
       }, 500);
-      return () => clearTimeout(timer);
+
+      // Backup timer in case play gets stuck
+      const safetyTimer = setTimeout(() => {
+        setEnvelopeDismissed(true);
+        if (onEnvelopeDismissed) onEnvelopeDismissed();
+      }, 3000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(safetyTimer);
+      };
     }
   }, [autoPlaySimulation, envelopeOpen]);
 
@@ -420,7 +434,11 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     
     setEnvelopeOpen(true);
     if (envelopeVideoRef.current) {
-      envelopeVideoRef.current.play().catch(e => console.log("Video play failed", e));
+      envelopeVideoRef.current.play().catch(e => {
+        console.log("Video play failed, dismissing envelope", e);
+        setEnvelopeDismissed(true);
+        if (onEnvelopeDismissed) onEnvelopeDismissed();
+      });
     }
   };
 

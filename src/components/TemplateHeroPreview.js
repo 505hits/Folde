@@ -24,11 +24,22 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
 
       const timer = setTimeout(() => {
         setEnvelopeOpen(true);
-        video.play().catch(e => console.log("Video play failed", e));
+        if (video) {
+          video.play().catch(e => {
+            console.log("Autoplay blocked, auto-dismissing envelope", e);
+            setEnvelopeDismissed(true);
+          });
+        }
       }, 1000);
+      
+      // Safety fallback: if video is stuck or taking too long, dismiss after 3.5s
+      const safetyTimer = setTimeout(() => {
+        setEnvelopeDismissed(true);
+      }, 3500);
       
       return () => {
         clearTimeout(timer);
+        clearTimeout(safetyTimer);
         if (hls) hls.destroy();
       };
     }
@@ -52,6 +63,7 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
         }}>
           <video 
             ref={envelopeVideoRef}
+            autoPlay
             muted
             playsInline
             onEnded={handleVideoEnded}
