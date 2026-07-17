@@ -275,29 +275,14 @@ export default function CheckoutClient() {
           }
         }
       }
-      if (isPremiumOrCustom) {
-        setStep(3); // Go to Customization Form
-      } else {
-        setStep(4); // Go to Summary (Standard flows skip customization)
-      }
-      window.scrollTo(0, 0);
-      return;
-    }
-    if (step === 3) {
-      setStep(4); // Go to Summary
+      setStep(3); // Go to Summary & Payment for all packages
       window.scrollTo(0, 0);
       return;
     }
   };
 
   const handleBack = () => {
-    if (step === 4) {
-      if (isPremiumOrCustom) {
-        setStep(3); // Back to Customization Form
-      } else {
-        setStep(2); // Back to details
-      }
-    } else if (step === 3) {
+    if (step === 3) {
       setStep(2); // Back to details
     } else if (step === 2) {
       setStep(1); // Back to package selection
@@ -313,19 +298,17 @@ export default function CheckoutClient() {
     // Create order record in mock DB
     createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
 
-    // If Premium or Custom, send the Resend customization details email
-    if (isPremiumOrCustom) {
-      try {
-        await handleSendOrder();
-      } catch (err) {
-        console.error('Error sending order details email:', err);
-      }
-    }
-
     // Simulate payment completion
     setTimeout(() => {
       setPaymentProcessing(false);
-      router.push('/success');
+      if (selectedPackage.id === 'essential') {
+        // Essential / Standard pack redirects directly to dashboard
+        router.push('/dashboard');
+      } else {
+        // Premium or Custom pack transitions to Step 4 (customization form)
+        setStep(4);
+        window.scrollTo(0, 0);
+      }
     }, 2000);
   };
 
@@ -532,8 +515,8 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* ═══ STEP 4: SUMMARY ═══ */}
-        {step === 4 && (
+        {/* ═══ STEP 3: SUMMARY ═══ */}
+        {step === 3 && (
           <div>
             <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
               <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -873,15 +856,15 @@ export default function CheckoutClient() {
         )}
       </div>
 
-      {/* ─── Bottom Bar (steps 1-4 only) ─── */}
-      {step <= 4 && (
+      {/* ─── Bottom Bar (steps 1-3 only) ─── */}
+      {step <= 3 && (
         <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
           <div style={{ height: '30px', background: 'linear-gradient(to top, #faf8f5, transparent)' }}></div>
           <div style={{ backgroundColor: '#faf8f5', padding: '0 1.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '600px' }}>
               <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>←</button>
-              <button onClick={step === 4 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
-                <span>{step === 4 ? 'PAY & START' : 'CONTINUE'}</span>
+              <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
+                <span>{step === 3 ? 'PAY & START' : 'CONTINUE'}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                   <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span>
                   <span>{total}$ →</span>
