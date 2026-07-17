@@ -726,21 +726,42 @@
 
 /* ===================== FINAL CTA ===================== */
 .finalCta {
-  padding: 6rem 0;
-  background: var(--color-foreground);
-  color: var(--color-background);
+  padding: 5rem 2rem;
+  background: #5C3A1E;
+  color: #ffffff;
   text-align: center;
+  border-radius: 24px;
+  max-width: 1060px;
+  margin: 2rem auto 6rem;
+  box-shadow: 0 20px 50px rgba(92, 58, 30, 0.15);
 }
 
-.finalCta .btn-primary {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  border-color: var(--color-background);
+.finalCta h2 {
+  color: #ffffff !important;
 }
 
-.finalCta .btn-primary:hover {
-  background: transparent;
-  color: var(--color-background);
+.finalCta p {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.finalCta :global(.btn-primary) {
+  background: #ffffff !important;
+  color: #5C3A1E !important;
+  border-color: #ffffff !important;
+}
+
+.finalCta :global(.btn-primary):hover {
+  background: transparent !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+@media (max-width: 1100px) {
+  .finalCta {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    padding: 4rem 1.5rem;
+  }
 }
 
 /* ===================== CONTACT SECTION ===================== */

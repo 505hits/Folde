@@ -13,6 +13,28 @@ const zenOldMincho = Zen_Old_Mincho({
 export const metadata = {
   title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
   description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide. Book your consultation.",
+  openGraph: {
+    title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
+    description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
+    url: "https://www.foldedesign.com",
+    siteName: "FOLDÈ Design",
+    images: [
+      {
+        url: "https://www.foldedesign.com/images/logo.png",
+        width: 800,
+        height: 600,
+        alt: "FOLDÈ Design Logo"
+      }
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
+    description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
+    images: ["https://www.foldedesign.com/images/logo.png"],
+  }
 };
 
 const jsonLd = {
