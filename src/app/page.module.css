@@ -66,31 +66,31 @@
 .phoneFrame {
   width: 280px;
   height: 485px;
-  background: #1a1a1a;
-  border-radius: 36px;
-  padding: 8px;
+  background: #121212;
+  border-radius: 42px;
+  padding: 4px;
   position: relative;
   box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.15),
+    0 25px 60px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .phoneNotch {
   position: absolute;
-  top: 8px;
+  top: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90px;
-  height: 24px;
-  background: #1a1a1a;
-  border-radius: 0 0 18px 18px;
+  width: 84px;
+  height: 20px;
+  background: #121212;
+  border-radius: 0 0 14px 14px;
   z-index: 2;
 }
 
 .phoneScreen {
   width: 100%;
   height: 100%;
-  border-radius: 30px;
+  border-radius: 38px;
   overflow: hidden;
   position: relative;
   background: #000;
@@ -98,7 +98,7 @@
 
 .mockupContent {
   width: 450px;
-  zoom: 0.5866;
+  zoom: 0.6044;
   margin: 0 auto;
 }
 
@@ -136,7 +136,7 @@
   }
   
   .mockupContent {
-    zoom: 0.497;
+    zoom: 0.5155;
   }
 }
 
@@ -144,22 +144,23 @@
   .phoneFrame {
     width: 210px;
     height: 360px;
-    border-radius: 32px;
-    padding: 10px;
+    border-radius: 36px;
+    padding: 4px;
   }
 
   .mockupContent {
-    zoom: 0.422;
+    zoom: 0.4488;
   }
 
   .phoneScreen {
-    border-radius: 24px;
+    border-radius: 32px;
   }
 
   .phoneNotch {
-    width: 80px;
-    height: 22px;
-    border-radius: 0 0 14px 14px;
+    top: 4px;
+    width: 76px;
+    height: 18px;
+    border-radius: 0 0 12px 12px;
   }
 }
 

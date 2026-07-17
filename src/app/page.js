@@ -75,7 +75,7 @@ export default function Home() {
               Premium Digital Wedding Invitations & Guest Tracking
             </h1>
             <p className="text-lg animate-fade-in-up delay-2">
-              We design fully personalized, interactive digital invitations with integrated RSVP, custom photo galleries, and real-time guest management — tailored to tell your story and simplify your planning.
+              Designed in our Paris studio, FOLDÈ crafts premium, interactive digital wedding invitations for destination celebrations in Provence, the French Riviera, Italy, and worldwide. Enjoy integrated RSVP, custom photo galleries, and real-time guest tracking.
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
               <Link href="/collections" className="btn-primary">Begin Your Story</Link>
