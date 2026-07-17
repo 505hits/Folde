@@ -591,3 +591,11 @@ h1, h2, h3, h4, h5, h6 {
 .creation-link-secondary:hover {
   color: var(--color-foreground);
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
