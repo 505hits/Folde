@@ -8,16 +8,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const templates = [
-  { id: 'bordeaux', name: 'Bordeaux Elegant', tag: 'ELEGANT', desc: 'Deep and majestic elegance.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Emma', partner2: 'Liam', popular: true, link: '/kissing-couple-wedding-invitation' },
-  { id: 'champagne', name: 'Champagne', tag: 'ROMANTIC', desc: 'Royal sophistication.', video: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', partner1: 'Ava', partner2: 'William', popular: false },
-  { id: 'ivory', name: 'Ivory', tag: 'MINIMAL', desc: 'Pure and delicate.', video: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Olivia', partner2: 'Noah', popular: false },
-  { id: 'sage', name: 'Sage', tag: 'NATURAL', desc: 'Organic and refined.', video: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', partner1: 'Charlotte', partner2: 'Elijah', popular: false },
-  { id: 'terracotta', name: 'Terracotta', tag: 'WARM', desc: 'Sun-kissed warmth.', video: 'https://www.wooowinvites.com/assets/just-married-car-theme-BhahCrzF.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', partner1: 'Sophia', partner2: 'James', popular: true },
-  { id: 'royalbordeaux', name: 'Royal Bordeaux', tag: 'DRAMATIC', desc: 'Intense and noble.', video: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Isabella', partner2: 'Oliver', popular: false },
-  { id: 'royalblue', name: 'Royal Blue', tag: 'ELEGANT', desc: 'Deep blue elegance.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', partner1: 'Mia', partner2: 'Benjamin', popular: false },
-  { id: 'chocolate', name: 'Chocolate', tag: 'WARM', desc: 'Rich warmth and character.', video: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Amelia', partner2: 'Lucas', popular: true },
-  { id: 'rosebow', name: 'Rose Bow', tag: 'ROMANTIC', desc: 'A delicate ribbon opening.', video: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', envelope: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', partner1: 'Chloe', partner2: 'Sam', popular: true },
-  { id: 'majestic', name: 'Majestic', tag: 'ELEGANT', desc: 'A regal and majestic entrance.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4', partner1: 'Victoria', partner2: 'Arthur', popular: false },
+  { id: 'bordeaux', name: 'Velvet Noir', tag: 'ELEGANT', desc: 'Bold and timeless.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Gregory', partner2: 'Isabelle', date: 'MAY 27, 2026', popular: true, link: '/kissing-couple-wedding-invitation' },
+  { id: 'champagne', name: 'Luxe Gold', tag: 'ROMANTIC', desc: 'Opulent and golden.', video: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', partner1: 'Ava', partner2: 'William', date: 'MAY 27, 2026', popular: false },
+  { id: 'ivory', name: 'Pearl', tag: 'MINIMAL', desc: 'Luminous and serene.', video: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Olivia', partner2: 'Noah', date: 'MAY 27, 2026', popular: false },
+  { id: 'sage', name: 'Olive Grove', tag: 'NATURAL', desc: 'Botanical and fresh.', video: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', partner1: 'Charlotte', partner2: 'Elijah', date: 'MAY 27, 2026', popular: false },
+  { id: 'terracotta', name: 'Amber', tag: 'WARM', desc: 'Earthy and radiant.', video: 'https://www.wooowinvites.com/assets/just-married-car-theme-BhahCrzF.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', partner1: 'Sophia', partner2: 'James', date: 'MAY 27, 2026', popular: true },
+  { id: 'royalbordeaux', name: 'Crimson Royal', tag: 'DRAMATIC', desc: 'Regal and distinguished.', video: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Isabella', partner2: 'Oliver', date: 'MAY 27, 2026', popular: false },
+  { id: 'royalblue', name: 'Sapphire', tag: 'ELEGANT', desc: 'Oceanic and refined.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', partner1: 'Mia', partner2: 'Benjamin', date: 'MAY 27, 2026', popular: false },
+  { id: 'chocolate', name: 'Mocha', tag: 'WARM', desc: 'Rich and soulful.', video: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Amelia', partner2: 'Lucas', date: 'MAY 27, 2026', popular: true },
+  { id: 'rosebow', name: 'Blush Ribbon', tag: 'ROMANTIC', desc: 'Romantic ribbon reveal.', video: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', envelope: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', partner1: 'Chloe', partner2: 'Sam', date: 'MAY 27, 2026', popular: true },
+  { id: 'majestic', name: 'Grand Heritage', tag: 'ELEGANT', desc: 'A grand ceremonial debut.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4', partner1: 'Victoria', partner2: 'Arthur', date: 'MAY 27, 2026', popular: false },
 ];
 
 export default function Templates() {
@@ -45,11 +45,11 @@ export default function Templates() {
 
   const openPreview = (e, t) => {
     e.stopPropagation();
-    router.push(`/templates/${t.id}`);
+    router.push(`/collections/${t.id}`);
   };
 
   return (
-    <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a' }}>
+    <div style={{ backgroundColor: '#FAF9F6', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#3D2B1F' }}>
       <style>{`
         .tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
         .tpl-card { border-radius: 16px; overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 12px rgba(0,0,0,0.03); transition: transform 0.25s, box-shadow 0.25s; cursor: pointer; }
@@ -66,7 +66,7 @@ export default function Templates() {
         .tpl-preview-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; z-index: 2; }
         @media (max-width: 900px) { .tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; } }
         @media (max-width: 550px) { .tpl-grid { grid-template-columns: 1fr; gap: 1rem; } }
-        .back-btn { position: absolute; top: 1.5rem; left: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: #6b363e; text-decoration: none; font-weight: 600; font-size: 0.95rem; background: #fff; padding: 0.6rem 1.25rem; border-radius: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s ease; z-index: 10; border: 1px solid rgba(0,0,0,0.03); }
+        .back-btn { position: absolute; top: 1.5rem; left: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: #5C3A1E; text-decoration: none; font-weight: 600; font-size: 0.95rem; background: #fff; padding: 0.6rem 1.25rem; border-radius: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s ease; z-index: 10; border: 1px solid rgba(0,0,0,0.03); }
         .back-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
       `}</style>
 
@@ -76,16 +76,16 @@ export default function Templates() {
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        Retour
+        Back
       </Link>
 
       {/* Header */}
       <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
         <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 400, marginBottom: '0.75rem' }}>
-          Choose your invitation style
+          Explore Our Design Collections
         </h1>
         <p style={{ color: '#888', fontSize: '1rem', maxWidth: '500px', margin: '0 auto' }}>
-          Pick a template you love. You can always change it later.
+          Find the universe that matches your story. Every collection can be fully personalized.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export default function Templates() {
           <button key={tag} onClick={() => setFilter(tag)}
             style={{
               padding: '0.5rem 1.25rem', borderRadius: '30px', border: 'none',
-              backgroundColor: filter === tag ? '#6b363e' : '#eee',
+              backgroundColor: filter === tag ? '#5C3A1E' : '#eee',
               color: filter === tag ? '#fff' : '#555',
               cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, fontFamily: 'inherit',
               transition: 'all 0.15s'
@@ -110,7 +110,7 @@ export default function Templates() {
         <div className="tpl-grid">
           {filtered.map(t => (
             <div key={t.id} className="tpl-card" onClick={() => setSelectedId(t.id)} style={{
-              borderColor: selectedId === t.id ? '#6b363e' : 'rgba(0,0,0,0.05)',
+              borderColor: selectedId === t.id ? '#5C3A1E' : 'rgba(0,0,0,0.05)',
               borderWidth: selectedId === t.id ? '2px' : '1px'
             }}>
               <div className="tpl-img-wrap">
@@ -140,7 +140,7 @@ export default function Templates() {
                 <button onClick={(e) => openPreview(e, t)}>
                   <PreviewIcon /> Preview
                 </button>
-                <button style={{ color: selectedId === t.id ? '#6b363e' : '#555', fontWeight: selectedId === t.id ? 700 : 500 }}>
+                <button style={{ color: selectedId === t.id ? '#5C3A1E' : '#555', fontWeight: selectedId === t.id ? 700 : 500 }}>
                   <SelectIcon /> {selectedId === t.id ? 'Selected' : 'Select'}
                 </button>
               </div>
@@ -158,10 +158,10 @@ export default function Templates() {
         pointerEvents: selectedId ? 'auto' : 'none'
       }}>
         <button onClick={handleContinue} style={{
-          backgroundColor: '#6b363e', color: '#fff', border: '1px solid rgba(255,255,255,0.1)',
+          backgroundColor: '#5C3A1E', color: '#fff', border: '1px solid rgba(255,255,255,0.1)',
           display: 'flex', alignItems: 'center', gap: '0.75rem',
           padding: '1.1rem 2rem', borderRadius: '40px', cursor: 'pointer',
-          boxShadow: '0 8px 30px rgba(107, 54, 62, 0.35), 0 4px 10px rgba(0,0,0,0.1)',
+          boxShadow: '0 8px 30px rgba(92, 58, 30, 0.35), 0 4px 10px rgba(0,0,0,0.1)',
           fontWeight: 600, fontSize: '1.05rem', fontFamily: 'inherit',
           letterSpacing: '0.5px'
         }}>

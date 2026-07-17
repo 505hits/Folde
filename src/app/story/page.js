@@ -3,8 +3,8 @@ import Image from "next/image";
 import styles from "./vision.module.css";
 
 export const metadata = {
-  title: "Our Vision | Our Day Studio — Redefining the Digital Wedding Invitation",
-  description: "Discover the philosophy behind Our Day Studio. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
+  title: "Our Vision | FOLDÈ Design — Redefining the Digital Wedding Invitation",
+  description: "Discover the philosophy behind FOLDÈ Design. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
 };
 
 export default function Vision() {
@@ -19,7 +19,7 @@ export default function Vision() {
             Your Invitation Should Be as Memorable as Your Day
           </h1>
           <p className="text-lg animate-fade-in-up delay-2" style={{ maxWidth: '650px' }}>
-            We founded Our Day Studio with a simple conviction: a wedding invitation is more than logistics — it&apos;s the very first chapter of your celebration. It deserves beauty, intention, and soul.
+            We founded FOLDÈ Design with a simple conviction: a wedding invitation is more than logistics — it&apos;s the very first chapter of your celebration. It deserves beauty, intention, and soul.
           </p>
         </div>
       </section>
@@ -44,7 +44,7 @@ export default function Vision() {
                 Traditional paper invitations are beautiful — but they often get lost, arrive late, or lack the interactive depth that modern celebrations demand. Mass-produced digital alternatives, meanwhile, feel impersonal and disposable.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                Our Day was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology — creating immersive, interactive experiences that your guests will remember long after the last dance.
+                FOLDÈ was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology — creating immersive, interactive experiences that your guests will remember long after the last dance.
               </p>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function Vision() {
                 When your guests tap that link, they don&apos;t just see information. They experience an immersive unveiling — an elegant opening animation, curated music, and a journey through every detail of your celebration. From the ceremony schedule to accommodation suggestions, from the photo gallery to the RSVP — everything unfolds with intention.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                This is what makes a Our Day invitation different. It&apos;s not a webpage. It&apos;s a moment.
+                This is what makes a FOLDÈ invitation different. It&apos;s not a webpage. It&apos;s a moment.
               </p>
             </div>
             <div className={styles.differenceStats}>
@@ -128,7 +128,7 @@ export default function Vision() {
         <div className="container">
           <div className="section-header">
             <span className="label">Our Commitment</span>
-            <h2 className="heading-lg">The Our Day Promise</h2>
+            <h2 className="heading-lg">The FOLDÈ Promise</h2>
           </div>
           <div className={styles.commitGrid}>
             {[
@@ -154,7 +154,7 @@ export default function Vision() {
             <Link href="/checkout" className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
               Order Now
             </Link>
-            <Link href="/templates" className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
+            <Link href="/collections" className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
               Explore Gallery
             </Link>
           </div>

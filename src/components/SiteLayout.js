@@ -10,7 +10,7 @@ export default function SiteLayout({ children }) {
   // Hide header and footer on dashboard and invitation routes
   const hideHeaderFooter = pathname?.startsWith("/dashboard") || 
                            pathname?.startsWith("/kissing-couple-wedding-invitation") ||
-                           pathname?.startsWith("/templates") ||
+                           pathname?.startsWith("/collections") ||
                            pathname?.startsWith("/[couple]") ||
                            pathname?.startsWith("/invite");
 

@@ -11,8 +11,8 @@ const zenOldMincho = Zen_Old_Mincho({
 });
 
 export const metadata = {
-  title: "Our Day Studio | Premium Digital Wedding Invitations",
-  description: "Discover Our Day Studio, specialist in immersive digital wedding invitations. An elegant, modern, and interactive experience to elevate your big day. Book your personalized consultation.",
+  title: "FOLDÈ Design | Premium Digital Wedding Invitations",
+  description: "Discover FOLDÈ Design, specialist in immersive digital wedding invitations. An elegant, modern, and interactive experience to elevate your big day. Book your personalized consultation.",
 };
 
 export default function RootLayout({ children }) {

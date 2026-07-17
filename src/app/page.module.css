@@ -304,10 +304,16 @@
 
 .pricingGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  max-width: 850px;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+@media (max-width: 990px) {
+  .pricingGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 700px) {
@@ -752,18 +758,18 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  color: #6b363e;
-  border: 1px solid rgba(107, 54, 62, 0.1);
+  color: #5C3A1E;
+  border: 1px solid rgba(92, 58, 30, 0.1);
 }
 
 .contactEmail {
   display: inline-block;
   margin-top: 2rem;
   padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, rgba(107, 54, 62, 0.06), rgba(107, 54, 62, 0.02));
-  border: 1px solid rgba(107, 54, 62, 0.12);
+  background: linear-gradient(135deg, rgba(92, 58, 30, 0.06), rgba(92, 58, 30, 0.02));
+  border: 1px solid rgba(92, 58, 30, 0.12);
   border-radius: 50px;
-  color: #6b363e;
+  color: #5C3A1E;
   font-size: 1.05rem;
   font-weight: 500;
   text-decoration: none;
@@ -773,10 +779,10 @@
 }
 
 .contactEmail:hover {
-  background: #6b363e;
+  background: #5C3A1E;
   color: #fff;
-  border-color: #6b363e;
-  box-shadow: 0 8px 24px rgba(107, 54, 62, 0.2);
+  border-color: #5C3A1E;
+  box-shadow: 0 8px 24px rgba(92, 58, 30, 0.2);
   transform: translateY(-2px);
 }
 

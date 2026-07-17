@@ -47,7 +47,7 @@ export default function ClientSite({ params }) {
         
         <div style={{ position: 'relative', zIndex: 10, padding: '2rem' }}>
           <p style={{ fontSize: '1.2rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', opacity: 0.8 }}>You are invited to the wedding of</p>
-          <h1 style={{ fontSize: '4rem', fontFamily: 'var(--font-heading)', color: '#6b363e', marginBottom: '1rem' }}>
+          <h1 style={{ fontSize: '4rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '1rem' }}>
             {order.couple}
           </h1>
           <p style={{ fontSize: '1.2rem', fontWeight: 500 }}>
@@ -58,7 +58,7 @@ export default function ClientSite({ params }) {
 
       {/* Details Section */}
       <section style={{ padding: '5rem 2rem', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', marginBottom: '1.5rem', color: '#6b363e' }}>The Details</h2>
+        <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', marginBottom: '1.5rem', color: '#5C3A1E' }}>The Details</h2>
         <p style={{ fontSize: '1.2rem', lineHeight: 1.8, marginBottom: '3rem', fontStyle: 'italic', opacity: 0.8 }}>
           {info?.customMessage || "We can't wait to celebrate with you!"}
         </p>
@@ -80,7 +80,7 @@ export default function ClientSite({ params }) {
       {/* RSVP Form Section */}
       <section style={{ padding: '5rem 2rem', backgroundColor: '#fff' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', marginBottom: '1rem', color: '#6b363e' }}>RSVP</h2>
+          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', marginBottom: '1rem', color: '#5C3A1E' }}>RSVP</h2>
           <p style={{ marginBottom: '3rem', opacity: 0.7 }}>Please kindly respond by August 1st.</p>
           
           {submitted ? (
@@ -144,7 +144,7 @@ export default function ClientSite({ params }) {
                 </>
               )}
 
-              <button type="submit" style={{ marginTop: '1rem', padding: '1.2rem', backgroundColor: '#6b363e', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer' }}>
+              <button type="submit" style={{ marginTop: '1rem', padding: '1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer' }}>
                 Send RSVP
               </button>
             </form>

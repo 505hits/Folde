@@ -29,11 +29,11 @@ export async function POST(request) {
 
     const sectionsText = sectionsWanted && sectionsWanted.length > 0 
       ? sectionsWanted.join(', ') 
-      : 'Non spécifié';
+      : 'Not specified';
 
     const attachmentSummary = attachments && attachments.length > 0
       ? attachments.map(a => `<li>📄 ${a.filename}</li>`).join('')
-      : 'Aucun fichier joint';
+      : 'No attached files';
 
     const emailBody = `
 <!DOCTYPE html>
@@ -42,13 +42,13 @@ export async function POST(request) {
   <style>
     body { font-family: 'Georgia', serif; color: #1a1a1a; background: #faf8f5; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
-    .header { background: linear-gradient(135deg, #6b363e, #8b5a62); padding: 2.5rem; text-align: center; color: #fff; }
+    .header { background: linear-gradient(135deg, #5C3A1E, #8b5a62); padding: 2.5rem; text-align: center; color: #fff; }
     .header h1 { margin: 0; font-size: 1.8rem; font-weight: 400; letter-spacing: 2px; }
     .header p { margin: 0.5rem 0 0; opacity: 0.85; font-size: 0.95rem; }
     .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.8rem; letter-spacing: 1px; margin-top: 1rem; }
     .content { padding: 2rem 2.5rem; }
     .section { margin-bottom: 2rem; }
-    .section-title { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #6b363e; margin-bottom: 1rem; font-weight: 600; border-bottom: 1px solid #f0ede9; padding-bottom: 0.5rem; }
+    .section-title { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #5C3A1E; margin-bottom: 1rem; font-weight: 600; border-bottom: 1px solid #f0ede9; padding-bottom: 0.5rem; }
     .row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dotted #e8e5e0; }
     .row:last-child { border-bottom: none; }
     .label { color: #888; font-size: 0.9rem; }
@@ -62,71 +62,71 @@ export async function POST(request) {
   <div style="padding: 1.5rem; background: #faf8f5;">
     <div class="container">
       <div class="header">
-        <h1>✨ Nouvelle Commande</h1>
+        <h1>✨ New Order</h1>
         <p>${name} & ${partnerName}</p>
         <div class="badge">${packageName} — ${price}$</div>
       </div>
       
       <div class="content">
         <div class="section">
-          <div class="section-title">👤 Informations Client</div>
-          <div class="row"><span class="label">Nom</span><span class="value">${name}</span></div>
-          <div class="row"><span class="label">Partenaire</span><span class="value">${partnerName}</span></div>
+          <div class="section-title">👤 Client Information</div>
+          <div class="row"><span class="label">Name</span><span class="value">${name}</span></div>
+          <div class="row"><span class="label">Partner</span><span class="value">${partnerName}</span></div>
           <div class="row"><span class="label">Email</span><span class="value">${email}</span></div>
-          <div class="row"><span class="label">Téléphone</span><span class="value">${phone || 'Non renseigné'}</span></div>
+          <div class="row"><span class="label">Phone</span><span class="value">${phone || 'Not provided'}</span></div>
         </div>
 
         <div class="section">
-          <div class="section-title">💒 Détails du Mariage</div>
-          <div class="row"><span class="label">Date</span><span class="value">${weddingDate || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Lieu</span><span class="value">${weddingVenue || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Ville</span><span class="value">${weddingCity || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Nombre d'invités</span><span class="value">${guestCount || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Langues</span><span class="value">${languages || 'Non renseigné'}</span></div>
+          <div class="section-title">💒 Wedding Details</div>
+          <div class="row"><span class="label">Date</span><span class="value">${weddingDate || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Venue</span><span class="value">${weddingVenue || 'Not provided'}</span></div>
+          <div class="row"><span class="label">City</span><span class="value">${weddingCity || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Guest Count</span><span class="value">${guestCount || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Languages</span><span class="value">${languages || 'Not provided'}</span></div>
         </div>
 
         <div class="section">
-          <div class="section-title">🎨 Préférences Design</div>
-          <div class="row"><span class="label">Thème choisi</span><span class="value">${selectedTheme || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Enveloppe</span><span class="value">${envelopeChoice || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Vidéo Hero</span><span class="value">${heroVideoChoice || 'Non renseigné'}</span></div>
-          <div class="row"><span class="label">Couleurs</span><span class="value">${colorPreferences || 'Non renseigné'}</span></div>
+          <div class="section-title">🎨 Design Preferences</div>
+          <div class="row"><span class="label">Selected Theme</span><span class="value">${selectedTheme || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Envelope</span><span class="value">${envelopeChoice || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Hero Video</span><span class="value">${heroVideoChoice || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Colors</span><span class="value">${colorPreferences || 'Not provided'}</span></div>
         </div>
 
         <div class="section">
-          <div class="section-title">📋 Sections souhaitées</div>
+          <div class="section-title">📋 Requested Sections</div>
           <div class="note-box">${sectionsText}</div>
         </div>
 
         ${menuDetails ? `
         <div class="section">
-          <div class="section-title">🍽️ Détails du Menu / Réception</div>
+          <div class="section-title">🍽️ Menu / Reception Details</div>
           <div class="note-box">${menuDetails}</div>
         </div>
         ` : ''}
 
         <div class="section">
-          <div class="section-title">📁 Fichiers joints</div>
+          <div class="section-title">📁 Attached Files</div>
           <ul>${attachmentSummary}</ul>
         </div>
 
         ${inspirationLinks ? `
         <div class="section">
-          <div class="section-title">🔗 Liens d'inspiration</div>
+          <div class="section-title">🔗 Inspiration Links</div>
           <div class="note-box">${inspirationLinks}</div>
         </div>
         ` : ''}
 
         ${specialRequests ? `
         <div class="section">
-          <div class="section-title">💬 Demandes spéciales / Détails à ajouter</div>
+          <div class="section-title">💬 Special Requests / Additional Details</div>
           <div class="note-box">${specialRequests}</div>
         </div>
         ` : ''}
       </div>
 
       <div class="footer">
-        Our Day Studio — Commande reçue le ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+        FOLDÈ Design — Order received on ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>
   </div>
@@ -145,9 +145,9 @@ export async function POST(request) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Our Day Studio <onboarding@resend.dev>',
-          to: ['contact.ourdaystudio@gmail.com'],
-          subject: `nouvelle commande — ${packageName} — ${name} & ${partnerName}`,
+          from: 'FOLDÈ Design <onboarding@resend.dev>',
+          to: ['contact.foldedesign@gmail.com'],
+          subject: `new order — ${packageName} — ${name} & ${partnerName}`,
           html: emailBody,
           reply_to: email,
           attachments: attachments || [],
@@ -165,9 +165,9 @@ export async function POST(request) {
     
     // Fallback: use built-in NodeMailer-like approach via SMTP
     const formData = new URLSearchParams();
-    formData.append('to', 'contact.ourdaystudio@gmail.com');
-    formData.append('subject', `nouvelle commande — ${packageName} — ${name} & ${partnerName}`);
-    formData.append('body', `Nouvelle commande ${packageName} (${price}$)\n\nClient: ${name} & ${partnerName}\nEmail: ${email}\nTéléphone: ${phone || 'N/A'}\n\nDate: ${weddingDate || 'N/A'}\nLieu: ${weddingVenue || 'N/A'}, ${weddingCity || 'N/A'}\nInvités: ${guestCount || 'N/A'}\nLangues: ${languages || 'N/A'}\n\nThème: ${selectedTheme || 'N/A'}\nEnveloppe: ${envelopeChoice || 'N/A'}\nVidéo Hero: ${heroVideoChoice || 'N/A'}\nCouleurs: ${colorPreferences || 'N/A'}\n\nSections: ${sectionsText}\n\nMenu: ${menuDetails || 'N/A'}\nFichiers: ${(attachments || []).map(a => a.filename).join(', ') || 'Aucun'}\n\nInspiration: ${inspirationLinks || 'N/A'}\nDemandes spéciales: ${specialRequests || 'N/A'}`);
+    formData.append('to', 'contact.foldedesign@gmail.com');
+    formData.append('subject', `new order — ${packageName} — ${name} & ${partnerName}`);
+    formData.append('body', `New order ${packageName} (${price}$)\n\nClient: ${name} & ${partnerName}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\n\nDate: ${weddingDate || 'N/A'}\nVenue: ${weddingVenue || 'N/A'}, ${weddingCity || 'N/A'}\nGuests: ${guestCount || 'N/A'}\nLanguages: ${languages || 'N/A'}\n\nTheme: ${selectedTheme || 'N/A'}\nEnvelope: ${envelopeChoice || 'N/A'}\nHero Video: ${heroVideoChoice || 'N/A'}\nColors: ${colorPreferences || 'N/A'}\n\nSections: ${sectionsText}\n\nMenu: ${menuDetails || 'N/A'}\nFiles: ${(attachments || []).map(a => a.filename).join(', ') || 'None'}\n\nInspiration: ${inspirationLinks || 'N/A'}\nSpecial Requests: ${specialRequests || 'N/A'}`);
 
     // Store order data as JSON for admin review
     console.log('=== NEW ORDER RECEIVED ===');

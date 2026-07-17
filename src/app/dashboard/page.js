@@ -104,7 +104,7 @@ export default function Dashboard() {
           boxShadow: '0 8px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)'
         }}>
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase', color: '#b08968', marginBottom: '0.75rem' }}>OUR DAY STUDIO</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase', color: '#b08968', marginBottom: '0.75rem' }}>FOLDÈ DESIGN</div>
             <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.35rem' }}>Welcome back</h1>
             <p style={{ color: '#888', fontSize: '0.9rem' }}>Sign in to access your dashboard</p>
           </div>
@@ -142,7 +142,7 @@ export default function Dashboard() {
               </div>
             )}
             <button type="submit" style={{
-              width: '100%', padding: '0.85rem', borderRadius: '10px', border: 'none', backgroundColor: '#6b363e',
+              width: '100%', padding: '0.85rem', borderRadius: '10px', border: 'none', backgroundColor: '#5C3A1E',
               color: '#fff', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
             }}>
@@ -172,7 +172,7 @@ export default function Dashboard() {
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1.25rem' }}>⏳</div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem' }}>No order found</h1>
           <p style={{ color: '#888', marginBottom: '2rem', fontSize: '0.9rem', lineHeight: 1.6 }}>Your dashboard will become available once your payment is confirmed.</p>
-          <Link href="/checkout" style={{ display: 'inline-block', backgroundColor: '#6b363e', color: '#fff', padding: '0.75rem 2rem', borderRadius: '10px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
+          <Link href="/checkout" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.75rem 2rem', borderRadius: '10px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
             Order now →
           </Link>
           <div style={{ marginTop: '1.5rem' }}>
@@ -214,7 +214,7 @@ export default function Dashboard() {
       showIntro: true,
       showVenue: true,
       showSchedule: true,
-      showBoardingPass: true,
+      showBoardingPass: false,
       showRSVP: true
     },
     images: {}
@@ -327,7 +327,7 @@ export default function Dashboard() {
       {/* 1. Left Sidebar */}
       <aside className={`dashboard-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#6b363e', fontFamily: 'var(--font-heading)' }}>Our Day Studio</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
           <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
         
@@ -340,7 +340,7 @@ export default function Dashboard() {
                   border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: activeTab === tab.id ? 600 : 500,
                   backgroundColor: activeTab === tab.id ? '#f3f4f6' : 'transparent',
                   color: activeTab === tab.id ? '#1a1a1a' : '#555',
-                  textAlign: 'left', fontFamily: 'inherit', borderLeft: activeTab === tab.id ? '3px solid #6b363e' : '3px solid transparent'
+                  textAlign: 'left', fontFamily: 'inherit', borderLeft: activeTab === tab.id ? '3px solid #5C3A1E' : '3px solid transparent'
                 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.1rem', opacity: 0.7 }}>{tab.icon}</span> {tab.label}
@@ -535,7 +535,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_floral', name: 'Floral Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', color: '#f5e3d7', desc: 'Beautiful floral wax seal opening' },
     { id: 'env_luxury', name: 'Luxury Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', color: '#9c8160', desc: 'Luxury golden wax seal opening' },
     { id: 'env_royal', name: 'Royal Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', color: '#33403a', desc: 'Regal wax seal opening' },
-    { id: 'env_horizon_bordeaux', name: 'Bordeaux Horizon', url: '/videos/horizon-bordeaux.mp4', color: '#6b363e', desc: 'A deep entrance, between warmth and refinement.' },
+    { id: 'env_horizon_bordeaux', name: 'Bordeaux Horizon', url: '/videos/horizon-bordeaux.mp4', color: '#5C3A1E', desc: 'A deep entrance, between warmth and refinement.' },
     { id: 'env_royal_doves', name: 'Royal Doves', url: '/videos/royal-doves.mp4', color: '#e5dcd3', desc: 'A gentle entrance, carried by grace.' },
     { id: 'env_imperial_light', name: 'Imperial Light', url: '/videos/imperial-light.mp4', color: '#f3e5d8', desc: 'An opening sculpted by light.' },
     { id: 'env_golden_palace', name: 'Golden Palace', url: '/videos/golden-palace.mp4', color: '#d4af37', desc: 'A precious glow, like a promise.' },
@@ -566,7 +566,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Visible Sections</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Visible Sections</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {[
             { key: 'showIntro', label: 'Introduction' },
@@ -574,7 +574,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             { key: 'showSchedule', label: 'Schedule' },
             { key: 'showDressCode', label: 'Dress Code' },
             { key: 'showGallery', label: 'Photo Gallery' },
-            { key: 'showBoardingPass', label: 'Boarding Pass' },
             { key: 'showRSVP', label: 'RSVP Form' }
           ].map(sec => {
             const isVisible = local.sections?.[sec.key] !== false;
@@ -588,7 +587,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     newSections[sec.key] = e.target.checked;
                     handleChange('sections', newSections);
                   }}
-                  style={{ width: '1.2rem', height: '1.2rem', accentColor: '#6b363e' }}
+                  style={{ width: '1.2rem', height: '1.2rem', accentColor: '#5C3A1E' }}
                 />
                 <span style={{ fontSize: '0.95rem', color: '#1a1a1a' }}>{sec.label}</span>
               </label>
@@ -603,7 +602,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           
           {/* Envelope Video Selection */}
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> Envelope Design Template
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -621,7 +620,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   }}
                   style={{
                     minWidth: '280px',
-                    border: local.videos?.envelope === env.url || (local.videos?.envelope && !AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos.envelope) && env.id === 'env_custom') || (local.videos?.envelope === 'custom' && env.id === 'env_custom') ? '2px solid #6b363e' : '1px solid #e0dcd7',
+                    border: local.videos?.envelope === env.url || (local.videos?.envelope && !AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos.envelope) && env.id === 'env_custom') || (local.videos?.envelope === 'custom' && env.id === 'env_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
                     borderRadius: '12px',
                     padding: '1rem',
                     cursor: 'pointer',
@@ -659,7 +658,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
           {/* Hero Video Selection */}
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> Hero Design Template
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -677,7 +676,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   }}
                   style={{
                     minWidth: '280px',
-                    border: local.videos?.hero === hero.url || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom') ? '2px solid #6b363e' : '1px solid #e0dcd7',
+                    border: local.videos?.hero === hero.url || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
                     borderRadius: '12px',
                     padding: '1rem',
                     cursor: 'pointer',
@@ -715,7 +714,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
           {/* Venue Image Upload */}
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> Venue Design Template (Replaces Map)
             </h2>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -760,7 +759,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Dress Code */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>👔 Dress Code</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>👔 Dress Code</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Description du Dress Code</label>
@@ -811,7 +810,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Memories Gallery */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Memories (Slider)</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Memories (Slider)</h2>
         <div style={{ marginBottom: '1rem' }}>
           <input 
             type="file" 
@@ -850,7 +849,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Guest Gallery */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Guest Photo Gallery</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Guest Photo Gallery</h2>
         <div style={{ marginBottom: '1rem' }}>
           <input 
             type="file" 
@@ -890,7 +889,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       {/* AI Magic Section (Signature Only) */}
       <div style={sectionStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', fontFamily: 'var(--font-heading)' }}>✨ AI Magic</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>✨ AI Magic</h2>
           {plan !== 'Signature' && (
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#b45309', backgroundColor: '#fef3c7', padding: '0.4rem 0.8rem', borderRadius: '20px' }}>
               Signature Exclusive
@@ -907,7 +906,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>Create custom AI videos, images, and ambient sounds.</p>
               </div>
             </div>
-            <button style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#6b363e', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            <button style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
               Upgrade Plan
             </button>
           </div>
@@ -956,7 +955,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Wedding Details */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Basic Details</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Basic Details</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
@@ -987,7 +986,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Schedule / Timeline */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Schedule</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Schedule</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {(local.timeline || []).map((item, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
@@ -1000,7 +999,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Accommodations */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Accommodations</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Accommodations</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {(local.accommodations || []).map((acc, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
@@ -1013,7 +1012,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Menu */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#6b363e', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Menu</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Menu</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {(local.menu || []).map((m, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>

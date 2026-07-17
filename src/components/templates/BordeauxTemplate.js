@@ -116,7 +116,7 @@ const DressCodeSection = ({ t, accentColor }) => {
   const [selectedColor, setSelectedColor] = React.useState(null);
 
   const colors = [
-    { hex: '#6b363e', name: 'Bordeaux', desc: 'Deep, rich noble tones' },
+    { hex: '#5C3A1E', name: 'Warm Espresso', desc: 'Deep, rich earthy tones' },
     { hex: '#C2A37B', name: 'Champagne', desc: 'Warm metallic elegance' },
     { hex: '#8C9A86', name: 'Sage Green', desc: 'Earthy, natural pastel' },
     { hex: '#CFA79F', name: 'Rosy Dust', desc: 'Romantic muted blush pink' },
@@ -224,7 +224,7 @@ const DressCodeSection = ({ t, accentColor }) => {
 
 const themes = {
   bordeaux: {
-    primary: '#6b363e',
+    primary: '#5C3A1E',
     secondary: '#8c7365',
     accent: '#c5975b',
     fontHeading: "'Harmond', 'Zen Old Mincho', serif",
@@ -259,7 +259,7 @@ const themes = {
     bgColor: '#FAF7F2'
   },
   royalbordeaux: {
-    primary: '#6b363e',
+    primary: '#5C3A1E',
     secondary: '#8c7365',
     accent: '#c5975b',
     fontHeading: "'Harmond', 'Zen Old Mincho', serif",
@@ -298,6 +298,13 @@ const themes = {
 export default function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
+  const [currentUrl, setCurrentUrl] = useState('https://foldedesign.com');
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
   
   // Envelope State
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
@@ -386,7 +393,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     showIntro: true,
     showVenue: true,
     showSchedule: true,
-    showBoardingPass: true,
+    showBoardingPass: false,
     showRSVP: true,
     showGallery: true
   };
@@ -614,51 +621,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           <DressCodeSection t={t} accentColor="#c5975b" />
         )}
 
-        {/* ================= BOARDING PASS ================= */}
-        {sections.showBoardingPass !== false && (
-          <section className={styles.boardingPassSection}>
-          <AnimatedSection type="zoom">
-            <div className={styles.boardingCard}>
-              <div className={styles.bcHeader}>
-                <span className={styles.bcTitle}>Boarding Pass</span>
-                <svg width="16" height="16" className="rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-              </div>
-              
-              {/* Cutouts on the border between header and body */}
-              <div className={styles.bcCutouts}></div>
 
-              <div className={styles.bcBody}>
-                <p className={styles.bcLabel}>Destination</p>
-                <h3 className={styles.bcDest}>Miami</h3>
-                
-                <div className={styles.bcGrid}>
-                  <div>
-                    <p className={styles.bcLabel}>Gate</p>
-                    <p className={styles.bcValue}>L♡V</p>
-                  </div>
-                  <div>
-                    <p className={styles.bcLabel}>Seat</p>
-                    <p className={styles.bcValue}>27.05</p>
-                  </div>
-                  <div>
-                    <p className={styles.bcLabel}>Row</p>
-                    <p className={styles.bcValue}>2026</p>
-                  </div>
-                  <div>
-                    <p className={styles.bcLabel}>Flight</p>
-                    <p className={styles.bcValue}>WED01</p>
-                  </div>
-                </div>
-
-                <div className={styles.bcFooter}>
-                  <div className={styles.barcode}></div>
-                  <p className={styles.bcCode}>MIA27052026</p>
-                </div>
-              </div>
-            </div>
-          </AnimatedSection>
-          </section>
-        )}
 
         {/* ================= MEMORIES SECTION ================= */}
         {sections.showGallery !== false && (
@@ -776,7 +739,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
 
           <AnimatedSection type="fade">
             <div className={styles.footerCredit}>
-              <p>Made with Love ❤ With Our Day Studio</p>
+              <p>Made with Love ❤ With FOLDÈ Design</p>
             </div>
           </AnimatedSection>
         </section>
@@ -788,9 +751,9 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             <AnimatedSection type="fade" style={{ width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', width: '100%' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)' }}>Galerie Photos</h1>
+                  <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)' }}>Photo Gallery</h1>
                   <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem' }}>
-                    Partagez vos photos et vidéos du mariage — avant, pendant et après la fête.
+                    Share your wedding photos and videos — before, during, and after the celebration.
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
@@ -799,8 +762,19 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                       <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
                       <circle cx="12" cy="13" r="3"></circle>
                     </svg>
-                    Ajouter vos photos & vidéos
+                    Add your photos & videos
                   </button>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', marginTop: '0.5rem' }}>
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`} 
+                      alt="QR Code to upload photos" 
+                      style={{ width: '130px', height: '130px', objectFit: 'contain' }}
+                    />
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0 }}>
+                      Scan to add your photos via this link
+                    </p>
+                  </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', marginTop: '1rem', width: '280px' }}>
                     {guestGallery.map((img, idx) => (
                       <div key={idx} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
@@ -817,13 +791,13 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {/* ================= VIRAL BADGE ================= */}
         {!editMode && (
           <div style={{ padding: '3rem 2rem 4rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center' }}>
-            <a href="https://ourdaystudio.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease' }}
+            <a href="https://foldedesign.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease' }}
                onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
                onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
             >
               <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
               <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', fontStyle: 'italic', letterSpacing: '1px' }}>
-                Our Day Studio
+                FOLDÈ Design
               </span>
               <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
             </a>

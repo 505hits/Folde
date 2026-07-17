@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import CheckoutClient from "./CheckoutClient";
 
 export const metadata = {
-  title: "Checkout | Our Day Studio",
+  title: "Checkout | FOLDÈ Design",
   description: "Complete your order for a premium digital wedding invitation.",
 };
 

@@ -1036,7 +1036,7 @@
 .galleryTitle {
   font-family: var(--font-heading, serif);
   font-size: 2.5rem;
-  color: var(--color-primary, #6b363e);
+  color: var(--color-primary, #5C3A1E);
   margin-bottom: 0.5rem;
   font-style: italic;
 }

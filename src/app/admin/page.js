@@ -15,7 +15,7 @@ export default function AdminDashboard() {
       <aside style={{ width: '250px', backgroundColor: '#18181b', color: '#fff', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
         <div style={{ marginBottom: '3rem', paddingLeft: '1rem' }}>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700 }}>Admin Portal</h1>
-          <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.2rem' }}>Our Day Studio</p>
+          <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.2rem' }}>FOLDÈ Design</p>
         </div>
         
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
                   <div style={{ marginBottom: '1.5rem' }}>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.25rem' }}>Dynamic URL (SEO)</p>
                     <Link href={`/${order.slug}`} target="_blank" style={{ fontSize: '0.95rem', color: '#2563eb', textDecoration: 'none', fontWeight: 500, wordBreak: 'break-all' }}>
-                      ourdaystudio.com/{order.slug}
+                      foldedesign.com/{order.slug}
                     </Link>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>

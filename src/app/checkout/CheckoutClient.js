@@ -18,9 +18,9 @@ const themes = [
 const packages = [
   { 
     id: 'essential', 
-    name: 'Essential', 
-    price: 175, 
-    originalPrice: 325, 
+    name: 'Standard', 
+    price: 49.90, 
+    originalPrice: 99.90, 
     desc: 'Choose from our +15 exclusive templates and receive a personalized digital wedding invitation with your texts, photos and colours.',
     features: [
       'Choose 1 template from over 15 options',
@@ -34,8 +34,8 @@ const packages = [
   { 
     id: 'premium', 
     name: 'Premium', 
-    price: 575, 
-    originalPrice: 850, 
+    price: 290, 
+    originalPrice: 490, 
     desc: 'We redesign and personalize any template to match the exact style of your wedding. All extras included.',
     features: [
       'Template redesigned to your style',
@@ -49,10 +49,10 @@ const packages = [
     ]
   },
   { 
-    id: 'excellence', 
-    name: 'Excellence', 
-    price: 975, 
-    originalPrice: 1450, 
+    id: 'Custom', 
+    name: 'Custom', 
+    price: 490, 
+    originalPrice: 890, 
     desc: '100% bespoke design from scratch with editorial art direction. A unique, one-of-a-kind piece.',
     features: [
       '100% custom design from scratch',
@@ -67,12 +67,12 @@ const packages = [
 ];
 
 const ENVELOPE_OPTIONS = [
-  { id: 'env_bordeaux', name: 'Bordeaux Envelope', url: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', color: '#4a1523' },
+  { id: 'env_bordeaux', name: 'Bordeaux Envelope', url: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/downloads/default.mp4', color: '#4a1523' },
   { id: 'env_seaview', name: 'Sea View Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', color: '#d4c5b9' },
   { id: 'env_floral', name: 'Floral Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', color: '#f5e3d7' },
   { id: 'env_luxury', name: 'Luxury Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1774273219231.mp4', color: '#9c8160' },
   { id: 'env_royal', name: 'Royal Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', color: '#33403a' },
-  { id: 'env_horizon_bordeaux', name: 'Bordeaux Horizon', url: '/videos/horizon-bordeaux.mp4', color: '#6b363e' },
+  { id: 'env_horizon_bordeaux', name: 'Bordeaux Horizon', url: '/videos/horizon-bordeaux.mp4', color: '#5C3A1E' },
   { id: 'env_royal_doves', name: 'Royal Doves', url: '/videos/royal-doves.mp4', color: '#e5dcd3' },
   { id: 'env_imperial_light', name: 'Imperial Light', url: '/videos/imperial-light.mp4', color: '#f3e5d8' },
   { id: 'env_golden_palace', name: 'Golden Palace', url: '/videos/golden-palace.mp4', color: '#d4af37' },
@@ -102,7 +102,6 @@ const SECTION_OPTIONS = [
   { key: 'venue', label: 'Venue' },
   { key: 'schedule', label: 'Schedule' },
   { key: 'dressCode', label: 'Dress Code' },
-  { key: 'boardingPass', label: 'Boarding Pass' },
   { key: 'rsvp', label: 'RSVP' },
   { key: 'gallery', label: 'Photo Gallery' },
   { key: 'gifts', label: 'Gift Registry' },
@@ -143,17 +142,17 @@ export default function CheckoutClient() {
   const { currentUser, register, login, createOrder } = useDatabase();
 
   // Essential flow: 1=Package, 2=Details, 3=Summary → pay → /success
-  // Premium/Excellence: 1=Package, 2=Details, 3=Summary → pay → 4=Wedding form → send email → done
+  // Premium/Custom: 1=Package, 2=Details, 3=Summary → pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
 
   // Account details (shared by all)
-  const [account, setAccount] = useState({ name: '', partnerName: '', email: '', password: '' });
+  const [account, setAccount] = useState({ name: '', partnerName: '', email: '', password: 'welcome123' });
   const [authError, setAuthError] = useState('');
 
-  // Premium/Excellence wedding form (shown AFTER payment)
+  // Premium/Custom wedding form (shown AFTER payment)
   const [premiumForm, setPremiumForm] = useState({
     phone: '',
     weddingDate: '',
@@ -221,7 +220,7 @@ export default function CheckoutClient() {
     }
   };
 
-  const isPremiumOrExcellence = selectedPackage.id === 'premium' || selectedPackage.id === 'excellence';
+  const isPremiumOrCustom = selectedPackage.id === 'premium' || selectedPackage.id === 'Custom';
 
   useEffect(() => {
     if (currentUser) {
@@ -255,20 +254,20 @@ export default function CheckoutClient() {
 
   const handleNextStep = async () => {
     setAuthError('');
-    if (step === 1 && currentUser) {
-      setStep(3); // Skip details → Summary
+    if (step === 1) {
+      setStep(2);
       window.scrollTo(0, 0);
       return;
     }
     if (step === 2) {
-      if (!account.name || !account.partnerName || !account.email || !account.password) {
+      if (!account.name || !account.partnerName || !account.email) {
         setAuthError('Please fill in all fields.');
         return;
       }
       if (!currentUser) {
         const result = register(account.email, account.password, account.name, account.partnerName);
         if (!result.success) {
-          if (result.error === 'Email already exists') {
+          if (result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.') {
             const loginRes = login(account.email, account.password);
             if (!loginRes.success) { setAuthError('Email exists. Incorrect password to login.'); return; }
           } else {
@@ -276,36 +275,57 @@ export default function CheckoutClient() {
           }
         }
       }
+      if (isPremiumOrCustom) {
+        setStep(3); // Go to Customization Form
+      } else {
+        setStep(4); // Go to Summary (Standard flows skip customization)
+      }
+      window.scrollTo(0, 0);
+      return;
     }
-    setStep(step + 1);
-    window.scrollTo(0, 0);
+    if (step === 3) {
+      setStep(4); // Go to Summary
+      window.scrollTo(0, 0);
+      return;
+    }
   };
 
   const handleBack = () => {
-    if (step === 4) return; // Can't go back from wedding form after payment
-    if (step === 3 && currentUser) {
-      setStep(1);
-    } else if (step > 1) {
-      setStep(step - 1);
+    if (step === 4) {
+      if (isPremiumOrCustom) {
+        setStep(3); // Back to Customization Form
+      } else {
+        setStep(2); // Back to details
+      }
+    } else if (step === 3) {
+      setStep(2); // Back to details
+    } else if (step === 2) {
+      setStep(1); // Back to package selection
     } else {
-      router.push('/templates');
+      router.push('/collections');
     }
     window.scrollTo(0, 0);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setPaymentProcessing(true);
+    
+    // Create order record in mock DB
     createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
 
-    // Simulate payment processing
+    // If Premium or Custom, send the Resend customization details email
+    if (isPremiumOrCustom) {
+      try {
+        await handleSendOrder();
+      } catch (err) {
+        console.error('Error sending order details email:', err);
+      }
+    }
+
+    // Simulate payment completion
     setTimeout(() => {
       setPaymentProcessing(false);
-      if (isPremiumOrExcellence) {
-        setStep(4); // Go to wedding form
-        window.scrollTo(0, 0);
-      } else {
-        router.push('/success');
-      }
+      router.push('/success');
     }, 2000);
   };
 
@@ -388,7 +408,7 @@ export default function CheckoutClient() {
     return (
       <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '3px solid #f0ede9', borderTopColor: '#6b363e', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
+          <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '3px solid #f0ede9', borderTopColor: '#5C3A1E', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
           <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           <h1 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Processing Payment</h1>
           <p style={{ color: '#888', fontSize: '0.95rem' }}>Please wait while we secure your order...</p>
@@ -411,7 +431,7 @@ export default function CheckoutClient() {
       `}</style>
 
       {/* ─── Top Header ─── */}
-      {step <= 3 && (
+      {step <= 4 && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, backgroundColor: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
           <button onClick={handleBack} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#555', fontSize: '0.85rem', fontFamily: 'inherit' }}>
             ← {step === 1 ? 'Templates' : 'Back'}
@@ -422,8 +442,8 @@ export default function CheckoutClient() {
             </div>
             {step > 1 && (
               <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-                {[2,3].map(s => (
-                  <div key={s} style={{ width: '32px', height: '3px', borderRadius: '2px', backgroundColor: step >= s ? '#6b363e' : '#e0dcd7' }}></div>
+                {(isPremiumOrCustom ? [2, 3, 4] : [2, 4]).map(s => (
+                  <div key={s} style={{ width: '32px', height: '3px', borderRadius: '2px', backgroundColor: step >= s ? '#5C3A1E' : '#e0dcd7' }}></div>
                 ))}
               </div>
             )}
@@ -449,12 +469,12 @@ export default function CheckoutClient() {
                 <div key={p.id} onClick={() => setSelectedPackage(p)}
                   style={{
                     backgroundColor: '#fff', padding: '2rem', borderRadius: '20px', cursor: 'pointer',
-                    border: selectedPackage.id === p.id ? '2px solid #6b363e' : '1px solid rgba(0,0,0,0.06)',
+                    border: selectedPackage.id === p.id ? '2px solid #5C3A1E' : '1px solid rgba(0,0,0,0.06)',
                     boxShadow: selectedPackage.id === p.id ? '0 8px 24px rgba(107,54,62,0.08)' : 'none',
                     transition: 'all 0.2s ease', position: 'relative'
                   }}>
                   {selectedPackage.id === p.id && (
-                    <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#6b363e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
+                    <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
                   )}
                   <div style={{ marginBottom: '1.5rem' }}>
                     <div style={{ fontSize: '0.75rem', color: '#888', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Your plan</div>
@@ -462,7 +482,7 @@ export default function CheckoutClient() {
                       <h3 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>{p.name}</h3>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '0.9rem', textDecoration: 'line-through', color: '#aaa' }}>{p.originalPrice}$</div>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#6b363e' }}>{p.price}$</div>
+                        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#5C3A1E' }}>{p.price}$</div>
                       </div>
                     </div>
                     <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.75rem', lineHeight: 1.5 }}>{p.desc}</p>
@@ -477,7 +497,7 @@ export default function CheckoutClient() {
                       ))}
                     </ul>
                   </div>
-                  {(p.id === 'premium' || p.id === 'excellence') && selectedPackage.id === p.id && (
+                  {(p.id === 'premium' || p.id === 'Custom') && selectedPackage.id === p.id && (
                     <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#faf5f0', borderRadius: '10px', border: '1px solid #e8ddd4', fontSize: '0.8rem', color: '#8b6e5a', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
                       <span style={{ fontSize: '1rem' }}>🎨</span>
                       <span>We handle everything for you! After payment, you'll fill in your wedding details and our design team will craft your invitation.</span>
@@ -486,7 +506,7 @@ export default function CheckoutClient() {
                 </div>
               ))}
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginTop: '1rem', border: '1px solid rgba(0,0,0,0.04)' }}>
-                <div style={{ fontSize: '1.2rem', color: '#6b363e' }}>🤍</div>
+                <div style={{ fontSize: '1.2rem', color: '#5C3A1E' }}>🤍</div>
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#555', marginBottom: '0.25rem' }}>YOU'LL-LOVE-IT PROMISE</div>
                   <div style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.5 }}>We work with you, revision after revision, until your invitation moves you. You won't share it with the world until every detail feels exactly the way you dreamed it.</div>
@@ -496,30 +516,29 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* ═══ STEP 2: DETAILS (same for all packages) ═══ */}
+        {/* ═══ STEP 2: ACCOUNT ═══ */}
         {step === 2 && (
           <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-              <h1 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#6b363e' }}>Your details</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Just the essentials to start</p>
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>Your Wedding Space</h1>
+              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Enter your details to automatically create your private dashboard to track RSVPs and customize your invitation.</p>
             </div>
             <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-              <input type="text" placeholder="Your name" value={account.name} onChange={e => setAccount({...account, name: e.target.value})} style={inputStyle} />
-              <input type="text" placeholder="Your partner's name" value={account.partnerName} onChange={e => setAccount({...account, partnerName: e.target.value})} style={inputStyle} />
+              <input type="text" placeholder="Your first name" value={account.name} onChange={e => setAccount({...account, name: e.target.value})} style={inputStyle} />
+              <input type="text" placeholder="Your partner's first name" value={account.partnerName} onChange={e => setAccount({...account, partnerName: e.target.value})} style={inputStyle} />
             </div>
-            <input type="email" placeholder="Your email" value={account.email} onChange={e => setAccount({...account, email: e.target.value})} style={{ ...inputStyle, marginBottom: '1rem' }} />
-            <input type="password" placeholder="Create a password" value={account.password} onChange={e => setAccount({...account, password: e.target.value})} style={inputStyle} />
+            <input type="email" placeholder="Your email address" value={account.email} onChange={e => setAccount({...account, email: e.target.value})} style={inputStyle} />
             {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
           </div>
         )}
 
-        {/* ═══ STEP 3: SUMMARY ═══ */}
-        {step === 3 && (
+        {/* ═══ STEP 4: SUMMARY ═══ */}
+        {step === 4 && (
           <div>
             <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
               <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
                 <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>YOUR INVITATION</div>
-                <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', color: '#6b363e', fontStyle: 'italic' }}>{selectedPackage.name}</h2>
+                <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', fontStyle: 'italic' }}>{selectedPackage.name}</h2>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '2rem', marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -530,18 +549,17 @@ export default function CheckoutClient() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <span style={{ fontSize: '1rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase' }}>TOTAL</span>
-                <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#6b363e' }}>{total}$</span>
+                <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>{total}$</span>
               </div>
-              {isPremiumOrExcellence ? (
+              {isPremiumOrCustom ? (
                 <div style={{ backgroundColor: '#faf5f0', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', border: '1px solid #e8ddd4' }}>
                   <div style={{ fontSize: '1.25rem' }}>🎨</div>
                   <div>
                     <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#8b6e5a', marginBottom: '0.25rem', textTransform: 'uppercase' }}>What happens next?</div>
                     <div style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5 }}>
                       1. You complete the payment.<br/>
-                      2. You fill out our quick wedding questionnaire (photos, music, details).<br/>
-                      3. Our design team creates your custom invitation.<br/>
-                      4. We refine it together until you love it.
+                      2. Our design team immediately begins crafting your custom invitation using the details you provided.<br/>
+                      3. We collaborate and refine the invitation together until it is absolutely perfect.
                     </div>
                   </div>
                 </div>
@@ -560,7 +578,7 @@ export default function CheckoutClient() {
                 </div>
               )}
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem' }}>
-                <div style={{ fontSize: '1.2rem', color: '#6b363e' }}>🤍</div>
+                <div style={{ fontSize: '1.2rem', color: '#5C3A1E' }}>🤍</div>
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#555', marginBottom: '0.25rem' }}>YOU'LL-LOVE-IT PROMISE</div>
                   <div style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.5 }}>We revise with you until every detail moves you. You won't share it until it feels exactly the way you dreamed.</div>
@@ -570,13 +588,13 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* ═══ STEP 4: WEDDING FORM (after payment, Premium/Excellence only) ═══ */}
+        {/* ═══ STEP 4: WEDDING FORM (after payment, Premium/Custom only) ═══ */}
         {step === 4 && (
           <div style={{ padding: '2rem 1.5rem 3rem' }}>
 
             {/* Success banner */}
             <div style={{ textAlign: 'center', marginBottom: '2.5rem', padding: '2rem' }}>
-              <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#6b363e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(107,54,62,0.2)' }}>✓</div>
+              <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(107,54,62,0.2)' }}>✓</div>
               <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Payment Confirmed!</h1>
               <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Now tell us about your wedding so we can start crafting your invitation.
@@ -590,7 +608,7 @@ export default function CheckoutClient() {
                 <p style={{ color: '#666', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
                   Thank you! Our design team has received your wedding details. We'll get in touch within 24 hours to start bringing your vision to life.
                 </p>
-                <button onClick={() => router.push('/')} style={{ backgroundColor: '#6b363e', color: '#fff', border: 'none', padding: '1rem 2.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px' }}>
+                <button onClick={() => router.push('/')} style={{ backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1rem 2.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px' }}>
                   BACK TO HOME
                 </button>
               </div>
@@ -599,7 +617,7 @@ export default function CheckoutClient() {
 
                 {/* Wedding Details */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💒 Wedding Details</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💒 Wedding Details</div>
                   <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                     <div>
                       <label style={labelStyle}>Wedding date</label>
@@ -628,21 +646,21 @@ export default function CheckoutClient() {
 
                 {/* Phone */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📱 Contact</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📱 Contact</div>
                   <label style={labelStyle}>Phone number (for WhatsApp or call)</label>
                   <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({...premiumForm, phone: e.target.value})} style={inputStyle} />
                 </div>
 
                 {/* Design Preferences (Visual selectors) */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎨 Envelope Choice</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎨 Envelope Choice</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                     {ENVELOPE_OPTIONS.map(e => {
                       const isSelected = premiumForm.envelopeChoice === e.id;
                       return (
                         <div key={e.id} onClick={() => setPremiumForm({...premiumForm, envelopeChoice: e.id})}
                           style={{
-                            border: isSelected ? '2.5px solid #6b363e' : '1px solid #e0dcd7',
+                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
                             borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
                             backgroundColor: isSelected ? '#faf5f6' : '#fff',
                             transition: 'all 0.2s', textAlign: 'center'
@@ -656,7 +674,7 @@ export default function CheckoutClient() {
                               <div style={{ width: '100%', height: '100%', backgroundColor: e.color }} />
                             )}
                           </div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#6b363e' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {e.name}
                           </div>
                         </div>
@@ -669,7 +687,7 @@ export default function CheckoutClient() {
                     <div style={{ marginBottom: '2rem', padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
                       <label style={{ cursor: 'pointer', display: 'block' }}>
                         <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem' }}>✉️</span>
-                        <span style={{ fontSize: '0.85rem', color: '#6b363e', fontWeight: 600 }}>Click to upload envelope video (.mp4)</span>
+                        <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload envelope video (.mp4)</span>
                         <input type="file" accept="video/mp4" onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
@@ -687,14 +705,14 @@ export default function CheckoutClient() {
                     </div>
                   )}
 
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎬 Hero Video Choice</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🎬 Hero Video Choice</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                     {HERO_VIDEO_OPTIONS.map(h => {
                       const isSelected = premiumForm.heroVideoChoice === h.id;
                       return (
                         <div key={h.id} onClick={() => setPremiumForm({...premiumForm, heroVideoChoice: h.id})}
                           style={{
-                            border: isSelected ? '2.5px solid #6b363e' : '1px solid #e0dcd7',
+                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
                             borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
                             backgroundColor: isSelected ? '#faf5f6' : '#fff',
                             transition: 'all 0.2s', textAlign: 'center'
@@ -706,7 +724,7 @@ export default function CheckoutClient() {
                               <span style={{ fontSize: '1.5rem' }}>📤</span>
                             )}
                           </div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#6b363e' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {h.name}
                           </div>
                         </div>
@@ -719,7 +737,7 @@ export default function CheckoutClient() {
                     <div style={{ marginBottom: '2rem', padding: '1.2rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
                       <label style={{ cursor: 'pointer', display: 'block' }}>
                         <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem' }}>🎥</span>
-                        <span style={{ fontSize: '0.85rem', color: '#6b363e', fontWeight: 600 }}>Click to upload custom hero video (.mp4)</span>
+                        <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload custom hero video (.mp4)</span>
                         <input type="file" accept="video/mp4" onChange={(e) => handleFileChange(e, 'customHeroVideo')} style={{ display: 'none' }} />
                       </label>
                       {premiumForm.customHeroVideo && (
@@ -738,7 +756,7 @@ export default function CheckoutClient() {
 
                 {/* Photo Gallery Upload */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📸 Photo Gallery</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📸 Photo Gallery</div>
                   <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Upload photos you want us to include in your gallery (Max 10 photos)</p>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -766,7 +784,7 @@ export default function CheckoutClient() {
 
                 {/* Menu Details & Upload */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🍽️ Menu & Reception details</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>🍽️ Menu & Reception details</div>
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={labelStyle}>Write your menu courses / details</label>
                     <textarea placeholder="Appetizers, main courses, desserts, dietary options..." value={premiumForm.menuDetails} onChange={e => setPremiumForm({...premiumForm, menuDetails: e.target.value})} rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
@@ -774,7 +792,7 @@ export default function CheckoutClient() {
                   <div style={{ padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
                     <label style={{ cursor: 'pointer', display: 'block' }}>
                       <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem' }}>📄</span>
-                      <span style={{ fontSize: '0.85rem', color: '#6b363e', fontWeight: 600 }}>Upload menu file (PDF, Image)</span>
+                      <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Upload menu file (PDF, Image)</span>
                       <input type="file" accept="application/pdf,image/*" onChange={(e) => handleFileChange(e, 'menuFile')} style={{ display: 'none' }} />
                     </label>
                     {premiumForm.menuFile && (
@@ -787,18 +805,18 @@ export default function CheckoutClient() {
 
                 {/* Sections */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📋 Invitation Sections</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>📋 Invitation Sections</div>
                   <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Select the sections you want</p>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                     {SECTION_OPTIONS.map(s => (
                       <div key={s.key} onClick={() => toggleSection(s.key)}
                         style={{
                           padding: '0.85rem 1rem', borderRadius: '12px',
-                          border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #6b363e' : '1px solid #e0dcd7',
+                          border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
                           backgroundColor: premiumForm.sectionsWanted.includes(s.key) ? '#fbf5f6' : '#faf8f5',
                           cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.15s ease',
                         }}>
-                        <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#6b363e' : '#ccc', fontSize: '0.9rem' }}>
+                        <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#5C3A1E' : '#ccc', fontSize: '0.9rem' }}>
                           {premiumForm.sectionsWanted.includes(s.key) ? '✓' : '○'}
                         </span>
                         {s.label}
@@ -809,7 +827,7 @@ export default function CheckoutClient() {
 
                 {/* Extra Notes */}
                 <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#6b363e', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💬 Additional Details & Notes</div>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>💬 Additional Details & Notes</div>
                   <div style={{ marginBottom: '1rem' }}>
                     <label style={labelStyle}>Inspiration links</label>
                     <textarea placeholder="Share any Pinterest boards, Instagram posts, or websites you love..." value={premiumForm.inspirationLinks} onChange={e => setPremiumForm({...premiumForm, inspirationLinks: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
@@ -826,7 +844,7 @@ export default function CheckoutClient() {
                   disabled={sending}
                   style={{
                     width: '100%', padding: '1.2rem', borderRadius: '16px', border: 'none',
-                    backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600,
+                    backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600,
                     cursor: sending ? 'wait' : 'pointer', fontFamily: 'inherit', letterSpacing: '1px',
                     opacity: sending ? 0.7 : 1, transition: 'all 0.3s',
                   }}>
@@ -848,22 +866,22 @@ export default function CheckoutClient() {
             </div>
             <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b363e', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
             </div>
           </div>
         )}
       </div>
 
-      {/* ─── Bottom Bar (steps 1-3 only) ─── */}
-      {step <= 3 && (
+      {/* ─── Bottom Bar (steps 1-4 only) ─── */}
+      {step <= 4 && (
         <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
           <div style={{ height: '30px', background: 'linear-gradient(to top, #faf8f5, transparent)' }}></div>
           <div style={{ backgroundColor: '#faf8f5', padding: '0 1.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '600px' }}>
               <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>←</button>
-              <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#6b363e', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
-                <span>{step === 3 ? 'PAY & START' : 'CONTINUE'}</span>
+              <button onClick={step === 4 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
+                <span>{step === 4 ? 'PAY & START' : 'CONTINUE'}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                   <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span>
                   <span>{total}$ →</span>

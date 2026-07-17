@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./method.module.css";
 
 export const metadata = {
-  title: "Our Method | Our Day Studio — How We Create Your Digital Wedding Invitation",
+  title: "Our Method | FOLDÈ Design — How We Create Your Digital Wedding Invitation",
   description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
 };
 

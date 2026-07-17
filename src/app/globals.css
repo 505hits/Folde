@@ -9,13 +9,13 @@
 
 :root {
   /* Color Palette */
-  --color-background: #FAF9F6;
-  --color-foreground: #1C1C1C;
-  --color-foreground-rgb: 28, 28, 28;
+  --color-background: #F5F0E8;
+  --color-foreground: #3D2B1F;
+  --color-foreground-rgb: 61, 43, 31;
   --color-border: rgba(28, 28, 28, 0.08);
   --color-muted: rgba(28, 28, 28, 0.55);
-  --color-accent: #C9A96E;
-  --color-accent-light: #f7e7ce;
+  --color-accent: #B8860B;
+  --color-accent-light: #F0DFC0;
 
   /* Typography */
   --font-heading: 'Zen Old Mincho', serif;
@@ -229,7 +229,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 1.2rem 2rem;
   position: sticky;
   top: 0;
-  background-color: rgba(250, 249, 246, 0.85);
+  background-color: rgba(245, 240, 232, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 1000;
@@ -323,7 +323,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100dvh;
-  background-color: rgba(250, 249, 246, 0.98);
+  background-color: rgba(245, 240, 232, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 999;

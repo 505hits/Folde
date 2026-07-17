@@ -13,17 +13,16 @@ export default function Header() {
     <>
       <header className="header">
         <div className="header-logo">
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'inherit' }}>
-            <img src="/images/logo.png" alt="Our Day Studio Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
-            <span>Our Day Studio</span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+            <img src="/images/logo.png" alt="FOLDÈ Design Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
           </Link>
         </div>
         <nav className="header-nav">
           <Link href="/">Home</Link>
-          <Link href="/templates">Gallery</Link>
-          <Link href="/process">Process</Link>
-          <Link href="/packages">Packages</Link>
-          <Link href="/story">Our Story</Link>
+          <Link href="/collections">Collections</Link>
+          <Link href="/process">Approach</Link>
+          <Link href="/packages">Formulas</Link>
+          <Link href="/story">About Us</Link>
         </nav>
         <div className="header-cta-desktop">
           <Link href="/checkout" className="btn-primary header-cta">
@@ -44,10 +43,10 @@ export default function Header() {
       {/* Mobile nav overlay */}
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
         <Link href="/" onClick={closeMenu}>Home</Link>
-        <Link href="/templates" onClick={closeMenu}>Gallery</Link>
-        <Link href="/process" onClick={closeMenu}>Process</Link>
-        <Link href="/packages" onClick={closeMenu}>Packages</Link>
-        <Link href="/story" onClick={closeMenu}>Our Story</Link>
+        <Link href="/collections" onClick={closeMenu}>Collections</Link>
+        <Link href="/process" onClick={closeMenu}>Approach</Link>
+        <Link href="/packages" onClick={closeMenu}>Formulas</Link>
+        <Link href="/story" onClick={closeMenu}>About Us</Link>
         <Link href="/checkout" className="btn-primary" onClick={closeMenu} style={{ marginTop: '1rem' }}>
           Order Now
         </Link>
