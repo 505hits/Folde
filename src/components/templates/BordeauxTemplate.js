@@ -373,6 +373,12 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     }
   }, [autoPlaySimulation, envelopeOpen]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   // Valeurs par défaut si `data` est vide
   const t = data || {};
   const themeId = t.themeId || data?.themeId || "royalbordeaux";
@@ -483,7 +489,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           
           {/* Background Audio */}
           {sounds.bgMusic && (
-            <audio ref={audioRef} src={sounds.bgMusic} loop />
+            <audio ref={audioRef} src={sounds.bgMusic} loop muted={isMuted} />
           )}
 
           {/* ================= ENVELOPE OVERLAY ================= */}
