@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
+
 import Link from "next/link";
+import StyledFileInput from '@/components/StyledFileInput';
 import Hls from 'hls.js';
 import Image from "next/image";
 import { useDatabase } from "@/context/DatabaseContext";
@@ -30,12 +32,20 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
     >
       {/* Thumbnail static view */}
       {url !== 'custom' && (
-         <video 
-           src={url && url.endsWith('.m3u8') ? undefined : url}
-           poster={getPoster()}
-           muted playsInline
-           style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-         />
+         url.match(/\.(jpeg|jpg|gif|png)$/) ? (
+           <img 
+             src={url}
+             alt="Thumbnail"
+             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+           />
+         ) : (
+           <video 
+             src={url && url.endsWith('.m3u8') ? undefined : url}
+             poster={getPoster()}
+             muted playsInline
+             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+           />
+         )
       )}
 
       {/* Expanded hover view */}
@@ -55,7 +65,9 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
           transformOrigin: 'bottom left',
           animation: 'popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
         }}>
-          {url && url.endsWith('.m3u8') ? (
+          {url.match(/\.(jpeg|jpg|gif|png)$/) ? (
+            <img src={url} alt="Expanded preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : url.endsWith('.m3u8') ? (
              <iframe 
                src={url.replace('manifest/video.m3u8', 'iframe?muted=true&autoplay=true&loop=true&controls=false')} 
                style={{ border: 'none', width: '100%', height: '100%' }} 
@@ -527,6 +539,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'sage', name: 'Sage', desc: 'Organique et raffiné avec une touche botanique' },
     { id: 'terracotta', name: 'Terracotta', desc: 'Chaleur ensoleillée pour une ambiance méditerranéenne' },
     { id: 'chocolate', name: 'Chocolate', desc: 'Chaleur riche et caractère pour une ambiance chaleureuse' },
+    { id: 'thelaceedit', name: 'The Lace Edit', desc: 'Delicate lace and timeless romance.' },
+    { id: 'lejardin', name: 'Le Jardin', desc: 'A lush garden romance.' },
+    { id: 'lacephotoscratch', name: 'Lace Photo Scratch', desc: 'Interactive elegant scratch reveal.' },
+    { id: 'oasisroyale', name: 'Oasis Royale', desc: 'A grand desert oasis celebration.' },
+    { id: 'tropical', name: 'Tropical', desc: 'Vibrant tropical paradise.' },
   ];
 
   const AVAILABLE_ENVELOPE_VIDEOS = [
@@ -545,6 +562,16 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_rose_veil', name: 'Rosé Veil', url: '/videos/rose-veil.mp4', color: '#f4e1e1', desc: 'A rosy whisper, like the start of a dream.' },
     { id: 'env_rose_bow', name: 'Rose Bow', url: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', color: '#f3d9d7', desc: 'A delicate ribbon opening.' },
     { id: 'env_majestic', name: 'Majestic', url: 'https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4', color: '#7a5e42', desc: 'A regal and majestic entrance.' },
+    { id: 'env_thelaceedit', name: 'The Lace Edit', url: 'https://savethedate-thelaceedit.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8', desc: 'The Lace Edit envelope' },
+    { id: 'env_lejardin', name: 'Le Jardin', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/08254d3d-25f6-40e6-a54a-6bc01219ec3e/envelope-v2.jpg', color: '#f3e5d8', desc: 'Le Jardin envelope' },
+    { id: 'env_lacephotoscratch', name: 'Lace Photo Scratch', url: 'https://savethedate-lacephotoscratch.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8', desc: 'Lace Photo Scratch envelope' },
+    { id: 'env_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/__l5e/assets-v1/08254d3d-25f6-40e6-a54a-6bc01219ec3e/envelope-v2.jpg', color: '#f3e5d8', desc: 'Oasis Royale envelope' },
+    { id: 'env_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/276cb847-0eab-41c6-9ad6-30c90ab5ec34/envelope-open.mp4', color: '#f3e5d8', desc: 'Tropical envelope' },
+    { id: 'env_photoscratch', name: 'Photo Scratch', url: 'https://savethedate-photo-scratch.thedigitalyes.com/assets/envelope-DHOz-Hvj.png', color: '#f3e5d8', desc: 'Photo Scratch envelope' },
+    { id: 'env_softscratch', name: 'Soft Scratch', url: 'https://soft-scratch.thedigitalyes.com/assets/envelope-CE1gCj0J.jpg', color: '#f3e5d8', desc: 'Soft Scratch envelope' },
+    { id: 'env_cisnes', name: 'Cisnes', url: 'https://savethedate-cisnes.thedigitalyes.com/__l5e/assets-v1/1adf8de4-5543-4146-a8f5-bebe42cfcd95/envelope.jpg', color: '#f3e5d8', desc: 'Cisnes envelope' },
+    { id: 'env_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/2a75bb65-4231-4df6-ba06-618dde8a86ed/envelope.jpg', color: '#f3e5d8', desc: 'Bloom envelope' },
+    { id: 'env_floral_new', name: 'Floral New', url: 'https://savethedate-floral.thedigitalyes.com/envelope.jpg', color: '#f3e5d8', desc: 'Floral envelope' },
     { id: 'env_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own envelope video' },
   ];
 
@@ -557,7 +584,22 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'hero_royal', name: 'Royal Heritage', url: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', color: '#3d4742', desc: 'Elegant palace archway' },
     { id: 'hero_sea_anim', name: 'Sea Animation', url: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', color: '#567c9c', desc: 'Animated ocean waves' },
     { id: 'hero_sea_balcony', name: 'Seaview Balcony', url: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4', color: '#a9b7c2', desc: 'Coastal balcony view' },
+    { id: 'hero_thelaceedit', name: 'The Lace Edit', url: 'https://savethedate-thelaceedit.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png', color: '#f3e5d8', desc: 'The Lace Edit hero' },
+    { id: 'hero_lejardin', name: 'Le Jardin', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/0d44b575-21a3-498b-856a-eaf9614d23c6/hero-video-compressed.mp4', color: '#f3e5d8', desc: 'Le Jardin hero' },
+    { id: 'hero_lacephotoscratch', name: 'Lace Photo Scratch', url: 'https://savethedate-lacephotoscratch.thedigitalyes.com/assets/hero-scratch-cover-reference-CIK32eF4.png', color: '#f3e5d8', desc: 'Lace Photo Scratch hero' },
+    { id: 'hero_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/__l5e/assets-v1/775de535-0300-4a62-ae3b-dceee4b22ab7/hero-video-compressed.mp4', color: '#f3e5d8', desc: 'Oasis Royale hero' },
+    { id: 'hero_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/4689b4cd-298d-4b59-b560-7d443345b459/hero-bg.mp4', color: '#f3e5d8', desc: 'Tropical hero' },
+    { id: 'hero_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', color: '#f3e5d8', desc: 'Bloom hero' },
     { id: 'hero_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own hero video' },
+  ];
+
+  const AVAILABLE_SOUNDS = [
+    { id: 'sound_none', name: 'No Music', url: '', desc: 'Silent experience' },
+    { id: 'sound_autumn', name: 'Autumn Wind', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/cbc31a31-f746-4167-a1a1-800f6bfbe346/autumn-wind.mp3', desc: 'Gentle acoustic guitar' },
+    { id: 'sound_lace', name: 'Lace Romance', url: 'https://savethedate-lacephotoscratch.thedigitalyes.com/__l5e/assets-v1/7fabed49-0b68-47b7-b210-0dcc4eae3cb9/background-music.mp3', desc: 'Soft romantic piano' },
+    { id: 'sound_tropical', name: 'Tropical Vibes', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/3d842fb0-cf11-4a32-adb8-a961c95045ac/background-music.mp3', desc: 'Upbeat tropical rhythm' },
+    { id: 'sound_bloom', name: 'Bloom Wind', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/cbc31a31-f746-4167-a1a1-800f6bfbe346/autumn-wind.mp3', desc: 'Bloom acoustic wind' },
+    { id: 'sound_custom', name: 'Custom Upload', url: 'custom', desc: 'Upload your own audio file' },
   ];
 
   return (
@@ -641,7 +683,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </div>
             {local.videos?.envelope === 'custom' || (!AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos?.envelope) && local.videos?.envelope && local.videos?.envelope !== 'custom') ? (
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <input type="file" accept="video/*" onChange={e => {
+                <StyledFileInput accept="video/*" label="Upload Envelope Video" onChange={e => {
                   if (e.target.files[0]) {
                     const reader = new FileReader();
                     reader.onloadend = () => {
@@ -651,7 +693,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     };
                     reader.readAsDataURL(e.target.files[0]);
                   }
-                }} style={{ fontSize: '0.8rem' }} />
+                }} />
               </div>
             ) : null}
           </div>
@@ -697,7 +739,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </div>
             {local.videos?.hero === 'custom' || (!AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos?.hero) && local.videos?.hero && local.videos?.hero !== 'custom') ? (
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <input type="file" accept="video/*" onChange={e => {
+                <StyledFileInput accept="video/*" label="Upload Hero Video" onChange={e => {
                   if (e.target.files[0]) {
                     const reader = new FileReader();
                     reader.onloadend = () => {
@@ -707,7 +749,61 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     };
                     reader.readAsDataURL(e.target.files[0]);
                   }
-                }} style={{ fontSize: '0.8rem' }} />
+                }} />
+              </div>
+            ) : null}
+          </div>
+
+          {/* Background Music Selection */}
+          <div style={{ marginTop: '2rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <span>🎵</span> Background Music
+            </h2>
+            <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {AVAILABLE_SOUNDS.map(sound => (
+                <div 
+                  key={sound.id}
+                  onClick={() => {
+                    const newState = { ...(local.sounds || {}) };
+                    if (sound.url === 'custom') {
+                      newState.bgMusic = 'custom';
+                    } else {
+                      newState.bgMusic = sound.url;
+                    }
+                    handleChange('sounds', newState);
+                  }}
+                  style={{
+                    minWidth: '220px',
+                    border: local.sounds?.bgMusic === sound.url || (!local.sounds?.bgMusic && sound.url === '') || (local.sounds?.bgMusic && !AVAILABLE_SOUNDS.find(v => v.url === local.sounds.bgMusic) && sound.id === 'sound_custom') || (local.sounds?.bgMusic === 'custom' && sound.id === 'sound_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    cursor: 'pointer',
+                    backgroundColor: local.sounds?.bgMusic === sound.url || (!local.sounds?.bgMusic && sound.url === '') ? '#fbf8f9' : '#fff',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a1a' }}>{sound.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#888', lineHeight: 1.3 }}>{sound.desc}</div>
+                </div>
+              ))}
+            </div>
+            {local.sounds?.bgMusic === 'custom' || (!AVAILABLE_SOUNDS.find(v => v.url === local.sounds?.bgMusic) && local.sounds?.bgMusic && local.sounds?.bgMusic !== 'custom') ? (
+              <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <StyledFileInput accept="audio/*" label="Upload Audio Track" onChange={e => {
+                  if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      const newState = { ...(local.sounds || {}) };
+                      newState.bgMusic = reader.result;
+                      handleChange('sounds', newState);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                  }
+                }} />
               </div>
             ) : null}
           </div>
@@ -723,9 +819,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   <img src={local.images.venue} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
-              <input 
-                type="file" 
+              <StyledFileInput 
                 accept="image/*"
+                label="Upload Venue Image"
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (file) {
@@ -738,7 +834,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     reader.readAsDataURL(file);
                   }
                 }}
-                style={{ fontSize: '0.85rem' }}
               />
               {local.images?.venue && (
                 <button 
@@ -779,9 +874,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   <img src={local.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
-              <input 
-                type="file" 
+              <StyledFileInput 
                 accept="image/*"
+                label="Upload Image"
                 onChange={(e) => {
                   if (e.target.files[0]) {
                     const reader = new FileReader();
@@ -789,7 +884,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     reader.readAsDataURL(e.target.files[0]);
                   }
                 }}
-                style={{ fontSize: '0.85rem' }}
               />
               {local.dressCode?.image && (
                 <button 
@@ -812,10 +906,10 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Memories (Slider)</h2>
         <div style={{ marginBottom: '1rem' }}>
-          <input 
-            type="file" 
+          <StyledFileInput 
             accept="image/*"
             multiple
+            label="Upload Photos"
             onChange={(e) => {
               const files = Array.from(e.target.files);
               files.forEach(file => {
@@ -827,7 +921,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 reader.readAsDataURL(file);
               });
             }}
-            style={{ fontSize: '0.85rem' }}
           />
         </div>
         <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
@@ -851,10 +944,10 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Guest Photo Gallery</h2>
         <div style={{ marginBottom: '1rem' }}>
-          <input 
-            type="file" 
+          <StyledFileInput 
             accept="image/*"
             multiple
+            label="Upload Photos"
             onChange={(e) => {
               const files = Array.from(e.target.files);
               files.forEach(file => {
@@ -866,7 +959,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 reader.readAsDataURL(file);
               });
             }}
-            style={{ fontSize: '0.85rem' }}
           />
         </div>
         <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
@@ -919,11 +1011,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 1 Face</label>
-                  <input type="file" accept="image/*" style={{ fontSize: '0.8rem' }} />
+                  <StyledFileInput accept="image/*" label="Upload Face 1" />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 2 Face</label>
-                  <input type="file" accept="image/*" style={{ fontSize: '0.8rem' }} />
+                  <StyledFileInput accept="image/*" label="Upload Face 2" />
                 </div>
               </div>
               <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>✨ Remix Video</button>

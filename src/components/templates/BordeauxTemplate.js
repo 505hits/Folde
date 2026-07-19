@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
@@ -310,6 +311,8 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(false);
   const envelopeVideoRef = useRef(null);
+  const audioRef = useRef(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   useEffect(() => {
     // Setup HLS for the envelope video
@@ -317,6 +320,11 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     if (!video) return;
 
     const src = data?.videos?.envelope || "https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8";
+    
+    // If src is an image, we don't need to do video setup
+    if (src.match(/\.(jpeg|jpg|gif|png)$/i)) {
+      return;
+    }
 
     if (src.endsWith('.m3u8') && Hls.isSupported()) {
       const hls = new Hls({
@@ -337,12 +345,18 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
       const timer = setTimeout(() => {
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
-        if (envelopeVideoRef.current) {
+        if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
           envelopeVideoRef.current.play().catch(e => {
             console.log("Video play failed in simulation, dismissing envelope", e);
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
           });
+        } else {
+          // If it's an image, just set a timer to dismiss it
+          setTimeout(() => {
+            setEnvelopeDismissed(true);
+            if (onEnvelopeDismissed) onEnvelopeDismissed();
+          }, 3500);
         }
       }, 500);
 
@@ -433,12 +447,23 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     if (envelopeOpen) return; // Prevent double clicks
     
     setEnvelopeOpen(true);
-    if (envelopeVideoRef.current) {
+    if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
       envelopeVideoRef.current.play().catch(e => {
         console.log("Video play failed, dismissing envelope", e);
         setEnvelopeDismissed(true);
         if (onEnvelopeDismissed) onEnvelopeDismissed();
       });
+    } else {
+      // It's an image, dismiss it automatically after a short delay
+      setTimeout(() => {
+        setEnvelopeDismissed(true);
+        if (onEnvelopeDismissed) onEnvelopeDismissed();
+      }, 3500);
+    }
+    if (audioRef.current && !isPlayingAudio) {
+      audioRef.current.play().catch(e => console.log("Audio play failed", e));
+      setIsPlayingAudio(true);
+      setIsMuted(false);
     }
   };
 
@@ -455,19 +480,34 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         
         {/* ================= HERO SECTION ================= */}
         <section className={styles.hero} style={{ height: heroHeight, minHeight: heroHeight }}>
+          
+          {/* Background Audio */}
+          {sounds.bgMusic && (
+            <audio ref={audioRef} src={sounds.bgMusic} loop />
+          )}
+
           {/* ================= ENVELOPE OVERLAY ================= */}
           {!editMode && !envelopeDismissed && (
             <div 
               className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`} 
               onClick={handleEnvelopeClick}
             >
-              <video 
-                ref={envelopeVideoRef}
-                className={styles.envelopeVideo}
-                muted
-                playsInline
-                onEnded={handleVideoEnded}
-              />
+              {(data?.videos?.envelope || "https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8").match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                <img 
+                  src={data.videos.envelope} 
+                  alt="Envelope" 
+                  className={styles.envelopeVideo} 
+                  style={{ objectFit: 'cover' }} 
+                />
+              ) : (
+                <video 
+                  ref={envelopeVideoRef}
+                  className={styles.envelopeVideo}
+                  muted
+                  playsInline
+                  onEnded={handleVideoEnded}
+                />
+              )}
             </div>
           )}
 
@@ -486,6 +526,20 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           {sounds.intro && !isMuted && (
             <audio src={sounds.intro} autoPlay loop />
           )}
+          {/* Scratch Overlay */}
+          {images.scratchCover && (
+            <ScratchCanvas 
+              coverImage={images.scratchCover} 
+              onComplete={() => {
+                if (audioRef.current && !isPlayingAudio) {
+                  audioRef.current.play().catch(e => console.log("Audio play failed", e));
+                  setIsPlayingAudio(true);
+                  setIsMuted(false);
+                }
+              }} 
+            />
+          )}
+
           <div className={styles.heroOverlay}></div>
           
           <div className={styles.heroContent}>

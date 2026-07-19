@@ -849,7 +849,7 @@ export default function CheckoutClient() {
             </div>
             <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save {originalTotal - total}$</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', letterSpacing: '2px', textTransform: 'uppercase' }}>✨ SPECIAL OFFER · You save ${Math.round(originalTotal - total)}</span>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
             </div>
           </div>

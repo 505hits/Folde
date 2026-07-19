@@ -61,14 +61,22 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           opacity: envelopeDismissed ? 0 : 1,
           visibility: envelopeDismissed ? 'hidden' : 'visible'
         }}>
-          <video 
-            ref={envelopeVideoRef}
-            autoPlay
-            muted
-            playsInline
-            onEnded={handleVideoEnded}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          {envelopeSrc.match(/\.(jpeg|jpg|gif|png)$/) ? (
+            <img 
+              src={envelopeSrc} 
+              alt="Envelope" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          ) : (
+            <video 
+              ref={envelopeVideoRef}
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleVideoEnded}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )}
         </div>
       )}
 
