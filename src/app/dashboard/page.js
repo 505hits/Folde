@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import Link from "next/link";
 import StyledFileInput from '@/components/StyledFileInput';
@@ -83,7 +83,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, logout, guests, orders, eventInfo, setEventInfo } = useDatabase();
+  const { currentUser, login, logout, guests, orders, eventInfo, setEventInfo, fetchGuests } = useDatabase();
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -96,12 +96,19 @@ export default function Dashboard() {
   const userOrder = currentUser ? orders.find(o => o.email === currentUser.email && o.paid) : null;
   const [selectedTheme, setSelectedTheme] = useState(userOrder?.theme || 'bordeaux');
 
+  // Fetch guests from Supabase when dashboard loads
+  useEffect(() => {
+    if (userOrder?.slug) {
+      fetchGuests(userOrder.slug);
+    }
+  }, [userOrder?.slug]);
+
   // ========== LOGIN GATE ==========
   if (!currentUser) {
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
       e.preventDefault();
       setLoginError('');
-      const result = login(loginForm.email, loginForm.password);
+      const result = await login(loginForm.email, loginForm.password);
       if (!result.success) setLoginError(result.error);
     };
 
@@ -197,8 +204,137 @@ export default function Dashboard() {
     );
   }
 
-  // ========== DASHBOARD ==========
+  // ========== PREMIUM DASHBOARD ==========
+  const isPremiumOrCustom = userOrder.plan === 'Premium' || userOrder.plan === 'Custom';
   const clientSlug = userOrder.slug;
+  const clientGuests = guests[clientSlug] || [];
+
+  if (isPremiumOrCustom) {
+    return (
+      <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', padding: '2rem 1.5rem' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+            <div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
+              <div style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.2rem' }}>Premium Space</div>
+            </div>
+            <button onClick={logout} style={{ background: 'none', border: '1px solid #e0dcd7', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', color: '#555', fontFamily: 'inherit' }}>
+              Sign out
+            </button>
+          </header>
+
+          {/* Status Indicator */}
+          {userOrder.status === 'Live' ? (
+            <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #dcfce7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #f8fafc, #fff)' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#dcfce7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(22, 101, 52, 0.15)' }}>
+                ✨
+              </div>
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.75rem' }}>
+                Your site is ready!
+              </h1>
+              <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 2rem' }}>
+                Our team has finalized the creation of your bespoke invitation. You can now visit it and share it with your guests.
+              </p>
+              
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', backgroundColor: '#f1f5f9', padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none', fontSize: '1rem' }}>
+                  View my site →
+                </a>
+                <span style={{ color: '#cbd5e1' }}>|</span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
+                    alert("Link copied!");
+                  }}
+                  style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontWeight: 500, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <span>🔗</span> Copy link
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #fef3c7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #fffdfa, #fff)' }}>
+              <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', position: 'relative' }}>
+                <span style={{ position: 'absolute', inset: 0, border: '3px solid #fef3c7', borderTopColor: '#d97706', borderRadius: '50%', animation: 'spin 2s linear infinite' }}></span>
+                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                ✨
+              </div>
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '0.75rem' }}>
+                Creation in Progress...
+              </h1>
+              <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '620px', margin: '0 auto 1.5rem' }}>
+                Our Paris design studio is currently handcrafting your bespoke wedding invitation using all the details, photos, and preferences you provided.
+              </p>
+              <div style={{ display: 'inline-block', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', padding: '0.75rem 1.5rem', borderRadius: '12px', color: '#8b6e5a', fontSize: '0.95rem', fontWeight: 600 }}>
+                ⏳ Estimated delivery: <strong>3 Days (72 hours)</strong>
+              </div>
+              <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '1.25rem' }}>
+                You will receive a notification email at <strong>{currentUser?.email}</strong> as soon as your custom website is published.
+              </p>
+            </div>
+          )}
+
+          {/* RSVPs List */}
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.25rem' }}>Guest List (RSVP)</h2>
+                <p style={{ color: '#888', fontSize: '0.9rem' }}>Track your guests' responses in real-time.</p>
+              </div>
+              <div style={{ backgroundColor: '#eefcf1', color: '#2e7d32', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
+                {clientGuests.filter(g => g.status === 'Attending').length} Attending
+              </div>
+            </div>
+
+            {clientGuests.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#888', backgroundColor: '#faf8f5', borderRadius: '12px' }}>
+                No responses yet.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {clientGuests.map((guest, idx) => (
+                  <div key={idx} style={{ padding: '1.25rem', border: '1px solid #e0dcd7', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.75rem', backgroundColor: guest.status === 'Attending' ? '#fdfdfd' : '#faf8f5' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          {guest.name}
+                          {guest.status === 'Attending' ? (
+                            <span style={{ fontSize: '0.7rem', backgroundColor: '#eefcf1', color: '#2e7d32', padding: '0.15rem 0.4rem', borderRadius: '8px', fontWeight: 700 }}>Attending</span>
+                          ) : (
+                            <span style={{ fontSize: '0.7rem', backgroundColor: '#f3f4f6', color: '#6b7280', padding: '0.15rem 0.4rem', borderRadius: '8px', fontWeight: 700 }}>Pending</span>
+                          )}
+                        </div>
+                        {guest.status === 'Attending' && guest.hasPlusOne && (
+                          <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <span style={{ color: '#b08968' }}>+1</span> {guest.plusOneName}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {guest.status === 'Attending' && guest.meal && guest.meal !== '-' && (
+                        <div style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f9f5f0', padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid #e8ddd4' }}>
+                          🍽 {guest.meal}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {guest.message && (
+                      <div style={{ marginTop: '0.5rem', padding: '0.8rem', backgroundColor: '#fdfbf9', borderRadius: '8px', borderLeft: '3px solid #d4c5b9', fontSize: '0.9rem', color: '#555', fontStyle: 'italic' }}>
+                        "{guest.message}"
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ========== DASHBOARD (STANDARD) ==========
   const defaultEventInfo = { 
     date: 'May 27, 2026', 
     time: '14:00', 

@@ -32,9 +32,9 @@ export default function ClientSite({ params }) {
     );
   }
 
-  const handleRSVPSubmit = (e) => {
+  const handleRSVPSubmit = async (e) => {
     e.preventDefault();
-    addGuest(couple, rsvp);
+    await addGuest(couple, rsvp);
     setSubmitted(true);
   };
 

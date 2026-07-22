@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import { supabase } from '@/lib/supabase';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
 import FlipCountdown from '../FlipCountdown';
@@ -299,6 +300,75 @@ const themes = {
 export default function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
+
+  // ===== RSVP Form State =====
+  const [rsvpName, setRsvpName] = useState('');
+  const [rsvpEmail, setRsvpEmail] = useState('');
+  const [rsvpAttending, setRsvpAttending] = useState('');
+  const [rsvpMeal, setRsvpMeal] = useState('');
+  const [rsvpPlusOneName, setRsvpPlusOneName] = useState('');
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
+  const [rsvpError, setRsvpError] = useState('');
+
+  const handleRsvpSubmit = async (e) => {
+    e.preventDefault();
+    if (!rsvpName.trim() || !rsvpAttending) {
+      setRsvpError('Please fill in your name and attendance.');
+      return;
+    }
+    setRsvpSubmitting(true);
+    setRsvpError('');
+
+    const slug = data?.slug || '';
+
+    // Determine status
+    const status = rsvpAttending === 'yes' ? 'Attending' : 'Declined';
+    const hasPlusOne = accompaniedStatus === 'plusOne' || accompaniedStatus === 'family';
+
+    // Try to find invitation_id by slug
+    let invitationId = null;
+    try {
+      const { data: inv } = await supabase
+        .from('invitations')
+        .select('id')
+        .eq('slug', slug)
+        .single();
+      invitationId = inv?.id || null;
+    } catch (err) {
+      // Invitation might not exist yet, continue without it
+    }
+
+    try {
+      const { error } = await supabase
+        .from('guests')
+        .insert({
+          invitation_id: invitationId,
+          slug: slug,
+          name: rsvpName.trim(),
+          email: rsvpEmail.trim() || null,
+          status: status,
+          meal: rsvpMeal || '-',
+          has_plus_one: hasPlusOne,
+          plus_one_name: rsvpPlusOneName.trim() || null,
+          accompanied_status: accompaniedStatus || 'alone',
+          side: 'Both'
+        });
+
+      if (error) {
+        console.error('Supabase RSVP insert error:', error);
+        setRsvpError('An error occurred. Please try again.');
+        setRsvpSubmitting(false);
+        return;
+      }
+
+      setRsvpSubmitted(true);
+    } catch (err) {
+      console.error('RSVP submit error:', err);
+      setRsvpError('An error occurred. Please try again.');
+    }
+    setRsvpSubmitting(false);
+  };
   const [currentUrl, setCurrentUrl] = useState('https://foldedesign.com');
   
   useEffect(() => {
@@ -733,18 +803,46 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             <p className={styles.rsvpDate}>Please reply by March 30th, 2026</p>
           </AnimatedSection>
 
-          <form onSubmit={(e) => e.preventDefault()}>
+          {rsvpSubmitted ? (
+            <AnimatedSection type="zoom">
+              <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
+                <h3 style={{ fontFamily: 'var(--color-font-heading, inherit)', fontSize: '1.6rem', marginBottom: '0.8rem', color: 'var(--color-foreground)' }}>
+                  Thank you, {rsvpName}!
+                </h3>
+                <p style={{ opacity: 0.7, fontSize: '1rem', lineHeight: 1.6 }}>
+                  {rsvpAttending === 'yes' 
+                    ? 'We are so happy you will be joining us! See you soon 💕' 
+                    : 'We understand and will miss you. Thank you for letting us know 🤍'}
+                </p>
+              </div>
+            </AnimatedSection>
+          ) : (
+          <form onSubmit={handleRsvpSubmit}>
             <AnimatedSection type="fade">
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Full name *</label>
-                <input type="text" placeholder="Your name" className={styles.formInput} />
+                <input 
+                  type="text" 
+                  placeholder="Your name" 
+                  className={styles.formInput} 
+                  value={rsvpName}
+                  onChange={(e) => setRsvpName(e.target.value)}
+                  required
+                />
               </div>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Email</label>
-                <input type="email" placeholder="your@email.com" className={styles.formInput} />
+                <input 
+                  type="email" 
+                  placeholder="your@email.com" 
+                  className={styles.formInput}
+                  value={rsvpEmail}
+                  onChange={(e) => setRsvpEmail(e.target.value)}
+                />
               </div>
             </AnimatedSection>
 
@@ -753,7 +851,12 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Will you attend? *</label>
                 <div className={styles.selectWrapper}>
-                  <select className={styles.formSelect} defaultValue="">
+                  <select 
+                    className={styles.formSelect} 
+                    value={rsvpAttending}
+                    onChange={(e) => setRsvpAttending(e.target.value)}
+                    required
+                  >
                     <option value="" disabled hidden>Please select</option>
                     <option value="yes">Joyfully Accept</option>
                     <option value="no">Regretfully Decline</option>
@@ -788,7 +891,13 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                   <label className={styles.formLabel}>
                     {accompaniedStatus === "plusOne" ? "Name of your +1 *" : "Names of your family members *"}
                   </label>
-                  <input type="text" placeholder="First names" className={styles.formInput} />
+                  <input 
+                    type="text" 
+                    placeholder="First names" 
+                    className={styles.formInput}
+                    value={rsvpPlusOneName}
+                    onChange={(e) => setRsvpPlusOneName(e.target.value)}
+                  />
                 </div>
               </AnimatedSection>
             )}
@@ -797,7 +906,11 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Which dish do you prefer? *</label>
                 <div className={styles.selectWrapper}>
-                  <select className={styles.formSelect} defaultValue="">
+                  <select 
+                    className={styles.formSelect} 
+                    value={rsvpMeal}
+                    onChange={(e) => setRsvpMeal(e.target.value)}
+                  >
                     <option value="" disabled hidden>Please select</option>
                     <option value="meat">Meat (Steak friete)</option>
                     <option value="fish">Fish</option>
@@ -808,12 +921,24 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               </div>
             </AnimatedSection>
 
+            {rsvpError && (
+              <AnimatedSection type="fade">
+                <p style={{ color: '#c0392b', textAlign: 'center', fontSize: '0.9rem', margin: '0.5rem 0' }}>{rsvpError}</p>
+              </AnimatedSection>
+            )}
+
             <AnimatedSection type="zoom">
-              <button type="submit" className={styles.btnSubmit}>
-                Send RSVP
+              <button 
+                type="submit" 
+                className={styles.btnSubmit}
+                disabled={rsvpSubmitting}
+                style={{ opacity: rsvpSubmitting ? 0.6 : 1, cursor: rsvpSubmitting ? 'wait' : 'pointer' }}
+              >
+                {rsvpSubmitting ? 'Sending...' : 'Send RSVP'}
               </button>
             </AnimatedSection>
           </form>
+          )}
 
           <AnimatedSection type="fade">
             <div className={styles.footerCredit}>

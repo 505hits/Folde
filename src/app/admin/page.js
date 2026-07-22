@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
 
 export default function AdminDashboard() {
-  const { orders } = useDatabase();
+  const { orders, updateOrderStatus } = useDatabase();
   const [activeTab, setActiveTab] = useState('orders');
 
   return (
@@ -79,12 +79,28 @@ export default function AdminDashboard() {
                       <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{order.price}$</td>
                       <td style={{ padding: '1rem 1.5rem' }}>
                         <span style={{ 
-                          padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600,
-                          backgroundColor: order.status === 'In Production' ? '#dcfce7' : '#fef9c3',
-                          color: order.status === 'In Production' ? '#166534' : '#854d0e'
+                          padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, display: 'inline-block', marginBottom: '0.5rem',
+                          backgroundColor: order.status === 'Live' ? '#dcfce7' : '#fef9c3',
+                          color: order.status === 'Live' ? '#166534' : '#854d0e'
                         }}>
                           {order.status}
                         </span>
+                        {order.status !== 'Live' && (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'Live')}
+                            style={{ display: 'block', backgroundColor: '#18181b', color: '#fff', border: 'none', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
+                          >
+                            Mark as Live
+                          </button>
+                        )}
+                        {order.status === 'Live' && (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'Awaiting Details')}
+                            style={{ display: 'block', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
+                          >
+                            Revert
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

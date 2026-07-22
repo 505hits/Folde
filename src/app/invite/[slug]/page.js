@@ -35,5 +35,5 @@ export default function InvitePage({ params }) {
 
   // For now, we use BordeauxTemplate as our universal base template 
   // (we change colors dynamically via other ways or it handles its own themes)
-  return <BordeauxTemplate data={data} editMode={false} />;
+  return <BordeauxTemplate data={{ ...data, slug }} editMode={false} />;
 }

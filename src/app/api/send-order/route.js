@@ -146,7 +146,7 @@ export async function POST(request) {
         },
         body: JSON.stringify({
           from: 'FOLDÈ Design <onboarding@resend.dev>',
-          to: ['contact.foldedesign@gmail.com'],
+          to: ['folde.wedding@gmail.com'],
           subject: `new order — ${packageName} — ${name} & ${partnerName}`,
           html: emailBody,
           reply_to: email,
@@ -165,7 +165,7 @@ export async function POST(request) {
     
     // Fallback: use built-in NodeMailer-like approach via SMTP
     const formData = new URLSearchParams();
-    formData.append('to', 'contact.foldedesign@gmail.com');
+    formData.append('to', 'folde.wedding@gmail.com');
     formData.append('subject', `new order — ${packageName} — ${name} & ${partnerName}`);
     formData.append('body', `New order ${packageName} (${price}$)\n\nClient: ${name} & ${partnerName}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\n\nDate: ${weddingDate || 'N/A'}\nVenue: ${weddingVenue || 'N/A'}, ${weddingCity || 'N/A'}\nGuests: ${guestCount || 'N/A'}\nLanguages: ${languages || 'N/A'}\n\nTheme: ${selectedTheme || 'N/A'}\nEnvelope: ${envelopeChoice || 'N/A'}\nHero Video: ${heroVideoChoice || 'N/A'}\nColors: ${colorPreferences || 'N/A'}\n\nSections: ${sectionsText}\n\nMenu: ${menuDetails || 'N/A'}\nFiles: ${(attachments || []).map(a => a.filename).join(', ') || 'None'}\n\nInspiration: ${inspirationLinks || 'N/A'}\nSpecial Requests: ${specialRequests || 'N/A'}`);
 

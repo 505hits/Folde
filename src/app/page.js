@@ -122,11 +122,11 @@ export default function Home() {
                       editMode={false}
                       heroHeight="820px"
                       data={{
-                        partner1: "Léa",
-                        partner2: "Max",
+                        partner1: "Anna",
+                        partner2: "Tom",
                         videos: {
-                          envelope: "https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8",
-                          hero: "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4"
+                          envelope: "https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4",
+                          hero: "https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
                         },
                         sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true }
                       }} 
@@ -452,8 +452,8 @@ export default function Home() {
           <p className="text-lg" style={{ marginTop: '0.75rem', color: '#888', lineHeight: 1.7 }}>
             Whether you're exploring ideas or ready to begin, our creative team is here to guide you every step of the way.
           </p>
-          <a href="mailto:contact@foldedesign.com" className={styles.contactEmail}>
-            contact@foldedesign.com
+          <a href="mailto:folde.wedding@gmail.com" className={styles.contactEmail}>
+            folde.wedding@gmail.com
           </a>
           <div className={styles.contactDivider}>
             <div className={styles.contactDividerLine}></div>

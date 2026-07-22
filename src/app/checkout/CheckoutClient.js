@@ -265,10 +265,10 @@ export default function CheckoutClient() {
         return;
       }
       if (!currentUser) {
-        const result = register(account.email, account.password, account.name, account.partnerName);
+        const result = await register(account.email, account.password, account.name, account.partnerName);
         if (!result.success) {
           if (result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.') {
-            const loginRes = login(account.email, account.password);
+            const loginRes = await login(account.email, account.password);
             if (!loginRes.success) { setAuthError('Email exists. Incorrect password to login.'); return; }
           } else {
             setAuthError(result.error); return;
@@ -294,22 +294,49 @@ export default function CheckoutClient() {
 
   const handlePayment = async () => {
     setPaymentProcessing(true);
-    
-    // Create order record in mock DB
-    createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
 
-    // Simulate payment completion
-    setTimeout(() => {
-      setPaymentProcessing(false);
-      if (selectedPackage.id === 'essential') {
-        // Essential / Standard pack redirects directly to dashboard
-        router.push('/dashboard');
+    // Save pending order info to localStorage (needed after Stripe redirect)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pendingOrder', JSON.stringify({
+        name: account.name,
+        partnerName: account.partnerName,
+        email: account.email,
+        password: account.password,
+        theme: selectedTheme,
+        plan: selectedPackage.name,
+        planId: selectedPackage.id,
+        price: total,
+      }));
+    }
+
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: selectedPackage.id,
+          name: account.name,
+          partnerName: account.partnerName,
+          email: account.email,
+          theme: selectedTheme,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
-        // Premium or Custom pack transitions to Step 4 (customization form)
-        setStep(4);
-        window.scrollTo(0, 0);
+        console.error('No checkout URL returned:', data.error);
+        setPaymentProcessing(false);
+        alert('Payment error: ' + (data.error || 'Please try again.'));
       }
-    }, 2000);
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentProcessing(false);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const handleSendOrder = async () => {
@@ -414,7 +441,7 @@ export default function CheckoutClient() {
       `}</style>
 
       {/* ─── Top Header ─── */}
-      {step <= 4 && (
+      {step <= 4 && !sent && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, backgroundColor: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
           <button onClick={handleBack} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#555', fontSize: '0.85rem', fontFamily: 'inherit' }}>
             ← {step === 1 ? 'Templates' : 'Back'}
@@ -575,27 +602,27 @@ export default function CheckoutClient() {
         {step === 4 && (
           <div style={{ padding: '2rem 1.5rem 3rem' }}>
 
-            {/* Success banner */}
-            <div style={{ textAlign: 'center', marginBottom: '2.5rem', padding: '2rem' }}>
-              <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(107,54,62,0.2)' }}>✓</div>
-              <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Payment Confirmed!</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
-                Now tell us about your wedding so we can start crafting your invitation.
-              </p>
-            </div>
-
             {sent ? (
-              <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#2d8a4e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 16px rgba(45,138,78,0.2)' }}>✓</div>
-                <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '1rem' }}>Details Sent!</h2>
-                <p style={{ color: '#666', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-                  Thank you! Our design team has received your wedding details. We'll get in touch within 24 hours to start bringing your vision to life.
+              <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '4rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center', maxWidth: '540px', margin: '2rem auto' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 16px rgba(92,58,30,0.2)' }}>✓</div>
+                <h2 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '1rem' }}>Details Sent Successfully!</h2>
+                <p style={{ color: '#666', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                  Thank you! Our design team has received your wedding details. Your bespoke invitation is now being crafted (estimated delivery: 3 days). You can access your private dashboard right now.
                 </p>
-                <button onClick={() => router.push('/')} style={{ backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1rem 2.5rem', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px' }}>
-                  BACK TO HOME
+                <button onClick={() => router.push('/dashboard')} style={{ width: '100%', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1.1rem 2rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(92,58,30,0.25)' }}>
+                  ACCESS MY DASHBOARD →
                 </button>
               </div>
             ) : (
+              <>
+                {/* Success banner */}
+                <div style={{ textAlign: 'center', marginBottom: '2.5rem', padding: '1rem 2rem' }}>
+                  <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(107,54,62,0.2)' }}>✓</div>
+                  <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.5rem' }}>Payment Confirmed!</h1>
+                  <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                    Now tell us about your wedding so we can start crafting your invitation.
+                  </p>
+                </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
                 {/* Wedding Details */}
@@ -837,6 +864,7 @@ export default function CheckoutClient() {
                   Our team will contact you within 24 hours ✨
                 </p>
               </div>
+              </>
             )}
           </div>
         )}

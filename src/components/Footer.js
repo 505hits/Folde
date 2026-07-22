@@ -15,7 +15,7 @@ export default function Footer() {
           <Link href="/vision">About Us</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
-          <Link href="mailto:contact@foldedesign.com">contact@foldedesign.com</Link>
+          <Link href="mailto:folde.wedding@gmail.com">folde.wedding@gmail.com</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '0.5rem' }}>
           <Link href="/legal">Legal Notice</Link>
