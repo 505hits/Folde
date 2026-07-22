@@ -23,8 +23,12 @@ export default function Header() {
           <Link href="/approach">Approach</Link>
           <Link href="/packages">Formulas</Link>
           <Link href="/story">About Us</Link>
+          <Link href="/dashboard">Dashboard</Link>
         </nav>
-        <div className="header-cta-desktop">
+        <div className="header-cta-desktop" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Link href="/dashboard" style={{ textDecoration: 'none', color: '#5C3A1E', fontWeight: 600, fontSize: '0.88rem', letterSpacing: '0.5px' }}>
+            My Space
+          </Link>
           <Link href="/checkout" className="btn-primary header-cta">
             Order Now
           </Link>
@@ -47,6 +51,7 @@ export default function Header() {
         <Link href="/approach" onClick={closeMenu}>Approach</Link>
         <Link href="/packages" onClick={closeMenu}>Formulas</Link>
         <Link href="/story" onClick={closeMenu}>About Us</Link>
+        <Link href="/dashboard" onClick={closeMenu} style={{ fontWeight: 600, color: '#5C3A1E' }}>My Space (Dashboard)</Link>
         <Link href="/checkout" className="btn-primary" onClick={closeMenu} style={{ marginTop: '1rem' }}>
           Order Now
         </Link>

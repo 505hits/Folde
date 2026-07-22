@@ -13,6 +13,7 @@ export default function Footer() {
           <Link href="/method">Approach</Link>
           <Link href="/offers">Formulas</Link>
           <Link href="/vision">About Us</Link>
+          <Link href="/dashboard">Dashboard</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
           <Link href="mailto:folde.wedding@gmail.com">folde.wedding@gmail.com</Link>
