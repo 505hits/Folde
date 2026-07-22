@@ -321,6 +321,36 @@ export function DatabaseProvider({ children }) {
     }
   }, [eventInfo, isLoaded]);
 
+  // ============ REVISIONS ============
+  const [revisions, setRevisions] = useState({});
+
+  const addRevision = (slug, comment) => {
+    const currentList = revisions[slug] || [];
+    if (currentList.length >= 2) {
+      return { success: false, error: 'Maximum limit of 2 revision rounds reached.' };
+    }
+    const newRev = {
+      number: currentList.length + 1,
+      comment,
+      date: new Date().toISOString()
+    };
+    const updated = { ...revisions, [slug]: [...currentList, newRev] };
+    setRevisions(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('revisions', JSON.stringify(updated));
+    }
+    return { success: true, revisionNumber: newRev.number };
+  };
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedRev = localStorage.getItem('revisions');
+      if (savedRev) {
+        try { setRevisions(JSON.parse(savedRev)); } catch (e) {}
+      }
+    }
+  }, []);
+
   return (
     <DatabaseContext.Provider value={{
       // Auth
@@ -331,6 +361,8 @@ export function DatabaseProvider({ children }) {
       guests, addGuest, fetchGuests,
       // Event Info
       eventInfo, setEventInfo,
+      // Revisions
+      revisions, addRevision,
       // Status
       isLoaded
     }}>

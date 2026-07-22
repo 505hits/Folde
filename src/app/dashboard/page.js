@@ -83,7 +83,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, logout, guests, orders, eventInfo, setEventInfo, fetchGuests } = useDatabase();
+  const { currentUser, login, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -91,6 +91,12 @@ export default function Dashboard() {
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Revision Request State
+  const [revisionComment, setRevisionComment] = useState('');
+  const [revisionSubmitting, setRevisionSubmitting] = useState(false);
+  const [revisionMessage, setRevisionMessage] = useState('');
+  const [revisionError, setRevisionError] = useState('');
 
   // Compute userOrder securely before hooks
   const userOrder = currentUser ? orders.find(o => o.email === currentUser.email && o.paid) : null;
@@ -102,6 +108,58 @@ export default function Dashboard() {
       fetchGuests(userOrder.slug);
     }
   }, [userOrder?.slug]);
+
+  const handleRevisionSubmit = async (e) => {
+    e.preventDefault();
+    if (!revisionComment.trim()) {
+      setRevisionError('Please describe the modifications you would like to request.');
+      return;
+    }
+
+    const clientSlug = userOrder?.slug || '';
+    const currentRevisions = revisions[clientSlug] || [];
+    if (currentRevisions.length >= 2) {
+      setRevisionError('You have reached the maximum of 2 revision rounds included in your plan.');
+      return;
+    }
+
+    setRevisionSubmitting(true);
+    setRevisionError('');
+    setRevisionMessage('');
+
+    const nextNumber = currentRevisions.length + 1;
+
+    try {
+      const res = await fetch('/api/send-revision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: currentUser.email,
+          coupleName: userOrder.couple,
+          slug: clientSlug,
+          revisionNumber: nextNumber,
+          comment: revisionComment.trim(),
+          origin: typeof window !== 'undefined' ? window.location.origin : 'https://foldedesign.com'
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setRevisionError(data.error || 'Failed to send request. Please try again.');
+        setRevisionSubmitting(false);
+        return;
+      }
+
+      if (addRevision) addRevision(clientSlug, revisionComment.trim());
+      setRevisionComment('');
+      setRevisionMessage(`Revision Request #${nextNumber} sent! Our studio team will review your comments and update your invitation within 24h.`);
+    } catch (err) {
+      console.error(err);
+      setRevisionError('An error occurred. Please try again.');
+    } finally {
+      setRevisionSubmitting(false);
+    }
+  };
 
   // ========== LOGIN GATE ==========
   if (!currentUser) {
@@ -214,38 +272,45 @@ export default function Dashboard() {
       <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', padding: '2rem 1.5rem' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
-              <div style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.2rem' }}>Premium Space</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#5C3A1E', fontFamily: 'var(--font-heading)', letterSpacing: '1px' }}>FOLDÈ</div>
+                <span style={{ backgroundColor: '#faf5f0', color: '#8b6e5a', border: '1px solid #e8ddd4', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  {userOrder.plan} Studio Space
+                </span>
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#555', marginTop: '0.25rem', fontWeight: 500 }}>
+                {userOrder.couple}
+              </div>
             </div>
-            <button onClick={logout} style={{ background: 'none', border: '1px solid #e0dcd7', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', color: '#555', fontFamily: 'inherit' }}>
+            <button onClick={logout} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.5rem 1.25rem', borderRadius: '10px', cursor: 'pointer', fontSize: '0.85rem', color: '#555', fontFamily: 'inherit', fontWeight: 500, boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
               Sign out
             </button>
           </header>
 
           {/* Status Indicator */}
           {userOrder.status === 'Live' ? (
-            <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #dcfce7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #f8fafc, #fff)' }}>
+            <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #dcfce7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #f8fafc, #fff)' }}>
               <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#dcfce7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(22, 101, 52, 0.15)' }}>
                 ✨
               </div>
-              <h1 style={{ fontSize: '1.8rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.75rem' }}>
-                Your site is ready!
+              <h1 style={{ fontSize: '2rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.75rem' }}>
+                Your invitation is live!
               </h1>
               <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 2rem' }}>
-                Our team has finalized the creation of your bespoke invitation. You can now visit it and share it with your guests.
+                Our design studio has finalized your bespoke wedding invitation. You can now view it live and share your link with guests.
               </p>
               
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', backgroundColor: '#f1f5f9', padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none', fontSize: '1rem' }}>
-                  View my site →
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1.25rem', backgroundColor: '#f1f5f9', padding: '0.85rem 1.75rem', borderRadius: '14px', border: '1px solid #e2e8f0', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  View my website →
                 </a>
                 <span style={{ color: '#cbd5e1' }}>|</span>
                 <button 
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
-                    alert("Link copied!");
+                    alert("Link copied to clipboard!");
                   }}
                   style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontWeight: 500, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                 >
@@ -254,19 +319,19 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #fef3c7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #fffdfa, #fff)' }}>
+            <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #fef3c7', marginBottom: '2.5rem', textAlign: 'center', backgroundImage: 'linear-gradient(to bottom, #fffdfa, #fff)' }}>
               <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem', position: 'relative' }}>
                 <span style={{ position: 'absolute', inset: 0, border: '3px solid #fef3c7', borderTopColor: '#d97706', borderRadius: '50%', animation: 'spin 2s linear infinite' }}></span>
                 <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
                 ✨
               </div>
-              <h1 style={{ fontSize: '1.8rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '0.75rem' }}>
+              <h1 style={{ fontSize: '1.9rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '0.75rem' }}>
                 Creation in Progress...
               </h1>
               <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '620px', margin: '0 auto 1.5rem' }}>
                 Our Paris design studio is currently handcrafting your bespoke wedding invitation using all the details, photos, and preferences you provided.
               </p>
-              <div style={{ display: 'inline-block', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', padding: '0.75rem 1.5rem', borderRadius: '12px', color: '#8b6e5a', fontSize: '0.95rem', fontWeight: 600 }}>
+              <div style={{ display: 'inline-block', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', padding: '0.75rem 1.5rem', borderRadius: '14px', color: '#8b6e5a', fontSize: '0.95rem', fontWeight: 600 }}>
                 ⏳ Estimated delivery: <strong>3 Days (72 hours)</strong>
               </div>
               <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '1.25rem' }}>
@@ -274,6 +339,93 @@ export default function Dashboard() {
               </p>
             </div>
           )}
+
+          {/* ================= REVISION REQUESTS SECTION ================= */}
+          <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #e8ddd4', marginBottom: '2.5rem', backgroundImage: 'linear-gradient(to bottom, #fffdfa, #fff)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>PARIS STUDIO SUPPORT</div>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#1a1a1a', margin: 0 }}>Request a Design Modification</h2>
+              </div>
+              <div style={{ backgroundColor: (revisions[clientSlug] || []).length >= 2 ? '#fef2f2' : '#faf5f0', color: (revisions[clientSlug] || []).length >= 2 ? '#991b1b' : '#8b6e5a', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, border: '1px solid #e8ddd4' }}>
+                {(revisions[clientSlug] || []).length} / 2 Revisions Used
+              </div>
+            </div>
+
+            <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              Your plan includes <strong>2 full revision rounds</strong> with our design team. Need adjustments to your text, photos, timeline, or color scheme? Submit your request below!
+            </p>
+
+            {/* Display Previous Revisions */}
+            {(revisions[clientSlug] || []).length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                {(revisions[clientSlug] || []).map((rev, idx) => (
+                  <div key={idx} style={{ backgroundColor: '#faf8f5', borderRadius: '14px', padding: '1.25rem', border: '1px solid #e0dcd7' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#5C3A1E' }}>✂️ Revision Request #{rev.number}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#888' }}>{new Date(rev.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p style={{ fontSize: '0.9rem', color: '#333', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{rev.comment}</p>
+                    <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: '#2d8a4e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <span>✓</span> Sent to studio (folde.wedding@gmail.com) · Processing
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Form to submit new revision */}
+            {(revisions[clientSlug] || []).length < 2 ? (
+              <form onSubmit={handleRevisionSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: '#555', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block', fontWeight: 600 }}>
+                    Requested Modifications (Revision #{(revisions[clientSlug] || []).length + 1} of 2)
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Describe any text updates, photo changes, dress code tweaks, or timeline adjustments you would like us to make..."
+                    value={revisionComment}
+                    onChange={(e) => setRevisionComment(e.target.value)}
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', fontSize: '0.95rem', fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                {revisionError && (
+                  <div style={{ color: '#dc2626', fontSize: '0.85rem', fontWeight: 500 }}>{revisionError}</div>
+                )}
+                {revisionMessage && (
+                  <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '0.8rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 500, border: '1px solid #bbf7d0' }}>
+                    ✓ {revisionMessage}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={revisionSubmitting}
+                  style={{
+                    alignSelf: 'flex-start',
+                    backgroundColor: '#5C3A1E',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '0.9rem 2rem',
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    cursor: revisionSubmitting ? 'wait' : 'pointer',
+                    fontFamily: 'inherit',
+                    letterSpacing: '0.5px',
+                    opacity: revisionSubmitting ? 0.7 : 1,
+                    boxShadow: '0 4px 12px rgba(92,58,30,0.15)'
+                  }}>
+                  {revisionSubmitting ? 'Sending Request...' : `SUBMIT REVISION #${(revisions[clientSlug] || []).length + 1} →`}
+                </button>
+              </form>
+            ) : (
+              <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e0dcd7', color: '#666', fontSize: '0.9rem', lineHeight: 1.5, textAlign: 'center' }}>
+                ✨ You have used all <strong>2 revision rounds</strong> included in your package. Our team has finalized your design. If you require additional custom changes, reach out to us directly at <a href="mailto:folde.wedding@gmail.com" style={{ color: '#5C3A1E', fontWeight: 600 }}>folde.wedding@gmail.com</a>.
+              </div>
+            )}
+          </div>
 
           {/* RSVPs List */}
           <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)' }}>
