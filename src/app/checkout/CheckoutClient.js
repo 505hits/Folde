@@ -539,6 +539,9 @@ export default function CheckoutClient() {
             </div>
             <input type="email" placeholder="Your email address" value={account.email} onChange={e => setAccount({...account, email: e.target.value})} style={inputStyle} />
             {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
+            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
+              Already have an account? <Link href="/dashboard" style={{ color: '#5C3A1E', fontWeight: 600, textDecoration: 'underline' }}>Log in to your dashboard</Link>
+            </div>
           </div>
         )}
 
