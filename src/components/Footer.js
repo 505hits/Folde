@@ -9,10 +9,10 @@ export default function Footer() {
         </div>
         <div className="footer-links">
           <Link href="/">Home</Link>
-          <Link href="/creations">Collections</Link>
-          <Link href="/method">Approach</Link>
-          <Link href="/offers">Formulas</Link>
-          <Link href="/vision">About Us</Link>
+          <Link href="/collections">Collections</Link>
+          <Link href="/approach">Approach</Link>
+          <Link href="/packages">Formulas</Link>
+          <Link href="/story">About Us</Link>
           <Link href="/dashboard">Dashboard</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
