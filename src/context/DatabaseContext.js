@@ -170,6 +170,24 @@ export function DatabaseProvider({ children }) {
     }
   };
 
+  const loginWithMagicLink = async (email) => {
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: email ? email.trim() : '',
+        options: {
+          emailRedirectTo: `${origin}/dashboard`
+        }
+      });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      return { success: true, data };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -431,7 +449,7 @@ export function DatabaseProvider({ children }) {
   return (
     <DatabaseContext.Provider value={{
       // Auth
-      currentUser, users, register, login, loginWithGoogle, logout,
+      currentUser, users, register, login, loginWithGoogle, loginWithMagicLink, logout,
       // Orders
       orders, setOrders, createOrder, updateOrderStatus,
       // Guests

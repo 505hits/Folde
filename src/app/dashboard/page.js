@@ -83,13 +83,14 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, register, loginWithGoogle, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
+  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
   const [loginError, setLoginError] = useState('');
   const [authSuccessMsg, setAuthSuccessMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMagicLinkSending, setIsMagicLinkSending] = useState(false);
   const [activeTab, setActiveTab] = useState('invitation');
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -203,6 +204,28 @@ export default function Dashboard() {
       const result = await loginWithGoogle();
       if (!result.success) {
         setLoginError(result.error || 'Erreur avec la connexion Google.');
+      }
+    };
+
+    const handleMagicLink = async () => {
+      if (!loginForm.email) {
+        setLoginError('Veuillez d’abord renseigner votre adresse e-mail.');
+        return;
+      }
+      setLoginError('');
+      setAuthSuccessMsg('');
+      setIsMagicLinkSending(true);
+      try {
+        const result = await loginWithMagicLink(loginForm.email);
+        if (!result.success) {
+          setLoginError(result.error || 'Erreur lors de l’envoi du lien magique.');
+        } else {
+          setAuthSuccessMsg('Un lien de connexion magique a été envoyé à votre adresse email !');
+        }
+      } catch (err) {
+        setLoginError('Erreur lors de l’envoi du lien magique.');
+      } finally {
+        setIsMagicLinkSending(false);
       }
     };
 
@@ -385,6 +408,22 @@ export default function Dashboard() {
             >
               {isSubmitting ? 'Chargement...' : authMode === 'login' ? 'Se connecter →' : 'S\'inscrire →'}
             </button>
+
+            {authMode === 'login' && (
+              <button
+                type="button"
+                onClick={handleMagicLink}
+                disabled={isMagicLinkSending}
+                style={{
+                  width: '100%', padding: '0.65rem', borderRadius: '10px', border: '1px solid #e0dcd7',
+                  backgroundColor: '#faf8f5', color: '#5C3A1E', fontSize: '0.84rem', fontWeight: 600,
+                  cursor: isMagicLinkSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                  transition: 'background-color 0.2s', marginTop: '0.1rem'
+                }}
+              >
+                {isMagicLinkSending ? 'Envoi...' : '✨ Recevoir un lien magique (sans mot de passe)'}
+              </button>
+            )}
           </form>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid #f0ede9' }}>
