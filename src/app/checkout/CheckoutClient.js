@@ -224,12 +224,12 @@ export default function CheckoutClient() {
 
   useEffect(() => {
     if (currentUser) {
-      setAccount({
-        name: currentUser.name || '',
-        partnerName: currentUser.partnerName || '',
-        email: currentUser.email || '',
-        password: currentUser.password || ''
-      });
+      setAccount(prev => ({
+        name: currentUser.name || prev.name || '',
+        partnerName: currentUser.partnerName || prev.partnerName || '',
+        email: currentUser.email || prev.email || '',
+        password: currentUser.password || prev.password || 'welcome123'
+      }));
     }
   }, [currentUser]);
 
@@ -242,7 +242,7 @@ export default function CheckoutClient() {
       const params = new URLSearchParams(window.location.search);
       const plan = params.get('plan');
       if (plan) {
-        const found = packages.find(p => p.id === plan);
+        const found = packages.find(p => p.id.toLowerCase() === plan.toLowerCase());
         if (found) setSelectedPackage(found);
       }
     }
@@ -534,10 +534,10 @@ export default function CheckoutClient() {
               <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Enter your details to automatically create your private dashboard to track RSVPs and customize your invitation.</p>
             </div>
             <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-              <input type="text" placeholder="Your first name" value={account.name} onChange={e => setAccount({...account, name: e.target.value})} style={inputStyle} />
-              <input type="text" placeholder="Your partner's first name" value={account.partnerName} onChange={e => setAccount({...account, partnerName: e.target.value})} style={inputStyle} />
+              <input type="text" placeholder="Your first name" value={account.name || ''} onChange={e => setAccount({...account, name: e.target.value})} style={inputStyle} />
+              <input type="text" placeholder="Your partner's first name" value={account.partnerName || ''} onChange={e => setAccount({...account, partnerName: e.target.value})} style={inputStyle} />
             </div>
-            <input type="email" placeholder="Your email address" value={account.email} onChange={e => setAccount({...account, email: e.target.value})} style={inputStyle} />
+            <input type="email" placeholder="Your email address" value={account.email || ''} onChange={e => setAccount({...account, email: e.target.value})} style={inputStyle} />
             {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
             <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
               Already have an account? <Link href="/dashboard" style={{ color: '#5C3A1E', fontWeight: 600, textDecoration: 'underline' }}>Log in to your dashboard</Link>
