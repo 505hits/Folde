@@ -83,10 +83,13 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
+  const { currentUser, login, register, loginWithGoogle, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
 
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
   const [loginError, setLoginError] = useState('');
+  const [authSuccessMsg, setAuthSuccessMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('invitation');
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -98,8 +101,8 @@ export default function Dashboard() {
   const [revisionMessage, setRevisionMessage] = useState('');
   const [revisionError, setRevisionError] = useState('');
 
-  // Compute userOrder securely before hooks
-  const userOrder = currentUser ? orders.find(o => o.email === currentUser.email && o.paid) : null;
+  // Compute userOrder securely before hooks with case-insensitive email match
+  const userOrder = currentUser ? orders.find(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid) : null;
   const [selectedTheme, setSelectedTheme] = useState(userOrder?.theme || 'bordeaux');
 
   // Fetch guests from Supabase when dashboard loads
@@ -163,73 +166,230 @@ export default function Dashboard() {
 
   // ========== LOGIN GATE ==========
   if (!currentUser) {
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoginError('');
-      const result = await login(loginForm.email, loginForm.password);
-      if (!result.success) setLoginError(result.error);
+      setAuthSuccessMsg('');
+      setIsSubmitting(true);
+
+      try {
+        if (authMode === 'login') {
+          const result = await login(loginForm.email, loginForm.password);
+          if (!result.success) {
+            setLoginError(result.error || 'Erreur lors de la connexion.');
+          }
+        } else {
+          if (!loginForm.email || !loginForm.password) {
+            setLoginError('Veuillez remplir tous les champs obligatoires.');
+            setIsSubmitting(false);
+            return;
+          }
+          const result = await register(loginForm.email, loginForm.password, loginForm.name, loginForm.partnerName);
+          if (!result.success) {
+            setLoginError(result.error || 'Erreur lors de l’inscription.');
+          } else {
+            setAuthSuccessMsg('Compte créé avec succès !');
+          }
+        }
+      } catch (err) {
+        setLoginError('Une erreur inattendue est survenue.');
+      } finally {
+        setIsSubmitting(false);
+      }
     };
 
-    const handleGoogleLogin = () => {
-      alert("Google login will be connected once Supabase is configured.");
+    const handleGoogleAuth = async () => {
+      setLoginError('');
+      const result = await loginWithGoogle();
+      if (!result.success) {
+        setLoginError(result.error || 'Erreur avec la connexion Google.');
+      }
     };
 
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)' }}>
+      <div style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        alignItems: 'center',
+        justify: 'center',
+        backgroundColor: '#faf8f5',
+        fontFamily: 'var(--font-body)',
+        padding: '1rem',
+        boxSizing: 'border-box'
+      }}>
         <div style={{
-          backgroundColor: '#fff', borderRadius: '20px', padding: '2.5rem', maxWidth: '420px', width: '100%',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)'
+          backgroundColor: '#ffffff',
+          borderRadius: '24px',
+          padding: '2.25rem 2rem',
+          maxWidth: '430px',
+          width: '100%',
+          boxShadow: '0 20px 50px rgba(92, 58, 30, 0.08), 0 2px 10px rgba(0, 0, 0, 0.02)',
+          border: '1px solid rgba(224, 220, 215, 0.7)',
+          boxSizing: 'border-box'
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase', color: '#b08968', marginBottom: '0.75rem' }}>FOLDÈ DESIGN</div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.35rem' }}>Welcome back</h1>
-            <p style={{ color: '#888', fontSize: '0.9rem' }}>Sign in to access your dashboard</p>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '3.5px', textTransform: 'uppercase', color: '#b08968', marginBottom: '0.6rem' }}>
+              FOLDÈ DESIGN
+            </div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.4rem', fontFamily: 'var(--font-heading)' }}>
+              {authMode === 'login' ? 'Bienvenue' : 'Créer votre compte'}
+            </h1>
+            <p style={{ color: '#777', fontSize: '0.88rem' }}>
+              {authMode === 'login' ? 'Connectez-vous pour accéder à votre espace' : 'Inscrivez-vous pour personnaliser vos faire-part'}
+            </p>
           </div>
 
-          {/* Google */}
-          <button onClick={handleGoogleLogin} style={{
-            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-            padding: '0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', backgroundColor: '#fff',
-            cursor: 'pointer', fontSize: '0.95rem', fontWeight: 500, color: '#1a1a1a', fontFamily: 'inherit'
+          {/* Mode Switcher Tabs */}
+          <div style={{
+            display: 'flex',
+            backgroundColor: '#f4f1ec',
+            padding: '4px',
+            borderRadius: '12px',
+            marginBottom: '1.5rem'
           }}>
+            <button
+              type="button"
+              onClick={() => { setAuthMode('login'); setLoginError(''); setAuthSuccessMsg(''); }}
+              style={{
+                flex: 1,
+                padding: '0.6rem',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                borderRadius: '9px',
+                border: 'none',
+                backgroundColor: authMode === 'login' ? '#ffffff' : 'transparent',
+                color: authMode === 'login' ? '#1a1a1a' : '#777',
+                boxShadow: authMode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Se connecter
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAuthMode('signup'); setLoginError(''); setAuthSuccessMsg(''); }}
+              style={{
+                flex: 1,
+                padding: '0.6rem',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                borderRadius: '9px',
+                border: 'none',
+                backgroundColor: authMode === 'signup' ? '#ffffff' : 'transparent',
+                color: authMode === 'signup' ? '#1a1a1a' : '#777',
+                boxShadow: authMode === 'signup' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              S'inscrire
+            </button>
+          </div>
+
+          {/* Google Login */}
+          <button
+            type="button"
+            onClick={handleGoogleAuth}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+              padding: '0.8rem', borderRadius: '12px', border: '1px solid #e0dcd7', backgroundColor: '#fff',
+              cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500, color: '#1a1a1a', fontFamily: 'inherit',
+              transition: 'background-color 0.2s'
+            }}
+          >
             <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-            Continue with Google
+            Continuer avec Google
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.25rem 0' }}>
             <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e5e1' }}></div>
-            <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 500 }}>or</span>
+            <span style={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>ou avec votre e-mail</span>
             <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e5e1' }}></div>
           </div>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+            {authMode === 'signup' && (
+              <>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Votre prénom</label>
+                    <input
+                      type="text"
+                      placeholder="Emma"
+                      value={loginForm.name}
+                      onChange={e => setLoginForm({...loginForm, name: e.target.value})}
+                      style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Prénom conjoint</label>
+                    <input
+                      type="text"
+                      placeholder="Lucas"
+                      value={loginForm.partnerName}
+                      onChange={e => setLoginForm({...loginForm, partnerName: e.target.value})}
+                      style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             <div>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Email</label>
-              <input type="email" placeholder="you@example.com" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})}
-                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit' }} />
+              <input
+                type="email"
+                required
+                placeholder="vous@exemple.com"
+                value={loginForm.email}
+                onChange={e => setLoginForm({...loginForm, email: e.target.value})}
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+              />
             </div>
+
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Password</label>
-              <input type="password" placeholder="Your password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})}
-                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit' }} />
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Mot de passe</label>
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                value={loginForm.password}
+                onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+              />
             </div>
+
             {loginError && (
-              <div style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '0.6rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', border: '1px solid #fecaca' }}>
+              <div style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '0.65rem 0.85rem', borderRadius: '10px', fontSize: '0.84rem', border: '1px solid #fecaca' }}>
                 {loginError}
               </div>
             )}
-            <button type="submit" style={{
-              width: '100%', padding: '0.85rem', borderRadius: '10px', border: 'none', backgroundColor: '#5C3A1E',
-              color: '#fff', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-            }}>
-              Sign in <span>→</span>
+
+            {authSuccessMsg && (
+              <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '0.65rem 0.85rem', borderRadius: '10px', fontSize: '0.84rem', border: '1px solid #bbf7d0' }}>
+                {authSuccessMsg}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                width: '100%', padding: '0.85rem', borderRadius: '12px', border: 'none', backgroundColor: '#5C3A1E',
+                color: '#fff', fontSize: '0.95rem', fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                opacity: isSubmitting ? 0.7 : 1, transition: 'opacity 0.2s', marginTop: '0.25rem'
+              }}
+            >
+              {isSubmitting ? 'Chargement...' : authMode === 'login' ? 'Se connecter →' : 'S\'inscrire →'}
             </button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #f0ede9' }}>
-            <Link href="/checkout" style={{ color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}>
-              Don't have an account? Order now
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid #f0ede9' }}>
+            <Link href="/checkout" style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
+              Vous n'avez pas encore commandé ? Découvrir les collections →
             </Link>
           </div>
         </div>

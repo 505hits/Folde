@@ -14,42 +14,86 @@ export function DatabaseProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
 
   React.useEffect(() => {
+    // 1. Initial local load
     const saved = typeof window !== 'undefined' && localStorage.getItem('currentUser');
     if (saved) {
       try { setCurrentUser(JSON.parse(saved)); } catch (e) {}
     }
+
+    // 2. Initial Supabase session load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const profile = {
+          email: session.user.email,
+          name: session.user.user_metadata?.name || '',
+          partnerName: session.user.user_metadata?.partner_name || '',
+          supabaseId: session.user.id
+        };
+        setCurrentUser(profile);
+        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
+      }
+    }).catch(err => console.warn('Supabase getSession error:', err));
+
+    // 3. Listen to active auth state changes (login, logout, OAuth redirect)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const profile = {
+          email: session.user.email,
+          name: session.user.user_metadata?.name || '',
+          partnerName: session.user.user_metadata?.partner_name || '',
+          supabaseId: session.user.id
+        };
+        setCurrentUser(profile);
+        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
+      } else if (_event === 'SIGNED_OUT') {
+        setCurrentUser(null);
+        if (typeof window !== 'undefined') localStorage.removeItem('currentUser');
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const register = async (email, password, name, partnerName) => {
-    // Try Supabase Auth first
+    const cleanEmail = email ? email.trim() : '';
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: cleanEmail,
         password,
         options: {
           data: { name, partner_name: partnerName }
         }
       });
+
       if (error) {
-        // Fallback to local if Supabase fails
-        console.warn('Supabase register failed, using local:', error.message);
-        const exists = users.find(u => u.email === email);
-        if (exists) return { success: false, error: 'Un compte existe déjà avec cet email.' };
-        const newUser = { email, password, name, partnerName };
-        setUsers(prev => [...prev, newUser]);
+        console.warn('Supabase register error:', error.message);
+        let errorMsg = 'Erreur lors de l’inscription.';
+        if (error.message.includes('User already registered') || error.message.includes('already exists')) {
+          errorMsg = 'Un compte existe déjà avec cet email.';
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+        return { success: false, error: errorMsg };
+      }
+
+      if (data?.user) {
+        const newUser = {
+          email: data.user.email,
+          name: name || data.user.user_metadata?.name || '',
+          partnerName: partnerName || data.user.user_metadata?.partner_name || '',
+          supabaseId: data.user.id
+        };
         setCurrentUser(newUser);
         if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(newUser));
         return { success: true };
       }
-      const newUser = { email, name, partnerName, supabaseId: data.user?.id };
-      setCurrentUser(newUser);
-      if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(newUser));
+
       return { success: true };
     } catch (err) {
-      // Fallback to local
-      const exists = users.find(u => u.email === email);
-      if (exists) return { success: false, error: 'Un compte existe déjà avec cet email.' };
-      const newUser = { email, password, name, partnerName };
+      console.error('Register error:', err);
+      const newUser = { email: cleanEmail, password, name, partnerName };
       setUsers(prev => [...prev, newUser]);
       setCurrentUser(newUser);
       if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(newUser));
@@ -58,22 +102,35 @@ export function DatabaseProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    // Try Supabase Auth first
+    const cleanEmail = email ? email.trim() : '';
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: cleanEmail,
         password
       });
+
       if (error) {
-        // Fallback to local auth
-        console.warn('Supabase login failed, using local:', error.message);
-        const user = users.find(u => u.email === email && u.password === password);
-        if (!user) return { success: false, error: 'Email ou mot de passe incorrect.' };
-        setCurrentUser(user);
-        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(user));
-        return { success: true };
+        console.warn('Supabase login error:', error.message);
+        
+        // Fallback check for local mock users
+        const localUser = users.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === password);
+        if (localUser) {
+          setCurrentUser(localUser);
+          if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(localUser));
+          return { success: true };
+        }
+
+        let errorMsg = 'Email ou mot de passe incorrect.';
+        if (error.message.includes('Invalid login credentials')) {
+          errorMsg = 'Email ou mot de passe incorrect.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMsg = 'Veuillez confirmer votre adresse e-mail avant de vous connecter.';
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+        return { success: false, error: errorMsg };
       }
-      // Supabase login succeeded
+
       const profile = {
         email: data.user.email,
         name: data.user.user_metadata?.name || '',
@@ -84,12 +141,32 @@ export function DatabaseProvider({ children }) {
       if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
       return { success: true };
     } catch (err) {
-      // Fallback to local auth
-      const user = users.find(u => u.email === email && u.password === password);
-      if (!user) return { success: false, error: 'Email ou mot de passe incorrect.' };
-      setCurrentUser(user);
-      if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(user));
-      return { success: true };
+      console.error('Login error:', err);
+      const localUser = users.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === password);
+      if (localUser) {
+        setCurrentUser(localUser);
+        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(localUser));
+        return { success: true };
+      }
+      return { success: false, error: 'Une erreur s’est produite lors de la connexion.' };
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${origin}/dashboard`
+        }
+      });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      return { success: true, data };
+    } catch (err) {
+      return { success: false, error: err.message };
     }
   };
 
@@ -354,7 +431,7 @@ export function DatabaseProvider({ children }) {
   return (
     <DatabaseContext.Provider value={{
       // Auth
-      currentUser, users, register, login, logout,
+      currentUser, users, register, login, loginWithGoogle, logout,
       // Orders
       orders, setOrders, createOrder, updateOrderStatus,
       // Guests
