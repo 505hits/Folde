@@ -69,9 +69,11 @@ export function DatabaseProvider({ children }) {
 
       if (error) {
         console.warn('Supabase register error:', error.message);
-        let errorMsg = 'Erreur lors de l’inscription.';
+        let errorMsg = 'An error occurred during registration.';
         if (error.message.includes('User already registered') || error.message.includes('already exists')) {
-          errorMsg = 'Un compte existe déjà avec cet email.';
+          errorMsg = 'An account already exists with this email.';
+        } else if (error.message.includes('Password should be')) {
+          errorMsg = 'Password must be at least 6 characters.';
         } else if (error.message) {
           errorMsg = error.message;
         }
@@ -120,11 +122,11 @@ export function DatabaseProvider({ children }) {
           return { success: true };
         }
 
-        let errorMsg = 'Email ou mot de passe incorrect.';
+        let errorMsg = 'Invalid email or password.';
         if (error.message.includes('Invalid login credentials')) {
-          errorMsg = 'Email ou mot de passe incorrect.';
+          errorMsg = 'Invalid email or password.';
         } else if (error.message.includes('Email not confirmed')) {
-          errorMsg = 'Veuillez confirmer votre adresse e-mail avant de vous connecter.';
+          errorMsg = 'Please confirm your email address before signing in.';
         } else if (error.message) {
           errorMsg = error.message;
         }
@@ -148,7 +150,7 @@ export function DatabaseProvider({ children }) {
         if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(localUser));
         return { success: true };
       }
-      return { success: false, error: 'Une erreur s’est produite lors de la connexion.' };
+      return { success: false, error: 'An error occurred while signing in.' };
     }
   };
 

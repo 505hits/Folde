@@ -177,23 +177,23 @@ export default function Dashboard() {
         if (authMode === 'login') {
           const result = await login(loginForm.email, loginForm.password);
           if (!result.success) {
-            setLoginError(result.error || 'Erreur lors de la connexion.');
+            setLoginError(result.error || 'An error occurred while signing in.');
           }
         } else {
           if (!loginForm.email || !loginForm.password) {
-            setLoginError('Veuillez remplir tous les champs obligatoires.');
+            setLoginError('Please fill in all required fields.');
             setIsSubmitting(false);
             return;
           }
           const result = await register(loginForm.email, loginForm.password, loginForm.name, loginForm.partnerName);
           if (!result.success) {
-            setLoginError(result.error || 'Erreur lors de l’inscription.');
+            setLoginError(result.error || 'An error occurred during registration.');
           } else {
-            setAuthSuccessMsg('Compte créé avec succès !');
+            setAuthSuccessMsg('Account created successfully!');
           }
         }
       } catch (err) {
-        setLoginError('Une erreur inattendue est survenue.');
+        setLoginError('An unexpected error occurred.');
       } finally {
         setIsSubmitting(false);
       }
@@ -203,13 +203,13 @@ export default function Dashboard() {
       setLoginError('');
       const result = await loginWithGoogle();
       if (!result.success) {
-        setLoginError(result.error || 'Erreur avec la connexion Google.');
+        setLoginError(result.error || 'Google sign-in failed.');
       }
     };
 
     const handleMagicLink = async () => {
       if (!loginForm.email) {
-        setLoginError('Veuillez d’abord renseigner votre adresse e-mail.');
+        setLoginError('Please enter your email address first.');
         return;
       }
       setLoginError('');
@@ -218,12 +218,12 @@ export default function Dashboard() {
       try {
         const result = await loginWithMagicLink(loginForm.email);
         if (!result.success) {
-          setLoginError(result.error || 'Erreur lors de l’envoi du lien magique.');
+          setLoginError(result.error || 'Failed to send magic link.');
         } else {
-          setAuthSuccessMsg('Un lien de connexion magique a été envoyé à votre adresse email !');
+          setAuthSuccessMsg('A magic sign-in link has been sent to your email!');
         }
       } catch (err) {
-        setLoginError('Erreur lors de l’envoi du lien magique.');
+        setLoginError('Failed to send magic link.');
       } finally {
         setIsMagicLinkSending(false);
       }
@@ -234,7 +234,7 @@ export default function Dashboard() {
         minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
-        justify: 'center',
+        justifyContent: 'center',
         backgroundColor: '#faf8f5',
         fontFamily: 'var(--font-body)',
         padding: '1rem',
@@ -248,7 +248,8 @@ export default function Dashboard() {
           width: '100%',
           boxShadow: '0 20px 50px rgba(92, 58, 30, 0.08), 0 2px 10px rgba(0, 0, 0, 0.02)',
           border: '1px solid rgba(224, 220, 215, 0.7)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          margin: '0 auto'
         }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
@@ -256,10 +257,10 @@ export default function Dashboard() {
               FOLDÈ DESIGN
             </div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.4rem', fontFamily: 'var(--font-heading)' }}>
-              {authMode === 'login' ? 'Bienvenue' : 'Créer votre compte'}
+              {authMode === 'login' ? 'Welcome back' : 'Create your account'}
             </h1>
             <p style={{ color: '#777', fontSize: '0.88rem' }}>
-              {authMode === 'login' ? 'Connectez-vous pour accéder à votre espace' : 'Inscrivez-vous pour personnaliser vos faire-part'}
+              {authMode === 'login' ? 'Sign in to access your personal space' : 'Sign up to start customizing your invitation'}
             </p>
           </div>
 
@@ -275,39 +276,29 @@ export default function Dashboard() {
               type="button"
               onClick={() => { setAuthMode('login'); setLoginError(''); setAuthSuccessMsg(''); }}
               style={{
-                flex: 1,
-                padding: '0.6rem',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                borderRadius: '9px',
-                border: 'none',
+                flex: 1, padding: '0.6rem', fontSize: '0.85rem', fontWeight: 600,
+                borderRadius: '9px', border: 'none',
                 backgroundColor: authMode === 'login' ? '#ffffff' : 'transparent',
                 color: authMode === 'login' ? '#1a1a1a' : '#777',
                 boxShadow: authMode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                cursor: 'pointer', transition: 'all 0.2s ease'
               }}
             >
-              Se connecter
+              Sign In
             </button>
             <button
               type="button"
               onClick={() => { setAuthMode('signup'); setLoginError(''); setAuthSuccessMsg(''); }}
               style={{
-                flex: 1,
-                padding: '0.6rem',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                borderRadius: '9px',
-                border: 'none',
+                flex: 1, padding: '0.6rem', fontSize: '0.85rem', fontWeight: 600,
+                borderRadius: '9px', border: 'none',
                 backgroundColor: authMode === 'signup' ? '#ffffff' : 'transparent',
                 color: authMode === 'signup' ? '#1a1a1a' : '#777',
                 boxShadow: authMode === 'signup' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                cursor: 'pointer', transition: 'all 0.2s ease'
               }}
             >
-              S'inscrire
+              Sign Up
             </button>
           </div>
 
@@ -323,12 +314,12 @@ export default function Dashboard() {
             }}
           >
             <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-            Continuer avec Google
+            Continue with Google
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.25rem 0' }}>
             <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e5e1' }}></div>
-            <span style={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>ou avec votre e-mail</span>
+            <span style={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>or with your email</span>
             <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e5e1' }}></div>
           </div>
 
@@ -337,7 +328,7 @@ export default function Dashboard() {
               <>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Votre prénom</label>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Your first name</label>
                     <input
                       type="text"
                       placeholder="Emma"
@@ -347,7 +338,7 @@ export default function Dashboard() {
                     />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Prénom conjoint</label>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Partner's name</label>
                     <input
                       type="text"
                       placeholder="Lucas"
@@ -365,7 +356,7 @@ export default function Dashboard() {
               <input
                 type="email"
                 required
-                placeholder="vous@exemple.com"
+                placeholder="you@example.com"
                 value={loginForm.email}
                 onChange={e => setLoginForm({...loginForm, email: e.target.value})}
                 style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
@@ -373,7 +364,7 @@ export default function Dashboard() {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Mot de passe</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Password</label>
               <input
                 type="password"
                 required
@@ -406,7 +397,7 @@ export default function Dashboard() {
                 opacity: isSubmitting ? 0.7 : 1, transition: 'opacity 0.2s', marginTop: '0.25rem'
               }}
             >
-              {isSubmitting ? 'Chargement...' : authMode === 'login' ? 'Se connecter →' : 'S\'inscrire →'}
+              {isSubmitting ? 'Loading...' : authMode === 'login' ? 'Sign in →' : 'Create account →'}
             </button>
 
             {authMode === 'login' && (
@@ -421,14 +412,14 @@ export default function Dashboard() {
                   transition: 'background-color 0.2s', marginTop: '0.1rem'
                 }}
               >
-                {isMagicLinkSending ? 'Envoi...' : '✨ Recevoir un lien magique (sans mot de passe)'}
+                {isMagicLinkSending ? 'Sending...' : '✨ Send me a magic link (passwordless)'}
               </button>
             )}
           </form>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid #f0ede9' }}>
-            <Link href="/checkout" style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
-              Vous n'avez pas encore commandé ? Découvrir les collections →
+            <Link href="/collections" style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
+              Don't have an account yet? Explore collections →
             </Link>
           </div>
         </div>
@@ -436,20 +427,30 @@ export default function Dashboard() {
     );
   }
 
-  // ========== CHECK IF USER HAS PAID ==========
+  // ========== NO ACTIVE ORDER ==========
   
   if (!userOrder) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)' }}>
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)', padding: '1rem', boxSizing: 'border-box' }}>
         <div style={{
-          backgroundColor: '#fff', borderRadius: '20px', padding: '3rem', maxWidth: '440px', width: '100%',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center'
+          backgroundColor: '#fff', borderRadius: '24px', padding: '2.5rem 2rem', maxWidth: '460px', width: '100%',
+          boxShadow: '0 20px 50px rgba(92, 58, 30, 0.08), 0 2px 10px rgba(0, 0, 0, 0.02)', border: '1px solid rgba(224, 220, 215, 0.7)', textAlign: 'center', boxSizing: 'border-box'
         }}>
-          <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1.25rem' }}>⏳</div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem' }}>No order found</h1>
-          <p style={{ color: '#888', marginBottom: '2rem', fontSize: '0.9rem', lineHeight: 1.6 }}>Your dashboard will become available once your payment is confirmed.</p>
-          <Link href="/checkout" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.75rem 2rem', borderRadius: '10px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem' }}>
-            Order now →
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1.25rem' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b08968" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+          </div>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>No active order</h1>
+          <p style={{ color: '#888', marginBottom: '0.75rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            Your personal wedding studio will become available once you choose a package and complete your order.
+          </p>
+          <p style={{ color: '#aaa', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Signed in as <strong style={{ color: '#666' }}>{currentUser?.email}</strong>
+          </p>
+          <Link href="/packages" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.85rem 2.5rem', borderRadius: '12px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+            Explore packages →
           </Link>
           <div style={{ marginTop: '1.5rem' }}>
             <button onClick={logout} style={{ background: 'none', border: 'none', color: '#888', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'inherit' }}>
