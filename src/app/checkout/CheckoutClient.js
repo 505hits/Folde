@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
 
 const themes = [
