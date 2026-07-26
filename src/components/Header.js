@@ -31,7 +31,7 @@ export default function Header() {
           <Link href="/packages">Formulas</Link>
           <Link href="/story">About Us</Link>
         </nav>
-        <div className="header-cta-desktop" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="header-cta-desktop">
           {currentUser ? (
             <Link href="/dashboard" style={{
               textDecoration: 'none', color: '#5C3A1E', fontWeight: 600, fontSize: '0.88rem',
@@ -53,7 +53,7 @@ export default function Header() {
                 <polyline points="10 17 15 12 10 7"/>
                 <line x1="15" y1="12" x2="3" y2="12"/>
               </svg>
-              Sign In
+              Sign In / Sign Up
             </Link>
           )}
           <Link href="/checkout" className="btn-primary header-cta">
@@ -73,33 +73,47 @@ export default function Header() {
 
       {/* Mobile nav overlay */}
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
-        <Link href="/" onClick={closeMenu}>Home</Link>
-        <Link href="/collections" onClick={closeMenu}>Collections</Link>
-        <Link href="/approach" onClick={closeMenu}>Approach</Link>
-        <Link href="/packages" onClick={closeMenu}>Formulas</Link>
-        <Link href="/story" onClick={closeMenu}>About Us</Link>
+        <div className="mobile-nav-content">
+          <nav className="mobile-nav-links">
+            <Link href="/" onClick={closeMenu}>Home</Link>
+            <Link href="/collections" onClick={closeMenu}>Collections</Link>
+            <Link href="/approach" onClick={closeMenu}>Approach</Link>
+            <Link href="/packages" onClick={closeMenu}>Formulas</Link>
+            <Link href="/story" onClick={closeMenu}>About Us</Link>
+          </nav>
 
-        {currentUser ? (
-          <>
-            <Link href="/dashboard" onClick={closeMenu} style={{ fontWeight: 600, color: '#5C3A1E' }}>My Space</Link>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: 'none', border: '1px solid #d4c8bc', borderRadius: '8px',
-                padding: '0.5rem 1.5rem', color: '#888', fontSize: '0.9rem', fontWeight: 500,
-                cursor: 'pointer', fontFamily: 'inherit'
-              }}
-            >
-              Sign Out
-            </button>
-          </>
-        ) : (
-          <Link href="/dashboard" onClick={closeMenu} style={{ fontWeight: 600, color: '#5C3A1E' }}>Sign In</Link>
-        )}
+          <div className="mobile-nav-divider"></div>
 
-        <Link href="/checkout" className="btn-primary" onClick={closeMenu} style={{ marginTop: '1rem' }}>
-          Order Now
-        </Link>
+          <div className="mobile-nav-actions">
+            {currentUser ? (
+              <div className="mobile-user-row">
+                <Link href="/dashboard" onClick={closeMenu} className="mobile-auth-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  My Space
+                </Link>
+                <button onClick={handleLogout} className="mobile-logout-btn">
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link href="/dashboard" onClick={closeMenu} className="mobile-auth-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Sign In / Sign Up
+              </Link>
+            )}
+
+            <Link href="/checkout" className="btn-primary mobile-cta-btn" onClick={closeMenu}>
+              Order Now
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

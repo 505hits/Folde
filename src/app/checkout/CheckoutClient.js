@@ -14,6 +14,29 @@ const themes = [
   { id: 'royalbordeaux', name: 'Royal Bordeaux' },
   { id: 'royalblue', name: 'Royal Blue' },
   { id: 'chocolate', name: 'Chocolate' },
+  { id: 'rosebow', name: 'Blush Ribbon' },
+  { id: 'majestic', name: 'Grand Heritage' },
+  { id: 'thelaceedit', name: 'The Lace Edit' },
+  { id: 'lejardin', name: 'Le Jardin' },
+  { id: 'lacephotoscratch', name: 'Lace Photo Scratch' },
+  { id: 'oasisroyale', name: 'Oasis Royale' },
+  { id: 'tropical', name: 'Tropical' },
+  { id: 'photoscratch', name: 'Photo Scratch' },
+  { id: 'softscratch', name: 'Soft Scratch' },
+  { id: 'cisnes', name: 'Cisnes' },
+  { id: 'bloom', name: 'Bloom' },
+  { id: 'floral', name: 'Floral' },
+  { id: 'romanticgarden', name: 'Romantic Garden' },
+  { id: 'blossomoud', name: 'Blossom Oud' },
+  { id: 'dolcevita', name: 'Dolce Vita' },
+  { id: 'webgencytemplate5', name: 'Velvet Garden' },
+  { id: 'tildatemplate2', name: 'Noir Gold' },
+  { id: 'pressedlovecomo', name: 'Como' },
+  { id: 'pressedloveteatro', name: 'Teatro' },
+  { id: 'pressedlovethevenue', name: 'The Venue' },
+  { id: 'pressedlovesweetlove', name: 'Sweet Love' },
+  { id: 'pressedlovefloral', name: 'Botanical Floral' },
+  { id: 'pressedlovebigentrance', name: 'Big Entrance' },
 ];
 
 const packages = [
@@ -223,16 +246,7 @@ export default function CheckoutClient() {
 
   const isPremiumOrCustom = selectedPackage.id === 'premium' || selectedPackage.id === 'Custom';
 
-  useEffect(() => {
-    if (currentUser) {
-      setAccount(prev => ({
-        name: currentUser.name || prev.name || '',
-        partnerName: currentUser.partnerName || prev.partnerName || '',
-        email: currentUser.email || prev.email || '',
-        password: currentUser.password || prev.password || 'welcome123'
-      }));
-    }
-  }, [currentUser]);
+  // Note: checkout fields intentionally start empty — the client enters their own details.
 
   useEffect(() => {
     const saved = typeof window !== 'undefined' && localStorage.getItem('selectedTemplate');
@@ -276,16 +290,14 @@ export default function CheckoutClient() {
           }
         }
       }
-      setStep(3); // Go to Summary & Payment for all packages
-      window.scrollTo(0, 0);
+      // Directly trigger Stripe Payment
+      await handlePayment();
       return;
     }
   };
 
   const handleBack = () => {
-    if (step === 3) {
-      setStep(2); // Back to details
-    } else if (step === 2) {
+    if (step === 2) {
       setStep(1); // Back to package selection
     } else {
       router.push('/collections');
@@ -431,12 +443,156 @@ export default function CheckoutClient() {
   return (
     <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', position: 'relative' }}>
       <style>{`
+        .checkout-bottom-bar-inner {
+          background-color: rgba(250, 248, 245, 0.95);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-top: 1px solid rgba(0, 0, 0, 0.06);
+          padding: 0.75rem 1.5rem 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .checkout-back-btn {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
+          border: 1px solid #e0dcd7;
+          background-color: #faf8f5;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          color: #555;
+          flex-shrink: 0;
+          transition: all 0.2s ease;
+        }
+
+        .checkout-back-btn:hover {
+          border-color: #5C3A1E;
+          color: #5C3A1E;
+        }
+
+        .checkout-main-btn {
+          flex: 1;
+          height: 56px;
+          border-radius: 14px;
+          border: none;
+          background-color: #5C3A1E;
+          color: #fff;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 1.25rem;
+          transition: all 0.2s ease;
+          letter-spacing: 0.5px;
+          min-width: 0;
+        }
+
+        .checkout-main-btn:hover:not(:disabled) {
+          background-color: #4A2E18;
+          transform: translateY(-1px);
+        }
+
+        .checkout-btn-text {
+          font-size: 0.95rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .checkout-btn-price {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .checkout-old-price {
+          text-decoration: line-through;
+          opacity: 0.65;
+          font-size: 0.85rem;
+          font-weight: 400;
+        }
+
+        .checkout-final-price {
+          font-size: 0.95rem;
+          font-weight: 700;
+        }
+
+        .checkout-pay-badge {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          margin-top: 0.4rem;
+          font-size: 0.72rem;
+          color: #888;
+        }
+
+        .pay-chip {
+          padding: 1px 5px;
+          border-radius: 4px;
+          font-weight: 700;
+          font-size: 0.58rem;
+          letter-spacing: 0.2px;
+        }
+
+        .pay-chip-apple {
+          background: #000;
+          color: #fff;
+        }
+
+        .pay-chip-google {
+          background: #fff;
+          color: #555;
+          border: 1px solid #ddd;
+        }
+
         @media (max-width: 600px) {
           .mobile-hide { display: none !important; }
-          .checkout-bottom-bar { padding: 0 1.5rem 1rem !important; }
-          .checkout-box { padding: 2rem 1.5rem !important; }
+          .checkout-bottom-bar-inner {
+            padding: 0.5rem 0.85rem 0.65rem !important;
+          }
+          .checkout-back-btn {
+            width: 44px !important;
+            height: 46px !important;
+            border-radius: 12px !important;
+            font-size: 1rem !important;
+          }
+          .checkout-main-btn {
+            height: 46px !important;
+            border-radius: 12px !important;
+            padding: 0 0.85rem !important;
+          }
+          .checkout-btn-text {
+            font-size: 0.82rem !important;
+            letter-spacing: 0.2px !important;
+          }
+          .checkout-btn-price {
+            gap: 0.3rem !important;
+          }
+          .checkout-old-price {
+            font-size: 0.72rem !important;
+          }
+          .checkout-final-price {
+            font-size: 0.85rem !important;
+          }
+          .checkout-pay-badge {
+            margin-top: 0.25rem !important;
+            font-size: 0.68rem !important;
+          }
+          .checkout-box { padding: 1.5rem 1rem !important; }
           .checkout-grid { grid-template-columns: 1fr !important; }
-          .checkout-container { padding-bottom: 90px !important; }
+          .checkout-container { padding-bottom: 80px !important; }
           input, select, textarea { width: 100% !important; box-sizing: border-box; }
         }
       `}</style>
@@ -453,7 +609,7 @@ export default function CheckoutClient() {
             </div>
             {step > 1 && (
               <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-                {(isPremiumOrCustom ? [2, 3, 4] : [2, 4]).map(s => (
+                {[1, 2].map(s => (
                   <div key={s} style={{ width: '32px', height: '3px', borderRadius: '2px', backgroundColor: step >= s ? '#5C3A1E' : '#e0dcd7' }}></div>
                 ))}
               </div>
@@ -546,61 +702,7 @@ export default function CheckoutClient() {
           </div>
         )}
 
-        {/* ═══ STEP 3: SUMMARY ═══ */}
-        {step === 3 && (
-          <div>
-            <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>YOUR INVITATION</div>
-                <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', fontStyle: 'italic' }}>{selectedPackage.name}</h2>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '2rem', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.9rem', color: '#555', letterSpacing: '2px', textTransform: 'uppercase' }}>PLAN</span>
-                  <div style={{ flex: 1, borderBottom: '1px dotted #ccc', margin: '0 1rem' }}></div>
-                  <span style={{ fontWeight: 600 }}>{selectedPackage.name}</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '1rem', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase' }}>TOTAL</span>
-                <span style={{ fontSize: '1.8rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>{total}$</span>
-              </div>
-              {isPremiumOrCustom ? (
-                <div style={{ backgroundColor: '#faf5f0', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', border: '1px solid #e8ddd4' }}>
-                  <div style={{ fontSize: '1.25rem' }}>🎨</div>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#8b6e5a', marginBottom: '0.25rem', textTransform: 'uppercase' }}>What happens next?</div>
-                    <div style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5 }}>
-                      1. You complete the payment.<br/>
-                      2. Our design team immediately begins crafting your custom invitation using the details you provided.<br/>
-                      3. We collaborate and refine the invitation together until it is absolutely perfect.
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ backgroundColor: '#faf5f0', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', border: '1px solid #e8ddd4' }}>
-                  <div style={{ fontSize: '1.25rem' }}>✨</div>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#8b6e5a', marginBottom: '0.25rem', textTransform: 'uppercase' }}>What happens next?</div>
-                    <div style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5 }}>
-                      1. You complete the payment.<br/>
-                      2. You gain instant access to your private dashboard.<br/>
-                      3. Choose your template and enter your wedding details.<br/>
-                      4. Publish your invitation and start receiving RSVPs!
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem' }}>
-                <div style={{ fontSize: '1.2rem', color: '#5C3A1E' }}>🤍</div>
-                <div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#555', marginBottom: '0.25rem' }}>YOU'LL-LOVE-IT PROMISE</div>
-                  <div style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.5 }}>We revise with you until every detail moves you. You won't share it until it feels exactly the way you dreamed.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* ═══ STEP 4: WEDDING FORM (after payment, Premium/Custom only) ═══ */}
         {step === 4 && (
@@ -874,7 +976,7 @@ export default function CheckoutClient() {
         )}
 
         {/* Trust Badges */}
-        {step <= 3 && (
+        {step <= 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem', paddingBottom: '6rem' }}>
             <div className="mobile-hide" style={{ display: 'flex', gap: '1rem', color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>
               <span>✓ Secure payment</span><span>·</span><span>✓ Instant confirmation</span><span>·</span><span>✓ Designer-made</span>
@@ -888,26 +990,28 @@ export default function CheckoutClient() {
         )}
       </div>
 
-      {/* ─── Bottom Bar (steps 1-3 only) ─── */}
-      {step <= 3 && (
+      {/* ─── Bottom Bar (steps 1-2 only) ─── */}
+      {step <= 2 && (
         <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
-          <div style={{ height: '30px', background: 'linear-gradient(to top, #faf8f5, transparent)' }}></div>
-          <div style={{ backgroundColor: '#faf8f5', padding: '0 1.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '600px' }}>
-              <button onClick={handleBack} style={{ width: '60px', height: '60px', borderRadius: '16px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555' }}>←</button>
-              <button onClick={step === 3 ? handlePayment : handleNextStep} style={{ flex: 1, height: '60px', borderRadius: '16px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.2rem', transition: 'transform 0.15s', letterSpacing: '1px' }}>
-                <span>{step === 3 ? 'PAY & START' : 'CONTINUE'}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
-                  <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.9rem' }}>{originalTotal}$</span>
-                  <span>{total}$ →</span>
+          <div style={{ height: '20px', background: 'linear-gradient(to top, #faf8f5, transparent)', pointerEvents: 'none' }}></div>
+          <div className="checkout-bottom-bar-inner">
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '600px' }}>
+              <button onClick={handleBack} className="checkout-back-btn" aria-label="Back">←</button>
+              <button onClick={handleNextStep} className="checkout-main-btn" disabled={paymentProcessing}>
+                <span className="checkout-btn-text">{step === 2 ? (paymentProcessing ? 'PROCESSING...' : 'PAY & START') : 'CONTINUE'}</span>
+                <div className="checkout-btn-price">
+                  {originalTotal > total && (
+                    <span className="checkout-old-price">{originalTotal}$</span>
+                  )}
+                  <span className="checkout-final-price">{total}$ →</span>
                 </div>
               </button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '0.75rem', color: '#888' }}>
-              1 tap with
+            <div className="checkout-pay-badge">
+              <span>1 tap with</span>
               <div style={{ display: 'flex', gap: '4px' }}>
-                <span style={{ background: '#000', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.6rem' }}>Pay</span>
-                <span style={{ background: '#fff', color: '#555', border: '1px solid #ddd', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.6rem' }}>G Pay</span>
+                <span className="pay-chip pay-chip-apple">Pay</span>
+                <span className="pay-chip pay-chip-google">G Pay</span>
               </div>
             </div>
           </div>

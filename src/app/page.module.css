@@ -32,6 +32,9 @@
 
 .heroText p {
   margin-bottom: 2rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  line-height: 1.6;
+  max-width: 520px;
 }
 
 .heroCtas {
