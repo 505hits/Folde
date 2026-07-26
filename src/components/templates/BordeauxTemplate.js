@@ -581,6 +581,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                   className={styles.envelopeVideo}
                   muted
                   playsInline
+                  preload="auto"
                   onEnded={handleVideoEnded}
                 />
               )}
@@ -595,6 +596,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               loop={videos.hero !== videos.envelope}
               muted={isMuted}
               playsInline
+              preload="auto"
               className={styles.heroVideo}
               src={videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4"}
             />
