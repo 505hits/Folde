@@ -42,18 +42,18 @@ const carouselItems = [
 ];
 
 const testimonials = [
-  { name: "Isabelle & Hugo", text: "FOLDÈ turned our vision into a breathtaking digital experience. Every guest was amazed — the invitation set the tone for the entire celebration.", rating: 5 },
-  { name: "Priya & Daniel", text: "The level of craftsmanship is extraordinary. Our invitation felt like a work of art, and the RSVP system made planning effortless.", rating: 5 },
-  { name: "Camille & Antoine", text: "Working with FOLDÈ was a dream. They captured our personality perfectly and delivered something we'll treasure forever.", rating: 5 },
-  { name: "Nina & Rafael", text: "The real-time guest dashboard changed everything for us. No more chasing RSVPs — just pure, elegant organization.", rating: 5 },
+  { name: "Isabelle & Hugo", text: "FOLDÈ transformed our vision into a breathtaking digital experience. All of our guests were captivated the moment they opened it.", rating: 5 },
+  { name: "Priya & Daniel", text: "The level of elegance and craftsmanship is extraordinary. Our invitation felt like a work of art, and the RSVP system made managing responses effortless.", rating: 5 },
+  { name: "Camille & Antoine", text: "Working with FOLDÈ was an absolute joy. They captured our aesthetic perfectly to create an unforgettable keepsake.", rating: 5 },
+  { name: "Nina & Rafael", text: "The real-time guest dashboard changed everything for us. No more tracking down guests — seamless and perfectly organized.", rating: 5 },
 ];
 
 const faqs = [
-  { q: "How quickly will my invitation be ready?", a: "Once we finalize your details during our creative session, your bespoke invitation is typically delivered within 5 to 7 business days, revisions included." },
-  { q: "Can I update details after sending?", a: "Absolutely. Your invitation lives as a dynamic link — update the schedule, venue, or any detail anytime without needing to resend." },
-  { q: "Is there a cap on the number of guests?", a: "Not at all. Both our Standard and Premium formulas include unlimited guest access at no extra charge." },
-  { q: "Do you support multiple languages?", a: "Our Premium formula includes full multilingual support. For the Standard formula, additional languages are available as an add-on." },
-  { q: "How does the RSVP system work?", a: "Each invitation features a built-in response form. Guests simply tap to confirm, decline, or share preferences like dietary needs — all tracked in your dashboard." },
+  { q: "How long does it take for my invitation to be ready?", a: "Once your information is completed, your custom invitation is ready within 5 to 7 business days, revisions included." },
+  { q: "Can I edit details after sending?", a: "Optionally. Your invitation is dynamic — update your schedule, location, or timings anytime without re-sending the link." },
+  { q: "Is there a guest limit?", a: "No limits. All packages include unlimited guests with no extra fees." },
+  { q: "Do you support multi-language invitations?", a: "Yes, our packages support multi-language invitations to welcome guests worldwide in their native language." },
+  { q: "How does the RSVP system work?", a: "Each invitation includes an interactive RSVP form. Guests confirm attendance and dietary choices in one tap, synced directly to your private dashboard." },
 ];
 
 export default function Home() {
@@ -91,21 +91,21 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroText}>
-            <span className="label animate-fade-in-up">Bespoke Digital Invitations</span>
+            <span className="label animate-fade-in-up">Bespoke Digital Wedding Invitations</span>
             <h1 className="heading-xl animate-fade-in-up delay-1">
-              Premium Digital Wedding Invitations & Guest Tracking
+              Immersive Digital Wedding Invitations & Live Guest Tracking
             </h1>
             <p className="text-lg animate-fade-in-up delay-2">
-              Crafted in Paris, FOLDÈ creates premium interactive digital wedding invitations with integrated RSVP, custom galleries, and real-time guest tracking.
+              Designed in Paris, FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
-              <Link href="/collections" className="btn-primary">Begin Your Story</Link>
-              <Link href="/collections" className="btn-secondary">View Collections</Link>
+              <Link href="/collections" className="btn-primary">Design Your Invitation</Link>
+              <Link href="/collections" className="btn-secondary">Explore Collections</Link>
             </div>
             <div className={`${styles.heroFeatures} animate-fade-in-up delay-4`}>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Starting at $49.90</span>
+                <span>From €49.90</span>
               </div>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -113,11 +113,11 @@ export default function Home() {
               </div>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>No Guest Limits</span>
+                <span>Unlimited Guests</span>
               </div>
               <div className={styles.heroFeature}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Dedicated Concierge</span>
+                <span>Personal Concierge</span>
               </div>
             </div>
           </div>
@@ -155,8 +155,8 @@ export default function Home() {
         <div className="container">
           <div className="section-header">
             <span className="label">Collections</span>
-            <h2 className="heading-lg">Explore Our Curated Design Universes</h2>
-            <p className="text-lg">Each collection is a world of its own — crafted to express your unique love story.</p>
+            <h2 className="heading-lg">Explore Our Exclusive Design Universes</h2>
+            <p className="text-lg">Each collection is a distinct aesthetic universe — crafted to tell your unique love story.</p>
           </div>
         </div>
         <div className={styles.carouselContainer}>
@@ -167,7 +167,7 @@ export default function Home() {
             <div className="carousel-track" ref={carouselRef}>
               {carouselItems.map((item, i) => (
                 <Link href="/collections" key={i} style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}>
-                  <div className="carousel-card" style={{ paddingBottom: '2rem', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}>
+                  <div className="carousel-card" style={{ paddingBottom: '2rem', transition: 'transform 0.2s' }}>
                     <div className={styles.phoneFrame} style={{ width: '240px', height: '490px', margin: '0 auto' }}>
                       <div className={styles.phoneNotch}></div>
                       <div className={styles.phoneScreen}>
@@ -196,7 +196,7 @@ export default function Home() {
           </button>
         </div>
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <Link href="/collections" className="btn-secondary">Browse All Collections</Link>
+          <Link href="/collections" className="btn-secondary">View All Collections</Link>
         </div>
       </section>
 
@@ -204,16 +204,16 @@ export default function Home() {
       <section className={styles.methodSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">Our Approach</span>
+            <span className="label">Our Process</span>
             <h2 className="heading-lg">From Vision to Masterpiece, Step by Step</h2>
-            <p className="text-lg">A thoughtful journey where your ideas become an unforgettable experience.</p>
+            <p className="text-lg">A tailored journey where your ideas become an unforgettable experience.</p>
           </div>
           <div className={styles.methodGrid}>
             {[
-              { num: '01', title: 'Discovery Session', desc: 'An in-depth conversation to explore your vision, aesthetic preferences, and every question on your mind.' },
-              { num: '02', title: 'Curate Your Content', desc: 'Share your photos, schedule, venue details, and RSVP preferences — we walk you through it all.' },
-              { num: '03', title: 'We Design Your Experience', desc: 'Our team brings your invitation to life, iterating on every detail until it feels perfect.' },
-              { num: '04', title: 'Launch & Celebrate', desc: 'Receive your polished invitation link and share it effortlessly with every guest on your list.' },
+              { num: '01', title: 'Discovery Session', desc: 'A dedicated exchange to explore your vision, aesthetic preferences, and event details.' },
+              { num: '02', title: 'Content Personalization', desc: 'Share your photos, timeline, venue, and RSVP preferences — guided every step of the way.' },
+              { num: '03', title: 'Bespoke Creation & Design', desc: 'Our atelier crafts your digital invitation and refines every detail to perfection.' },
+              { num: '04', title: 'Launch & Celebration', desc: 'Receive your personalized invitation link and effortlessly share it with your guests.' },
             ].map((step, i) => (
               <div key={i} className={styles.methodCard}>
                 <span className={styles.methodNum}>{step.num}</span>
@@ -229,63 +229,63 @@ export default function Home() {
       <section className={styles.pricingSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">Formulas</span>
-            <h2 className="heading-lg">Select the Perfect Formula for Your Day</h2>
-            <p className="text-lg">Handcrafted packages tailored to bring your wedding story to life digitally.</p>
+            <span className="label">Packages</span>
+            <h2 className="heading-lg">Select the Perfect Package for Your Wedding</h2>
+            <p className="text-lg">Tailored packages designed to elevate your wedding invitation experience.</p>
           </div>
           <div className={styles.pricingGrid}>
             <div className={styles.pricingCard}>
               <div>
                 <h3 className="heading-md">Standard</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem' }}>Everything you need for an elegant, expertly guided invitation.</p>
-                <div className={styles.pricingPrice}>$49.90</div>
+                <p className="text-sm" style={{ marginTop: '0.5rem' }}>Everything you need for an elegant, personalized invitation.</p>
+                <div className={styles.pricingPrice}>49.90 €</div>
                 <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> Choice of design universe</li>
-                  <li><span className={styles.checkIcon}>✓</span> Your colors & info applied</li>
-                  <li><span className={styles.checkIcon}>✓</span> Integrated RSVP</li>
-                  <li><span className={styles.checkIcon}>✓</span> Live guest dashboard</li>
-                  <li><span className={styles.checkIcon}>✓</span> Unlimited guests</li>
-                  <li><span className={styles.checkIcon}>✓</span> 2 design revisions</li>
+                  <li><span className={styles.checkIcon}>✓</span> Select from exclusive design universes</li>
+                  <li><span className={styles.checkIcon}>✓</span> Personalized with your colors & details</li>
+                  <li><span className={styles.checkIcon}>✓</span> Interactive RSVP form</li>
+                  <li><span className={styles.checkIcon}>✓</span> Real-time guest dashboard</li>
+                  <li><span className={styles.checkIcon}>✓</span> Unlimited guests included</li>
+                  <li><span className={styles.checkIcon}>✓</span> 2 design revision rounds</li>
                 </ul>
               </div>
-              <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Choose This Formula</Link>
+              <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Select Standard</Link>
             </div>
             <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
-              <div className={styles.pricingBadge}>Editor's Choice</div>
+              <div className={styles.pricingBadge}>Recommended</div>
               <div>
                 <h3 className="heading-md">Premium</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>The ultimate bespoke experience with premium customization.</p>
-                <div className={styles.pricingPrice}>$290</div>
+                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>The ultimate bespoke experience with elevated customization.</p>
+                <div className={styles.pricingPrice}>290 €</div>
                 <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> Template redesigned to your style</li>
-                  <li><span className={styles.checkIcon}>✓</span> Custom icons & typography</li>
-                  <li><span className={styles.checkIcon}>✓</span> Includes Video & Music</li>
-                  <li><span className={styles.checkIcon}>✓</span> Integrated photo gallery</li>
+                  <li><span className={styles.checkIcon}>✓</span> Template fully tailored to your style</li>
+                  <li><span className={styles.checkIcon}>✓</span> Custom typography & iconography</li>
+                  <li><span className={styles.checkIcon}>✓</span> Cover video & background music included</li>
+                  <li><span className={styles.checkIcon}>✓</span> Interactive photo gallery</li>
                   <li><span className={styles.checkIcon}>✓</span> Unlimited blocks & revisions</li>
-                  <li><span className={styles.checkIcon}>✓</span> Direct contact with designer</li>
+                  <li><span className={styles.checkIcon}>✓</span> Direct contact with your designer</li>
                 </ul>
               </div>
-              <Link href="/collections" className="btn-primary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', borderColor: 'var(--color-foreground)' }}>Choose This Formula</Link>
+              <Link href="/collections" className="btn-primary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem', backgroundColor: '#ffffff', color: '#5C3A1E', borderColor: '#ffffff', fontWeight: 700 }}>Select Premium</Link>
             </div>
             <div className={styles.pricingCard}>
               <div>
                 <h3 className="heading-md">Custom</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem' }}>100% bespoke design from scratch with editorial art direction.</p>
-                <div className={styles.pricingPrice}>$490</div>
+                <p className="text-sm" style={{ marginTop: '0.5rem' }}>100% bespoke design from scratch with dedicated editorial art direction.</p>
+                <div className={styles.pricingPrice}>490 €</div>
                 <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> 100% custom layout design</li>
+                  <li><span className={styles.checkIcon}>✓</span> 100% custom layout and design</li>
                   <li><span className={styles.checkIcon}>✓</span> Editorial art direction</li>
-                  <li><span className={styles.checkIcon}>✓</span> Advanced custom interactions</li>
-                  <li><span className={styles.checkIcon}>✓</span> Dedicated concierge manager</li>
-                  <li><span className={styles.checkIcon}>✓</span> All languages supported</li>
-                  <li><span className={styles.checkIcon}>✓</span> Everything in Premium</li>
+                  <li><span className={styles.checkIcon}>✓</span> Advanced interactions & custom animations</li>
+                  <li><span className={styles.checkIcon}>✓</span> Personal concierge manager</li>
+                  <li><span className={styles.checkIcon}>✓</span> Full multi-language support</li>
+                  <li><span className={styles.checkIcon}>✓</span> Everything included in Premium</li>
                 </ul>
               </div>
-              <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Choose This Formula</Link>
+              <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Select Custom</Link>
             </div>
           </div>
           <div className={styles.pricingAddons}>
-            <p className="text-sm"><strong>Essential add-ons:</strong> Video cover — $19 · Custom music — $19 · Extra language — $19 · Multi-group management — $29</p>
+            <p className="text-sm"><strong>Optional Add-ons:</strong> Video Cover — €19 · Custom Music — €19 · Additional Language — €19 · Multi-group Management — €29</p>
           </div>
         </div>
       </section>
@@ -295,9 +295,9 @@ export default function Home() {
         <div className="container">
           <div className={styles.dashboardInner}>
             <div className={styles.dashboardText}>
-              <span className="label">Live Dashboard</span>
-              <h2 className="heading-lg" style={{ marginTop: '1rem' }}>Your Wedding Command Center</h2>
-              <p className="text-lg" style={{ marginTop: '1rem' }}>Track every RSVP, dietary preference, and guest status in real time — beautifully organized and always at your fingertips.</p>
+              <span className="label">Dashboard</span>
+              <h2 className="heading-lg" style={{ marginTop: '1rem' }}>Your Private Wedding Dashboard</h2>
+              <p className="text-lg" style={{ marginTop: '1rem' }}>Track every RSVP response, dietary preference, and guest status in real time — elegantly organized and always at hand.</p>
               <div className={styles.dashboardStats}>
                 <div className={styles.statCard}>
                   <span className={styles.statNumber}>127</span>
@@ -311,11 +311,11 @@ export default function Home() {
               <ul className={styles.dashboardFeatures}>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Live response tracking
+                  Real-time RSVP response tracking
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Organized by status at a glance
+                  Clear organization at a glance
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -323,7 +323,7 @@ export default function Home() {
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Mobile-optimized access
+                  Seamless on mobile & desktop
                 </li>
               </ul>
             </div>
@@ -336,12 +336,12 @@ export default function Home() {
                   <div className={styles.mockupRow}>
                     <div className={styles.mockupDot} style={{ backgroundColor: '#3ED660' }}></div>
                     <span>Sophie & James</span>
-                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Confirmed</span>
+                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Attending</span>
                   </div>
                   <div className={styles.mockupRow}>
                     <div className={styles.mockupDot} style={{ backgroundColor: '#3ED660' }}></div>
                     <span>Clara & Thomas</span>
-                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Confirmed</span>
+                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Attending</span>
                   </div>
                   <div className={styles.mockupRow}>
                     <div className={styles.mockupDot} style={{ backgroundColor: '#EE9441' }}></div>
@@ -356,7 +356,7 @@ export default function Home() {
                   <div className={styles.mockupRow}>
                     <div className={styles.mockupDot} style={{ backgroundColor: '#3ED660' }}></div>
                     <span>Emma Laurent</span>
-                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Confirmed</span>
+                    <span className={styles.mockupBadge} style={{ backgroundColor: 'rgba(62, 214, 96, 0.1)', color: '#3ED660' }}>Attending</span>
                   </div>
                 </div>
               </div>
@@ -369,9 +369,9 @@ export default function Home() {
       <section className={styles.testimonialsSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">Love Letters</span>
-            <h2 className="heading-lg">Cherished by Couples Worldwide</h2>
-            <p className="text-lg">Hear from the couples who trusted us with their most important day.</p>
+            <span className="label">Client Stories</span>
+            <h2 className="heading-lg">Loved by Our Couples</h2>
+            <p className="text-lg">Read stories from couples who trusted us for their special day.</p>
           </div>
           <div className={styles.testimonialsGrid}>
             {testimonials.map((t, i) => (
@@ -390,10 +390,10 @@ export default function Home() {
         <div className="container">
           <div className={styles.autonomousInner}>
             <div className={styles.autonomousText}>
-              <span className="label">Studio Access</span>
-              <h2 className="heading-lg" style={{ marginTop: '1rem' }}>Want to Build Your Invitation Independently?</h2>
+              <span className="label">Studio Experience</span>
+              <h2 className="heading-lg" style={{ marginTop: '1rem' }}>Prefer to Personalize at Your Own Pace?</h2>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                The FOLDÈ Studio gives you full creative control — fill in details, pick your collection, and shape your invitation at your own rhythm.
+                The FOLDÈ Studio gives you complete creative control — input your details, select your collection, and craft your invitation seamlessly.
               </p>
               <ul className={styles.autonomousFeatures}>
                 <li>
@@ -406,16 +406,16 @@ export default function Home() {
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Smart RSVP & live dashboard — track confirmations from your space
+                  RSVP tracking & dashboard — monitor confirmations in real time
                 </li>
                 <li>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  At your own pace — come back and edit whenever you like
+                  At your own pace — update your content whenever you wish
                 </li>
               </ul>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/collections" className="btn-primary">Order Now</Link>
-                <Link href="/studio" className="btn-secondary">Enter the Studio</Link>
+                <Link href="/collections" className="btn-secondary">Explore Studio</Link>
               </div>
             </div>
           </div>
@@ -427,8 +427,8 @@ export default function Home() {
         <div className="container">
           <div className="section-header">
             <span className="label">FAQ</span>
-            <h2 className="heading-lg">Common Questions, Clear Answers</h2>
-            <p className="text-lg">Everything you need to know before we begin.</p>
+            <h2 className="heading-lg">Frequently Asked Questions</h2>
+            <p className="text-lg">Everything you need to know before getting started.</p>
           </div>
           <div className={styles.faqList}>
             {faqs.map((faq, i) => (
@@ -444,9 +444,9 @@ export default function Home() {
       {/* ===================== FINAL CTA ===================== */}
       <section className={styles.finalCta}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 className="heading-lg">Let's Bring Your Vision to Life</h2>
-          <p className="text-lg" style={{ marginTop: '0.5rem' }}>Bespoke experiences from $49.90</p>
-          <Link href="/collections" className="btn-primary" style={{ marginTop: '2rem' }}>Begin Your Journey</Link>
+          <h2 className="heading-lg">Bring Your Invitation to Life</h2>
+          <p className="text-lg" style={{ marginTop: '0.5rem' }}>Bespoke digital creations starting at €49.90</p>
+          <Link href="/collections" className="btn-primary" style={{ marginTop: '2rem' }}>Design Your Invitation</Link>
         </div>
       </section>
 
@@ -459,9 +459,9 @@ export default function Home() {
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
           </div>
-          <h2 className="heading-lg" style={{ fontSize: '2rem' }}>Let's Start a Conversation</h2>
+          <h2 className="heading-lg" style={{ fontSize: '2rem' }}>Have Questions? Get in Touch</h2>
           <p className="text-lg" style={{ marginTop: '0.75rem', color: '#888', lineHeight: 1.7 }}>
-            Whether you're exploring ideas or ready to begin, our creative team is here to guide you every step of the way.
+            Whether you are exploring options or ready to begin, our team is here to assist you.
           </p>
           <a href="mailto:folde.wedding@gmail.com" className={styles.contactEmail}>
             folde.wedding@gmail.com
@@ -472,7 +472,7 @@ export default function Home() {
             <div className={styles.contactDividerLine}></div>
           </div>
           <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
-            Responses within a few hours ✨
+            Response within a few hours ✨
           </p>
         </div>
       </section>
@@ -494,7 +494,7 @@ export default function Home() {
           fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.1)',
           whiteSpace: 'nowrap', width: 'max-content'
         }}>
-          Begin your story →
+          Design your invitation →
         </Link>
       </div>
     </div>

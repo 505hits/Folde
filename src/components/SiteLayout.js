@@ -7,8 +7,9 @@ import Footer from "./Footer";
 export default function SiteLayout({ children }) {
   const pathname = usePathname();
   
-  // Hide header and footer on dashboard and invitation routes
+  // Hide header and footer on checkout, dashboard and invitation routes
   const hideHeaderFooter = pathname?.startsWith("/dashboard") || 
+                           pathname?.startsWith("/checkout") ||
                            pathname?.startsWith("/kissing-couple-wedding-invitation") ||
                            pathname?.startsWith("/collections") ||
                            pathname?.startsWith("/[couple]") ||

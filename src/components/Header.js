@@ -27,9 +27,9 @@ export default function Header() {
         <nav className="header-nav">
           <Link href="/">Home</Link>
           <Link href="/collections">Collections</Link>
-          <Link href="/approach">Approach</Link>
-          <Link href="/packages">Formulas</Link>
-          <Link href="/story">About Us</Link>
+          <Link href="/approach">Our Process</Link>
+          <Link href="/packages">Packages</Link>
+          <Link href="/story">About</Link>
         </nav>
         <div className="header-cta-desktop">
           {currentUser ? (
@@ -41,7 +41,7 @@ export default function Header() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              My Space
+              My Dashboard
             </Link>
           ) : (
             <Link href="/dashboard" style={{
@@ -53,7 +53,7 @@ export default function Header() {
                 <polyline points="10 17 15 12 10 7"/>
                 <line x1="15" y1="12" x2="3" y2="12"/>
               </svg>
-              Sign In / Sign Up
+              Sign In / Register
             </Link>
           )}
           <Link href="/checkout" className="btn-primary header-cta">
@@ -77,9 +77,9 @@ export default function Header() {
           <nav className="mobile-nav-links">
             <Link href="/" onClick={closeMenu}>Home</Link>
             <Link href="/collections" onClick={closeMenu}>Collections</Link>
-            <Link href="/approach" onClick={closeMenu}>Approach</Link>
-            <Link href="/packages" onClick={closeMenu}>Formulas</Link>
-            <Link href="/story" onClick={closeMenu}>About Us</Link>
+            <Link href="/approach" onClick={closeMenu}>Our Process</Link>
+            <Link href="/packages" onClick={closeMenu}>Packages</Link>
+            <Link href="/story" onClick={closeMenu}>About</Link>
           </nav>
 
           <div className="mobile-nav-divider"></div>
@@ -92,10 +92,10 @@ export default function Header() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
-                  My Space
+                  My Dashboard
                 </Link>
                 <button onClick={handleLogout} className="mobile-logout-btn">
-                  Sign Out
+                  Log Out
                 </button>
               </div>
             ) : (
@@ -105,7 +105,7 @@ export default function Header() {
                   <polyline points="10 17 15 12 10 7"/>
                   <line x1="15" y1="12" x2="3" y2="12"/>
                 </svg>
-                Sign In / Sign Up
+                Sign In / Register
               </Link>
             )}
 

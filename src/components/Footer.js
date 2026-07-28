@@ -10,10 +10,10 @@ export default function Footer() {
         <div className="footer-links">
           <Link href="/">Home</Link>
           <Link href="/collections">Collections</Link>
-          <Link href="/approach">Approach</Link>
-          <Link href="/packages">Formulas</Link>
-          <Link href="/story">About Us</Link>
-          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/approach">Our Process</Link>
+          <Link href="/packages">Packages</Link>
+          <Link href="/story">About</Link>
+          <Link href="/dashboard">Wedding Dashboard</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
           <Link href="mailto:folde.wedding@gmail.com">folde.wedding@gmail.com</Link>
@@ -21,7 +21,7 @@ export default function Footer() {
         <div className="footer-links" style={{ marginTop: '0.5rem' }}>
           <Link href="/legal">Legal Notice</Link>
           <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms of Sale</Link>
+          <Link href="/terms">Terms & Conditions</Link>
         </div>
         <p className="footer-copy">
           © {new Date().getFullYear()} FOLDÈ Design. All rights reserved.
