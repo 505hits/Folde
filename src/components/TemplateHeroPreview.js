@@ -130,15 +130,11 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           <video 
             src={videoSrc} 
             autoPlay 
+            loop 
             muted 
             playsInline 
             preload="auto"
             onLoadedData={() => setVideoLoaded(true)}
-            onTimeUpdate={(e) => {
-              if (e.currentTarget.currentTime >= 10) {
-                e.currentTarget.pause();
-              }
-            }}
             style={{ 
               width: '100%', 
               height: '100%', 

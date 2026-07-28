@@ -604,14 +604,10 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <video
                 ref={heroVideoRef}
                 autoPlay
+                loop
                 muted
                 playsInline
                 preload="auto"
-                onTimeUpdate={(e) => {
-                  if (e.currentTarget.currentTime >= 10) {
-                    e.currentTarget.pause();
-                  }
-                }}
                 className={styles.heroVideo}
                 src={heroSrc}
               />
