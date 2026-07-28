@@ -588,19 +588,23 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             </div>
           )}
 
-          {images.hero ? (
-            <img src={images.hero} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover' }} />
-          ) : (
-            <video
-              autoPlay
-              loop={videos.hero !== videos.envelope}
-              muted={isMuted}
-              playsInline
-              preload="auto"
-              className={styles.heroVideo}
-              src={videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4"}
-            />
-          )}
+          {(() => {
+            const heroSrc = images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
+            const isHeroImage = images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
+            return isHeroImage ? (
+              <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+            ) : (
+              <video
+                autoPlay
+                loop={videos.hero !== videos.envelope}
+                muted={isMuted}
+                playsInline
+                preload="auto"
+                className={styles.heroVideo}
+                src={heroSrc}
+              />
+            );
+          })()}
           {sounds.intro && !isMuted && (
             <audio src={sounds.intro} autoPlay loop />
           )}
