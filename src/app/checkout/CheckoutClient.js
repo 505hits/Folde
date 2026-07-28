@@ -678,9 +678,18 @@ export default function CheckoutClient() {
           overscroll-behavior: contain;
           -ms-overflow-style: none;
           scrollbar-width: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
         .preview-phone-screen::-webkit-scrollbar {
           display: none;
+        }
+        .preview-phone-template-inner {
+          width: 450px;
+          flex-shrink: 0;
+          zoom: 0.5777;
+          margin: 0 auto;
         }
         @keyframes phoneSlideIn {
           from { opacity: 0; transform: translateY(40px) scale(0.92); }
@@ -723,6 +732,9 @@ export default function CheckoutClient() {
             width: 260px;
             height: 540px;
           }
+          .preview-phone-template-inner {
+            zoom: 0.5333;
+          }
         }
         @media (max-width: 600px) {
           .preview-step-wrapper {
@@ -733,9 +745,12 @@ export default function CheckoutClient() {
             margin-top: 1.5rem;
           }
           .preview-phone-frame {
-            width: 240px;
-            height: 500px;
-            border-radius: 36px;
+            width: 250px;
+            height: 520px;
+            border-radius: 38px;
+          }
+          .preview-phone-template-inner {
+            zoom: 0.5111;
           }
         }
 
@@ -1009,7 +1024,7 @@ export default function CheckoutClient() {
                 <div style={{ fontSize: '0.68rem', letterSpacing: '2.5px', textTransform: 'uppercase', color: '#999', fontWeight: 600 }}>Live Preview</div>
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen">
-                    <div style={{ width: '450px', zoom: 0.578 }}>
+                    <div className="preview-phone-template-inner">
                       <BordeauxTemplate data={previewData} editMode={true} />
                     </div>
                   </div>

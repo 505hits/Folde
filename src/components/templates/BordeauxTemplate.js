@@ -943,8 +943,8 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           )}
 
           <AnimatedSection type="fade">
-            <div className={styles.footerCredit}>
-              <p>Made with Love ❤ With FOLDÈ Design</p>
+            <div className={styles.footerCredit} style={{ width: '100%', textAlign: 'center', margin: '3rem auto 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <p style={{ textAlign: 'center', margin: '0 auto', width: '100%' }}>Made with Love ❤ With FOLDÈ Design</p>
             </div>
           </AnimatedSection>
         </section>
@@ -952,17 +952,17 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
 
         {/* ================= PHOTO UPLOAD CTA (Galerie Photos) ================= */}
         {sections.showGallery !== false && (
-          <section style={{ width: '100%', maxWidth: '900px', margin: '0 auto', backgroundColor: 'var(--color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-foreground)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '4rem 0' }}>
+          <section style={{ width: '100%', maxWidth: '900px', margin: '0 auto', backgroundColor: 'var(--color-background)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-foreground)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '4rem 1.5rem', boxSizing: 'border-box' }}>
             <AnimatedSection type="fade" style={{ width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', width: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)' }}>Photo Gallery</h1>
-                  <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
+                  <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)', textAlign: 'center', margin: '0 auto' }}>Photo Gallery</h1>
+                  <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem', textAlign: 'center', margin: '0 auto' }}>
                     Share your wedding photos and videos — before, during, and after the celebration.
                   </p>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-                  <button type="button" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.1rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
+                  <button type="button" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.1rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease', margin: '0 auto' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
                       <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
                       <circle cx="12" cy="13" r="3"></circle>
@@ -970,17 +970,17 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                     Add your photos & videos
                   </button>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', marginTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', margin: '0.5rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     <img 
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`} 
                       alt="QR Code to upload photos" 
                       style={{ width: '130px', height: '130px', objectFit: 'contain' }}
                     />
-                    <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0 }}>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
                       Scan to add your photos via this link
                     </p>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', marginTop: '1rem', width: '280px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', margin: '1rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     {guestGallery.map((img, idx) => (
                       <div key={idx} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                         <img src={img} alt={`Guest Gallery ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -994,20 +994,18 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         )}
 
         {/* ================= VIRAL BADGE ================= */}
-        {!editMode && (
-          <div style={{ padding: '3rem 2rem 4rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center' }}>
-            <a href="https://foldedesign.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease' }}
-               onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
-               onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
-            >
-              <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', fontStyle: 'italic', letterSpacing: '1px' }}>
-                FOLDÈ Design
-              </span>
-              <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
-            </a>
-          </div>
-        )}
+        <div style={{ padding: '2.5rem 1rem 3.5rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+          <a href="https://foldedesign.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease', margin: '0 auto' }}
+             onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
+             onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
+          >
+            <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontStyle: 'italic', letterSpacing: '1px' }}>
+              FOLDÈ Design
+            </span>
+            <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
+          </a>
+        </div>
 
       </div>
     </div>
