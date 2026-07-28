@@ -135,9 +135,8 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
             preload="auto"
             onLoadedData={() => setVideoLoaded(true)}
             onTimeUpdate={(e) => {
-              if (e.currentTarget.currentTime >= 5) {
+              if (e.currentTarget.currentTime >= 10) {
                 e.currentTarget.pause();
-                e.currentTarget.currentTime = 5;
               }
             }}
             style={{ 

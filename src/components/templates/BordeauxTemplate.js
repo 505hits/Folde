@@ -381,8 +381,16 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(false);
   const envelopeVideoRef = useRef(null);
+  const heroVideoRef = useRef(null);
   const audioRef = useRef(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.muted = true;
+      heroVideoRef.current.play().catch(e => console.log("Hero video autoplay fallback:", e));
+    }
+  }, [data?.videos?.hero, data?.images?.hero]);
 
   useEffect(() => {
     // Setup HLS for the envelope video
@@ -594,14 +602,14 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
             ) : (
               <video
+                ref={heroVideoRef}
                 autoPlay
-                muted={isMuted}
+                muted
                 playsInline
                 preload="auto"
                 onTimeUpdate={(e) => {
-                  if (e.currentTarget.currentTime >= 5) {
+                  if (e.currentTarget.currentTime >= 10) {
                     e.currentTarget.pause();
-                    e.currentTarget.currentTime = 5;
                   }
                 }}
                 className={styles.heroVideo}
