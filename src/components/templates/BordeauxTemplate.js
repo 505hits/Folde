@@ -600,9 +600,9 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                 playsInline
                 preload="auto"
                 onTimeUpdate={(e) => {
-                  if (e.currentTarget.currentTime >= 3) {
+                  if (e.currentTarget.currentTime >= 5) {
                     e.currentTarget.pause();
-                    e.currentTarget.currentTime = 3;
+                    e.currentTarget.currentTime = 5;
                   }
                 }}
                 className={styles.heroVideo}
