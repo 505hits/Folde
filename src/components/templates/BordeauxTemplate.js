@@ -596,10 +596,15 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             ) : (
               <video
                 autoPlay
-                loop={videos.hero !== videos.envelope}
                 muted={isMuted}
                 playsInline
                 preload="auto"
+                onTimeUpdate={(e) => {
+                  if (e.currentTarget.currentTime >= 3) {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 3;
+                  }
+                }}
                 className={styles.heroVideo}
                 src={heroSrc}
               />
