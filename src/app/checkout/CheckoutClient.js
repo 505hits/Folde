@@ -827,11 +827,14 @@ export default function CheckoutClient() {
 
                 {/* Envelope Selection Card */}
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                  <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    Envelope Animation
+                  <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      Envelope Animation
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '0.6rem', maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
                     {ENVELOPE_OPTIONS.map(env => {
                       const isSelected = selectedEnvelope === env.id;
                       return (
@@ -839,20 +842,21 @@ export default function CheckoutClient() {
                           key={env.id}
                           onClick={() => setSelectedEnvelope(env.id)}
                           style={{
-                            border: isSelected ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                            borderRadius: '12px', padding: '0.4rem', cursor: 'pointer',
+                            flex: '0 0 105px',
+                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                            borderRadius: '14px', padding: '0.35rem', cursor: 'pointer',
                             backgroundColor: isSelected ? '#faf5f6' : '#fff',
                             transition: 'all 0.2s', textAlign: 'center'
                           }}
                         >
-                          <div style={{ height: '52px', borderRadius: '8px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
+                          <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
                             {env.url && !env.url.endsWith('.m3u8') && env.id !== 'env_custom' ? (
                               <video src={env.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
                               <div style={{ width: '100%', height: '100%', backgroundColor: env.color }} />
                             )}
                           </div>
-                          <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.35rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {env.name.replace(' Envelope', '')}
                           </div>
                         </div>
@@ -863,11 +867,14 @@ export default function CheckoutClient() {
 
                 {/* Hero Video Selection Card */}
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                  <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
-                    Hero Theme Video
+                  <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                      Hero Theme Video
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '0.6rem', maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
                     {HERO_VIDEO_OPTIONS.map(hero => {
                       const isSelected = selectedHeroVideo === hero.id;
                       return (
@@ -875,20 +882,21 @@ export default function CheckoutClient() {
                           key={hero.id}
                           onClick={() => setSelectedHeroVideo(hero.id)}
                           style={{
-                            border: isSelected ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                            borderRadius: '12px', padding: '0.4rem', cursor: 'pointer',
+                            flex: '0 0 105px',
+                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                            borderRadius: '14px', padding: '0.35rem', cursor: 'pointer',
                             backgroundColor: isSelected ? '#faf5f6' : '#fff',
                             transition: 'all 0.2s', textAlign: 'center'
                           }}
                         >
-                          <div style={{ height: '52px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
+                          <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
                             {hero.url && hero.id !== 'hero_custom' ? (
                               <video src={hero.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
                               <div style={{ width: '100%', height: '100%', backgroundColor: '#d9d0c7' }} />
                             )}
                           </div>
-                          <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.35rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {hero.name}
                           </div>
                         </div>
