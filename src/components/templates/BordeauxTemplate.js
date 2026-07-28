@@ -411,37 +411,36 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   }, [data?.videos?.envelope]);
 
   useEffect(() => {
-    if (autoPlaySimulation) {
+    if (!editMode || autoPlaySimulation) {
       const timer = setTimeout(() => {
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
         if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
           envelopeVideoRef.current.play().catch(e => {
-            console.log("Video play failed in simulation, dismissing envelope", e);
+            console.log("Video play failed or blocked, dismissing envelope:", e);
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
           });
         } else {
-          // If it's an image, just set a timer to dismiss it
           setTimeout(() => {
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 3500);
+          }, 3000);
         }
       }, 500);
 
-      // Backup timer in case play gets stuck
+      // Backup safety timer: guarantee the envelope is dismissed after 3.5s if anything gets stuck
       const safetyTimer = setTimeout(() => {
         setEnvelopeDismissed(true);
         if (onEnvelopeDismissed) onEnvelopeDismissed();
-      }, 3000);
+      }, 3500);
 
       return () => {
         clearTimeout(timer);
         clearTimeout(safetyTimer);
       };
     }
-  }, [autoPlaySimulation, envelopeOpen]);
+  }, [autoPlaySimulation, editMode, envelopeOpen]);
 
   useEffect(() => {
     if (audioRef.current) {
