@@ -53,26 +53,25 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
         setEnvelopeOpen(true);
         if (video) {
           video.play().catch(e => {
-            console.log("Autoplay blocked, auto-dismissing envelope", e);
-            setEnvelopeDismissed(true);
+            console.log("Autoplay blocked:", e);
           });
+          // 15s safety fallback only
+          setTimeout(() => setEnvelopeDismissed(true), 15000);
         }
       }, 1000);
       
-      const safetyTimer = setTimeout(() => {
-        setEnvelopeDismissed(true);
-      }, 4500);
-      
       return () => {
         clearTimeout(timer);
-        clearTimeout(safetyTimer);
         if (hls) hls.destroy();
       };
     }
   }, [showEnvelope, envelopeSrc, envelopeDismissed, isVisible]);
 
   const handleVideoEnded = () => {
-    setEnvelopeDismissed(true);
+    // Hold the opened envelope on screen for 2.5s so the user can see the full reveal before transitioning
+    setTimeout(() => {
+      setEnvelopeDismissed(true);
+    }, 2500);
   };
 
   return (

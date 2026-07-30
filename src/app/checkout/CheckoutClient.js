@@ -92,7 +92,7 @@ const packages = [
 ];
 
 const ENVELOPE_OPTIONS = [
-  { id: 'env_bordeaux', name: 'Bordeaux Envelope', url: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', color: '#4a1523' },
+  { id: 'env_bordeaux', name: 'Bordeaux Envelope', url: '/videos/bordeaux.mp4', color: '#4a1523' },
   { id: 'env_seaview', name: 'Sea View Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', color: '#d4c5b9' },
   { id: 'env_floral', name: 'Floral Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', color: '#f5e3d7' },
   { id: 'env_luxury', name: 'Luxury Envelope', url: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', color: '#d4c5b9' },
@@ -116,7 +116,6 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_softscratch', name: 'Soft Scratch', url: 'https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_cisnes', name: 'Cisnes', url: 'https://savethedate-cisnes.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
-  { id: 'env_floral_new', name: 'Floral New', url: 'https://savethedate-floral.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_romanticgarden', name: 'Romantic Garden', url: 'https://eftesa.com/assets/themes/romantic-garden/Floral-garden-intro-video.mp4', color: '#e8f0e8' },
   { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340' },
   { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810' },
@@ -140,8 +139,6 @@ const HERO_VIDEO_OPTIONS = [
   { id: 'hero_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/__l5e/assets-v1/775de535-0300-4a62-ae3b-dceee4b22ab7/hero-video-compressed.mp4' },
   { id: 'hero_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/4689b4cd-298d-4b59-b560-7d443345b459/hero-bg.mp4' },
   { id: 'hero_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4' },
-  { id: 'hero_romanticgarden', name: 'Romantic Garden', url: 'https://eftesa.com/assets/themes/romantic-garden/cover-video.mp4' },
-  { id: 'hero_blossomoud', name: 'Blossom Oud', url: 'https://static.tildacdn.net/tild3332-3762-4233-a636-636233333133/Vector.png' },
   { id: 'hero_dolcevita', name: 'Dolce Vita', url: 'https://static.tildacdn.net/tild3733-3133-4232-b033-623736623262/romantic-moments-bea.png' },
   { id: 'hero_webgencytemplate5', name: 'Velvet Garden', url: 'https://static.tildacdn.net/tild3338-6332-4463-b639-623665353237/300592484d1f31590325.png' },
   { id: 'hero_pressedlovecomo', name: 'Como Villa', url: 'https://pressedlove.com/demo-media/como/hero-video.mp4' },
@@ -237,6 +234,7 @@ export default function CheckoutClient() {
   const [previewVenue, setPreviewVenue] = useState('');
   const [selectedEnvelope, setSelectedEnvelope] = useState(ENVELOPE_OPTIONS[0].id);
   const [selectedHeroVideo, setSelectedHeroVideo] = useState(HERO_VIDEO_OPTIONS[0].id);
+  const [envelopeKey, setEnvelopeKey] = useState(0);
 
   const handleFileChange = (e, field) => {
     const files = Array.from(e.target.files);
@@ -306,9 +304,10 @@ export default function CheckoutClient() {
   const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
 
   const formatPreviewDate = (dateStr) => {
-    if (!dateStr) return 'Your Wedding Date';
+    if (!dateStr) return 'MAY 27, 2026';
     const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    if (isNaN(d.getTime())) return 'MAY 27, 2026';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   };
 
   const envObj = ENVELOPE_OPTIONS.find(e => e.id === selectedEnvelope);
@@ -836,8 +835,9 @@ export default function CheckoutClient() {
             ← {step === 1 ? 'Templates' : 'Back'}
           </button>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontWeight: 600, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              ✨ {selectedPackage.name}
+            <div style={{ fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#2c2c2c' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b08968' }}></span>
+              {selectedPackage.name} Package
             </div>
             {step > 1 && step <= 3 && (
               <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
@@ -862,13 +862,73 @@ export default function CheckoutClient() {
             {/* ── Form Panel ── */}
             <div className="preview-form-side">
               <div style={{ maxWidth: '520px', margin: '0 auto' }}>
-                {/* Header */}
+                {/* Header with Social Proof */}
                 <div className="preview-form-card" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '54px', height: '54px', borderRadius: '50%', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', color: '#5C3A1E', marginBottom: '0.75rem' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  
+                  {/* Social Proof Pill Badge */}
+                  <div style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.75rem', 
+                    backgroundColor: '#ffffff', 
+                    padding: '0.45rem 1.1rem 0.45rem 0.6rem', 
+                    borderRadius: '30px', 
+                    border: '1px solid rgba(176, 137, 104, 0.25)', 
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.04)', 
+                    marginBottom: '1rem' 
+                  }}>
+                    {/* Overlapping Avatars */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <img 
+                        src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100" 
+                        alt="Couple 1" 
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }} 
+                      />
+                      <img 
+                        src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100" 
+                        alt="Couple 2" 
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      />
+                      <img 
+                        src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100" 
+                        alt="Couple 3" 
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      />
+                      <img 
+                        src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100" 
+                        alt="Couple 4" 
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      />
+                    </div>
+
+                    {/* Social Proof Text */}
+                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span style={{ color: '#b08968', fontSize: '0.75rem', letterSpacing: '1px' }}>★★★★★</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#333' }}>4.9/5</span>
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#666', fontWeight: 500 }}>Chosen by 500+ happy couples</span>
+                    </div>
                   </div>
+
                   <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.4rem' }}>Live Personalization Preview</h1>
-                  <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.5 }}>Select your preferred envelope animation, background video, and details to preview your invitation live.</p>
+                  <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '0.75rem' }}>Select your preferred envelope animation, background video, and details to preview your invitation live.</p>
+                  
+                  {/* Customer Review Quote Pill */}
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.45rem 1rem',
+                    backgroundColor: '#FAF5F0',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(176, 137, 104, 0.18)'
+                  }}>
+                    <span style={{ fontSize: '0.8rem' }}>💬</span>
+                    <p style={{ fontSize: '0.78rem', color: '#5C3A1E', fontStyle: 'italic', margin: 0, fontWeight: 500 }}>
+                      &ldquo;Our guests were captivated from the moment they opened it!&rdquo; <span style={{ fontStyle: 'normal', opacity: 0.75, fontWeight: 600 }}>&mdash; Camille &amp; Antoine</span>
+                    </p>
+                  </div>
                 </div>
 
                 {/* Envelope Selection Card */}
@@ -886,7 +946,10 @@ export default function CheckoutClient() {
                       return (
                         <div
                           key={env.id}
-                          onClick={() => setSelectedEnvelope(env.id)}
+                          onClick={() => {
+                            setSelectedEnvelope(env.id);
+                            setEnvelopeKey(k => k + 1);
+                          }}
                           style={{
                             flex: '0 0 105px',
                             border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
@@ -1060,7 +1123,7 @@ export default function CheckoutClient() {
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen">
                     <div className="preview-phone-template-inner">
-                      <BordeauxTemplate data={previewData} editMode={true} />
+                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={true} heroHeight="970px" />
                     </div>
                   </div>
                 </div>

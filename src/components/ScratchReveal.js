@@ -204,7 +204,8 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
 
   // Parse date
   const parts = dateStr.match(/^(\w+)\s+(\d+),?\s+(\d{4})$/);
-  const month = parts ? parts[1] : 'MAY';
+  const rawMonth = parts ? parts[1] : 'MAY';
+  const month = rawMonth.substring(0, 3).toUpperCase();
   const day = parts ? parts[2] : '27';
   const year = parts ? parts[3] : '2026';
 

@@ -393,11 +393,15 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   }, [data?.videos?.hero, data?.images?.hero]);
 
   useEffect(() => {
+    // Reset envelope state whenever envelope source changes so new selection is shown
+    setEnvelopeDismissed(false);
+    setEnvelopeOpen(false);
+
     // Setup HLS for the envelope video
     const video = envelopeVideoRef.current;
     if (!video) return;
 
-    const src = data?.videos?.envelope || "https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8";
+    const src = data?.videos?.envelope || "/videos/bordeaux.mp4";
     
     // If src is an image, we don't need to do video setup
     if (src.match(/\.(jpeg|jpg|gif|png)$/i)) {
@@ -415,40 +419,45 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     } else {
       // Fallback for Safari which natively supports HLS, or direct mp4/webm links
       video.src = src;
+      if (typeof video.load === 'function') video.load();
     }
   }, [data?.videos?.envelope]);
 
   useEffect(() => {
-    if (!editMode || autoPlaySimulation) {
+    // Only auto-play envelope in simulation mode (hero mockup on landing page & checkout preview)
+    // In real mode (!editMode), the envelope is triggered by user click
+    if (autoPlaySimulation) {
+      let fallbackTimer = null;
+
       const timer = setTimeout(() => {
-        if (envelopeOpen) return;
         setEnvelopeOpen(true);
-        if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
-          envelopeVideoRef.current.play().catch(e => {
-            console.log("Video play failed or blocked, dismissing envelope:", e);
-            setEnvelopeDismissed(true);
-            if (onEnvelopeDismissed) onEnvelopeDismissed();
+        const video = envelopeVideoRef.current;
+        if (video && typeof video.play === 'function') {
+          video.muted = true;
+          video.play().catch(e => {
+            console.log("Video play failed or blocked:", e);
           });
-        } else {
-          setTimeout(() => {
+
+          // Fallback safety timer: guarantee dismissal after 15s if onEnded never fires
+          fallbackTimer = setTimeout(() => {
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 3000);
+          }, 15000);
+        } else {
+          // Image envelope or no video ref — dismiss after 4s
+          fallbackTimer = setTimeout(() => {
+            setEnvelopeDismissed(true);
+            if (onEnvelopeDismissed) onEnvelopeDismissed();
+          }, 4000);
         }
       }, 500);
 
-      // Backup safety timer: guarantee the envelope is dismissed after 3.5s if anything gets stuck
-      const safetyTimer = setTimeout(() => {
-        setEnvelopeDismissed(true);
-        if (onEnvelopeDismissed) onEnvelopeDismissed();
-      }, 3500);
-
       return () => {
         clearTimeout(timer);
-        clearTimeout(safetyTimer);
+        if (fallbackTimer) clearTimeout(fallbackTimer);
       };
     }
-  }, [autoPlaySimulation, editMode, envelopeOpen]);
+  }, [autoPlaySimulation, data?.videos?.envelope]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -551,8 +560,11 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   };
 
   const handleVideoEnded = () => {
-    setEnvelopeDismissed(true);
-    if (onEnvelopeDismissed) onEnvelopeDismissed();
+    // Hold the opened envelope on screen for 2.5s so the user can see the full reveal before transitioning to hero
+    setTimeout(() => {
+      setEnvelopeDismissed(true);
+      if (onEnvelopeDismissed) onEnvelopeDismissed();
+    }, 2500);
   };
 
   return (
@@ -575,7 +587,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`} 
               onClick={handleEnvelopeClick}
             >
-              {(data?.videos?.envelope || "https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8").match(/\.(jpeg|jpg|gif|png)$/i) ? (
+              {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
                 <img 
                   src={data.videos.envelope} 
                   alt="Envelope" 
@@ -586,6 +598,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                 <video 
                   ref={envelopeVideoRef}
                   className={styles.envelopeVideo}
+                  autoPlay
                   muted
                   playsInline
                   preload="auto"

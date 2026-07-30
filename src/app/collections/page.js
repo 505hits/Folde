@@ -8,14 +8,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const templates = [
-  { id: 'champagne', name: 'Luxe Gold', tag: 'ROMANTIC', desc: 'Opulent and golden.', video: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026', popular: false },
-  { id: 'ivory', name: 'Pearl', tag: 'MINIMAL', desc: 'Luminous and serene.', video: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Arthur', partner2: 'Chloé', date: 'MAY 27, 2026', popular: false },
-  { id: 'bordeaux', name: 'Velvet Noir', tag: 'ELEGANT', desc: 'Bold and timeless.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Alexandre', partner2: 'Éléonore', date: 'MAY 27, 2026', popular: true, link: '/kissing-couple-wedding-invitation' },
+  { id: 'champagne', name: 'Luxe Gold', tag: 'ROMANTIC', desc: 'Opulent and golden.', video: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026', popular: false },
+  { id: 'ivory', name: 'Pearl', tag: 'MINIMAL', desc: 'Luminous and serene.', video: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4', envelope: '/videos/ivory-veil.mp4', partner1: 'Arthur', partner2: 'Chloé', date: 'MAY 27, 2026', popular: false },
+  { id: 'bordeaux', name: 'Velvet Noir', tag: 'ELEGANT', desc: 'Bold and timeless.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', envelope: '/videos/bordeaux.mp4', partner1: 'Alexandre', partner2: 'Éléonore', date: 'MAY 27, 2026', popular: true, link: '/kissing-couple-wedding-invitation' },
   { id: 'sage', name: 'Olive Grove', tag: 'NATURAL', desc: 'Botanical and fresh.', video: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', partner1: 'Lucas', partner2: 'Margaux', date: 'MAY 27, 2026', popular: false },
   { id: 'terracotta', name: 'Amber', tag: 'WARM', desc: 'Earthy and radiant.', video: 'https://www.wooowinvites.com/assets/just-married-car-theme-BhahCrzF.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', partner1: 'Hugo', partner2: 'Inès', date: 'MAY 27, 2026', popular: true },
   { id: 'chocolate', name: 'Mocha', tag: 'WARM', desc: 'Rich and soulful.', video: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Louis', partner2: 'Camille', date: 'MAY 27, 2026', popular: true },
-  { id: 'royalbordeaux', name: 'Crimson Royal', tag: 'DRAMATIC', desc: 'Regal and distinguished.', video: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4', envelope: 'https://customer-u86xbpugorqyu327.cloudflarestream.com/dd56b19a36d2302d980bcafece0a9b05/manifest/video.m3u8', partner1: 'Antoine', partner2: 'Victoire', date: 'MAY 27, 2026', popular: false },
-  { id: 'royalblue', name: 'Sapphire', tag: 'ELEGANT', desc: 'Oceanic and refined.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Maxime', partner2: 'Charlotte', date: 'MAY 27, 2026', popular: false },
+  { id: 'royalbordeaux', name: 'Crimson Royal', tag: 'DRAMATIC', desc: 'Regal and distinguished.', video: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4', envelope: '/videos/horizon-bordeaux.mp4', partner1: 'Antoine', partner2: 'Victoire', date: 'MAY 27, 2026', popular: false },
+  { id: 'royalblue', name: 'Sapphire', tag: 'ELEGANT', desc: 'Oceanic and refined.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: '/videos/celestial-veil.mp4', partner1: 'Maxime', partner2: 'Charlotte', date: 'MAY 27, 2026', popular: false },
   { id: 'rosebow', name: 'Blush Ribbon', tag: 'ROMANTIC', desc: 'Romantic ribbon reveal.', video: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', envelope: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4', partner1: 'Paul', partner2: 'Juliette', date: 'MAY 27, 2026', popular: true },
   { id: 'majestic', name: 'Grand Heritage', tag: 'ELEGANT', desc: 'A grand ceremonial debut.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', envelope: 'https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4', partner1: 'Charles', partner2: 'Valentine', date: 'MAY 27, 2026', popular: false },
   { id: 'thelaceedit', name: 'The Lace Edit', tag: 'ELEGANT', desc: 'Delicate lace and timeless romance.', video: 'https://savethedate-thelaceedit.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png', isImage: true, envelope: 'https://savethedate-thelaceedit.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Emma', partner2: 'Liam', date: 'MAY 27, 2026', popular: true },
@@ -142,8 +142,8 @@ export default function Templates() {
                       partner1={t.partner1} 
                       partner2={t.partner2} 
                       videoSrc={t.video} 
-                      envelopeSrc={null}
-                      showEnvelope={false}
+                      envelopeSrc={t.envelope}
+                      showEnvelope={!!t.envelope}
                       isImage={t.isImage || false}
                     />
                   </div>
@@ -171,21 +171,22 @@ export default function Templates() {
 
       {/* Sticky bottom CTA for selection */}
       <div style={{
-        position: 'fixed', bottom: '2.5rem', left: '50%', zIndex: 999,
+        position: 'fixed', bottom: '1.8rem', left: '50%', zIndex: 999,
         transform: `translateX(-50%) ${selectedId ? 'translateY(0) scale(1)' : 'translateY(150%) scale(0.9)'}`,
         opacity: selectedId ? 1 : 0,
         transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        pointerEvents: selectedId ? 'auto' : 'none'
+        pointerEvents: selectedId ? 'auto' : 'none',
+        maxWidth: 'calc(100vw - 2rem)'
       }}>
         <button onClick={handleContinue} style={{
-          backgroundColor: '#5C3A1E', color: '#fff', border: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex', alignItems: 'center', gap: '0.75rem',
-          padding: '1.1rem 2rem', borderRadius: '40px', cursor: 'pointer',
-          boxShadow: '0 8px 30px rgba(92, 58, 30, 0.35), 0 4px 10px rgba(0,0,0,0.1)',
-          fontWeight: 600, fontSize: '1.05rem', fontFamily: 'inherit',
-          letterSpacing: '0.5px'
+          backgroundColor: '#5C3A1E', color: '#fff', border: '1px solid rgba(255,255,255,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
+          padding: '0.9rem 1.6rem', borderRadius: '40px', cursor: 'pointer',
+          boxShadow: '0 10px 32px rgba(92, 58, 30, 0.38), 0 4px 12px rgba(0,0,0,0.12)',
+          fontWeight: 600, fontSize: '0.95rem', fontFamily: 'inherit',
+          letterSpacing: '0.3px', whiteSpace: 'nowrap'
         }}>
-          Continue with {templates.find(t => t.id === selectedId)?.name} →
+          Customize Your Invitation →
         </button>
       </div>
 

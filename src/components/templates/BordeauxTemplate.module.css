@@ -35,6 +35,7 @@
   justify-content: center;
   transition: opacity 1s ease-in-out, visibility 1s;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .envelopeOverlay.dismissed {
@@ -403,9 +404,11 @@
 .timelinePlane {
   position: absolute;
   left: 50%;
+  top: 0;
   color: #C2A37B;
   opacity: 0;
   z-index: 2;
+  transform: translateX(-50%) rotate(180deg);
 }
 
 .timelinePlane.visible {

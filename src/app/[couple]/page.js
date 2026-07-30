@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { useDatabase } from "@/context/DatabaseContext";
 
 export default function ClientSite({ params }) {
-  const { couple } = params; // This is the dynamic slug, e.g. 'emma-et-lucas'
+  const resolvedParams = use(params);
+  const couple = resolvedParams.couple;
   const { eventInfo, addGuest, orders } = useDatabase();
   
   // Find the specific couple's order to get the theme or real name
