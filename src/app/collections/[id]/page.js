@@ -62,9 +62,9 @@ export default function TemplateDetailPage({ params }) {
     <div style={{ position: 'relative', width: '100%', minHeight: '100vh', backgroundColor: '#FAF9F6' }}>
 
       {/* Main Template Content rendering full screen */}
-      <BordeauxTemplate 
+      <BordeauxTemplate
         editMode={false}
-        autoPlaySimulation={true}
+        autoPlaySimulation={false}
         heroHeight="100vh"
         data={{
           themeId: tpl.id,

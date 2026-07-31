@@ -41,11 +41,11 @@ const themes = [
 ];
 
 const packages = [
-  { 
-    id: 'essential', 
-    name: 'Standard', 
-    price: 49.90, 
-    originalPrice: 99.90, 
+  {
+    id: 'essential',
+    name: 'Standard',
+    price: 49.90,
+    originalPrice: 99.90,
     desc: 'Choose from our +15 exclusive templates and receive a personalized digital wedding invitation with your texts, photos and colours.',
     features: [
       'Choose 1 template from over 15 options',
@@ -56,11 +56,11 @@ const packages = [
       '2 design revision rounds'
     ]
   },
-  { 
-    id: 'premium', 
-    name: 'Premium', 
-    price: 290, 
-    originalPrice: 490, 
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: 290,
+    originalPrice: 490,
     desc: 'We redesign and personalize any template to match the exact style of your wedding. All extras included.',
     features: [
       'Template redesigned to your style',
@@ -73,11 +73,11 @@ const packages = [
       'Unlimited guests included'
     ]
   },
-  { 
-    id: 'Custom', 
-    name: 'Custom', 
-    price: 490, 
-    originalPrice: 890, 
+  {
+    id: 'Custom',
+    name: 'Custom',
+    price: 490,
+    originalPrice: 890,
     desc: '100% bespoke design from scratch with editorial art direction. A unique, one-of-a-kind piece.',
     features: [
       '100% custom design from scratch',
@@ -412,6 +412,23 @@ export default function CheckoutClient() {
         planId: selectedPackage.id,
         price: total,
       }));
+    }
+
+    // Fast Test Bypass: if email contains 'test' or 'bypass' (e.g. emma@test.com, test@test.com, user@test.com)
+    const cleanEmail = (account.email || '').trim().toLowerCase();
+    const isTestEmail = cleanEmail.includes('test') || cleanEmail.includes('bypass') || cleanEmail.endsWith('@test.com');
+
+    if (isTestEmail) {
+      try {
+        if (!currentUser) {
+          await register(account.email, account.password || 'test123', account.name, account.partnerName);
+        }
+        await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
+        router.push('/dashboard');
+        return;
+      } catch (err) {
+        console.warn('Fast test payment bypass failed:', err);
+      }
     }
 
     try {
@@ -855,7 +872,7 @@ export default function CheckoutClient() {
       )}
 
       <div className={`checkout-container ${step === 1 ? 'preview-active' : ''}`} style={{ maxWidth: step === 1 ? 'none' : '600px', margin: '0 auto', padding: step === 4 ? '0' : step === 1 ? '0' : '3rem 1.5rem 120px' }}>
-        
+
         {/* ═══ STEP 1: PERSONALIZE + PREVIEW ═══ */}
         {step === 1 && (
           <div className="preview-step-wrapper">
@@ -864,40 +881,40 @@ export default function CheckoutClient() {
               <div style={{ maxWidth: '520px', margin: '0 auto' }}>
                 {/* Header with Social Proof */}
                 <div className="preview-form-card" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                  
+
                   {/* Social Proof Pill Badge */}
-                  <div style={{ 
-                    display: 'inline-flex', 
-                    alignItems: 'center', 
-                    gap: '0.75rem', 
-                    backgroundColor: '#ffffff', 
-                    padding: '0.45rem 1.1rem 0.45rem 0.6rem', 
-                    borderRadius: '30px', 
-                    border: '1px solid rgba(176, 137, 104, 0.25)', 
-                    boxShadow: '0 4px 18px rgba(0,0,0,0.04)', 
-                    marginBottom: '1rem' 
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    backgroundColor: '#ffffff',
+                    padding: '0.45rem 1.1rem 0.45rem 0.6rem',
+                    borderRadius: '30px',
+                    border: '1px solid rgba(176, 137, 104, 0.25)',
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+                    marginBottom: '1rem'
                   }}>
                     {/* Overlapping Avatars */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <img 
-                        src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                        alt="Couple 1" 
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }} 
+                      <img
+                        src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100"
+                        alt="Couple 1"
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }}
                       />
-                      <img 
-                        src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                        alt="Couple 2" 
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      <img
+                        src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100"
+                        alt="Couple 2"
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                       />
-                      <img 
-                        src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                        alt="Couple 3" 
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      <img
+                        src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100"
+                        alt="Couple 3"
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                       />
-                      <img 
-                        src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                        alt="Couple 4" 
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                      <img
+                        src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100"
+                        alt="Couple 4"
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                       />
                     </div>
 
@@ -913,7 +930,7 @@ export default function CheckoutClient() {
 
                   <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.4rem' }}>Live Personalization Preview</h1>
                   <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '0.75rem' }}>Select your preferred envelope animation, background video, and details to preview your invitation live.</p>
-                  
+
                   {/* Customer Review Quote Pill */}
                   <div style={{
                     display: 'inline-flex',
@@ -935,7 +952,7 @@ export default function CheckoutClient() {
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
                       Envelope Animation
                     </div>
                     <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
@@ -978,7 +995,7 @@ export default function CheckoutClient() {
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" /><line x1="7" y1="2" x2="7" y2="22" /><line x1="17" y1="2" x2="17" y2="22" /><line x1="2" y1="12" x2="22" y2="12" /><line x1="2" y1="7" x2="7" y2="7" /><line x1="2" y1="17" x2="7" y2="17" /><line x1="17" y1="17" x2="22" y2="17" /><line x1="17" y1="7" x2="22" y2="7" /></svg>
                       Hero Theme Video
                     </div>
                     <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
@@ -1021,7 +1038,7 @@ export default function CheckoutClient() {
                 {/* Couple Names Card */}
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                     The Couple
                   </div>
                   <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
@@ -1031,7 +1048,7 @@ export default function CheckoutClient() {
                         type="text"
                         placeholder="e.g. Sophie"
                         value={account.name || ''}
-                        onChange={e => setAccount({...account, name: e.target.value})}
+                        onChange={e => setAccount({ ...account, name: e.target.value })}
                         onFocus={e => e.target.classList.add('preview-input-active')}
                         onBlur={e => e.target.classList.remove('preview-input-active')}
                         style={{ ...inputStyle, transition: 'border-color 0.3s, box-shadow 0.3s' }}
@@ -1043,7 +1060,7 @@ export default function CheckoutClient() {
                         type="text"
                         placeholder="e.g. Lucas"
                         value={account.partnerName || ''}
-                        onChange={e => setAccount({...account, partnerName: e.target.value})}
+                        onChange={e => setAccount({ ...account, partnerName: e.target.value })}
                         onFocus={e => e.target.classList.add('preview-input-active')}
                         onBlur={e => e.target.classList.remove('preview-input-active')}
                         style={{ ...inputStyle, transition: 'border-color 0.3s, box-shadow 0.3s' }}
@@ -1062,7 +1079,7 @@ export default function CheckoutClient() {
                 {/* Date & Venue Card */}
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
                     Wedding Details
                   </div>
                   <div style={{ marginBottom: '0.85rem' }}>
@@ -1093,7 +1110,7 @@ export default function CheckoutClient() {
                 {/* Important Notice Banner (Moved to the end of input fields) */}
                 <div className="preview-form-card" style={{ backgroundColor: '#FAF5F0', border: '1px solid #E8DDD4', borderRadius: '16px', padding: '1rem 1.25rem', marginBottom: '1rem', display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
                   <div style={{ color: '#5C3A1E', marginTop: '2px', flexShrink: 0 }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#5C3A1E', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.25rem' }}>Live Invitation Preview</div>
@@ -1175,7 +1192,7 @@ export default function CheckoutClient() {
                   </div>
                   {(p.id === 'premium' || p.id === 'Custom') && selectedPackage.id === p.id && (
                     <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#faf5f0', borderRadius: '10px', border: '1px solid #e8ddd4', fontSize: '0.8rem', color: '#8b6e5a', display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b6e5a" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b6e5a" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
                       <span>We handle everything for you! After payment, you'll fill in your wedding details and our design team will craft your invitation.</span>
                     </div>
                   )}
@@ -1183,7 +1200,7 @@ export default function CheckoutClient() {
               ))}
               <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginTop: '1rem', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ color: '#5C3A1E', flexShrink: 0 }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '1px', color: '#555', marginBottom: '0.25rem' }}>YOU'LL-LOVE-IT PROMISE</div>
@@ -1205,7 +1222,7 @@ export default function CheckoutClient() {
             {/* Couple summary badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem', backgroundColor: '#faf8f5', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid rgba(0,0,0,0.04)' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #5C3A1E, #8b6e5a)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.98rem', fontWeight: 600, color: '#1a1a1a' }}>{account.name} & {account.partnerName}</div>
@@ -1221,7 +1238,7 @@ export default function CheckoutClient() {
 
             <div style={{ marginBottom: '0.25rem' }}>
               <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Email address</label>
-              <input type="email" placeholder="your@email.com" value={account.email || ''} onChange={e => setAccount({...account, email: e.target.value})} style={inputStyle} />
+              <input type="email" placeholder="your@email.com" value={account.email || ''} onChange={e => setAccount({ ...account, email: e.target.value })} style={inputStyle} />
             </div>
             {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
             <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
@@ -1257,244 +1274,244 @@ export default function CheckoutClient() {
                     Now tell us about your wedding so we can start crafting your invitation.
                   </p>
                 </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-                {/* Wedding Details */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Wedding Details</div>
-                  <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    <div>
-                      <label style={labelStyle}>Wedding date</label>
-                      <input type="date" value={premiumForm.weddingDate} onChange={e => setPremiumForm({...premiumForm, weddingDate: e.target.value})} style={inputStyle} />
+                  {/* Wedding Details */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Wedding Details</div>
+                    <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                      <div>
+                        <label style={labelStyle}>Wedding date</label>
+                        <input type="date" value={premiumForm.weddingDate} onChange={e => setPremiumForm({ ...premiumForm, weddingDate: e.target.value })} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Guest count</label>
+                        <input type="text" placeholder="e.g. 120" value={premiumForm.guestCount} onChange={e => setPremiumForm({ ...premiumForm, guestCount: e.target.value })} style={inputStyle} />
+                      </div>
                     </div>
-                    <div>
-                      <label style={labelStyle}>Guest count</label>
-                      <input type="text" placeholder="e.g. 120" value={premiumForm.guestCount} onChange={e => setPremiumForm({...premiumForm, guestCount: e.target.value})} style={inputStyle} />
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label style={labelStyle}>Venue name</label>
+                      <input type="text" placeholder="e.g. Château de Versailles" value={premiumForm.weddingVenue} onChange={e => setPremiumForm({ ...premiumForm, weddingVenue: e.target.value })} style={inputStyle} />
+                    </div>
+                    <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                      <div>
+                        <label style={labelStyle}>City / Country</label>
+                        <input type="text" placeholder="e.g. Paris, France" value={premiumForm.weddingCity} onChange={e => setPremiumForm({ ...premiumForm, weddingCity: e.target.value })} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Languages</label>
+                        <input type="text" placeholder="e.g. French, English" value={premiumForm.languages} onChange={e => setPremiumForm({ ...premiumForm, languages: e.target.value })} style={inputStyle} />
+                      </div>
                     </div>
                   </div>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label style={labelStyle}>Venue name</label>
-                    <input type="text" placeholder="e.g. Château de Versailles" value={premiumForm.weddingVenue} onChange={e => setPremiumForm({...premiumForm, weddingVenue: e.target.value})} style={inputStyle} />
-                  </div>
-                  <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div>
-                      <label style={labelStyle}>City / Country</label>
-                      <input type="text" placeholder="e.g. Paris, France" value={premiumForm.weddingCity} onChange={e => setPremiumForm({...premiumForm, weddingCity: e.target.value})} style={inputStyle} />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Languages</label>
-                      <input type="text" placeholder="e.g. French, English" value={premiumForm.languages} onChange={e => setPremiumForm({...premiumForm, languages: e.target.value})} style={inputStyle} />
-                    </div>
-                  </div>
-                </div>
 
-                {/* Phone */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Contact Details</div>
-                  <label style={labelStyle}>Phone number (for WhatsApp or call)</label>
-                  <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({...premiumForm, phone: e.target.value})} style={inputStyle} />
-                </div>
+                  {/* Phone */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Contact Details</div>
+                    <label style={labelStyle}>Phone number (for WhatsApp or call)</label>
+                    <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({ ...premiumForm, phone: e.target.value })} style={inputStyle} />
+                  </div>
 
-                {/* Design Preferences (Visual selectors) */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Envelope Choice</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
-                    {ENVELOPE_OPTIONS.map(e => {
-                      const isSelected = premiumForm.envelopeChoice === e.id;
-                      return (
-                        <div key={e.id} onClick={() => setPremiumForm({...premiumForm, envelopeChoice: e.id})}
-                          style={{
-                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
-                            borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
-                            backgroundColor: isSelected ? '#faf5f6' : '#fff',
-                            transition: 'all 0.2s', textAlign: 'center'
-                          }}>
-                          <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                            {e.url && !e.url.endsWith('.m3u8') && e.id !== 'env_custom' ? (
-                              <video src={e.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : e.id === 'env_custom' ? (
-                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
-                            ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: e.color }} />
-                            )}
+                  {/* Design Preferences (Visual selectors) */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Envelope Choice</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
+                      {ENVELOPE_OPTIONS.map(e => {
+                        const isSelected = premiumForm.envelopeChoice === e.id;
+                        return (
+                          <div key={e.id} onClick={() => setPremiumForm({ ...premiumForm, envelopeChoice: e.id })}
+                            style={{
+                              border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                              borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
+                              backgroundColor: isSelected ? '#faf5f6' : '#fff',
+                              transition: 'all 0.2s', textAlign: 'center'
+                            }}>
+                            <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                              {e.url && !e.url.endsWith('.m3u8') && e.id !== 'env_custom' ? (
+                                <video src={e.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : e.id === 'env_custom' ? (
+                                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
+                              ) : (
+                                <div style={{ width: '100%', height: '100%', backgroundColor: e.color }} />
+                              )}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                              {e.name}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                            {e.name}
+                        );
+                      })}
+                    </div>
+
+                    {/* Custom Envelope File Upload */}
+                    {premiumForm.envelopeChoice === 'env_custom' && (
+                      <div style={{ marginBottom: '2rem', padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
+                        <label style={{ cursor: 'pointer', display: 'block' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload envelope video (.mp4)</span>
+                          <input type="file" accept="video/mp4" onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                setPremiumForm(prev => ({
+                                  ...prev,
+                                  envelopeChoice: `Custom Uploaded: ${file.name}`
+                                }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} style={{ display: 'none' }} />
+                        </label>
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Hero Video Choice</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
+                      {HERO_VIDEO_OPTIONS.map(h => {
+                        const isSelected = premiumForm.heroVideoChoice === h.id;
+                        return (
+                          <div key={h.id} onClick={() => setPremiumForm({ ...premiumForm, heroVideoChoice: h.id })}
+                            style={{
+                              border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                              borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
+                              backgroundColor: isSelected ? '#faf5f6' : '#fff',
+                              transition: 'all 0.2s', textAlign: 'center'
+                            }}>
+                            <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                              {h.url && h.id !== 'hero_custom' ? (
+                                <video src={h.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                              {h.name}
+                            </div>
                           </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Custom Hero Video File Upload */}
+                    {premiumForm.heroVideoChoice === 'hero_custom' && (
+                      <div style={{ marginBottom: '2rem', padding: '1.2rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
+                        <label style={{ cursor: 'pointer', display: 'block' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload custom hero video (.mp4)</span>
+                          <input type="file" accept="video/mp4" onChange={(e) => handleFileChange(e, 'customHeroVideo')} style={{ display: 'none' }} />
+                        </label>
+                        {premiumForm.customHeroVideo && (
+                          <div style={{ fontSize: '0.8rem', color: '#2d8a4e', marginTop: '0.5rem', fontWeight: 600 }}>
+                            Selected: {premiumForm.customHeroVideo.name} ({(premiumForm.customHeroVideo.size / (1024 * 1024)).toFixed(2)} MB)
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div>
+                      <label style={labelStyle}>Color preferences</label>
+                      <input type="text" placeholder="e.g. Blush pink, gold, ivory" value={premiumForm.colorPreferences} onChange={e => setPremiumForm({ ...premiumForm, colorPreferences: e.target.value })} style={inputStyle} />
+                    </div>
+                  </div>
+
+                  {/* Photo Gallery Upload */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Photo Gallery</div>
+                    <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Upload photos you want us to include in your gallery (Max 10 photos)</p>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
+                      {premiumForm.galleryPhotos.map((photo, index) => (
+                        <div key={index} style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7' }}>
+                          <img src={`data:${photo.type};base64,${photo.content}`} alt="Gallery preview" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button onClick={() => {
+                            setPremiumForm(prev => ({
+                              ...prev,
+                              galleryPhotos: prev.galleryPhotos.filter((_, i) => i !== index)
+                            }));
+                          }} style={{ position: 'absolute', top: '2px', right: '2px', backgroundColor: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', cursor: 'pointer' }}>
+                            ✕
+                          </button>
                         </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Custom Envelope File Upload */}
-                  {premiumForm.envelopeChoice === 'env_custom' && (
-                    <div style={{ marginBottom: '2rem', padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
-                      <label style={{ cursor: 'pointer', display: 'block' }}>
-                        <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload envelope video (.mp4)</span>
-                        <input type="file" accept="video/mp4" onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setPremiumForm(prev => ({
-                                ...prev,
-                                envelopeChoice: `Custom Uploaded: ${file.name}`
-                              }));
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }} style={{ display: 'none' }} />
-                      </label>
+                      ))}
+                      {premiumForm.galleryPhotos.length < 10 && (
+                        <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer', minHeight: '60px' }}>
+                          <span style={{ fontSize: '1.2rem', color: '#888' }}>+</span>
+                          <input type="file" multiple accept="image/*" onChange={(e) => handleFileChange(e, 'galleryPhotos')} style={{ display: 'none' }} />
+                        </label>
+                      )}
                     </div>
-                  )}
-
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Hero Video Choice</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
-                    {HERO_VIDEO_OPTIONS.map(h => {
-                      const isSelected = premiumForm.heroVideoChoice === h.id;
-                      return (
-                        <div key={h.id} onClick={() => setPremiumForm({...premiumForm, heroVideoChoice: h.id})}
-                          style={{
-                            border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
-                            borderRadius: '12px', padding: '0.5rem', cursor: 'pointer',
-                            backgroundColor: isSelected ? '#faf5f6' : '#fff',
-                            transition: 'all 0.2s', textAlign: 'center'
-                          }}>
-                          <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                            {h.url && h.id !== 'hero_custom' ? (
-                              <video src={h.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
-                            )}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                            {h.name}
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
 
-                  {/* Custom Hero Video File Upload */}
-                  {premiumForm.heroVideoChoice === 'hero_custom' && (
-                    <div style={{ marginBottom: '2rem', padding: '1.2rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
+                  {/* Menu Details & Upload */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Menu & Reception details</div>
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <label style={labelStyle}>Write your menu courses / details</label>
+                      <textarea placeholder="Appetizers, main courses, desserts, dietary options..." value={premiumForm.menuDetails} onChange={e => setPremiumForm({ ...premiumForm, menuDetails: e.target.value })} rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
+                    </div>
+                    <div style={{ padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
                       <label style={{ cursor: 'pointer', display: 'block' }}>
-                        <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Click to upload custom hero video (.mp4)</span>
-                        <input type="file" accept="video/mp4" onChange={(e) => handleFileChange(e, 'customHeroVideo')} style={{ display: 'none' }} />
+                        <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Upload menu file (PDF, Image)</span>
+                        <input type="file" accept="application/pdf,image/*" onChange={(e) => handleFileChange(e, 'menuFile')} style={{ display: 'none' }} />
                       </label>
-                      {premiumForm.customHeroVideo && (
+                      {premiumForm.menuFile && (
                         <div style={{ fontSize: '0.8rem', color: '#2d8a4e', marginTop: '0.5rem', fontWeight: 600 }}>
-                          Selected: {premiumForm.customHeroVideo.name} ({(premiumForm.customHeroVideo.size / (1024*1024)).toFixed(2)} MB)
+                          Selected: {premiumForm.menuFile.name}
                         </div>
                       )}
                     </div>
-                  )}
-
-                  <div>
-                    <label style={labelStyle}>Color preferences</label>
-                    <input type="text" placeholder="e.g. Blush pink, gold, ivory" value={premiumForm.colorPreferences} onChange={e => setPremiumForm({...premiumForm, colorPreferences: e.target.value})} style={inputStyle} />
                   </div>
+
+                  {/* Sections */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Invitation Sections</div>
+                    <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Select the sections you want</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      {SECTION_OPTIONS.map(s => (
+                        <div key={s.key} onClick={() => toggleSection(s.key)}
+                          style={{
+                            padding: '0.85rem 1rem', borderRadius: '12px',
+                            border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
+                            backgroundColor: premiumForm.sectionsWanted.includes(s.key) ? '#fbf5f6' : '#faf8f5',
+                            cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.15s ease',
+                          }}>
+                          <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#5C3A1E' : '#ccc', fontSize: '0.9rem' }}>
+                            {premiumForm.sectionsWanted.includes(s.key) ? '✓' : '○'}
+                          </span>
+                          {s.label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Extra Notes */}
+                  <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Additional Details & Notes</div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label style={labelStyle}>Inspiration links</label>
+                      <textarea placeholder="Share any Pinterest boards, Instagram posts, or websites you love..." value={premiumForm.inspirationLinks} onChange={e => setPremiumForm({ ...premiumForm, inspirationLinks: e.target.value })} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Details / requests to add</label>
+                      <textarea placeholder="Write down any text blocks, timeline events, or special layout requests you want us to add..." value={premiumForm.specialRequests} onChange={e => setPremiumForm({ ...premiumForm, specialRequests: e.target.value })} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+                    </div>
+                  </div>
+
+                  {/* Submit button */}
+                  <button
+                    onClick={handleSendOrder}
+                    disabled={sending}
+                    style={{
+                      width: '100%', padding: '1.2rem', borderRadius: '16px', border: 'none',
+                      backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600,
+                      cursor: sending ? 'wait' : 'pointer', fontFamily: 'inherit', letterSpacing: '1px',
+                      opacity: sending ? 0.7 : 1, transition: 'all 0.3s',
+                    }}>
+                    {sending ? 'SENDING...' : 'SEND MY DETAILS →'}
+                  </button>
+                  <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#aaa' }}>
+                    Our team will contact you within 24 hours
+                  </p>
                 </div>
-
-                {/* Photo Gallery Upload */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Photo Gallery</div>
-                  <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Upload photos you want us to include in your gallery (Max 10 photos)</p>
-                  
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-                    {premiumForm.galleryPhotos.map((photo, index) => (
-                      <div key={index} style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7' }}>
-                        <img src={`data:${photo.type};base64,${photo.content}`} alt="Gallery preview" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button onClick={() => {
-                          setPremiumForm(prev => ({
-                            ...prev,
-                            galleryPhotos: prev.galleryPhotos.filter((_, i) => i !== index)
-                          }));
-                        }} style={{ position: 'absolute', top: '2px', right: '2px', backgroundColor: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', cursor: 'pointer' }}>
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                    {premiumForm.galleryPhotos.length < 10 && (
-                      <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer', minHeight: '60px' }}>
-                        <span style={{ fontSize: '1.2rem', color: '#888' }}>+</span>
-                        <input type="file" multiple accept="image/*" onChange={(e) => handleFileChange(e, 'galleryPhotos')} style={{ display: 'none' }} />
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                {/* Menu Details & Upload */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Menu & Reception details</div>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={labelStyle}>Write your menu courses / details</label>
-                    <textarea placeholder="Appetizers, main courses, desserts, dietary options..." value={premiumForm.menuDetails} onChange={e => setPremiumForm({...premiumForm, menuDetails: e.target.value})} rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
-                  </div>
-                  <div style={{ padding: '1rem', border: '2px dashed #e0dcd7', borderRadius: '12px', backgroundColor: '#faf8f5', textAlign: 'center' }}>
-                    <label style={{ cursor: 'pointer', display: 'block' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#5C3A1E', fontWeight: 600 }}>Upload menu file (PDF, Image)</span>
-                      <input type="file" accept="application/pdf,image/*" onChange={(e) => handleFileChange(e, 'menuFile')} style={{ display: 'none' }} />
-                    </label>
-                    {premiumForm.menuFile && (
-                      <div style={{ fontSize: '0.8rem', color: '#2d8a4e', marginTop: '0.5rem', fontWeight: 600 }}>
-                        Selected: {premiumForm.menuFile.name}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Sections */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Invitation Sections</div>
-                  <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>Select the sections you want</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                    {SECTION_OPTIONS.map(s => (
-                      <div key={s.key} onClick={() => toggleSection(s.key)}
-                        style={{
-                          padding: '0.85rem 1rem', borderRadius: '12px',
-                          border: premiumForm.sectionsWanted.includes(s.key) ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                          backgroundColor: premiumForm.sectionsWanted.includes(s.key) ? '#fbf5f6' : '#faf8f5',
-                          cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.15s ease',
-                        }}>
-                        <span style={{ color: premiumForm.sectionsWanted.includes(s.key) ? '#5C3A1E' : '#ccc', fontSize: '0.9rem' }}>
-                          {premiumForm.sectionsWanted.includes(s.key) ? '✓' : '○'}
-                        </span>
-                        {s.label}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Extra Notes */}
-                <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Additional Details & Notes</div>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label style={labelStyle}>Inspiration links</label>
-                    <textarea placeholder="Share any Pinterest boards, Instagram posts, or websites you love..." value={premiumForm.inspirationLinks} onChange={e => setPremiumForm({...premiumForm, inspirationLinks: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Details / requests to add</label>
-                    <textarea placeholder="Write down any text blocks, timeline events, or special layout requests you want us to add..." value={premiumForm.specialRequests} onChange={e => setPremiumForm({...premiumForm, specialRequests: e.target.value})} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
-                  </div>
-                </div>
-
-                {/* Submit button */}
-                <button
-                  onClick={handleSendOrder}
-                  disabled={sending}
-                  style={{
-                    width: '100%', padding: '1.2rem', borderRadius: '16px', border: 'none',
-                    backgroundColor: '#5C3A1E', color: '#fff', fontSize: '1.1rem', fontWeight: 600,
-                    cursor: sending ? 'wait' : 'pointer', fontFamily: 'inherit', letterSpacing: '1px',
-                    opacity: sending ? 0.7 : 1, transition: 'all 0.3s',
-                  }}>
-                  {sending ? 'SENDING...' : 'SEND MY DETAILS →'}
-                </button>
-                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#aaa' }}>
-                  Our team will contact you within 24 hours
-                </p>
-              </div>
               </>
             )}
           </div>

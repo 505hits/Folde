@@ -22,7 +22,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
   };
 
   return (
-    <div 
+    <div
       style={{ width: '50px', height: '90px', borderRadius: '8px', backgroundColor: fallbackColor, flexShrink: 0, position: 'relative' }}
       onMouseEnter={(e) => {
         rectRef.current = e.currentTarget.getBoundingClientRect();
@@ -32,20 +32,20 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
     >
       {/* Thumbnail static view */}
       {url !== 'custom' && (
-         url.match(/\.(jpeg|jpg|gif|png)$/) ? (
-           <img 
-             src={url}
-             alt="Thumbnail"
-             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-           />
-         ) : (
-           <video 
-             src={url && url.endsWith('.m3u8') ? undefined : url}
-             poster={getPoster()}
-             muted playsInline
-             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-           />
-         )
+        url.match(/\.(jpeg|jpg|gif|png)$/) ? (
+          <img
+            src={url}
+            alt="Thumbnail"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+          />
+        ) : (
+          <video
+            src={url && url.endsWith('.m3u8') ? undefined : url}
+            poster={getPoster()}
+            muted playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+          />
+        )
       )}
 
       {/* Expanded hover view */}
@@ -68,13 +68,13 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
           {url.match(/\.(jpeg|jpg|gif|png)$/) ? (
             <img src={url} alt="Expanded preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : url.endsWith('.m3u8') ? (
-             <iframe 
-               src={url.replace('manifest/video.m3u8', 'iframe?muted=true&autoplay=true&loop=true&controls=false')} 
-               style={{ border: 'none', width: '100%', height: '100%' }} 
-               allow="autoplay">
-             </iframe>
+            <iframe
+              src={url.replace('manifest/video.m3u8', 'iframe?muted=true&autoplay=true&loop=true&controls=false')}
+              style={{ border: 'none', width: '100%', height: '100%' }}
+              allow="autoplay">
+            </iframe>
           ) : (
-             <video src={url} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <video src={url} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           )}
         </div>
       )}
@@ -313,7 +313,7 @@ export default function Dashboard() {
               transition: 'background-color 0.2s'
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" /><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" /><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z" /><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" /></svg>
             Continue with Google
           </button>
 
@@ -333,7 +333,7 @@ export default function Dashboard() {
                       type="text"
                       placeholder="Emma"
                       value={loginForm.name}
-                      onChange={e => setLoginForm({...loginForm, name: e.target.value})}
+                      onChange={e => setLoginForm({ ...loginForm, name: e.target.value })}
                       style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </div>
@@ -343,7 +343,7 @@ export default function Dashboard() {
                       type="text"
                       placeholder="Lucas"
                       value={loginForm.partnerName}
-                      onChange={e => setLoginForm({...loginForm, partnerName: e.target.value})}
+                      onChange={e => setLoginForm({ ...loginForm, partnerName: e.target.value })}
                       style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </div>
@@ -358,7 +358,7 @@ export default function Dashboard() {
                 required
                 placeholder="you@example.com"
                 value={loginForm.email}
-                onChange={e => setLoginForm({...loginForm, email: e.target.value})}
+                onChange={e => setLoginForm({ ...loginForm, email: e.target.value })}
                 style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
               />
             </div>
@@ -370,7 +370,7 @@ export default function Dashboard() {
                 required
                 placeholder="••••••••"
                 value={loginForm.password}
-                onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
                 style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
               />
             </div>
@@ -428,7 +428,7 @@ export default function Dashboard() {
   }
 
   // ========== NO ACTIVE ORDER ==========
-  
+
   if (!userOrder) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)', padding: '1rem', boxSizing: 'border-box' }}>
@@ -438,8 +438,8 @@ export default function Dashboard() {
         }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1.25rem' }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b08968" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
             </svg>
           </div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>No active order</h1>
@@ -471,7 +471,7 @@ export default function Dashboard() {
     return (
       <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', padding: '2rem 1.5rem' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          
+
           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -501,13 +501,13 @@ export default function Dashboard() {
               <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 2rem' }}>
                 Our design studio has finalized your bespoke wedding invitation. You can now view it live and share your link with guests.
               </p>
-              
+
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1.25rem', backgroundColor: '#f1f5f9', padding: '0.85rem 1.75rem', borderRadius: '14px', border: '1px solid #e2e8f0', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   View my website →
                 </a>
                 <span style={{ color: '#cbd5e1' }}>|</span>
-                <button 
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
                     alert("Link copied to clipboard!");
@@ -663,14 +663,14 @@ export default function Dashboard() {
                           </div>
                         )}
                       </div>
-                      
+
                       {guest.status === 'Attending' && guest.meal && guest.meal !== '-' && (
                         <div style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f9f5f0', padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid #e8ddd4' }}>
                           🍽 {guest.meal}
                         </div>
                       )}
                     </div>
-                    
+
                     {guest.message && (
                       <div style={{ marginTop: '0.5rem', padding: '0.8rem', backgroundColor: '#fdfbf9', borderRadius: '8px', borderLeft: '3px solid #d4c5b9', fontSize: '0.9rem', color: '#555', fontStyle: 'italic' }}>
                         "{guest.message}"
@@ -687,12 +687,12 @@ export default function Dashboard() {
   }
 
   // ========== DASHBOARD (STANDARD) ==========
-  const defaultEventInfo = { 
-    date: 'May 27, 2026', 
-    time: '14:00', 
-    ceremonyVenue: 'Ocean front beach House', 
-    receptionVenue: 'South Dixie Highway, Homestead', 
-    partner1: currentUser.name || '', 
+  const defaultEventInfo = {
+    date: 'May 27, 2026',
+    time: '14:00',
+    ceremonyVenue: 'Ocean front beach House',
+    receptionVenue: 'South Dixie Highway, Homestead',
+    partner1: currentUser.name || '',
     partner2: currentUser.partnerName || '',
     timeline: [
       { time: "14:00", title: "Lunch" },
@@ -823,14 +823,14 @@ export default function Dashboard() {
           }
         }
       `}</style>
-      
+
       {/* 1. Left Sidebar */}
       <aside className={`dashboard-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
           <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
-        
+
         <div style={{ padding: '1rem 0', flex: 1, overflowY: 'auto' }}>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {tabs.map(tab => (
@@ -872,7 +872,7 @@ export default function Dashboard() {
             ))}
           </nav>
         </div>
-        
+
         <div style={{ padding: '1.25rem', backgroundColor: '#faf8f5', borderTop: '1px solid rgba(0,0,0,0.04)', margin: '1rem', borderRadius: '12px' }}>
           <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem' }}>Your Wedding</div>
           <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Partner 1'} & {clientEventInfo.partner2 || 'Partner 2'}</div>
@@ -897,7 +897,7 @@ export default function Dashboard() {
             <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', color: '#555', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
               <span>📱</span> Voir en plein écran
             </a>
-            <button 
+            <button
               onClick={() => {
                 setIsPublishing(true);
                 setTimeout(() => {
@@ -917,7 +917,7 @@ export default function Dashboard() {
         </header>
 
         <div style={{ padding: '1.5rem', maxWidth: '800px', width: '100%', margin: '0 auto' }}>
-          
+
           <div style={{ backgroundColor: '#f8fdf8', border: '1px solid #e2f2e5', borderRadius: '12px', padding: '1.25rem', display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
             <div style={{ fontSize: '1.2rem', color: '#7b906f' }}>🕒</div>
             <div>
@@ -927,9 +927,9 @@ export default function Dashboard() {
           </div>
 
           {activeTab === 'invitation' ? <InvitationTab eventInfo={clientEventInfo} slug={clientSlug} setEventInfo={setEventInfo} allEventInfo={eventInfo} selectedTheme={selectedTheme} setSelectedTheme={setSelectedTheme} plan={userOrder.plan} orderId={userOrder.id} /> : (
-             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
-               Section in development
-             </div>
+            <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
+              Section in development
+            </div>
           )}
 
         </div>
@@ -951,7 +951,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        
+
       </aside>
 
       {/* PUBLISH MODAL */}
@@ -961,12 +961,12 @@ export default function Dashboard() {
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
             <h2 style={{ fontSize: '1.8rem', color: '#1a1a1a', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem' }}>Bravo !</h2>
             <p style={{ color: '#666', marginBottom: '2rem' }}>Votre site de mariage est maintenant public et prêt à être partagé avec vos invités.</p>
-            
+
             <div style={{ backgroundColor: '#f5f5f5', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', border: '1px solid #e0e0e0' }}>
               <span style={{ fontSize: '0.9rem', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {typeof window !== 'undefined' ? window.location.origin : ''}/invite/{clientSlug}
               </span>
-              <button 
+              <button
                 onClick={() => {
                   navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
                   alert("Lien copié dans le presse-papier !");
@@ -976,7 +976,7 @@ export default function Dashboard() {
               </button>
             </div>
 
-            <button 
+            <button
               onClick={() => setShowPublishModal(false)}
               style={{ width: '100%', padding: '1rem', backgroundColor: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>
               Continuer à modifier
@@ -990,36 +990,98 @@ export default function Dashboard() {
 }
 
 function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId }) {
+  const { saveOrderDetails } = useDatabase();
   const [local, setLocal] = useState(eventInfo);
 
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };
     setLocal(updated);
     setEventInfo({ ...allEventInfo, [slug]: updated });
+    if (saveOrderDetails) {
+      saveOrderDetails(slug, updated);
+    }
   };
 
   const handleTimelineChange = (index, field, value) => {
-    const newTimeline = [...(local.timeline || [])];
+    const current = local.timeline || [
+      { time: "14:00", title: "Cocktail d'accueil" },
+      { time: "16:30", title: "Cérémonie Laïque" },
+      { time: "19:00", title: "Dîner de Gala" }
+    ];
+    const newTimeline = [...current];
     newTimeline[index] = { ...newTimeline[index], [field]: value };
     handleChange('timeline', newTimeline);
   };
 
+  const addTimelineItem = () => {
+    const current = local.timeline || [
+      { time: "14:00", title: "Cocktail d'accueil" },
+      { time: "16:30", title: "Cérémonie Laïque" },
+      { time: "19:00", title: "Dîner de Gala" }
+    ];
+    handleChange('timeline', [...current, { time: "20:00", title: "Nouvelle étape" }]);
+  };
+
+  const removeTimelineItem = (index) => {
+    const current = local.timeline || [];
+    const newTimeline = current.filter((_, i) => i !== index);
+    handleChange('timeline', newTimeline);
+  };
+
   const handleMenuChange = (index, field, value) => {
-    const newMenu = [...(local.menu || [])];
+    const current = local.menu || [
+      { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
+      { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
+      { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+    ];
+    const newMenu = [...current];
     newMenu[index] = { ...newMenu[index], [field]: value };
     handleChange('menu', newMenu);
   };
 
+  const addMenuItem = () => {
+    const current = local.menu || [
+      { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
+      { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
+      { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+    ];
+    handleChange('menu', [...current, { course: "Nouveau plat", dish: "Description du plat" }]);
+  };
+
+  const removeMenuItem = (index) => {
+    const current = local.menu || [];
+    const newMenu = current.filter((_, i) => i !== index);
+    handleChange('menu', newMenu);
+  };
+
   const handleAccommodationsChange = (index, field, value) => {
-    const newAcc = [...(local.accommodations || [])];
+    const current = local.accommodations || [
+      { name: "Hôtel du Domaine", price: "120€ / nuit" },
+      { name: "Gîte de la Rose", price: "90€ / nuit" }
+    ];
+    const newAcc = [...current];
     newAcc[index] = { ...newAcc[index], [field]: value };
+    handleChange('accommodations', newAcc);
+  };
+
+  const addAccommodationItem = () => {
+    const current = local.accommodations || [
+      { name: "Hôtel du Domaine", price: "120€ / nuit" },
+      { name: "Gîte de la Rose", price: "90€ / nuit" }
+    ];
+    handleChange('accommodations', [...current, { name: "Nom de l'hôtel", price: "100€ / nuit" }]);
+  };
+
+  const removeAccommodationItem = (index) => {
+    const current = local.accommodations || [];
+    const newAcc = current.filter((_, i) => i !== index);
     handleChange('accommodations', newAcc);
   };
 
   const inputStyle = { width: '100%', padding: '0.85rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.95rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#faf8f5', color: '#1a1a1a' };
   const labelStyle = { display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' };
   const sectionStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '2rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', marginBottom: '1.5rem' };
-  
+
   const AVAILABLE_TEMPLATES = [
     { id: 'bordeaux', name: 'Bordeaux Elegant', desc: 'Une célébration moderne, dramatique et élégante' },
     { id: 'champagne', name: 'Champagne / Luxe Gold', desc: 'Sophistication royale avec une chaleur dorée' },
@@ -1126,7 +1188,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      
+
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
@@ -1143,8 +1205,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             const isVisible = local.sections?.[sec.key] !== false;
             return (
               <label key={sec.key} style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}>
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={isVisible}
                   onChange={(e) => {
                     const newSections = { ...(local.sections || {}) };
@@ -1163,7 +1225,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       {/* Media & Videos */}
       <div style={sectionStyle}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          
+
           {/* Envelope Video Selection */}
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
@@ -1171,7 +1233,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {AVAILABLE_ENVELOPE_VIDEOS.map(env => (
-                <div 
+                <div
                   key={env.id}
                   onClick={() => {
                     const newState = { ...(local.videos || {}) };
@@ -1227,7 +1289,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {AVAILABLE_HERO_VIDEOS.map(hero => (
-                <div 
+                <div
                   key={hero.id}
                   onClick={() => {
                     const newState = { ...(local.videos || {}) };
@@ -1283,7 +1345,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {AVAILABLE_SOUNDS.map(sound => (
-                <div 
+                <div
                   key={sound.id}
                   onClick={() => {
                     const newState = { ...(local.sounds || {}) };
@@ -1341,7 +1403,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   <img src={local.images.venue} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
-              <StyledFileInput 
+              <StyledFileInput
                 accept="image/*"
                 label="Upload Venue Image"
                 onChange={(e) => {
@@ -1358,7 +1420,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 }}
               />
               {local.images?.venue && (
-                <button 
+                <button
                   onClick={() => {
                     const newState = { ...(local.images || {}) };
                     delete newState.venue;
@@ -1380,8 +1442,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Description du Dress Code</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={local.dressCode?.text || ''}
               onChange={(e) => handleChange('dressCode', { ...local.dressCode, text: e.target.value })}
               placeholder="Ex: Tenue de soirée, tons pastels..."
@@ -1396,7 +1458,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   <img src={local.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
-              <StyledFileInput 
+              <StyledFileInput
                 accept="image/*"
                 label="Upload Image"
                 onChange={(e) => {
@@ -1408,7 +1470,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 }}
               />
               {local.dressCode?.image && (
-                <button 
+                <button
                   onClick={() => {
                     const newState = { ...(local.dressCode || {}) };
                     delete newState.image;
@@ -1428,7 +1490,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Memories (Slider)</h2>
         <div style={{ marginBottom: '1rem' }}>
-          <StyledFileInput 
+          <StyledFileInput
             accept="image/*"
             multiple
             label="Upload Photos"
@@ -1449,7 +1511,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           {(local.gallery || []).map((img, idx) => (
             <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
               <img src={img} alt={`Gallery ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-              <button 
+              <button
                 onClick={() => {
                   const newGallery = [...local.gallery];
                   newGallery.splice(idx, 1);
@@ -1466,7 +1528,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Guest Photo Gallery</h2>
         <div style={{ marginBottom: '1rem' }}>
-          <StyledFileInput 
+          <StyledFileInput
             accept="image/*"
             multiple
             label="Upload Photos"
@@ -1487,7 +1549,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           {(local.guestGallery || []).map((img, idx) => (
             <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
               <img src={img} alt={`Guest Gallery ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-              <button 
+              <button
                 onClick={() => {
                   const newGallery = [...local.guestGallery];
                   newGallery.splice(idx, 1);
@@ -1510,7 +1572,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </span>
           )}
         </div>
-        
+
         {plan !== 'Signature' ? (
           <div style={{ backgroundColor: '#fff8f6', border: '1px solid #fce8e6', borderRadius: '12px', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -1574,11 +1636,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={labelStyle}>Partner 1</label>
-              <input type="text" value={local.partner1 || ''} onChange={e => handleChange('partner1', e.target.value)} style={inputStyle} />
+              <input type="text" value={local.partner1 || ''} onChange={e => handleChange('partner1', e.target.value)} style={inputStyle} placeholder="Prénom Marié 1" />
             </div>
             <div>
               <label style={labelStyle}>Partner 2</label>
-              <input type="text" value={local.partner2 || ''} onChange={e => handleChange('partner2', e.target.value)} style={inputStyle} />
+              <input type="text" value={local.partner2 || ''} onChange={e => handleChange('partner2', e.target.value)} style={inputStyle} placeholder="Prénom Marié 2" />
             </div>
           </div>
           <div>
@@ -1587,25 +1649,63 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Venue Name</label>
-              <input type="text" value={local.ceremonyVenue || ''} onChange={e => handleChange('ceremonyVenue', e.target.value)} style={inputStyle} />
+              <label style={labelStyle}>Nom du Lieu / Domaine</label>
+              <input type="text" value={local.ceremonyVenue || ''} onChange={e => handleChange('ceremonyVenue', e.target.value)} style={inputStyle} placeholder="Ex: Château de Chantilly" />
             </div>
             <div>
-              <label style={labelStyle}>Address</label>
-              <input type="text" value={local.receptionVenue || ''} onChange={e => handleChange('receptionVenue', e.target.value)} style={inputStyle} />
+              <label style={labelStyle}>Adresse de la Réception (Géolocalisation automatique)</label>
+              <input type="text" value={local.receptionVenue || ''} onChange={e => handleChange('receptionVenue', e.target.value)} style={inputStyle} placeholder="Ex: 7 Rue du Conétable, 60500 Chantilly" />
             </div>
           </div>
+
+          {/* Dynamic Map Live Preview */}
+          {local.receptionVenue && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>📍</span> Carte interactive (Mapbox / Google Maps Embed)
+              </label>
+              <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0dcd7', height: '200px', backgroundColor: '#f5f5f5' }}>
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, display: 'block' }}
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(local.receptionVenue)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Schedule / Timeline */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Schedule</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>⏰ Programme (Schedule)</h2>
+          <button
+            onClick={addTimelineItem}
+            style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            + Ajouter une étape
+          </button>
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {(local.timeline || []).map((item, idx) => (
-            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
-              <input type="text" value={item.time} onChange={e => handleTimelineChange(idx, 'time', e.target.value)} style={inputStyle} placeholder="Time" />
-              <input type="text" value={item.title} onChange={e => handleTimelineChange(idx, 'title', e.target.value)} style={inputStyle} placeholder="Event" />
+          {((local.timeline && local.timeline.length > 0) ? local.timeline : [
+            { time: "14:00", title: "Cocktail d'accueil" },
+            { time: "16:30", title: "Cérémonie Laïque" },
+            { time: "19:00", title: "Dîner de Gala" }
+          ]).map((item, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '0.75rem', alignItems: 'center' }}>
+              <input type="text" value={item.time || ''} onChange={e => handleTimelineChange(idx, 'time', e.target.value)} style={inputStyle} placeholder="Heure (ex: 14:00)" />
+              <input type="text" value={item.title || ''} onChange={e => handleTimelineChange(idx, 'title', e.target.value)} style={inputStyle} placeholder="Événement (ex: Cérémonie)" />
+              <button
+                onClick={() => removeTimelineItem(idx)}
+                style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                title="Supprimer"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>
@@ -1613,12 +1713,30 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Accommodations */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Accommodations</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🏨 Hébergements (Accommodations)</h2>
+          <button
+            onClick={addAccommodationItem}
+            style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            + Ajouter un hôtel
+          </button>
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {(local.accommodations || []).map((acc, idx) => (
-            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
-              <input type="text" value={acc.name} onChange={e => handleAccommodationsChange(idx, 'name', e.target.value)} style={inputStyle} placeholder="Hotel Name" />
-              <input type="text" value={acc.price} onChange={e => handleAccommodationsChange(idx, 'price', e.target.value)} style={inputStyle} placeholder="Price" />
+          {((local.accommodations && local.accommodations.length > 0) ? local.accommodations : [
+            { name: "Hôtel du Domaine", price: "120€ / nuit" },
+            { name: "Gîte de la Rose", price: "90€ / nuit" }
+          ]).map((acc, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: '0.75rem', alignItems: 'center' }}>
+              <input type="text" value={acc.name || ''} onChange={e => handleAccommodationsChange(idx, 'name', e.target.value)} style={inputStyle} placeholder="Nom de l'hôtel" />
+              <input type="text" value={acc.price || ''} onChange={e => handleAccommodationsChange(idx, 'price', e.target.value)} style={inputStyle} placeholder="Prix / Info" />
+              <button
+                onClick={() => removeAccommodationItem(idx)}
+                style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                title="Supprimer"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>
@@ -1626,12 +1744,31 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Menu */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Menu</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🍽️ Menu</h2>
+          <button
+            onClick={addMenuItem}
+            style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            + Ajouter un plat
+          </button>
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {(local.menu || []).map((m, idx) => (
-            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
-              <input type="text" value={m.course} onChange={e => handleMenuChange(idx, 'course', e.target.value)} style={inputStyle} placeholder="Course (Starter...)" />
-              <input type="text" value={m.dish} onChange={e => handleMenuChange(idx, 'dish', e.target.value)} style={inputStyle} placeholder="Dish Name" />
+          {((local.menu && local.menu.length > 0) ? local.menu : [
+            { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
+            { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
+            { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+          ]).map((m, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '0.75rem', alignItems: 'center' }}>
+              <input type="text" value={m.course || ''} onChange={e => handleMenuChange(idx, 'course', e.target.value)} style={inputStyle} placeholder="Type (Entrée...)" />
+              <input type="text" value={m.dish || ''} onChange={e => handleMenuChange(idx, 'dish', e.target.value)} style={inputStyle} placeholder="Description du plat" />
+              <button
+                onClick={() => removeMenuItem(idx)}
+                style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                title="Supprimer"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>

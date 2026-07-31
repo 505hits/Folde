@@ -54,18 +54,18 @@ const GalleryCoverflow = ({ images }) => {
     if (!trackRef.current) return;
     const track = trackRef.current;
     const trackCenter = track.scrollLeft + track.clientWidth / 2;
-    
+
     const newStyles = Array.from(track.children).map(child => {
       const childCenter = child.offsetLeft + child.clientWidth / 2;
       const distance = Math.abs(trackCenter - childCenter);
       const maxDist = track.clientWidth / 1.5;
       const ratio = Math.max(0, 1 - distance / maxDist);
-      
+
       const scale = 0.85 + (ratio * 0.15);
       const opacity = 0.4 + (ratio * 0.6);
       const rotateY = ((childCenter - trackCenter) / maxDist) * -30;
       const zIndex = Math.round(ratio * 100);
-      
+
       return {
         transform: `perspective(1200px) scale(${scale}) rotateY(${rotateY}deg)`,
         opacity,
@@ -83,9 +83,9 @@ const GalleryCoverflow = ({ images }) => {
   }, [images]);
 
   return (
-    <div 
+    <div
       ref={trackRef}
-      className={styles.galleryTrack} 
+      className={styles.galleryTrack}
       onScroll={handleScroll}
       style={{ perspective: '1200px' }}
     >
@@ -104,10 +104,10 @@ const VenueImage = ({ src }) => {
 
   return (
     <div ref={ref} className={styles.photoRevealContainer}>
-      <img 
-        src={src} 
-        alt="Venue" 
-        className={`${styles.revealImage} ${isVisible ? styles.active : ''}`} 
+      <img
+        src={src}
+        alt="Venue"
+        className={`${styles.revealImage} ${isVisible ? styles.active : ''}`}
       />
     </div>
   );
@@ -154,11 +154,11 @@ const DressCodeSection = ({ t, accentColor }) => {
         </p>
         <div className={styles.colorsRow} style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center', gap: '1.25rem' }}>
           {colors.map((c, i) => (
-            <div 
-              key={i} 
-              className={styles.colorDot} 
-              style={{ 
-                backgroundColor: c.hex, 
+            <div
+              key={i}
+              className={styles.colorDot}
+              style={{
+                backgroundColor: c.hex,
                 cursor: 'pointer',
                 transform: selectedColor?.hex === c.hex ? 'scale(1.2)' : 'scale(1)',
                 transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
@@ -190,9 +190,9 @@ const DressCodeSection = ({ t, accentColor }) => {
 
       <AnimatedSection type="zoom">
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
-          <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code Inspiration" style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s ease' }} 
-               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code Inspiration" style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           />
           {t.dressCode?.text && (
             <div style={{
@@ -206,10 +206,10 @@ const DressCodeSection = ({ t, accentColor }) => {
               alignItems: 'flex-end',
               justifyContent: 'center'
             }}>
-              <p style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontSize: '2.2rem', 
-                color: '#ffffff', 
+              <p style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: '2.2rem',
+                color: '#ffffff',
                 margin: 0,
                 textShadow: '0 3px 10px rgba(0,0,0,0.4)',
                 lineHeight: 1.1
@@ -370,13 +370,13 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     setRsvpSubmitting(false);
   };
   const [currentUrl, setCurrentUrl] = useState('https://foldedesign.com');
-  
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentUrl(window.location.href);
     }
   }, []);
-  
+
   // Envelope State
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(false);
@@ -402,7 +402,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     if (!video) return;
 
     const src = data?.videos?.envelope || "/videos/bordeaux.mp4";
-    
+
     // If src is an image, we don't need to do video setup
     if (src.match(/\.(jpeg|jpg|gif|png)$/i)) {
       return;
@@ -411,7 +411,9 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     if (src.endsWith('.m3u8') && Hls.isSupported()) {
       const hls = new Hls({
         startLevel: -1, // Use auto quality
-        capLevelToPlayerSize: true
+        capLevelToPlayerSize: true,
+        maxBufferLength: 30, // Preload up to 30s buffer for smooth playback
+        maxMaxBufferLength: 60
       });
       hls.loadSource(src);
       hls.attachMedia(video);
@@ -419,6 +421,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     } else {
       // Fallback for Safari which natively supports HLS, or direct mp4/webm links
       video.src = src;
+      video.preload = "auto";
       if (typeof video.load === 'function') video.load();
     }
   }, [data?.videos?.envelope]);
@@ -488,7 +491,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
   const targetDate = dp ? `${dp[3]}-${monthMap[dp[1].toUpperCase()] || '01'}-${dp[2].padStart(2, '0')}` : '2026-05-27';
   const ceremonyVenue = t.ceremonyVenue || "Ocean front beach House";
   const receptionVenue = t.receptionVenue || "South Dixie Highway, Homestead, Miami-Dade County, Florida, 33030, United States";
-  
+
   // Default structure for complex fields
   const timeline = t.timeline || [
     { time: "14:00", title: "Lunch" },
@@ -537,7 +540,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
 
   const handleEnvelopeClick = () => {
     if (envelopeOpen) return; // Prevent double clicks
-    
+
     setEnvelopeOpen(true);
     if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
       envelopeVideoRef.current.play().catch(e => {
@@ -572,10 +575,10 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
       <div className={styles.container} style={{ backgroundColor: theme.bgColor }}>
-        
+
         {/* ================= HERO SECTION ================= */}
         <section className={styles.hero} style={{ height: heroHeight, minHeight: heroHeight }}>
-          
+
           {/* Background Audio */}
           {sounds.bgMusic && (
             <audio ref={audioRef} src={sounds.bgMusic} loop muted={isMuted} />
@@ -583,19 +586,19 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
 
           {/* ================= ENVELOPE OVERLAY ================= */}
           {!editMode && !envelopeDismissed && (
-            <div 
-              className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`} 
+            <div
+              className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
               onClick={handleEnvelopeClick}
             >
               {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                <img 
-                  src={data.videos.envelope} 
-                  alt="Envelope" 
-                  className={styles.envelopeVideo} 
-                  style={{ objectFit: 'cover' }} 
+                <img
+                  src={data.videos.envelope}
+                  alt="Envelope"
+                  className={styles.envelopeVideo}
+                  style={{ objectFit: 'cover' }}
                 />
               ) : (
-                <video 
+                <video
                   ref={envelopeVideoRef}
                   className={styles.envelopeVideo}
                   autoPlay
@@ -631,38 +634,38 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           )}
           {/* Scratch Overlay */}
           {images.scratchCover && (
-            <ScratchCanvas 
-              coverImage={images.scratchCover} 
+            <ScratchCanvas
+              coverImage={images.scratchCover}
               onComplete={() => {
                 if (audioRef.current && !isPlayingAudio) {
                   audioRef.current.play().catch(e => console.log("Audio play failed", e));
                   setIsPlayingAudio(true);
                   setIsMuted(false);
                 }
-              }} 
+              }}
             />
           )}
 
           <div className={styles.heroOverlay}></div>
-          
+
           <div className={styles.heroContent}>
             <AnimatedSection type="zoom">
               <h1 className={styles.heroNames}>
-                {partner1.toUpperCase()} <br/>
+                {partner1.toUpperCase()} <br />
                 {showPartner2 && (
                   <>
-                    <span className={styles.heroAmpersand}>&amp;</span> <br/>
+                    <span className={styles.heroAmpersand}>&amp;</span> <br />
                     {partner2.toUpperCase()}
                   </>
                 )}
               </h1>
             </AnimatedSection>
-            
+
             <div className={styles.heroSubInfo}>
               <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
                 <h2 className={styles.heroTitle}>Wedding Day</h2>
               </AnimatedSection>
-              
+
               <AnimatedSection type="fade" style={{ animationDelay: '0.4s' }}>
                 <div className={styles.heroDivider}>
                   <div className={styles.heroLine}></div>
@@ -677,7 +680,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             </div>
           </div>
 
-          <button 
+          <button
             onClick={() => setIsMuted(!isMuted)}
             className={styles.muteBtn}
           >
@@ -692,12 +695,12 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {/* ================= INTRO SECTION ================= */}
         {sections.showIntro !== false && (
           <section className={styles.intro}>
-          <AnimatedSection type="fade">
-            <h2 className={styles.introTitle}>The Day Has Arrived!</h2>
-          </AnimatedSection>
-          <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
-            <p className={styles.introSubtitle}>we can't wait to celebrate with you</p>
-          </AnimatedSection>
+            <AnimatedSection type="fade">
+              <h2 className={styles.introTitle}>The Day Has Arrived!</h2>
+            </AnimatedSection>
+            <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
+              <p className={styles.introSubtitle}>we can't wait to celebrate with you</p>
+            </AnimatedSection>
           </section>
         )}
 
@@ -707,13 +710,14 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           accentColor="#c5975b"
           bgColor="#1a1a1a"
           textColor="#fff"
-        />        {/* ================= VENUE SECTION ================= */}
+        />
+        {/* ================= VENUE SECTION ================= */}
         {sections.showVenue !== false && (
           <section className={styles.venue}>
             <AnimatedSection type="fade">
               <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-5a2 2 0 012-2h2a2 2 0 012 2v5M12 11v.01"></path></svg>
             </AnimatedSection>
-            
+
             <AnimatedSection type="fade">
               <h2 className={styles.venueTitle}>Venue</h2>
             </AnimatedSection>
@@ -730,19 +734,19 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <a href="https://maps.google.com/?q=South+Dixie+Highway,+Homestead" target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(receptionVenue)}`} target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 Get directions
               </a>
             </AnimatedSection>
 
             <AnimatedSection type="zoom" className={styles.mapContainer}>
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114562.59371060975!2d-80.5218764024827!3d25.467471960244793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9e666a7b73cc3%3A0x600989f66fc108b3!2sHomestead%2C%20FL%2C%20USA!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr" 
-                width="100%" 
-                height="250" 
-                style={{border:0, display:'block'}} 
-                allowFullScreen="" 
+              <iframe
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(receptionVenue)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                width="100%"
+                height="250"
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen=""
                 loading="lazy">
               </iframe>
             </AnimatedSection>
@@ -752,42 +756,42 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {/* ================= SCHEDULE SECTION ================= */}
         {sections.showSchedule !== false && (
           <section className={styles.schedule}>
-          <AnimatedSection type="fade">
-            <h2 className={styles.marbella}>The Celebration</h2>
-          </AnimatedSection>
-          
-          <AnimatedSection type="fade">
-            <h3 className={styles.scheduleTitle}>Schedule</h3>
-          </AnimatedSection>
-          
-          <AnimatedSection type="fade">
-            <p className={styles.scheduleSubtitle}>What we have planned for you</p>
-          </AnimatedSection>
+            <AnimatedSection type="fade">
+              <h2 className={styles.marbella}>The Celebration</h2>
+            </AnimatedSection>
 
-          <AnimatedSection type="fade">
-            {(isVisible) => (
-              <div className={styles.timeline}>
-                <div className={`${styles.timelineLine} ${isVisible ? styles.visible : ''}`}></div>
-                
-                {/* Airplane flying down the timeline */}
-                <svg className={`${styles.timelinePlane} ${isVisible ? styles.visible : ''}`} width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                </svg>
+            <AnimatedSection type="fade">
+              <h3 className={styles.scheduleTitle}>Schedule</h3>
+            </AnimatedSection>
 
-                {timeline.map((item, idx) => (
-                  <div key={idx} className={styles.timelineItem}>
-                    <div className={styles.timelineLeft}>
-                      <h4 className={styles.timelineEvent}>{item.title}</h4>
+            <AnimatedSection type="fade">
+              <p className={styles.scheduleSubtitle}>What we have planned for you</p>
+            </AnimatedSection>
+
+            <AnimatedSection type="fade">
+              {(isVisible) => (
+                <div className={styles.timeline}>
+                  <div className={`${styles.timelineLine} ${isVisible ? styles.visible : ''}`}></div>
+
+                  {/* Airplane flying down the timeline */}
+                  <svg className={`${styles.timelinePlane} ${isVisible ? styles.visible : ''}`} width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                  </svg>
+
+                  {timeline.map((item, idx) => (
+                    <div key={idx} className={styles.timelineItem}>
+                      <div className={styles.timelineLeft}>
+                        <h4 className={styles.timelineEvent}>{item.title}</h4>
+                      </div>
+                      <div className={`${styles.timelineDot} ${isVisible ? styles.visible : ''}`} style={{ animationDelay: `${idx * 0.2 + 0.5}s` }}></div>
+                      <div className={styles.timelineRight}>
+                        <p className={styles.timelineTime}>{item.time}</p>
+                      </div>
                     </div>
-                    <div className={`${styles.timelineDot} ${isVisible ? styles.visible : ''}`} style={{ animationDelay: `${idx * 0.2 + 0.5}s` }}></div>
-                    <div className={styles.timelineRight}>
-                      <p className={styles.timelineTime}>{item.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </AnimatedSection>
+                  ))}
+                </div>
+              )}
+            </AnimatedSection>
           </section>
         )}
 
@@ -805,174 +809,174 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
               <h2 className={styles.galleryTitle}>Memories</h2>
               <p className={styles.gallerySubtitle}>A glimpse into our story</p>
             </AnimatedSection>
-            
+
             <GalleryCoverflow images={gallery && gallery.length > 0 ? gallery : [
-                 "/images/couple_beach_sunset_1782995185709.png",
-                 "/images/couple_elegant_dinner_1782995195329.png",
-                 "/images/couple_forest_walk_1782995203954.png",
-                 "/images/couple_cafe_smile_1782995212728.png"
-               ]} />
+              "/images/couple_beach_sunset_1782995185709.png",
+              "/images/couple_elegant_dinner_1782995195329.png",
+              "/images/couple_forest_walk_1782995203954.png",
+              "/images/couple_cafe_smile_1782995212728.png"
+            ]} />
           </section>
         )}
 
         {/* ================= RSVP SECTION ================= */}
         {sections.showRSVP !== false && (
           <section id="rsvp" className={styles.rsvp}>
-          <AnimatedSection type="fade">
-            <h2 className={styles.rsvpTitle}>RSVP</h2>
-          </AnimatedSection>
-          
-          <AnimatedSection type="fade">
-            <p className={styles.rsvpSubtitle}>We hope to count on you</p>
-          </AnimatedSection>
-          
-          <AnimatedSection type="fade">
-            <p className={styles.rsvpDate}>Please reply by March 30th, 2026</p>
-          </AnimatedSection>
-
-          {rsvpSubmitted ? (
-            <AnimatedSection type="zoom">
-              <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
-                <h3 style={{ fontFamily: 'var(--color-font-heading, inherit)', fontSize: '1.6rem', marginBottom: '0.8rem', color: 'var(--color-foreground)' }}>
-                  Thank you, {rsvpName}!
-                </h3>
-                <p style={{ opacity: 0.7, fontSize: '1rem', lineHeight: 1.6 }}>
-                  {rsvpAttending === 'yes' 
-                    ? 'We are so happy you will be joining us! See you soon 💕' 
-                    : 'We understand and will miss you. Thank you for letting us know 🤍'}
-                </p>
-              </div>
-            </AnimatedSection>
-          ) : (
-          <form onSubmit={handleRsvpSubmit}>
             <AnimatedSection type="fade">
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Full name *</label>
-                <input 
-                  type="text" 
-                  placeholder="Your name" 
-                  className={styles.formInput} 
-                  value={rsvpName}
-                  onChange={(e) => setRsvpName(e.target.value)}
-                  required
-                />
-              </div>
+              <h2 className={styles.rsvpTitle}>RSVP</h2>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Email</label>
-                <input 
-                  type="email" 
-                  placeholder="your@email.com" 
-                  className={styles.formInput}
-                  value={rsvpEmail}
-                  onChange={(e) => setRsvpEmail(e.target.value)}
-                />
-              </div>
-            </AnimatedSection>
-
-            {/* STYLIZED SELECT QUESTIONS */}
-            <AnimatedSection type="fade">
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Will you attend? *</label>
-                <div className={styles.selectWrapper}>
-                  <select 
-                    className={styles.formSelect} 
-                    value={rsvpAttending}
-                    onChange={(e) => setRsvpAttending(e.target.value)}
-                    required
-                  >
-                    <option value="" disabled hidden>Please select</option>
-                    <option value="yes">Joyfully Accept</option>
-                    <option value="no">Regretfully Decline</option>
-                  </select>
-                  <ChevronIcon />
-                </div>
-              </div>
+              <p className={styles.rsvpSubtitle}>We hope to count on you</p>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Will you be accompanied? *</label>
-                <div className={styles.selectWrapper}>
-                  <select 
-                    className={styles.formSelect} 
-                    value={accompaniedStatus}
-                    onChange={(e) => setAccompaniedStatus(e.target.value)}
-                  >
-                    <option value="" disabled hidden>Please select</option>
-                    <option value="alone">No, coming alone</option>
-                    <option value="plusOne">Yes, with a plus one</option>
-                    <option value="family">Yes, with family</option>
-                  </select>
-                  <ChevronIcon />
-                </div>
-              </div>
+              <p className={styles.rsvpDate}>Please reply by March 30th, 2026</p>
             </AnimatedSection>
 
-            {(accompaniedStatus === "plusOne" || accompaniedStatus === "family") && (
-              <AnimatedSection type="fade">
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>
-                    {accompaniedStatus === "plusOne" ? "Name of your +1 *" : "Names of your family members *"}
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="First names" 
-                    className={styles.formInput}
-                    value={rsvpPlusOneName}
-                    onChange={(e) => setRsvpPlusOneName(e.target.value)}
-                  />
+            {rsvpSubmitted ? (
+              <AnimatedSection type="zoom">
+                <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
+                  <h3 style={{ fontFamily: 'var(--color-font-heading, inherit)', fontSize: '1.6rem', marginBottom: '0.8rem', color: 'var(--color-foreground)' }}>
+                    Thank you, {rsvpName}!
+                  </h3>
+                  <p style={{ opacity: 0.7, fontSize: '1rem', lineHeight: 1.6 }}>
+                    {rsvpAttending === 'yes'
+                      ? 'We are so happy you will be joining us! See you soon 💕'
+                      : 'We understand and will miss you. Thank you for letting us know 🤍'}
+                  </p>
                 </div>
               </AnimatedSection>
+            ) : (
+              <form onSubmit={handleRsvpSubmit}>
+                <AnimatedSection type="fade">
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Full name *</label>
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      className={styles.formInput}
+                      value={rsvpName}
+                      onChange={(e) => setRsvpName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </AnimatedSection>
+
+                <AnimatedSection type="fade">
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Email</label>
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      className={styles.formInput}
+                      value={rsvpEmail}
+                      onChange={(e) => setRsvpEmail(e.target.value)}
+                    />
+                  </div>
+                </AnimatedSection>
+
+                {/* STYLIZED SELECT QUESTIONS */}
+                <AnimatedSection type="fade">
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Will you attend? *</label>
+                    <div className={styles.selectWrapper}>
+                      <select
+                        className={styles.formSelect}
+                        value={rsvpAttending}
+                        onChange={(e) => setRsvpAttending(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled hidden>Please select</option>
+                        <option value="yes">Joyfully Accept</option>
+                        <option value="no">Regretfully Decline</option>
+                      </select>
+                      <ChevronIcon />
+                    </div>
+                  </div>
+                </AnimatedSection>
+
+                <AnimatedSection type="fade">
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Will you be accompanied? *</label>
+                    <div className={styles.selectWrapper}>
+                      <select
+                        className={styles.formSelect}
+                        value={accompaniedStatus}
+                        onChange={(e) => setAccompaniedStatus(e.target.value)}
+                      >
+                        <option value="" disabled hidden>Please select</option>
+                        <option value="alone">No, coming alone</option>
+                        <option value="plusOne">Yes, with a plus one</option>
+                        <option value="family">Yes, with family</option>
+                      </select>
+                      <ChevronIcon />
+                    </div>
+                  </div>
+                </AnimatedSection>
+
+                {(accompaniedStatus === "plusOne" || accompaniedStatus === "family") && (
+                  <AnimatedSection type="fade">
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        {accompaniedStatus === "plusOne" ? "Name of your +1 *" : "Names of your family members *"}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="First names"
+                        className={styles.formInput}
+                        value={rsvpPlusOneName}
+                        onChange={(e) => setRsvpPlusOneName(e.target.value)}
+                      />
+                    </div>
+                  </AnimatedSection>
+                )}
+
+                <AnimatedSection type="fade">
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Which dish do you prefer? *</label>
+                    <div className={styles.selectWrapper}>
+                      <select
+                        className={styles.formSelect}
+                        value={rsvpMeal}
+                        onChange={(e) => setRsvpMeal(e.target.value)}
+                      >
+                        <option value="" disabled hidden>Please select</option>
+                        <option value="meat">Meat (Steak friete)</option>
+                        <option value="fish">Fish</option>
+                        <option value="vegetarian">Vegetarian</option>
+                      </select>
+                      <ChevronIcon />
+                    </div>
+                  </div>
+                </AnimatedSection>
+
+                {rsvpError && (
+                  <AnimatedSection type="fade">
+                    <p style={{ color: '#c0392b', textAlign: 'center', fontSize: '0.9rem', margin: '0.5rem 0' }}>{rsvpError}</p>
+                  </AnimatedSection>
+                )}
+
+                <AnimatedSection type="zoom">
+                  <button
+                    type="submit"
+                    className={styles.btnSubmit}
+                    disabled={rsvpSubmitting}
+                    style={{ opacity: rsvpSubmitting ? 0.6 : 1, cursor: rsvpSubmitting ? 'wait' : 'pointer' }}
+                  >
+                    {rsvpSubmitting ? 'Sending...' : 'Send RSVP'}
+                  </button>
+                </AnimatedSection>
+              </form>
             )}
 
             <AnimatedSection type="fade">
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Which dish do you prefer? *</label>
-                <div className={styles.selectWrapper}>
-                  <select 
-                    className={styles.formSelect} 
-                    value={rsvpMeal}
-                    onChange={(e) => setRsvpMeal(e.target.value)}
-                  >
-                    <option value="" disabled hidden>Please select</option>
-                    <option value="meat">Meat (Steak friete)</option>
-                    <option value="fish">Fish</option>
-                    <option value="vegetarian">Vegetarian</option>
-                  </select>
-                  <ChevronIcon />
-                </div>
+              <div className={styles.footerCredit} style={{ width: '100%', textAlign: 'center', margin: '3rem auto 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <p style={{ textAlign: 'center', margin: '0 auto', width: '100%' }}>Made with Love ❤ With FOLDÈ Design</p>
               </div>
             </AnimatedSection>
-
-            {rsvpError && (
-              <AnimatedSection type="fade">
-                <p style={{ color: '#c0392b', textAlign: 'center', fontSize: '0.9rem', margin: '0.5rem 0' }}>{rsvpError}</p>
-              </AnimatedSection>
-            )}
-
-            <AnimatedSection type="zoom">
-              <button 
-                type="submit" 
-                className={styles.btnSubmit}
-                disabled={rsvpSubmitting}
-                style={{ opacity: rsvpSubmitting ? 0.6 : 1, cursor: rsvpSubmitting ? 'wait' : 'pointer' }}
-              >
-                {rsvpSubmitting ? 'Sending...' : 'Send RSVP'}
-              </button>
-            </AnimatedSection>
-          </form>
-          )}
-
-          <AnimatedSection type="fade">
-            <div className={styles.footerCredit} style={{ width: '100%', textAlign: 'center', margin: '3rem auto 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <p style={{ textAlign: 'center', margin: '0 auto', width: '100%' }}>Made with Love ❤ With FOLDÈ Design</p>
-            </div>
-          </AnimatedSection>
-        </section>
+          </section>
         )}
 
         {/* ================= PHOTO UPLOAD CTA (Galerie Photos) ================= */}
@@ -996,9 +1000,9 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                   </button>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', margin: '0.5rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
-                    <img 
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`} 
-                      alt="QR Code to upload photos" 
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`}
+                      alt="QR Code to upload photos"
                       style={{ width: '130px', height: '130px', objectFit: 'contain' }}
                     />
                     <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
@@ -1021,8 +1025,8 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {/* ================= VIRAL BADGE ================= */}
         <div style={{ padding: '2.5rem 1rem 3.5rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           <a href="https://foldedesign.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease', margin: '0 auto' }}
-             onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
-             onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
           >
             <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
             <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontStyle: 'italic', letterSpacing: '1px' }}>

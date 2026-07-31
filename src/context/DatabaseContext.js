@@ -17,7 +17,7 @@ export function DatabaseProvider({ children }) {
     // 1. Initial local load
     const saved = typeof window !== 'undefined' && localStorage.getItem('currentUser');
     if (saved) {
-      try { setCurrentUser(JSON.parse(saved)); } catch (e) {}
+      try { setCurrentUser(JSON.parse(saved)); } catch (e) { }
     }
 
     // 2. Initial Supabase session load
@@ -113,7 +113,7 @@ export function DatabaseProvider({ children }) {
 
       if (error) {
         console.warn('Supabase login error:', error.message);
-        
+
         // Fallback check for local mock users
         const localUser = users.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === password);
         if (localUser) {
@@ -228,11 +228,60 @@ export function DatabaseProvider({ children }) {
     },
   ]);
 
-  const createOrder = (userEmail, name, partnerName, theme, plan, price) => {
+  // Fetch orders from Supabase (or fallback to local)
+  const fetchOrders = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('Supabase fetchOrders failed:', error.message);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const mappedOrders = data.map(o => ({
+          id: o.id,
+          couple: o.couple,
+          slug: o.slug,
+          email: o.user_email,
+          plan: o.plan,
+          price: o.price,
+          status: o.status,
+          paid: o.paid,
+          date: o.date,
+          theme: o.theme,
+          details: o.details || {}
+        }));
+        setOrders(mappedOrders);
+
+        // Also merge eventInfo from stored order details
+        setEventInfo(prev => {
+          const merged = { ...prev };
+          data.forEach(o => {
+            if (o.slug && o.details && Object.keys(o.details).length > 0) {
+              merged[o.slug] = { ...(prev[o.slug] || {}), ...o.details };
+            }
+          });
+          return merged;
+        });
+      }
+    } catch (err) {
+      console.warn('fetchOrders error:', err);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const createOrder = async (userEmail, name, partnerName, theme, plan, price, details = {}) => {
     const baseSlug = `${name.toLowerCase()}-et-${partnerName.toLowerCase()}`.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     let slug = baseSlug;
     let counter = 1;
-    
+
     // Ensure slug is unique
     while (orders.find(o => o.slug === slug)) {
       slug = `${baseSlug}-wedding${counter > 1 ? `-${counter}` : ''}`;
@@ -240,9 +289,10 @@ export function DatabaseProvider({ children }) {
     }
 
     const isStandard = plan === 'Standard' || plan === 'Essential' || plan === 'essential';
+    const orderId = `ORD-${String(orders.length + 1).padStart(3, '0')}`;
 
     const newOrder = {
-      id: `ORD-${String(orders.length + 1).padStart(3, '0')}`,
+      id: orderId,
       couple: `${name} et ${partnerName}`,
       slug,
       email: userEmail,
@@ -251,14 +301,57 @@ export function DatabaseProvider({ children }) {
       status: isStandard ? "Live" : "In Creation",
       paid: true,
       date: new Date().toISOString().split('T')[0],
-      theme
+      theme,
+      details
     };
-    setOrders(prev => [...prev, newOrder]);
+
+    // 1. Save locally immediately
+    setOrders(prev => [newOrder, ...prev]);
+
+    // 2. Try to insert into Supabase `orders` table
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          id: orderId,
+          user_email: userEmail,
+          couple: `${name} et ${partnerName}`,
+          slug: slug,
+          plan: plan,
+          price: price,
+          status: isStandard ? "Live" : "In Creation",
+          paid: true,
+          date: new Date().toISOString().split('T')[0],
+          theme: theme,
+          details: details
+        });
+
+      if (error) {
+        console.warn('Supabase createOrder failed (saved locally):', error.message);
+      }
+    } catch (err) {
+      console.warn('Supabase createOrder exception:', err);
+    }
+
     return newOrder;
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId, newStatus) => {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    try {
+      await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+    } catch (err) {
+      console.warn('updateOrderStatus Supabase error:', err);
+    }
+  };
+
+  const saveOrderDetails = async (slug, details) => {
+    setEventInfo(prev => ({ ...prev, [slug]: { ...(prev[slug] || {}), ...details } }));
+    try {
+      await supabase.from('orders').update({ details }).eq('slug', slug);
+    } catch (err) {
+      console.warn('saveOrderDetails Supabase error:', err);
+    }
   };
 
   // ============ GUESTS (Supabase + local fallback) ============
@@ -396,11 +489,11 @@ export function DatabaseProvider({ children }) {
     if (typeof window !== 'undefined') {
       const savedOrders = localStorage.getItem('orders');
       if (savedOrders) {
-        try { setOrders(JSON.parse(savedOrders)); } catch (e) {}
+        try { setOrders(JSON.parse(savedOrders)); } catch (e) { }
       }
       const savedEventInfo = localStorage.getItem('eventInfo');
       if (savedEventInfo) {
-        try { setEventInfo(JSON.parse(savedEventInfo)); } catch (e) {}
+        try { setEventInfo(JSON.parse(savedEventInfo)); } catch (e) { }
       }
       setIsLoaded(true);
     }
@@ -443,7 +536,7 @@ export function DatabaseProvider({ children }) {
     if (typeof window !== 'undefined') {
       const savedRev = localStorage.getItem('revisions');
       if (savedRev) {
-        try { setRevisions(JSON.parse(savedRev)); } catch (e) {}
+        try { setRevisions(JSON.parse(savedRev)); } catch (e) { }
       }
     }
   }, []);
@@ -453,7 +546,7 @@ export function DatabaseProvider({ children }) {
       // Auth
       currentUser, users, register, login, loginWithGoogle, loginWithMagicLink, logout,
       // Orders
-      orders, setOrders, createOrder, updateOrderStatus,
+      orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, fetchOrders,
       // Guests
       guests, addGuest, fetchGuests,
       // Event Info
