@@ -18,7 +18,7 @@ export default function InvitePage({ params }) {
 
   // Find the order for this slug
   const order = orders.find(o => o.slug === slug);
-  
+
   if (!order) {
     return (
       <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)' }}>
@@ -30,10 +30,10 @@ export default function InvitePage({ params }) {
     );
   }
 
-  // Get the data for this slug
-  const data = eventInfo[slug] || {};
+  // Get the data for this slug (merge order details from DB with eventInfo state)
+  const data = { ...(order.details || {}), ...(eventInfo[slug] || {}), slug };
 
   // For now, we use BordeauxTemplate as our universal base template 
   // (we change colors dynamically via other ways or it handles its own themes)
-  return <BordeauxTemplate data={{ ...data, slug }} editMode={false} autoPlaySimulation={true} />;
+  return <BordeauxTemplate data={data} editMode={false} autoPlaySimulation={true} />;
 }

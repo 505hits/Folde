@@ -983,9 +983,17 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                         onChange={(e) => setRsvpMeal(e.target.value)}
                       >
                         <option value="" disabled hidden>Please select</option>
-                        <option value="meat">Meat (Steak friete)</option>
-                        <option value="fish">Fish</option>
-                        <option value="vegetarian">Vegetarian</option>
+                        {menu && menu.length > 0 ? (
+                          menu.map((m, idx) => (
+                            <option key={idx} value={m.dish}>{m.course ? `${m.course}: ` : ''}{m.dish}</option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="Meat">Meat Option</option>
+                            <option value="Fish">Fish Option</option>
+                            <option value="Vegetarian">Vegetarian Option</option>
+                          </>
+                        )}
                       </select>
                       <ChevronIcon />
                     </div>
