@@ -1154,13 +1154,32 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     }
   };
 
+  // Debounced auto-save timeout ref to prevent network flooding and React re-render crashes while typing
+  const saveTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    setLocal(eventInfo);
+  }, [slug]);
+
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };
     setLocal(updated);
-    setEventInfo({ ...allEventInfo, [slug]: updated });
-    if (saveOrderDetails) {
-      saveOrderDetails(slug, updated);
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      setEventInfo(prev => ({ ...prev, [slug]: updated }));
+      if (saveOrderDetails) {
+        try {
+          saveOrderDetails(slug, updated);
+        } catch (e) {
+          console.warn("Auto-save error:", e);
+        }
+      }
+    }, 400);
+
     if (field === 'receptionVenue') {
       fetchAddressSuggestions(value);
     }
