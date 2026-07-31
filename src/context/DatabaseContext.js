@@ -501,13 +501,21 @@ export function DatabaseProvider({ children }) {
 
   React.useEffect(() => {
     if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem('orders', JSON.stringify(orders));
+      try {
+        localStorage.setItem('orders', JSON.stringify(orders));
+      } catch (e) {
+        console.warn('LocalStorage quota limit reached for orders:', e);
+      }
     }
   }, [orders, isLoaded]);
 
   React.useEffect(() => {
     if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem('eventInfo', JSON.stringify(eventInfo));
+      try {
+        localStorage.setItem('eventInfo', JSON.stringify(eventInfo));
+      } catch (e) {
+        console.warn('LocalStorage quota limit reached for eventInfo:', e);
+      }
     }
   }, [eventInfo, isLoaded]);
 

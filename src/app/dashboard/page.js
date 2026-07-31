@@ -883,6 +883,29 @@ export default function Dashboard() {
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#b08968', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></span> {userOrder.plan} · Draft
           </div>
+          <button
+            onClick={logout}
+            style={{
+              width: '100%',
+              marginTop: '1rem',
+              padding: '0.5rem 0.8rem',
+              borderRadius: '8px',
+              border: '1px solid #e0dcd7',
+              backgroundColor: '#fff',
+              color: '#dc2626',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <span>🚪</span> Sign Out
+          </button>
         </div>
       </aside>
 
@@ -895,7 +918,7 @@ export default function Dashboard() {
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', color: '#555', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-              <span>📱</span> Voir en plein écran
+              <span>📱</span> View Fullscreen
             </a>
             <button
               onClick={() => {
@@ -908,9 +931,9 @@ export default function Dashboard() {
               style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#7b906f', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               {isPublishing ? (
-                <>⏳ Publication...</>
+                <>⏳ Publishing...</>
               ) : (
-                <>🔒 Publier mon site</>
+                <>🔒 Publish My Website</>
               )}
             </button>
           </div>
@@ -993,6 +1016,75 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   const { saveOrderDetails } = useDatabase();
   const [local, setLocal] = useState(eventInfo);
 
+  // Client-side Canvas Image Compression helper to avoid LocalStorage quota & payload limits
+  const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.85) => {
+    return new Promise((resolve) => {
+      if (!file || !file.type.startsWith('image/')) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => resolve(e.target.result);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Address Autocomplete State (OpenStreetMap Nominatim API - 100% free)
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+
+  const fetchAddressSuggestions = async (query) => {
+    if (!query || query.trim().length < 3) {
+      setAddressSuggestions([]);
+      setShowAddressDropdown(false);
+      return;
+    }
+    setIsSearchingAddress(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`, {
+        headers: { 'Accept-Language': 'en,fr' }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setAddressSuggestions(data);
+        setShowAddressDropdown(data.length > 0);
+      }
+    } catch (e) {
+      console.warn("Address search error:", e);
+    } finally {
+      setIsSearchingAddress(false);
+    }
+  };
+
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };
     setLocal(updated);
@@ -1000,13 +1092,16 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     if (saveOrderDetails) {
       saveOrderDetails(slug, updated);
     }
+    if (field === 'receptionVenue') {
+      fetchAddressSuggestions(value);
+    }
   };
 
   const handleTimelineChange = (index, field, value) => {
     const current = local.timeline || [
-      { time: "14:00", title: "Cocktail d'accueil" },
-      { time: "16:30", title: "Cérémonie Laïque" },
-      { time: "19:00", title: "Dîner de Gala" }
+      { time: "2:00 PM", title: "Welcome Cocktail" },
+      { time: "4:30 PM", title: "Wedding Ceremony" },
+      { time: "7:00 PM", title: "Gala Dinner" }
     ];
     const newTimeline = [...current];
     newTimeline[index] = { ...newTimeline[index], [field]: value };
@@ -1015,11 +1110,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const addTimelineItem = () => {
     const current = local.timeline || [
-      { time: "14:00", title: "Cocktail d'accueil" },
-      { time: "16:30", title: "Cérémonie Laïque" },
-      { time: "19:00", title: "Dîner de Gala" }
+      { time: "2:00 PM", title: "Welcome Cocktail" },
+      { time: "4:30 PM", title: "Wedding Ceremony" },
+      { time: "7:00 PM", title: "Gala Dinner" }
     ];
-    handleChange('timeline', [...current, { time: "20:00", title: "Nouvelle étape" }]);
+    handleChange('timeline', [...current, { time: "8:00 PM", title: "New Event" }]);
   };
 
   const removeTimelineItem = (index) => {
@@ -1030,9 +1125,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const handleMenuChange = (index, field, value) => {
     const current = local.menu || [
-      { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
-      { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
-      { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+      { course: "Starter", dish: "Seared Foie Gras or Scallop Tartare" },
+      { course: "Main", dish: "Beef Tenderloin with Morel Sauce & Truffle Mash" },
+      { course: "Dessert", dish: "Wedding Cake & Gourmet Dessert Buffet" }
     ];
     const newMenu = [...current];
     newMenu[index] = { ...newMenu[index], [field]: value };
@@ -1041,11 +1136,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const addMenuItem = () => {
     const current = local.menu || [
-      { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
-      { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
-      { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+      { course: "Starter", dish: "Seared Foie Gras or Scallop Tartare" },
+      { course: "Main", dish: "Beef Tenderloin with Morel Sauce & Truffle Mash" },
+      { course: "Dessert", dish: "Wedding Cake & Gourmet Dessert Buffet" }
     ];
-    handleChange('menu', [...current, { course: "Nouveau plat", dish: "Description du plat" }]);
+    handleChange('menu', [...current, { course: "Course", dish: "Dish Description" }]);
   };
 
   const removeMenuItem = (index) => {
@@ -1056,8 +1151,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const handleAccommodationsChange = (index, field, value) => {
     const current = local.accommodations || [
-      { name: "Hôtel du Domaine", price: "120€ / nuit" },
-      { name: "Gîte de la Rose", price: "90€ / nuit" }
+      { name: "Grand Hotel", price: "$150 / night" },
+      { name: "Rose Cottage Guesthouse", price: "$95 / night" }
     ];
     const newAcc = [...current];
     newAcc[index] = { ...newAcc[index], [field]: value };
@@ -1066,10 +1161,10 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const addAccommodationItem = () => {
     const current = local.accommodations || [
-      { name: "Hôtel du Domaine", price: "120€ / nuit" },
-      { name: "Gîte de la Rose", price: "90€ / nuit" }
+      { name: "Grand Hotel", price: "$150 / night" },
+      { name: "Rose Cottage Guesthouse", price: "$95 / night" }
     ];
-    handleChange('accommodations', [...current, { name: "Nom de l'hôtel", price: "100€ / nuit" }]);
+    handleChange('accommodations', [...current, { name: "Hotel Name", price: "$100 / night" }]);
   };
 
   const removeAccommodationItem = (index) => {
@@ -1461,11 +1556,12 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <StyledFileInput
                 accept="image/*"
                 label="Upload Image"
-                onChange={(e) => {
+                onChange={async (e) => {
                   if (e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => handleChange('dressCode', { ...local.dressCode, image: reader.result });
-                    reader.readAsDataURL(e.target.files[0]);
+                    const compressedBase64 = await compressImage(e.target.files[0]);
+                    if (compressedBase64) {
+                      handleChange('dressCode', { ...local.dressCode, image: compressedBase64 });
+                    }
                   }
                 }}
               />
@@ -1494,16 +1590,14 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             accept="image/*"
             multiple
             label="Upload Photos"
-            onChange={(e) => {
+            onChange={async (e) => {
               const files = Array.from(e.target.files);
-              files.forEach(file => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  const currentGallery = local.gallery || [];
-                  handleChange('gallery', [...currentGallery, reader.result]);
-                };
-                reader.readAsDataURL(file);
-              });
+              const compressedImages = await Promise.all(files.map(file => compressImage(file)));
+              const validImages = compressedImages.filter(Boolean);
+              if (validImages.length > 0) {
+                const currentGallery = local.gallery || [];
+                handleChange('gallery', [...currentGallery, ...validImages]);
+              }
             }}
           />
         </div>
@@ -1532,16 +1626,14 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             accept="image/*"
             multiple
             label="Upload Photos"
-            onChange={(e) => {
+            onChange={async (e) => {
               const files = Array.from(e.target.files);
-              files.forEach(file => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  const currentGuestGallery = local.guestGallery || [];
-                  handleChange('guestGallery', [...currentGuestGallery, reader.result]);
-                };
-                reader.readAsDataURL(file);
-              });
+              const compressedImages = await Promise.all(files.map(file => compressImage(file)));
+              const validImages = compressedImages.filter(Boolean);
+              if (validImages.length > 0) {
+                const currentGuestGallery = local.guestGallery || [];
+                handleChange('guestGallery', [...currentGuestGallery, ...validImages]);
+              }
             }}
           />
         </div>
@@ -1635,74 +1727,127 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Partner 1</label>
-              <input type="text" value={local.partner1 || ''} onChange={e => handleChange('partner1', e.target.value)} style={inputStyle} placeholder="Prénom Marié 1" />
+              <label style={labelStyle}>Partner 1 First Name</label>
+              <input type="text" value={local.partner1 || ''} onChange={e => handleChange('partner1', e.target.value)} style={inputStyle} placeholder="Partner 1 Name" />
             </div>
             <div>
-              <label style={labelStyle}>Partner 2</label>
-              <input type="text" value={local.partner2 || ''} onChange={e => handleChange('partner2', e.target.value)} style={inputStyle} placeholder="Prénom Marié 2" />
+              <label style={labelStyle}>Partner 2 First Name</label>
+              <input type="text" value={local.partner2 || ''} onChange={e => handleChange('partner2', e.target.value)} style={inputStyle} placeholder="Partner 2 Name" />
             </div>
           </div>
           <div>
-            <label style={labelStyle}>Displayed Date</label>
+            <label style={labelStyle}>Displayed Wedding Date</label>
             <input type="text" value={local.date || ''} onChange={e => handleChange('date', e.target.value)} style={inputStyle} placeholder="MAY 27, 2026" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Nom du Lieu / Domaine</label>
-              <input type="text" value={local.ceremonyVenue || ''} onChange={e => handleChange('ceremonyVenue', e.target.value)} style={inputStyle} placeholder="Ex: Château de Chantilly" />
+              <label style={labelStyle}>Venue / Estate Name</label>
+              <input type="text" value={local.ceremonyVenue || ''} onChange={e => handleChange('ceremonyVenue', e.target.value)} style={inputStyle} placeholder="e.g. Château de Chantilly, Paris" />
             </div>
-            <div>
-              <label style={labelStyle}>Adresse de la Réception (Géolocalisation automatique)</label>
-              <input type="text" value={local.receptionVenue || ''} onChange={e => handleChange('receptionVenue', e.target.value)} style={inputStyle} placeholder="Ex: 7 Rue du Conétable, 60500 Chantilly" />
+            <div style={{ position: 'relative' }}>
+              <label style={labelStyle}>Reception Address (Live Address Assistance)</label>
+              <input
+                type="text"
+                value={local.receptionVenue || ''}
+                onChange={e => handleChange('receptionVenue', e.target.value)}
+                onFocus={() => { if (addressSuggestions.length > 0) setShowAddressDropdown(true); }}
+                style={inputStyle}
+                placeholder="e.g. 5 Rue de la Taulière, 13008 Marseille, France"
+              />
+              {isSearchingAddress && (
+                <div style={{ position: 'absolute', right: '1rem', top: '2.4rem', fontSize: '0.8rem', color: '#888' }}>🔍 Searching...</div>
+              )}
+
+              {/* Address Autocomplete Suggestions Dropdown */}
+              {showAddressDropdown && addressSuggestions.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e0dcd7',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                  zIndex: 99,
+                  marginTop: '0.25rem',
+                  maxHeight: '220px',
+                  overflowY: 'auto'
+                }}>
+                  {addressSuggestions.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        handleChange('receptionVenue', item.display_name);
+                        setShowAddressDropdown(false);
+                      }}
+                      style={{
+                        padding: '0.75rem 1rem',
+                        fontSize: '0.85rem',
+                        color: '#333',
+                        cursor: 'pointer',
+                        borderBottom: idx < addressSuggestions.length - 1 ? '1px solid #f0ede9' : 'none',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#faf5f0'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                    >
+                      📍 {item.display_name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Dynamic Map Live Preview */}
-          {local.receptionVenue && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span>📍</span> Carte interactive (Mapbox / Google Maps Embed)
-              </label>
-              <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0dcd7', height: '200px', backgroundColor: '#f5f5f5' }}>
-                <iframe
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, display: 'block' }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(local.receptionVenue)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                />
+          {/* Dynamic Map Live Preview using combined query */}
+          {(() => {
+            const mapCombinedQuery = [local.receptionVenue, local.ceremonyVenue].filter(Boolean).join(', ');
+            return mapCombinedQuery ? (
+              <div style={{ marginTop: '0.5rem' }}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>📍</span> Interactive Location Map
+                </label>
+                <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0dcd7', height: '220px', backgroundColor: '#f5f5f5' }}>
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, display: 'block' }}
+                    loading="lazy"
+                    allowFullScreen
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(mapCombinedQuery)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            ) : null;
+          })()}
         </div>
       </div>
 
       {/* Schedule / Timeline */}
       <div style={sectionStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>⏰ Programme (Schedule)</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>⏰ Schedule & Timeline</h2>
           <button
             onClick={addTimelineItem}
             style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
           >
-            + Ajouter une étape
+            + Add Event
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {((local.timeline && local.timeline.length > 0) ? local.timeline : [
-            { time: "14:00", title: "Cocktail d'accueil" },
-            { time: "16:30", title: "Cérémonie Laïque" },
-            { time: "19:00", title: "Dîner de Gala" }
+            { time: "2:00 PM", title: "Welcome Cocktail" },
+            { time: "4:30 PM", title: "Wedding Ceremony" },
+            { time: "7:00 PM", title: "Gala Dinner" }
           ]).map((item, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '0.75rem', alignItems: 'center' }}>
-              <input type="text" value={item.time || ''} onChange={e => handleTimelineChange(idx, 'time', e.target.value)} style={inputStyle} placeholder="Heure (ex: 14:00)" />
-              <input type="text" value={item.title || ''} onChange={e => handleTimelineChange(idx, 'title', e.target.value)} style={inputStyle} placeholder="Événement (ex: Cérémonie)" />
+              <input type="text" value={item.time || ''} onChange={e => handleTimelineChange(idx, 'time', e.target.value)} style={inputStyle} placeholder="Time (e.g., 2:00 PM)" />
+              <input type="text" value={item.title || ''} onChange={e => handleTimelineChange(idx, 'title', e.target.value)} style={inputStyle} placeholder="Event Name (e.g., Ceremony)" />
               <button
                 onClick={() => removeTimelineItem(idx)}
                 style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
-                title="Supprimer"
+                title="Delete"
               >
                 ✕
               </button>
@@ -1714,26 +1859,26 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       {/* Accommodations */}
       <div style={sectionStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🏨 Hébergements (Accommodations)</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🏨 Accommodations & Hotels</h2>
           <button
             onClick={addAccommodationItem}
             style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
           >
-            + Ajouter un hôtel
+            + Add Hotel
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {((local.accommodations && local.accommodations.length > 0) ? local.accommodations : [
-            { name: "Hôtel du Domaine", price: "120€ / nuit" },
-            { name: "Gîte de la Rose", price: "90€ / nuit" }
+            { name: "Grand Hotel", price: "$150 / night" },
+            { name: "Rose Cottage Guesthouse", price: "$95 / night" }
           ]).map((acc, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: '0.75rem', alignItems: 'center' }}>
-              <input type="text" value={acc.name || ''} onChange={e => handleAccommodationsChange(idx, 'name', e.target.value)} style={inputStyle} placeholder="Nom de l'hôtel" />
-              <input type="text" value={acc.price || ''} onChange={e => handleAccommodationsChange(idx, 'price', e.target.value)} style={inputStyle} placeholder="Prix / Info" />
+              <input type="text" value={acc.name || ''} onChange={e => handleAccommodationsChange(idx, 'name', e.target.value)} style={inputStyle} placeholder="Hotel Name" />
+              <input type="text" value={acc.price || ''} onChange={e => handleAccommodationsChange(idx, 'price', e.target.value)} style={inputStyle} placeholder="Rate / Info" />
               <button
                 onClick={() => removeAccommodationItem(idx)}
                 style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
-                title="Supprimer"
+                title="Delete"
               >
                 ✕
               </button>
@@ -1745,27 +1890,27 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       {/* Menu */}
       <div style={sectionStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🍽️ Menu</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🍽️ Wedding Menu</h2>
           <button
             onClick={addMenuItem}
             style={{ padding: '0.4rem 0.9rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
           >
-            + Ajouter un plat
+            + Add Dish
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {((local.menu && local.menu.length > 0) ? local.menu : [
-            { course: "Entrée", dish: "Foie Gras poêlé ou Tartare de St-Jacques" },
-            { course: "Plat", dish: "Filet de bœuf aux morilles & écrasé de truffes" },
-            { course: "Dessert", dish: "Pièce montée & buffet de gourmandises" }
+            { course: "Starter", dish: "Seared Foie Gras or Scallop Tartare" },
+            { course: "Main", dish: "Beef Tenderloin with Morel Sauce & Truffle Mash" },
+            { course: "Dessert", dish: "Wedding Cake & Gourmet Dessert Buffet" }
           ]).map((m, idx) => (
             <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '0.75rem', alignItems: 'center' }}>
-              <input type="text" value={m.course || ''} onChange={e => handleMenuChange(idx, 'course', e.target.value)} style={inputStyle} placeholder="Type (Entrée...)" />
-              <input type="text" value={m.dish || ''} onChange={e => handleMenuChange(idx, 'dish', e.target.value)} style={inputStyle} placeholder="Description du plat" />
+              <input type="text" value={m.course || ''} onChange={e => handleMenuChange(idx, 'course', e.target.value)} style={inputStyle} placeholder="Course (e.g., Starter)" />
+              <input type="text" value={m.dish || ''} onChange={e => handleMenuChange(idx, 'dish', e.target.value)} style={inputStyle} placeholder="Dish Description" />
               <button
                 onClick={() => removeMenuItem(idx)}
                 style={{ padding: '0.6rem', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
-                title="Supprimer"
+                title="Delete"
               >
                 ✕
               </button>
