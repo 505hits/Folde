@@ -585,7 +585,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           )}
 
           {/* ================= ENVELOPE OVERLAY ================= */}
-          {!editMode && !envelopeDismissed && (
+          {!envelopeDismissed && (
             <div
               className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
               onClick={handleEnvelopeClick}
@@ -798,6 +798,46 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
         {/* ================= DRESS CODE SECTION ================= */}
         {sections.showDressCode !== false && (
           <DressCodeSection t={t} accentColor="#c5975b" />
+        )}
+
+        {/* ================= ACCOMMODATIONS SECTION ================= */}
+        {sections.showAccommodations !== false && (
+          <section style={{ padding: '4rem 2rem', backgroundColor: '#FAF9F6', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
+            <AnimatedSection type="fade">
+              <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Accommodations &amp; Hotels</h2>
+              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>Where to stay during our celebration</p>
+            </AnimatedSection>
+            <AnimatedSection type="zoom">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '450px', margin: '0 auto' }}>
+                {accommodations.map((acc, i) => (
+                  <div key={i} style={{ backgroundColor: '#fff', padding: '1.25rem 1.5rem', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--color-primary)', fontSize: '1rem' }}>{acc.name}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 600, backgroundColor: '#FAF9F6', padding: '0.3rem 0.8rem', borderRadius: '20px' }}>{acc.price}</div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          </section>
+        )}
+
+        {/* ================= MENU SECTION ================= */}
+        {sections.showMenu !== false && (
+          <section style={{ padding: '4rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
+            <AnimatedSection type="fade">
+              <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Wedding Menu</h2>
+              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>A taste of what awaits you</p>
+            </AnimatedSection>
+            <AnimatedSection type="zoom">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '450px', margin: '0 auto' }}>
+                {menu.map((m, i) => (
+                  <div key={i} style={{ backgroundColor: '#FAF9F6', padding: '1.25rem 1.5rem', borderRadius: '12px', border: '1px dashed rgba(0,0,0,0.1)' }}>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--color-accent)', fontWeight: 700, marginBottom: '0.3rem' }}>{m.course}</div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.15rem', color: 'var(--color-primary)' }}>{m.dish}</div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          </section>
         )}
 
 

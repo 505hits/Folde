@@ -96,6 +96,7 @@ export default function Dashboard() {
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [envelopeKey, setEnvelopeKey] = useState(0);
 
   // Revision Request State
   const [revisionComment, setRevisionComment] = useState('');
@@ -950,7 +951,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {activeTab === 'invitation' ? <InvitationTab eventInfo={clientEventInfo} slug={clientSlug} setEventInfo={setEventInfo} allEventInfo={eventInfo} selectedTheme={selectedTheme} setSelectedTheme={setSelectedTheme} plan={userOrder.plan} orderId={userOrder.id} /> : (
+          {activeTab === 'invitation' ? <InvitationTab eventInfo={clientEventInfo} slug={clientSlug} setEventInfo={setEventInfo} allEventInfo={eventInfo} selectedTheme={selectedTheme} setSelectedTheme={setSelectedTheme} plan={userOrder.plan} orderId={userOrder.id} triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)} /> : (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
               Section in development
             </div>
@@ -961,14 +962,37 @@ export default function Dashboard() {
 
       {/* 3. Right Preview Panel */}
       <aside className="dashboard-preview">
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden' }}>
+          <button
+            onClick={() => setEnvelopeKey(prev => prev + 1)}
+            style={{
+              marginBottom: '1rem',
+              padding: '0.45rem 1rem',
+              borderRadius: '20px',
+              border: '1px solid #e0dcd7',
+              backgroundColor: '#fff',
+              color: '#5C3A1E',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#faf8f5'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+          >
+            <span>✉️</span> Replay Envelope Opening
+          </button>
           {/* Phone Mockup */}
           <div style={{ width: '300px', height: '620px', backgroundColor: '#111', borderRadius: '40px', padding: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', position: 'relative' }}>
             <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '28px', overflow: 'hidden', position: 'relative' }}>
               {/* Live rendering of the template with correct overflow handling */}
               <div style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
                 <div style={{ width: '450px', zoom: 0.6133 }}>
-                  <BordeauxTemplate data={clientEventInfo} editMode={true} />
+                  <BordeauxTemplate key={envelopeKey} data={clientEventInfo} editMode={true} />
                 </div>
               </div>
 
@@ -1013,7 +1037,7 @@ export default function Dashboard() {
   );
 }
 
-function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId }) {
+function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId, triggerReplayEnvelope }) {
   const { saveOrderDetails } = useDatabase();
   const [local, setLocal] = useState(eventInfo);
 
@@ -1313,19 +1337,43 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Visible Sections</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>👁️</span> Website Sections & Visibility
+          </h2>
+          <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.25rem' }}>
+            Toggle sections on or off to customize what appears on your wedding invitation site.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
           {[
             { key: 'showIntro', label: 'Introduction' },
-            { key: 'showVenue', label: 'Venue' },
-            { key: 'showSchedule', label: 'Schedule' },
+            { key: 'showVenue', label: 'Venue & Map' },
+            { key: 'showSchedule', label: 'Schedule & Timeline' },
+            { key: 'showAccommodations', label: 'Accommodations & Hotels' },
+            { key: 'showMenu', label: 'Wedding Menu' },
             { key: 'showDressCode', label: 'Dress Code' },
-            { key: 'showGallery', label: 'Photo Gallery' },
-            { key: 'showRSVP', label: 'RSVP Form' }
+            { key: 'showGallery', label: 'Memories (Photo Slider)' },
+            { key: 'showRSVP', label: 'RSVP Form' },
+            { key: 'showGuestGallery', label: 'Guest Photo Gallery' }
           ].map(sec => {
             const isVisible = local.sections?.[sec.key] !== false;
             return (
-              <label key={sec.key} style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}>
+              <label
+                key={sec.key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justify: 'space-between',
+                  padding: '0.8rem 1rem',
+                  borderRadius: '12px',
+                  backgroundColor: isVisible ? '#f4f7f4' : '#fafafa',
+                  border: isVisible ? '1px solid #7b906f' : '1px solid #e0e0e0',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: isVisible ? '#2e5b32' : '#777' }}>{sec.label}</span>
                 <input
                   type="checkbox"
                   checked={isVisible}
@@ -1334,9 +1382,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     newSections[sec.key] = e.target.checked;
                     handleChange('sections', newSections);
                   }}
-                  style={{ width: '1.2rem', height: '1.2rem', accentColor: '#5C3A1E' }}
+                  style={{ width: '1.15rem', height: '1.15rem', accentColor: '#7b906f', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '0.95rem', color: '#1a1a1a' }}>{sec.label}</span>
               </label>
             );
           })}
@@ -1364,6 +1411,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                       newState.envelope = env.url;
                     }
                     handleChange('videos', newState);
+                    if (triggerReplayEnvelope) triggerReplayEnvelope();
                   }}
                   style={{
                     minWidth: '280px',
