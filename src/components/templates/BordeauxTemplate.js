@@ -574,7 +574,34 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     <div className={styles.main} style={styleVariables}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-      <div className={styles.container} style={{ backgroundColor: theme.bgColor }}>
+      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (editMode ? '100%' : '100vh') : undefined }}>
+
+        {/* ================= ENVELOPE OVERLAY ================= */}
+        {!envelopeDismissed && (
+          <div
+            className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
+            onClick={handleEnvelopeClick}
+          >
+            {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
+              <img
+                src={data.videos.envelope}
+                alt="Envelope"
+                className={styles.envelopeVideo}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              />
+            ) : (
+              <video
+                ref={envelopeVideoRef}
+                className={styles.envelopeVideo}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={handleVideoEnded}
+              />
+            )}
+          </div>
+        )}
 
         {/* ================= HERO SECTION ================= */}
         <section className={styles.hero} style={{ height: heroHeight, minHeight: heroHeight }}>
@@ -582,33 +609,6 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
           {/* Background Audio */}
           {sounds.bgMusic && (
             <audio ref={audioRef} src={sounds.bgMusic} loop muted={isMuted} />
-          )}
-
-          {/* ================= ENVELOPE OVERLAY ================= */}
-          {!envelopeDismissed && (
-            <div
-              className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
-              onClick={handleEnvelopeClick}
-            >
-              {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                <img
-                  src={data.videos.envelope}
-                  alt="Envelope"
-                  className={styles.envelopeVideo}
-                  style={{ objectFit: 'cover' }}
-                />
-              ) : (
-                <video
-                  ref={envelopeVideoRef}
-                  className={styles.envelopeVideo}
-                  autoPlay
-                  muted
-                  playsInline
-                  preload="auto"
-                  onEnded={handleVideoEnded}
-                />
-              )}
-            </div>
           )}
 
           {(() => {
