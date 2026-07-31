@@ -7,6 +7,7 @@ import StyledFileInput from '@/components/StyledFileInput';
 import Hls from 'hls.js';
 import Image from "next/image";
 import { useDatabase } from "@/context/DatabaseContext";
+import { supabase } from "@/lib/supabase";
 import InteractiveVideo from "@/components/InteractiveVideo";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 
@@ -1017,7 +1018,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   const [local, setLocal] = useState(eventInfo);
 
   // Client-side Canvas Image Compression helper to avoid LocalStorage quota & payload limits
-  const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.85) => {
+  const compressImage = (file, maxWidth = 500, maxHeight = 500, quality = 0.6) => {
     return new Promise((resolve) => {
       if (!file || !file.type.startsWith('image/')) {
         resolve(null);
@@ -1055,6 +1056,31 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
     });
+  };
+
+  // Upload image to Supabase Storage 'media' bucket, or fallback to ultra-light compression (~12KB)
+  const uploadImage = async (file) => {
+    if (!file) return null;
+    try {
+      const fileExt = file.name ? file.name.split('.').pop().toLowerCase() : 'jpg';
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+      const filePath = `uploads/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+      if (!error && data) {
+        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
+        if (publicUrlData?.publicUrl) {
+          return publicUrlData.publicUrl;
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase Storage bucket upload attempt failed, falling back to compression:", err);
+    }
+
+    return await compressImage(file, 500, 500, 0.6);
   };
 
   // Address Autocomplete State (OpenStreetMap Nominatim API - 100% free)
@@ -1558,9 +1584,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 label="Upload Image"
                 onChange={async (e) => {
                   if (e.target.files[0]) {
-                    const compressedBase64 = await compressImage(e.target.files[0]);
-                    if (compressedBase64) {
-                      handleChange('dressCode', { ...local.dressCode, image: compressedBase64 });
+                    const imgUrl = await uploadImage(e.target.files[0]);
+                    if (imgUrl) {
+                      handleChange('dressCode', { ...local.dressCode, image: imgUrl });
                     }
                   }
                 }}
@@ -1592,11 +1618,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             label="Upload Photos"
             onChange={async (e) => {
               const files = Array.from(e.target.files);
-              const compressedImages = await Promise.all(files.map(file => compressImage(file)));
-              const validImages = compressedImages.filter(Boolean);
-              if (validImages.length > 0) {
+              const uploadedUrls = await Promise.all(files.map(file => uploadImage(file)));
+              const validUrls = uploadedUrls.filter(Boolean);
+              if (validUrls.length > 0) {
                 const currentGallery = local.gallery || [];
-                handleChange('gallery', [...currentGallery, ...validImages]);
+                handleChange('gallery', [...currentGallery, ...validUrls]);
               }
             }}
           />
@@ -1628,11 +1654,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             label="Upload Photos"
             onChange={async (e) => {
               const files = Array.from(e.target.files);
-              const compressedImages = await Promise.all(files.map(file => compressImage(file)));
-              const validImages = compressedImages.filter(Boolean);
-              if (validImages.length > 0) {
+              const uploadedUrls = await Promise.all(files.map(file => uploadImage(file)));
+              const validUrls = uploadedUrls.filter(Boolean);
+              if (validUrls.length > 0) {
                 const currentGuestGallery = local.guestGallery || [];
-                handleChange('guestGallery', [...currentGuestGallery, ...validImages]);
+                handleChange('guestGallery', [...currentGuestGallery, ...validUrls]);
               }
             }}
           />
