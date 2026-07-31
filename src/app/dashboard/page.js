@@ -110,7 +110,7 @@ export default function Dashboard() {
     couple: `${currentUser?.name || 'Partner 1'} et ${currentUser?.partnerName || 'Partner 2'}`,
     slug: currentUser?.name ? `${currentUser.name.toLowerCase()}-et-${(currentUser.partnerName || 'partner').toLowerCase()}` : 'emma-et-lucas',
     email: currentUser?.email || '',
-    plan: 'Premium',
+    plan: 'Standard',
     price: 0,
     status: 'Live',
     paid: true,
@@ -1071,7 +1071,48 @@ export default function Dashboard() {
 
 function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId, triggerReplayEnvelope }) {
   const { saveOrderDetails } = useDatabase();
-  const [local, setLocal] = useState(eventInfo);
+
+  const defaultTabInfo = {
+    date: 'May 27, 2026',
+    time: '14:00',
+    ceremonyVenue: 'Ocean front beach House',
+    receptionVenue: 'South Dixie Highway, Homestead',
+    partner1: 'Partner 1',
+    partner2: 'Partner 2',
+    timeline: [
+      { time: "14:00", title: "Lunch" },
+      { time: "18:00", title: "Ceremony" },
+      { time: "20:00", title: "Dinner" },
+      { time: "22:00", title: "Party" },
+      { time: "04:00", title: "End" }
+    ],
+    accommodations: [
+      { name: "Hotel Costa", price: "410$" },
+      { name: "Hotel Love", price: "120$" }
+    ],
+    menu: [
+      { course: "Starter", dish: "Caviar" },
+      { course: "Main", dish: "Steak friete" },
+      { course: "Dessert", dish: "Dame blanche" }
+    ],
+    sections: {
+      showIntro: true,
+      showVenue: true,
+      showSchedule: true,
+      showBoardingPass: false,
+      showRSVP: true,
+      showDressCode: true,
+      showAccommodations: true,
+      showMenu: true,
+      showGallery: true
+    },
+    images: {}
+  };
+
+  const [local, setLocal] = useState(() => ({
+    ...defaultTabInfo,
+    ...(eventInfo || {})
+  }));
 
   // Client-side Canvas Image Compression helper to avoid LocalStorage quota & payload limits
   const compressImage = (file, maxWidth = 500, maxHeight = 500, quality = 0.6) => {
@@ -1171,8 +1212,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   const saveTimeoutRef = useRef(null);
 
   useEffect(() => {
-    setLocal(eventInfo);
-  }, [slug]);
+    setLocal({
+      ...defaultTabInfo,
+      ...(eventInfo || {})
+    });
+  }, [slug, eventInfo]);
 
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };

@@ -574,13 +574,14 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     <div className={styles.main} style={styleVariables}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? '100%' : undefined, minHeight: !envelopeDismissed ? '100%' : undefined }}>
+      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? heroHeight : undefined, minHeight: !envelopeDismissed ? heroHeight : undefined }}>
 
         {/* ================= ENVELOPE OVERLAY ================= */}
         {!envelopeDismissed && (
           <div
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
+            style={{ height: heroHeight || '100vh', minHeight: heroHeight || '100vh' }}
           >
             {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
               <img
