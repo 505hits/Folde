@@ -574,7 +574,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     <div className={styles.main} style={styleVariables}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (editMode ? '100%' : '100vh') : undefined }}>
+      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? '100%' : undefined, minHeight: !envelopeDismissed ? '100%' : undefined }}>
 
         {/* ================= ENVELOPE OVERLAY ================= */}
         {!envelopeDismissed && (

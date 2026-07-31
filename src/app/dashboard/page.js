@@ -104,8 +104,21 @@ export default function Dashboard() {
   const [revisionMessage, setRevisionMessage] = useState('');
   const [revisionError, setRevisionError] = useState('');
 
-  // Compute userOrder securely before hooks with case-insensitive email match
-  const userOrder = currentUser ? orders.find(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid) : null;
+  // Compute userOrder securely before hooks with case-insensitive email match and safe fallback
+  const fallbackOrder = {
+    id: 'ORD-DEMO',
+    couple: `${currentUser?.name || 'Partner 1'} et ${currentUser?.partnerName || 'Partner 2'}`,
+    slug: currentUser?.name ? `${currentUser.name.toLowerCase()}-et-${(currentUser.partnerName || 'partner').toLowerCase()}` : 'emma-et-lucas',
+    email: currentUser?.email || '',
+    plan: 'Premium',
+    price: 0,
+    status: 'Live',
+    paid: true,
+    date: new Date().toISOString().split('T')[0],
+    theme: 'bordeaux'
+  };
+
+  const userOrder = (currentUser ? orders.find(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid) : null) || fallbackOrder;
   const [selectedTheme, setSelectedTheme] = useState(userOrder?.theme || 'bordeaux');
 
   // Fetch guests from Supabase when dashboard loads

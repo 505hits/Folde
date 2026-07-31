@@ -734,6 +734,10 @@ export default function CheckoutClient() {
         }
         .preview-phone-template-inner {
           width: 450px;
+          min-height: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
           flex-shrink: 0;
           zoom: 0.5777;
           margin: 0 auto;
