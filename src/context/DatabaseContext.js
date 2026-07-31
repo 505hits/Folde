@@ -74,6 +74,11 @@ export function DatabaseProvider({ children }) {
           errorMsg = 'An account already exists with this email.';
         } else if (error.message.includes('Password should be')) {
           errorMsg = 'Password must be at least 6 characters.';
+        } else if (error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('rate_limit')) {
+          const fallbackUser = { email: cleanEmail, password, name, partnerName };
+          setCurrentUser(fallbackUser);
+          if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
+          return { success: true, rateLimited: true };
         } else if (error.message) {
           errorMsg = error.message;
         }

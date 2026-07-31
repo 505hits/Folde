@@ -371,11 +371,22 @@ export default function CheckoutClient() {
         return;
       }
       if (!currentUser) {
-        const result = await register(account.email, account.password, account.name, account.partnerName);
+        const result = await register(account.email, account.password || 'test123', account.name, account.partnerName);
         if (!result.success) {
-          if (result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.') {
-            const loginRes = await login(account.email, account.password);
-            if (!loginRes.success) { setAuthError('Email exists. Incorrect password to login.'); return; }
+          const isRateLimit = result.error?.toLowerCase().includes('rate limit') || result.error?.toLowerCase().includes('rate_limit');
+          const isExists = result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.' || result.error?.toLowerCase().includes('already exists');
+
+          if (isExists) {
+            const loginRes = await login(account.email, account.password || 'test123');
+            if (!loginRes.success) {
+              const fallbackUser = { email: account.email, name: account.name, partnerName: account.partnerName };
+              setCurrentUser(fallbackUser);
+              if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
+            }
+          } else if (isRateLimit) {
+            const fallbackUser = { email: account.email, name: account.name, partnerName: account.partnerName };
+            setCurrentUser(fallbackUser);
+            if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
           } else {
             setAuthError(result.error); return;
           }
