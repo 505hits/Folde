@@ -951,7 +951,26 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {activeTab === 'invitation' ? <InvitationTab eventInfo={clientEventInfo} slug={clientSlug} setEventInfo={setEventInfo} allEventInfo={eventInfo} selectedTheme={selectedTheme} setSelectedTheme={setSelectedTheme} plan={userOrder.plan} orderId={userOrder.id} triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)} /> : (
+          {activeTab === 'invitation' && (
+            <InvitationTab
+              eventInfo={clientEventInfo}
+              slug={clientSlug}
+              setEventInfo={setEventInfo}
+              allEventInfo={eventInfo}
+              selectedTheme={selectedTheme}
+              setSelectedTheme={setSelectedTheme}
+              plan={userOrder.plan}
+              orderId={userOrder.id}
+              triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)}
+            />
+          )}
+          {activeTab === 'guests' && (
+            <GuestListTab slug={clientSlug} />
+          )}
+          {activeTab === 'rsvps' && (
+            <RsvpsTab slug={clientSlug} />
+          )}
+          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
               Section in development
             </div>
@@ -1990,6 +2009,375 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               </button>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GuestListTab({ slug }) {
+  const { guests, addGuest, fetchGuests } = useDatabase();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sideFilter, setSideFilter] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newGuest, setNewGuest] = useState({ name: '', email: '', side: 'Bride', status: 'Pending', hasPlusOne: false, plusOneName: '' });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchGuests(slug);
+  }, [slug, fetchGuests]);
+
+  const guestList = guests[slug] || [];
+
+  const filtered = guestList.filter(g => {
+    const matchesSearch = (g.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (g.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || (g.status || '').toLowerCase() === statusFilter.toLowerCase();
+    const matchesSide = sideFilter === 'all' || (g.side || '').toLowerCase() === sideFilter.toLowerCase();
+    return matchesSearch && matchesStatus && matchesSide;
+  });
+
+  const totalCount = guestList.length;
+  const attendingCount = guestList.filter(g => (g.status || '').toLowerCase() === 'attending').length;
+  const pendingCount = guestList.filter(g => (g.status || '').toLowerCase() === 'pending' || !g.status).length;
+  const declinedCount = guestList.filter(g => (g.status || '').toLowerCase() === 'declined').length;
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    if (!newGuest.name.trim()) return;
+    setLoading(true);
+    await addGuest(slug, newGuest);
+    setNewGuest({ name: '', email: '', side: 'Bride', status: 'Pending', hasPlusOne: false, plusOneName: '' });
+    setShowAddModal(false);
+    setLoading(false);
+  };
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header Metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Total Invited</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1a1a1a', marginTop: '0.2rem' }}>{totalCount}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
+          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>Confirmed Attending</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{attendingCount}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
+          <div style={{ fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>Pending Response</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#b45309', marginTop: '0.2rem' }}>{pendingCount}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
+          <div style={{ fontSize: '0.8rem', color: '#dc2626', fontWeight: 600 }}>Declined</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>{declinedCount}</div>
+        </div>
+      </div>
+
+      {/* Main Table Card */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>👥 Guest Directory</h2>
+            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Manage your invitees and track who is attending your wedding.</p>
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <span>+</span> Add Guest
+          </button>
+        </div>
+
+        {/* Filter Controls */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+          <input
+            type="text"
+            placeholder="🔍 Search guests..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: 1, minWidth: '200px', padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', fontSize: '0.88rem' }}
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.88rem', backgroundColor: '#fff' }}
+          >
+            <option value="all">All Statuses</option>
+            <option value="attending">Attending</option>
+            <option value="pending">Pending</option>
+            <option value="declined">Declined</option>
+          </select>
+          <select
+            value={sideFilter}
+            onChange={(e) => setSideFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.88rem', backgroundColor: '#fff' }}
+          >
+            <option value="all">All Sides</option>
+            <option value="bride">Bride's Guest</option>
+            <option value="groom">Groom's Guest</option>
+            <option value="both">Mutual Friends</option>
+          </select>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #f0ede9', color: '#888' }}>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Guest Name</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Side</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Status</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Plus One</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Meal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
+                    No guests found. Click <strong>+ Add Guest</strong> to add one!
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((g, idx) => (
+                  <tr key={g.id || idx} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <div style={{ fontWeight: 600, color: '#1a1a1a' }}>{g.name}</div>
+                      {g.email && <div style={{ fontSize: '0.78rem', color: '#888' }}>{g.email}</div>}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '12px', backgroundColor: '#faf8f5', color: '#5C3A1E', border: '1px solid #e0dcd7' }}>
+                        {g.side || 'Both'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <span style={{
+                        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.65rem', borderRadius: '20px',
+                        backgroundColor: (g.status || '').toLowerCase() === 'attending' ? '#eefcf1' : (g.status || '').toLowerCase() === 'declined' ? '#fef2f2' : '#fffbeb',
+                        color: (g.status || '').toLowerCase() === 'attending' ? '#2e7d32' : (g.status || '').toLowerCase() === 'declined' ? '#dc2626' : '#b45309'
+                      }}>
+                        {(g.status || 'Pending').charAt(0).toUpperCase() + (g.status || 'Pending').slice(1)}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem', color: '#666' }}>
+                      {g.hasPlusOne || g.plusOneName ? (
+                        <span>Yes ({g.plusOneName || '+1'})</span>
+                      ) : 'No'}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem', color: '#555' }}>
+                      {g.meal || '-'}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Add Guest Modal */}
+      {showAddModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '20px', maxWidth: '420px', width: '90%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>Add New Guest</h3>
+            <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Guest Full Name *</label>
+                <input type="text" required value={newGuest.name} onChange={e => setNewGuest({ ...newGuest, name: e.target.value })} placeholder="e.g. Jean Dupont" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Email Address</label>
+                <input type="email" value={newGuest.email} onChange={e => setNewGuest({ ...newGuest, email: e.target.value })} placeholder="jean@example.com" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Side</label>
+                  <select value={newGuest.side} onChange={e => setNewGuest({ ...newGuest, side: e.target.value })} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', backgroundColor: '#fff' }}>
+                    <option value="Bride">Bride</option>
+                    <option value="Groom">Groom</option>
+                    <option value="Both">Both</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Status</label>
+                  <select value={newGuest.status} onChange={e => setNewGuest({ ...newGuest, status: e.target.value })} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', backgroundColor: '#fff' }}>
+                    <option value="Pending">Pending</option>
+                    <option value="Attending">Attending</option>
+                    <option value="Declined">Declined</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, padding: '0.75rem', border: '1px solid #e0dcd7', borderRadius: '8px', backgroundColor: '#fff', color: '#666', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={loading} style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', backgroundColor: '#5C3A1E', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>{loading ? 'Adding...' : 'Save Guest'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RsvpsTab({ slug }) {
+  const { guests, fetchGuests } = useDatabase();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  useEffect(() => {
+    fetchGuests(slug);
+  }, [slug, fetchGuests]);
+
+  const guestList = guests[slug] || [];
+
+  // Filter items that have actual RSVP responses
+  const rsvpResponses = guestList.filter(g => g.status && g.status !== 'Pending');
+
+  const filtered = rsvpResponses.filter(g => {
+    const matchesSearch = (g.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (g.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || (g.status || '').toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalResponses = rsvpResponses.length;
+  const totalAttending = rsvpResponses.filter(g => (g.status || '').toLowerCase() === 'attending').length;
+  const totalDeclined = rsvpResponses.filter(g => (g.status || '').toLowerCase() === 'declined').length;
+
+  // Compute Meal Preference Counts
+  const mealCounts = {};
+  rsvpResponses.forEach(g => {
+    if ((g.status || '').toLowerCase() === 'attending' && g.meal && g.meal !== '-') {
+      mealCounts[g.meal] = (mealCounts[g.meal] || 0) + 1;
+    }
+  });
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+      {/* Info Banner */}
+      <div style={{ backgroundColor: '#f4f7f4', border: '1px solid #c8e6c9', borderRadius: '12px', padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ fontSize: '1.4rem' }}>📱</div>
+        <div>
+          <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#2e5b32' }}>Live RSVP Response Sync</div>
+          <div style={{ fontSize: '0.83rem', color: '#444' }}>These are real-time responses submitted by your guests through your published online wedding invitation.</div>
+        </div>
+      </div>
+
+      {/* Metrics Summary */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
+          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>🎉 Confirmed Attending</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{totalAttending}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
+          <div style={{ fontSize: '0.8rem', color: '#dc2626', fontWeight: 600 }}>🤍 Regretfully Declined</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>{totalDeclined}</div>
+        </div>
+        <div style={{ ...cardStyle }}>
+          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>✉️ Total Responses</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1a1a1a', marginTop: '0.2rem' }}>{totalResponses}</div>
+        </div>
+      </div>
+
+      {/* Meal Breakdown Widget */}
+      {Object.keys(mealCounts).length > 0 && (
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>🍽️ Meal Preference Breakdown</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+            {Object.entries(mealCounts).map(([dish, count]) => (
+              <div key={dish} style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', padding: '0.75rem 1.25rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#5C3A1E' }}>{count}×</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1a1a1a' }}>{dish}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* RSVP Table */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>✉️ Submitted RSVPs</h2>
+            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Detailed list of all guest responses submitted via the web form.</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <input
+              type="text"
+              placeholder="🔍 Search guest name..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ padding: '0.55rem 0.9rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', fontSize: '0.85rem' }}
+            />
+            <select
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              style={{ padding: '0.55rem 0.9rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.85rem', backgroundColor: '#fff' }}
+            >
+              <option value="all">All Responses</option>
+              <option value="attending">Attending Only</option>
+              <option value="declined">Declined Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #f0ede9', color: '#888' }}>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Guest Name</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Response</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Dish Preference</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Accompanied / +1</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
+                    No submitted RSVPs found yet. Responses submitted by guests via your online invitation link will automatically appear here!
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((g, idx) => (
+                  <tr key={g.id || idx} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <div style={{ fontWeight: 600, color: '#1a1a1a' }}>{g.name}</div>
+                      {g.email && <div style={{ fontSize: '0.78rem', color: '#888' }}>{g.email}</div>}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <span style={{
+                        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.65rem', borderRadius: '20px',
+                        backgroundColor: (g.status || '').toLowerCase() === 'attending' ? '#eefcf1' : '#fef2f2',
+                        color: (g.status || '').toLowerCase() === 'attending' ? '#2e7d32' : '#dc2626'
+                      }}>
+                        {(g.status || '').toLowerCase() === 'attending' ? 'Attending 🎉' : 'Declined 🤍'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem', color: '#333', fontWeight: 500 }}>
+                      {g.meal && g.meal !== '-' ? g.meal : 'N/A'}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem', color: '#666' }}>
+                      {g.hasPlusOne || g.plusOneName || g.accompaniedStatus !== 'alone' ? (
+                        <span style={{ backgroundColor: '#faf8f5', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.8rem' }}>
+                          {g.plusOneName ? `+1 (${g.plusOneName})` : g.accompaniedStatus === 'family' ? 'Family' : '+1'}
+                        </span>
+                      ) : 'Single'}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem', color: '#555', fontStyle: g.message ? 'italic' : 'normal' }}>
+                      {g.message || 'No message'}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
