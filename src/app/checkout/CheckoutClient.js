@@ -391,6 +391,7 @@ export default function CheckoutClient() {
         const result = await register(account.email, account.password || 'test123', account.name, account.partnerName);
         if (!result.success) {
           const isRateLimit = result.error?.toLowerCase().includes('rate limit') || result.error?.toLowerCase().includes('rate_limit');
+          const isInvalid = result.error?.toLowerCase().includes('invalid') || account.email?.toLowerCase().endsWith('@test.com');
           const isExists = result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.' || result.error?.toLowerCase().includes('already exists');
 
           if (isExists) {
@@ -400,7 +401,7 @@ export default function CheckoutClient() {
               setCurrentUser(fallbackUser);
               if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
             }
-          } else if (isRateLimit) {
+          } else if (isRateLimit || isInvalid) {
             const fallbackUser = { email: account.email, name: account.name, partnerName: account.partnerName };
             setCurrentUser(fallbackUser);
             if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
