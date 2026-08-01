@@ -441,17 +441,17 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             console.log("Video play failed or blocked:", e);
           });
 
-          // Fallback safety timer: guarantee dismissal after 15s if onEnded never fires
+          // Fallback safety timer: guarantee dismissal after 4.5s if onEnded never fires or network is slow
           fallbackTimer = setTimeout(() => {
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 15000);
+          }, 4500);
         } else {
-          // Image envelope or no video ref — dismiss after 4s
+          // Image envelope or no video ref — dismiss after 3.5s
           fallbackTimer = setTimeout(() => {
             setEnvelopeDismissed(true);
             if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 4000);
+          }, 3500);
         }
       }, 500);
 
@@ -601,6 +601,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 onEnded={handleVideoEnded}
               />
             )}
+            <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(92,58,30,0.85)', color: '#fff', padding: '0.6rem 1.4rem', borderRadius: '30px', fontSize: '0.78rem', letterSpacing: '2px', textTransform: 'uppercase', pointerEvents: 'none', backdropFilter: 'blur(4px)', boxShadow: '0 4px 15px rgba(0,0,0,0.15)', fontWeight: 600 }}>
+              Toucher pour ouvrir ✉️
+            </div>
           </div>
         )}
 
