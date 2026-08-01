@@ -110,6 +110,7 @@ export default function TemplateHeroPreview({
   }, [videoActive, showEnvelope, envelopeSrc, envelopeDismissed, isEnvImg]);
 
   const handleVideoEnded = () => {
+    if (!envelopeOpen && !videoActive) return;
     setTimeout(() => {
       setEnvelopeDismissed(true);
     }, 2000);
