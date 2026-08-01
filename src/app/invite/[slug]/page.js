@@ -16,24 +16,9 @@ export default function InvitePage({ params }) {
 
   if (!mounted || !isLoaded) return null;
 
-  // Find the order for this slug
+  // Find the order for this slug if available in local state, or fallback to slug & eventInfo
   const order = orders.find(o => o.slug === slug);
+  const data = { ...(order?.details || {}), ...(eventInfo[slug] || {}), slug };
 
-  if (!order) {
-    return (
-      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <h1 style={{ fontSize: '2rem', color: '#1a1a1a', marginBottom: '1rem' }}>Invitation not found</h1>
-          <p style={{ color: '#888' }}>The invitation link you followed seems to be invalid or expired.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Get the data for this slug (merge order details from DB with eventInfo state)
-  const data = { ...(order.details || {}), ...(eventInfo[slug] || {}), slug };
-
-  // For now, we use BordeauxTemplate as our universal base template 
-  // (we change colors dynamically via other ways or it handles its own themes)
   return <BordeauxTemplate data={data} editMode={false} autoPlaySimulation={true} />;
 }

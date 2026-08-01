@@ -365,7 +365,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           .insert({
             invitation_id: invitationId,
             slug: slug,
-            name: rsvpName.trim(),
+            name: fullName,
             email: rsvpEmail.trim() || null,
             status: status,
             meal: rsvpMeal || '-',
