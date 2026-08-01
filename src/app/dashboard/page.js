@@ -1914,20 +1914,20 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <span>🎵</span> Background Music
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {clientEventInfo?.bgMusicUrl && (
+              {eventInfo?.bgMusicUrl && (
                 <div
                   onClick={() => {
                     const newState = { ...(local.sounds || {}) };
-                    newState.bgMusic = clientEventInfo.bgMusicUrl;
+                    newState.bgMusic = eventInfo.bgMusicUrl;
                     handleChange('sounds', newState);
                   }}
                   style={{
                     minWidth: '260px',
-                    border: local.sounds?.bgMusic === clientEventInfo.bgMusicUrl ? '2px solid #5C3A1E' : '1px solid #bbf7d0',
+                    border: local.sounds?.bgMusic === eventInfo.bgMusicUrl ? '2px solid #5C3A1E' : '1px solid #bbf7d0',
                     borderRadius: '12px',
                     padding: '1rem',
                     cursor: 'pointer',
-                    backgroundColor: local.sounds?.bgMusic === clientEventInfo.bgMusicUrl ? '#fbf8f9' : '#f0fdf4',
+                    backgroundColor: local.sounds?.bgMusic === eventInfo.bgMusicUrl ? '#fbf8f9' : '#f0fdf4',
                     transition: 'all 0.2s ease',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1940,7 +1940,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#dcfce7', color: '#15803d', padding: '0.2rem 0.5rem', borderRadius: '10px' }}>Active AI</span>
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#166534' }}>Custom music track created in AI Studio</div>
-                  <audio controls src={clientEventInfo.bgMusicUrl} style={{ width: '100%', height: '32px', marginTop: '0.2rem' }} onClick={e => e.stopPropagation()} />
+                  <audio controls src={eventInfo.bgMusicUrl} style={{ width: '100%', height: '32px', marginTop: '0.2rem' }} onClick={e => e.stopPropagation()} />
                 </div>
               )}
               {AVAILABLE_SOUNDS.map(sound => (
