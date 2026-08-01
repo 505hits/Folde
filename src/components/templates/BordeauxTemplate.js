@@ -558,21 +558,20 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }, 2500);
   };
 
-  const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
-    if (!url) return fallback;
+  const getFirstFramePoster = (url) => {
+    if (!url) return undefined;
     if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
     if (url.includes('cloudflarestream')) {
       return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
     }
-    if (url.includes('bordeaux')) return '/images/bordeaux.png';
-    if (url.includes('champagne') || url.includes('golden')) return '/images/champagne.png';
-    if (url.includes('ivory')) return '/images/ivory.png';
-    if (url.includes('sage') || url.includes('olive')) return '/images/sage.png';
-    if (url.includes('terracotta') || url.includes('amber')) return '/images/terracotta.png';
-    if (url.includes('chocolate') || url.includes('mocha')) return '/images/chocolate.png';
-    if (url.includes('royalbordeaux') || url.includes('crimson')) return '/images/royalbordeaux.png';
-    if (url.includes('royalblue') || url.includes('sapphire')) return '/images/royalblue.png';
-    return fallback;
+    return undefined;
+  };
+
+  const getFirstFrameVideoSrc = (url) => {
+    if (!url) return '';
+    if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+    if (url.includes('#t=')) return url;
+    return `${url}#t=0.001`;
   };
 
   return (
@@ -588,11 +587,21 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             onClick={handleEnvelopeClick}
             style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
           >
-            {!envelopeVideoActive || (data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+            {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
               <img
-                src={getPosterForUrl(data?.videos?.envelope, '/images/bordeaux.png')}
+                src={data.videos.envelope}
                 alt="Envelope"
                 className={styles.envelopeVideo}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              />
+            ) : !envelopeVideoActive ? (
+              <video
+                src={getFirstFrameVideoSrc(data?.videos?.envelope || "/videos/bordeaux.mp4")}
+                poster={getFirstFramePoster(data?.videos?.envelope)}
+                className={styles.envelopeVideo}
+                preload="metadata"
+                muted
+                playsInline
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             ) : (
@@ -619,10 +628,24 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           {(() => {
             const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
             const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
-            const heroPoster = getPosterForUrl(heroSrc, '/images/bordeaux.png');
+            const heroPoster = getFirstFramePoster(heroSrc);
 
-            if (isHeroImage || !heroVideoActive) {
-              return <img src={heroPoster} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
+            if (isHeroImage) {
+              return <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
+            }
+
+            if (!heroVideoActive) {
+              return (
+                <video
+                  src={getFirstFrameVideoSrc(heroSrc)}
+                  poster={heroPoster}
+                  preload="metadata"
+                  muted
+                  playsInline
+                  className={styles.heroVideo}
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              );
             }
 
             return (
@@ -634,7 +657,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 playsInline
                 preload="metadata"
                 className={styles.heroVideo}
-                src={heroSrc}
+                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') : ''}
               />
             );
           })()}

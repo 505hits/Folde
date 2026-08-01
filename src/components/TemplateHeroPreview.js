@@ -3,21 +3,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Hls from 'hls.js';
 
-export const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
-  if (!url) return fallback;
+export const getFirstFramePoster = (url) => {
+  if (!url) return undefined;
   if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
   if (url.includes('cloudflarestream')) {
     return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
   }
-  if (url.includes('bordeaux')) return '/images/bordeaux.png';
-  if (url.includes('champagne') || url.includes('golden')) return '/images/champagne.png';
-  if (url.includes('ivory')) return '/images/ivory.png';
-  if (url.includes('sage') || url.includes('olive')) return '/images/sage.png';
-  if (url.includes('terracotta') || url.includes('amber')) return '/images/terracotta.png';
-  if (url.includes('chocolate') || url.includes('mocha')) return '/images/chocolate.png';
-  if (url.includes('royalbordeaux') || url.includes('crimson')) return '/images/royalbordeaux.png';
-  if (url.includes('royalblue') || url.includes('sapphire')) return '/images/royalblue.png';
-  return fallback;
+  return undefined;
+};
+
+export const getFirstFrameVideoSrc = (url) => {
+  if (!url) return '';
+  if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+  if (url.includes('#t=')) return url;
+  return `${url}#t=0.001`;
 };
 
 export default function TemplateHeroPreview({
@@ -35,9 +34,10 @@ export default function TemplateHeroPreview({
   const [videoActive, setVideoActive] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const envelopeVideoRef = useRef(null);
+  const heroVideoRef = useRef(null);
 
-  const heroPoster = previewImage || getPosterForUrl(videoSrc, '/images/bordeaux.png');
-  const envelopePoster = getPosterForUrl(envelopeSrc, '/images/bordeaux.png');
+  const heroPoster = previewImage || getFirstFramePoster(videoSrc);
+  const envelopePoster = getFirstFramePoster(envelopeSrc);
 
   const handleActivateVideo = (e) => {
     e.stopPropagation();
@@ -52,16 +52,17 @@ export default function TemplateHeroPreview({
       if (!video) return;
 
       let hls;
-      if (envelopeSrc.endsWith('.m3u8') && Hls.isSupported()) {
+      const cleanEnvelopeSrc = envelopeSrc.replace(/#t=.*$/, '');
+      if (cleanEnvelopeSrc.endsWith('.m3u8') && Hls.isSupported()) {
         hls = new Hls({ startLevel: -1, capLevelToPlayerSize: true });
-        hls.loadSource(envelopeSrc);
+        hls.loadSource(cleanEnvelopeSrc);
         hls.attachMedia(video);
       } else {
-        video.src = envelopeSrc;
+        video.src = cleanEnvelopeSrc;
       }
 
       setEnvelopeOpen(true);
-      video.play().catch(e => console.log("Video play on click:", e));
+      video.play().catch(e => console.log("Video play on click error:", e));
       const timer = setTimeout(() => setEnvelopeDismissed(true), 12000);
 
       return () => {
@@ -76,6 +77,9 @@ export default function TemplateHeroPreview({
       setEnvelopeDismissed(true);
     }, 2000);
   };
+
+  const isHeroImg = isImage || (videoSrc && videoSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
+  const isEnvImg = envelopeSrc && envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i);
 
   return (
     <div
@@ -100,10 +104,19 @@ export default function TemplateHeroPreview({
           opacity: envelopeDismissed ? 0 : 1,
           visibility: envelopeDismissed ? 'hidden' : 'visible'
         }}>
-          {!videoActive || envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+          {isEnvImg ? (
             <img
-              src={envelopePoster}
+              src={envelopeSrc}
               alt="Envelope Preview"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : !videoActive ? (
+            <video
+              src={getFirstFrameVideoSrc(envelopeSrc)}
+              poster={envelopePoster}
+              preload="metadata"
+              muted
+              playsInline
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
@@ -121,16 +134,26 @@ export default function TemplateHeroPreview({
       )}
 
       {/* HERO CONTENT */}
-      {isImage || !videoActive ? (
+      {isHeroImg ? (
         <img
-          src={heroPoster}
-          alt="Preview Poster"
+          src={videoSrc}
+          alt="Hero Preview"
           loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.3s ease' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
+        />
+      ) : !videoActive ? (
+        <video
+          ref={heroVideoRef}
+          src={getFirstFrameVideoSrc(videoSrc)}
+          poster={heroPoster}
+          preload="metadata"
+          muted
+          playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       ) : (
         <video
-          src={videoSrc}
+          src={videoSrc ? videoSrc.replace(/#t=.*$/, '') : ''}
           autoPlay
           loop
           muted
@@ -148,7 +171,7 @@ export default function TemplateHeroPreview({
       )}
 
       {/* Click to play indicator overlay */}
-      {!videoActive && !isImage && (
+      {!videoActive && !isHeroImg && (
         <div style={{
           position: 'absolute',
           bottom: '12px',
