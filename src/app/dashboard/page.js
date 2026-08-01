@@ -477,12 +477,12 @@ export default function Dashboard() {
     );
   }
 
-  // ========== PREMIUM DASHBOARD ==========
-  const isPremiumOrCustom = userOrder.plan === 'Premium' || userOrder.plan === 'Custom';
+  // ========== CUSTOM / SUR MESURE STUDIO DASHBOARD ==========
+  const isCustomOnly = userOrder.plan === 'Custom' || userOrder.plan === 'custom';
   const clientSlug = userOrder.slug;
   const clientGuests = guests[clientSlug] || [];
 
-  if (isPremiumOrCustom) {
+  if (isCustomOnly) {
     return (
       <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', padding: '2rem 1.5rem' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
