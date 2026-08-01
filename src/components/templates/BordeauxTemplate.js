@@ -860,7 +860,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
                   <h3 style={{ fontFamily: 'var(--color-font-heading, inherit)', fontSize: '1.6rem', marginBottom: '0.8rem', color: 'var(--color-foreground)' }}>
-                    Thank you, {rsvpName}!
+                    Thank you, {rsvpFirstName}!
                   </h3>
                   <p style={{ opacity: 0.7, fontSize: '1rem', lineHeight: 1.6 }}>
                     {rsvpAttending === 'yes'
