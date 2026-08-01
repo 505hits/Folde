@@ -1682,6 +1682,35 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <span>🎵</span> Background Music
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {clientEventInfo?.bgMusicUrl && (
+                <div
+                  onClick={() => {
+                    const newState = { ...(local.sounds || {}) };
+                    newState.bgMusic = clientEventInfo.bgMusicUrl;
+                    handleChange('sounds', newState);
+                  }}
+                  style={{
+                    minWidth: '260px',
+                    border: local.sounds?.bgMusic === clientEventInfo.bgMusicUrl ? '2px solid #5C3A1E' : '1px solid #bbf7d0',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    cursor: 'pointer',
+                    backgroundColor: local.sounds?.bgMusic === clientEventInfo.bgMusicUrl ? '#fbf8f9' : '#f0fdf4',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.6rem',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#166534' }}>🎶 Custom AI Soundtrack</div>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#dcfce7', color: '#15803d', padding: '0.2rem 0.5rem', borderRadius: '10px' }}>Active AI</span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#166534' }}>Custom music track created in AI Studio</div>
+                  <audio controls src={clientEventInfo.bgMusicUrl} style={{ width: '100%', height: '32px', marginTop: '0.2rem' }} onClick={e => e.stopPropagation()} />
+                </div>
+              )}
               {AVAILABLE_SOUNDS.map(sound => (
                 <div
                   key={sound.id}
@@ -1695,7 +1724,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     handleChange('sounds', newState);
                   }}
                   style={{
-                    minWidth: '220px',
+                    minWidth: '260px',
                     border: local.sounds?.bgMusic === sound.url || (!local.sounds?.bgMusic && sound.url === '') || (local.sounds?.bgMusic && !AVAILABLE_SOUNDS.find(v => v.url === local.sounds.bgMusic) && sound.id === 'sound_custom') || (local.sounds?.bgMusic === 'custom' && sound.id === 'sound_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
                     borderRadius: '12px',
                     padding: '1rem',
@@ -1704,12 +1733,15 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     transition: 'all 0.2s ease',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.5rem',
+                    gap: '0.6rem',
                     justifyContent: 'center'
                   }}
                 >
                   <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a1a' }}>{sound.name}</div>
                   <div style={{ fontSize: '0.75rem', color: '#888', lineHeight: 1.3 }}>{sound.desc}</div>
+                  {sound.url && sound.url !== 'custom' && (
+                    <audio controls src={sound.url} style={{ width: '100%', height: '32px', marginTop: '0.2rem' }} onClick={e => e.stopPropagation()} />
+                  )}
                 </div>
               ))}
             </div>
@@ -2876,8 +2908,27 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [photoGenerating, setPhotoGenerating] = useState(false);
   const [photoTaskId, setPhotoTaskId] = useState(null);
   const [photoStatus, setPhotoStatus] = useState('');
-  const [generatedPhotos, setGeneratedPhotos] = useState([]);
-  const [photoError, setPhotoError] = useState('');
+  const [generatedPhotos, setGeneratedPhotos] = useState(() => {
+    if (typeof window !== 'undefined' && slug) {
+      try {
+        const saved = localStorage.getItem(`generated_photos_${slug}`);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) { }
+    }
+    const eventPhotos = eventInfo?.aiPhotos || eventInfo?.generatedPhotos || [];
+    return Array.isArray(eventPhotos) ? eventPhotos : [];
+  });
+
+  const saveGeneratedPhotos = (newPhotos) => {
+    setGeneratedPhotos(newPhotos);
+    if (typeof window !== 'undefined' && slug) {
+      try { localStorage.setItem(`generated_photos_${slug}`, JSON.stringify(newPhotos)); } catch (e) { }
+    }
+    saveMediaToDatabase(undefined, undefined, newPhotos);
+  };
 
   // 5 Credits Limit Tracking
   const [photoCreditsUsed, setPhotoCreditsUsed] = useState(() => {
@@ -2967,12 +3018,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   };
 
   // Save custom media directly to Supabase DB orders table
-  const saveMediaToDatabase = async (heroUrl, musicUrl) => {
+  const saveMediaToDatabase = async (heroUrl, musicUrl, aiPhotosArray) => {
     if (!slug) return;
     try {
       const payload = {};
       if (heroUrl !== undefined) payload.custom_hero_image = heroUrl;
       if (musicUrl !== undefined) payload.bg_music_url = musicUrl;
+      if (aiPhotosArray !== undefined) payload.ai_photos = aiPhotosArray;
       await supabase.from('orders').update(payload).eq('slug', slug);
     } catch (err) {
       console.warn("Supabase order update notice:", err);
@@ -3054,7 +3106,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         };
       });
       saveMediaToDatabase(undefined, audioUrl);
-      alert('🎶 Musique IA appliquée comme musique de fond du site !');
+      if (typeof setLocalData === 'function') {
+        setLocalData(prev => ({
+          ...prev,
+          sounds: { ...(prev?.sounds || {}), bgMusic: audioUrl }
+        }));
+      }
+      alert('🎶 AI Music applied as website background music!');
     }
   };
 
@@ -3072,7 +3130,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         };
       });
       saveMediaToDatabase(undefined, '');
-      alert('🔇 Musique retirée du site.');
+      if (typeof setLocalData === 'function') {
+        setLocalData(prev => ({
+          ...prev,
+          sounds: { ...(prev?.sounds || {}), bgMusic: '' }
+        }));
+      }
+      alert('🔇 Background music removed from website.');
     }
   };
 
@@ -3139,7 +3203,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             return next;
           });
           if (data.resultUrls && data.resultUrls.length > 0) {
-            setGeneratedPhotos(prev => [...data.resultUrls, ...prev]);
+            saveGeneratedPhotos([...data.resultUrls, ...generatedPhotos]);
           }
           clearInterval(interval);
         } else if (data.state === 'fail') {
@@ -3524,7 +3588,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       {activeSubTab === 'music' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={cardStyle}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>1. Choisissez une ambiance musicale</h3>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>1. Select a musical ambiance</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
               {MUSIC_PRESETS.map((preset, idx) => (
                 <div
@@ -3546,12 +3610,12 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Style ou thématique musicale *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Style or musical theme *</label>
               <textarea
                 rows={3}
                 value={musicPrompt}
                 onChange={e => setMusicPrompt(e.target.value)}
-                placeholder="Décrivez l'instrumentation, le rythme ou le style souhaité..."
+                placeholder="Describe instruments, tempo, or desired mood..."
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }}
               />
             </div>
@@ -3563,7 +3627,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   checked={isInstrumental}
                   onChange={e => setIsInstrumental(e.target.checked)}
                 />
-                Musique Instrumentale uniquement (sans voix)
+                Instrumental music only (no vocals)
               </label>
 
               <button
@@ -3580,7 +3644,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   cursor: musicCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {musicGenerating ? '🎵 Composition en cours...' : musicCreditsUsed >= 5 ? '🚫 Limite atteinte (5/5)' : 'Composer la Musique'}
+                {musicGenerating ? '🎵 Composing music...' : musicCreditsUsed >= 5 ? '🚫 Limit reached (5/5)' : 'Compose Music'}
               </button>
             </div>
 
@@ -3600,7 +3664,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {/* Generated Music Player */}
           {generatedAudio && (
             <div style={cardStyle}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Votre Musique de Mariage Générée</h3>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Your Generated Wedding Music</h3>
               <audio controls src={generatedAudio} style={{ width: '100%', marginBottom: '1.25rem' }} />
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <button
@@ -3616,11 +3680,11 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     cursor: 'pointer'
                   }}
                 >
-                  Appliquer comme Musique de Fond du site
+                  Set as Main Background Music
                 </button>
                 <a
                   href={generatedAudio}
-                  download="mariage-ambiance-musicale.mp3"
+                  download="wedding-background-music.mp3"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -3635,14 +3699,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     alignItems: 'center'
                   }}
                 >
-                  📥 Télécharger le MP3
+                  📥 Download MP3
                 </a>
               </div>
             </div>
           )}
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
