@@ -323,7 +323,14 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     setRsvpSubmitting(true);
     setRsvpError('');
 
-    const slug = data?.slug || '';
+    let slug = data?.slug || '';
+    if (!slug && typeof window !== 'undefined') {
+      const parts = window.location.pathname.split('/');
+      const inviteIdx = parts.indexOf('invite');
+      if (inviteIdx !== -1 && parts[inviteIdx + 1]) {
+        slug = parts[inviteIdx + 1];
+      }
+    }
     const status = rsvpAttending === 'yes' ? 'Attending' : 'Declined';
     const hasPlusOne = accompaniedStatus === 'plusOne' || accompaniedStatus === 'family';
 

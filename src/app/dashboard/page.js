@@ -1024,7 +1024,7 @@ export default function Dashboard() {
               {/* Live rendering of the template with correct overflow handling */}
               <div style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
                 <div style={{ width: '450px', zoom: 0.6133 }}>
-                  <BordeauxTemplate key={envelopeKey} data={clientEventInfo} editMode={true} />
+                  <BordeauxTemplate key={envelopeKey} data={{ ...clientEventInfo, slug: clientSlug }} editMode={true} />
                 </div>
               </div>
 
@@ -2108,7 +2108,11 @@ function GuestListTab({ slug }) {
 
   useEffect(() => {
     fetchGuests(slug);
-  }, [slug, fetchGuests]);
+    const interval = setInterval(() => {
+      fetchGuests(slug);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [slug]);
 
   const guestList = guests[slug] || [];
 
@@ -2311,12 +2315,16 @@ function RsvpsTab({ slug }) {
 
   useEffect(() => {
     fetchGuests(slug);
-  }, [slug, fetchGuests]);
+    const interval = setInterval(() => {
+      fetchGuests(slug);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [slug]);
 
   const guestList = guests[slug] || [];
 
   // Filter items that have actual RSVP responses
-  const rsvpResponses = guestList.filter(g => g.status && g.status !== 'Pending');
+  const rsvpResponses = guestList.filter(g => g.status && g.status.toLowerCase() !== 'pending');
 
   const filtered = rsvpResponses.filter(g => {
     const matchesSearch = (g.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (g.email || '').toLowerCase().includes(searchTerm.toLowerCase());
