@@ -3,35 +3,51 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Hls from 'hls.js';
 
-export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Liam", date = "MAY 27, 2026", videoSrc, envelopeSrc, showEnvelope = false, isImage = false }) {
+export const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
+  if (!url) return fallback;
+  if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+  if (url.includes('cloudflarestream')) {
+    return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
+  }
+  if (url.includes('bordeaux')) return '/images/bordeaux.png';
+  if (url.includes('champagne') || url.includes('golden')) return '/images/champagne.png';
+  if (url.includes('ivory')) return '/images/ivory.png';
+  if (url.includes('sage') || url.includes('olive')) return '/images/sage.png';
+  if (url.includes('terracotta') || url.includes('amber')) return '/images/terracotta.png';
+  if (url.includes('chocolate') || url.includes('mocha')) return '/images/chocolate.png';
+  if (url.includes('royalbordeaux') || url.includes('crimson')) return '/images/royalbordeaux.png';
+  if (url.includes('royalblue') || url.includes('sapphire')) return '/images/royalblue.png';
+  return fallback;
+};
+
+export default function TemplateHeroPreview({
+  partner1 = "Emma",
+  partner2 = "Liam",
+  date = "MAY 27, 2026",
+  videoSrc,
+  envelopeSrc,
+  showEnvelope = false,
+  isImage = false,
+  previewImage
+}) {
   const [envelopeDismissed, setEnvelopeDismissed] = useState(!showEnvelope);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(showEnvelope);
+  const [videoActive, setVideoActive] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const containerRef = useRef(null);
   const envelopeVideoRef = useRef(null);
 
-  // Lazy loading observer: Only download/play video when card is inside or near viewport
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: '150px' }
-    );
+  const heroPoster = previewImage || getPosterForUrl(videoSrc, '/images/bordeaux.png');
+  const envelopePoster = getPosterForUrl(envelopeSrc, '/images/bordeaux.png');
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+  const handleActivateVideo = (e) => {
+    e.stopPropagation();
+    if (!videoActive) {
+      setVideoActive(true);
     }
-
-    return () => observer.disconnect();
-  }, []);
+  };
 
   useEffect(() => {
-    if (showEnvelope && envelopeSrc && !envelopeDismissed && isVisible) {
+    if (videoActive && showEnvelope && envelopeSrc && !envelopeDismissed) {
       const video = envelopeVideoRef.current;
       if (!video) return;
 
@@ -44,41 +60,34 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
         video.src = envelopeSrc;
       }
 
-      const timer = setTimeout(() => {
-        setEnvelopeOpen(true);
-        if (video) {
-          video.play().catch(e => {
-            console.log("Autoplay blocked:", e);
-          });
-          // 15s safety fallback only
-          setTimeout(() => setEnvelopeDismissed(true), 15000);
-        }
-      }, 1000);
+      setEnvelopeOpen(true);
+      video.play().catch(e => console.log("Video play on click:", e));
+      const timer = setTimeout(() => setEnvelopeDismissed(true), 12000);
 
       return () => {
         clearTimeout(timer);
         if (hls) hls.destroy();
       };
     }
-  }, [showEnvelope, envelopeSrc, envelopeDismissed, isVisible]);
+  }, [videoActive, showEnvelope, envelopeSrc, envelopeDismissed]);
 
   const handleVideoEnded = () => {
-    // Hold the opened envelope on screen for 2.5s so the user can see the full reveal before transitioning
     setTimeout(() => {
       setEnvelopeDismissed(true);
-    }, 2500);
+    }, 2000);
   };
 
   return (
     <div
-      ref={containerRef}
+      onClick={handleActivateVideo}
       style={{
         position: 'relative',
         width: '100%',
         height: '100%',
         overflow: 'hidden',
         backgroundColor: '#1c1714',
-        containerType: 'inline-size'
+        containerType: 'inline-size',
+        cursor: 'pointer'
       }}
     >
       {/* ENVELOPE OVERLAY */}
@@ -87,14 +96,14 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
           backgroundColor: '#F7F5F0', zIndex: 100, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          transition: 'opacity 1s ease-in-out, visibility 1s',
+          transition: 'opacity 0.8s ease-in-out, visibility 0.8s',
           opacity: envelopeDismissed ? 0 : 1,
           visibility: envelopeDismissed ? 'hidden' : 'visible'
         }}>
-          {envelopeSrc.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+          {!videoActive || envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
             <img
-              src={envelopeSrc}
-              alt="Envelope"
+              src={envelopePoster}
+              alt="Envelope Preview"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
@@ -112,32 +121,52 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
       )}
 
       {/* HERO CONTENT */}
-      {isImage ? (
+      {isImage || !videoActive ? (
         <img
-          src={isVisible ? videoSrc : undefined}
-          alt="Preview"
+          src={heroPoster}
+          alt="Preview Poster"
           loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isVisible ? 1 : 0, transition: 'opacity 0.5s ease' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.3s ease' }}
         />
       ) : (
-        isVisible && (
-          <video
-            src={videoSrc}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onLoadedData={() => setVideoLoaded(true)}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: videoLoaded ? 1 : 0.8,
-              transition: 'opacity 0.4s ease'
-            }}
-          />
-        )
+        <video
+          src={videoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          onLoadedData={() => setVideoLoaded(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: videoLoaded ? 1 : 0.8,
+            transition: 'opacity 0.4s ease'
+          }}
+        />
+      )}
+
+      {/* Click to play indicator overlay */}
+      {!videoActive && !isImage && (
+        <div style={{
+          position: 'absolute',
+          bottom: '12px',
+          right: '12px',
+          backgroundColor: 'rgba(0,0,0,0.65)',
+          color: '#fff',
+          padding: '4px 10px',
+          borderRadius: '20px',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <span>▶</span> Click to play video
+        </div>
       )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.25)', zIndex: 1 }} />
@@ -161,3 +190,4 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
     </div>
   );
 }
+

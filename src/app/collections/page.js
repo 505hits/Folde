@@ -45,15 +45,15 @@ export default function Templates() {
   const [selectedId, setSelectedId] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
 
-  const PreviewIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginTop: '-2px'}}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
-  const SelectIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginTop: '-2px'}}><polyline points="20 6 9 17 4 12"></polyline></svg>;
+  const PreviewIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+  const SelectIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>;
   const CloseIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
   const tags = ['All', 'Popular', 'Elegant', 'Romantic', 'Warm', 'New'];
 
   const filtered = filter === 'All' ? templates
     : filter === 'Popular' ? templates.filter(t => t.popular)
-    : templates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
+      : templates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
 
   const handleContinue = () => {
     if (selectedId) {
@@ -138,13 +138,14 @@ export default function Templates() {
                 <div className="tpl-phone">
                   <div className="tpl-notch"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden' }}>
-                    <TemplateHeroPreview 
-                      partner1={t.partner1} 
-                      partner2={t.partner2} 
-                      videoSrc={t.video} 
+                    <TemplateHeroPreview
+                      partner1={t.partner1}
+                      partner2={t.partner2}
+                      videoSrc={t.video}
                       envelopeSrc={t.envelope}
                       showEnvelope={!!t.envelope}
                       isImage={t.isImage || false}
+                      previewImage={t.image}
                     />
                   </div>
                 </div>

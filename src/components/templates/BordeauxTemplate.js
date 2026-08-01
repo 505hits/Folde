@@ -393,25 +393,29 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }
   }, []);
 
-  // Envelope State
+  // Envelope & Hero Video Activation States (Default to static image posters until clicked)
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(false);
+  const [envelopeVideoActive, setEnvelopeVideoActive] = useState(false);
+  const [heroVideoActive, setHeroVideoActive] = useState(false);
   const envelopeVideoRef = useRef(null);
   const heroVideoRef = useRef(null);
   const audioRef = useRef(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   useEffect(() => {
-    if (heroVideoRef.current) {
+    if (heroVideoActive && heroVideoRef.current) {
       heroVideoRef.current.muted = true;
-      heroVideoRef.current.play().catch(e => console.log("Hero video autoplay fallback:", e));
+      heroVideoRef.current.play().catch(e => console.log("Hero video play error:", e));
     }
-  }, [data?.videos?.hero, data?.images?.hero]);
+  }, [heroVideoActive, data?.videos?.hero, data?.images?.hero]);
 
   useEffect(() => {
     // Reset envelope state whenever envelope source changes so new selection is shown
     setEnvelopeDismissed(false);
     setEnvelopeOpen(false);
+    setEnvelopeVideoActive(false);
+    setHeroVideoActive(false);
 
     // Setup HLS for the envelope video
     const video = envelopeVideoRef.current;
@@ -524,6 +528,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     if (envelopeOpen) return; // Prevent double clicks
 
     setEnvelopeOpen(true);
+    setEnvelopeVideoActive(true);
+    setHeroVideoActive(true);
     if (envelopeVideoRef.current && typeof envelopeVideoRef.current.play === 'function') {
       envelopeVideoRef.current.play().catch(e => {
         console.log("Video play failed, dismissing envelope", e);
@@ -552,6 +558,23 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }, 2500);
   };
 
+  const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
+    if (!url) return fallback;
+    if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+    if (url.includes('cloudflarestream')) {
+      return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
+    }
+    if (url.includes('bordeaux')) return '/images/bordeaux.png';
+    if (url.includes('champagne') || url.includes('golden')) return '/images/champagne.png';
+    if (url.includes('ivory')) return '/images/ivory.png';
+    if (url.includes('sage') || url.includes('olive')) return '/images/sage.png';
+    if (url.includes('terracotta') || url.includes('amber')) return '/images/terracotta.png';
+    if (url.includes('chocolate') || url.includes('mocha')) return '/images/chocolate.png';
+    if (url.includes('royalbordeaux') || url.includes('crimson')) return '/images/royalbordeaux.png';
+    if (url.includes('royalblue') || url.includes('sapphire')) return '/images/royalblue.png';
+    return fallback;
+  };
+
   return (
     <div className={styles.main} style={{ ...styleVariables, height: heroHeight || '100%', minHeight: heroHeight || '100%' }}>
       {/* Dynamic Font Loader */}
@@ -563,11 +586,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           <div
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
-            style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%' }}
+            style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
           >
-            {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
+            {!envelopeVideoActive || (data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
               <img
-                src={data.videos.envelope}
+                src={getPosterForUrl(data?.videos?.envelope, '/images/bordeaux.png')}
                 alt="Envelope"
                 className={styles.envelopeVideo}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
@@ -586,7 +609,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         )}
 
         {/* ================= HERO SECTION ================= */}
-        <section className={styles.hero} style={{ height: heroHeight, minHeight: heroHeight }}>
+        <section className={styles.hero} onClick={() => setHeroVideoActive(true)} style={{ height: heroHeight, minHeight: heroHeight, cursor: 'pointer' }}>
 
           {/* Background Audio */}
           {(data?.bgMusicUrl || data?.musicUrl || sounds.bgMusic) && (
@@ -596,9 +619,13 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           {(() => {
             const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
             const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
-            return isHeroImage ? (
-              <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-            ) : (
+            const heroPoster = getPosterForUrl(heroSrc, '/images/bordeaux.png');
+
+            if (isHeroImage || !heroVideoActive) {
+              return <img src={heroPoster} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
+            }
+
+            return (
               <video
                 ref={heroVideoRef}
                 autoPlay
