@@ -2832,6 +2832,23 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [generatedPhotos, setGeneratedPhotos] = useState([]);
   const [photoError, setPhotoError] = useState('');
 
+  // 5 Credits Limit Tracking
+  const [photoCreditsUsed, setPhotoCreditsUsed] = useState(() => {
+    if (typeof window !== 'undefined' && slug) {
+      const saved = localStorage.getItem(`photo_credits_${slug}`);
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  const [musicCreditsUsed, setMusicCreditsUsed] = useState(() => {
+    if (typeof window !== 'undefined' && slug) {
+      const saved = localStorage.getItem(`music_credits_${slug}`);
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
   // Music state
   const [musicPrompt, setMusicPrompt] = useState('');
   const [isInstrumental, setIsInstrumental] = useState(true);
@@ -2902,57 +2919,105 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
     reader.readAsDataURL(file);
   };
 
+  // Save custom media directly to Supabase DB orders table
+  const saveMediaToDatabase = async (heroUrl, musicUrl) => {
+    if (!slug) return;
+    try {
+      const payload = {};
+      if (heroUrl !== undefined) payload.custom_hero_image = heroUrl;
+      if (musicUrl !== undefined) payload.bg_music_url = musicUrl;
+      await supabase.from('orders').update(payload).eq('slug', slug);
+    } catch (err) {
+      console.warn("Supabase order update notice:", err);
+    }
+  };
+
   // Actions for applying images / music to eventInfo
   const handleApplyHeroImage = (url) => {
     if (typeof setEventInfo === 'function') {
-      setEventInfo(prev => ({
-        ...prev,
-        customHeroImage: url,
-        images: { ...(prev?.images || {}), hero: url }
-      }));
+      setEventInfo(prev => {
+        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+        return {
+          ...prev,
+          [slug]: {
+            ...currentSlugData,
+            customHeroImage: url,
+            images: { ...(currentSlugData.images || {}), hero: url }
+          }
+        };
+      });
+      saveMediaToDatabase(url, undefined);
       alert('✨ Photo IA appliquée comme image principale (Hero) de votre invitation !');
     }
   };
 
   const handleRemoveHeroImage = () => {
     if (typeof setEventInfo === 'function') {
-      setEventInfo(prev => ({
-        ...prev,
-        customHeroImage: null,
-        images: { ...(prev?.images || {}), hero: null }
-      }));
+      setEventInfo(prev => {
+        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+        return {
+          ...prev,
+          [slug]: {
+            ...currentSlugData,
+            customHeroImage: null,
+            images: { ...(currentSlugData.images || {}), hero: null }
+          }
+        };
+      });
+      saveMediaToDatabase(null, undefined);
       alert('❌ Image principale IA retirée du site.');
     }
   };
 
   const handleAddToGallery = (url) => {
     if (typeof setEventInfo === 'function') {
-      setEventInfo(prev => ({
-        ...prev,
-        guestGallery: Array.from(new Set([url, ...(prev?.guestGallery || [])]))
-      }));
+      setEventInfo(prev => {
+        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+        const existingGallery = currentSlugData.guestGallery || [];
+        return {
+          ...prev,
+          [slug]: {
+            ...currentSlugData,
+            guestGallery: Array.from(new Set([url, ...existingGallery]))
+          }
+        };
+      });
       alert('🖼️ Photo IA ajoutée à la Galerie Photo de votre site !');
     }
   };
 
   const handleApplyMusic = (audioUrl) => {
     if (typeof setEventInfo === 'function') {
-      setEventInfo(prev => ({
-        ...prev,
-        bgMusicUrl: audioUrl,
-        musicEnabled: true
-      }));
+      setEventInfo(prev => {
+        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+        return {
+          ...prev,
+          [slug]: {
+            ...currentSlugData,
+            bgMusicUrl: audioUrl,
+            musicEnabled: true
+          }
+        };
+      });
+      saveMediaToDatabase(undefined, audioUrl);
       alert('🎶 Musique IA appliquée comme musique de fond du site !');
     }
   };
 
   const handleRemoveMusic = () => {
     if (typeof setEventInfo === 'function') {
-      setEventInfo(prev => ({
-        ...prev,
-        bgMusicUrl: '',
-        musicEnabled: false
-      }));
+      setEventInfo(prev => {
+        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+        return {
+          ...prev,
+          [slug]: {
+            ...currentSlugData,
+            bgMusicUrl: '',
+            musicEnabled: false
+          }
+        };
+      });
+      saveMediaToDatabase(undefined, '');
       alert('🔇 Musique retirée du site.');
     }
   };
@@ -3012,6 +3077,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         if (data.state === 'success') {
           setPhotoGenerating(false);
           setPhotoStatus('✨ Illustration générée avec succès !');
+          setPhotoCreditsUsed(prev => {
+            const next = prev + 1;
+            if (typeof window !== 'undefined' && slug) {
+              try { localStorage.setItem(`photo_credits_${slug}`, next.toString()); } catch (e) { }
+            }
+            return next;
+          });
           if (data.resultUrls && data.resultUrls.length > 0) {
             setGeneratedPhotos(prev => [...data.resultUrls, ...prev]);
           }
@@ -3026,7 +3098,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       } catch (err) { }
     }, 3000);
     return () => clearInterval(interval);
-  }, [photoTaskId, photoGenerating]);
+  }, [photoTaskId, photoGenerating, slug]);
 
   useEffect(() => {
     if (!musicTaskId || !musicGenerating) return;
@@ -3037,6 +3109,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         if (data.state === 'success') {
           setMusicGenerating(false);
           setMusicStatus('✨ Musique générée avec succès par Suno !');
+          setMusicCreditsUsed(prev => {
+            const next = prev + 1;
+            if (typeof window !== 'undefined' && slug) {
+              try { localStorage.setItem(`music_credits_${slug}`, next.toString()); } catch (e) { }
+            }
+            return next;
+          });
           if (data.audioUrl) {
             setGeneratedAudio(data.audioUrl);
           }
@@ -3051,9 +3130,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       } catch (err) { }
     }, 4000);
     return () => clearInterval(interval);
-  }, [musicTaskId, musicGenerating]);
+  }, [musicTaskId, musicGenerating, slug]);
 
   const handleGeneratePhoto = async () => {
+    if (photoCreditsUsed >= 5) {
+      setPhotoError('Vous avez atteint la limite maximale de 5 illustrations IA (5/5).');
+      return;
+    }
     if (!photoPrompt.trim()) {
       setPhotoError('Veuillez saisir un prompt ou en sélectionner un parmi nos suggestions.');
       return;
@@ -3086,6 +3169,10 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   };
 
   const handleGenerateMusic = async () => {
+    if (musicCreditsUsed >= 5) {
+      setMusicError('Vous avez atteint la limite maximale de 5 musiques IA (5/5).');
+      return;
+    }
     if (!musicPrompt.trim()) {
       setMusicError('Veuillez saisir ou sélectionner un style de musique.');
       return;
@@ -3154,8 +3241,8 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         </div>
       )}
 
-      {/* Sub-tab Switcher */}
-      <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '0.5rem' }}>
+      {/* Sub-tab Switcher with Credit Badges */}
+      <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <button
           onClick={() => setActiveSubTab('photo')}
           style={{
@@ -3166,10 +3253,16 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             color: activeSubTab === 'photo' ? '#fff' : '#555',
             fontWeight: 600,
             fontSize: '0.88rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
         >
-          🎨 Photos IA (Qwen 2)
+          <span>🎨 Photos IA (Qwen)</span>
+          <span style={{ backgroundColor: activeSubTab === 'photo' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
+            {Math.max(0, 5 - photoCreditsUsed)} / 5 crédits
+          </span>
         </button>
         <button
           onClick={() => setActiveSubTab('music')}
@@ -3181,10 +3274,16 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             color: activeSubTab === 'music' ? '#fff' : '#555',
             fontWeight: 600,
             fontSize: '0.88rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
         >
-          🎵 Musique IA (Suno)
+          <span>🎵 Musique IA (Suno)</span>
+          <span style={{ backgroundColor: activeSubTab === 'music' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
+            {Math.max(0, 5 - musicCreditsUsed)} / 5 crédits
+          </span>
         </button>
       </div>
 
@@ -3304,19 +3403,19 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
               <button
                 onClick={handleGeneratePhoto}
-                disabled={photoGenerating}
+                disabled={photoGenerating || photoCreditsUsed >= 5}
                 style={{
                   padding: '0.75rem 1.8rem',
-                  backgroundColor: '#7b906f',
+                  backgroundColor: photoCreditsUsed >= 5 ? '#a3a3a3' : '#7b906f',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '30px',
                   fontWeight: 600,
                   fontSize: '0.9rem',
-                  cursor: 'pointer'
+                  cursor: photoCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {photoGenerating ? '🎨 Génération en cours...' : '✨ Générer la Photo IA (Qwen)'}
+                {photoGenerating ? '🎨 Génération en cours...' : photoCreditsUsed >= 5 ? '🚫 Crédits épuisés (5/5)' : '✨ Générer la Photo IA (Qwen)'}
               </button>
             </div>
 
@@ -3333,15 +3432,17 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             )}
           </div>
 
-          {/* Generated Photos Gallery */}
+          {/* Generated Photos Gallery with Fixed Aspect Ratio */}
           {generatedPhotos.length > 0 && (
             <div style={cardStyle}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Vos Illustrations Générées</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 {generatedPhotos.map((url, idx) => (
-                  <div key={idx} style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5' }}>
-                    <img src={url} alt={`IA Result ${idx}`} style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
-                    <div style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div key={idx} style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#FAF7F2', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
+                    <div style={{ width: '100%', maxHeight: '480px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAF7F2', padding: '0.5rem 0' }}>
+                      <img src={url} alt={`IA Result ${idx}`} style={{ maxWidth: '100%', maxHeight: '460px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto', borderRadius: '8px' }} />
+                    </div>
+                    <div style={{ padding: '1rem', backgroundColor: '#fff', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       <button
                         onClick={() => handleApplyHeroImage(url)}
                         style={{
@@ -3349,11 +3450,12 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           backgroundColor: '#5C3A1E',
                           color: '#fff',
                           border: 'none',
-                          padding: '0.55rem',
+                          padding: '0.65rem',
                           borderRadius: '8px',
                           fontWeight: 600,
-                          fontSize: '0.8rem',
-                          cursor: 'pointer'
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 6px rgba(92,58,30,0.15)'
                         }}
                       >
                         ✨ Appliquer comme Photo Principale du site
@@ -3365,10 +3467,10 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           backgroundColor: '#fff',
                           color: '#5C3A1E',
                           border: '1px solid #5C3A1E',
-                          padding: '0.55rem',
+                          padding: '0.6rem',
                           borderRadius: '8px',
                           fontWeight: 600,
-                          fontSize: '0.8rem',
+                          fontSize: '0.82rem',
                           cursor: 'pointer'
                         }}
                       >
@@ -3434,19 +3536,19 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
               <button
                 onClick={handleGenerateMusic}
-                disabled={musicGenerating}
+                disabled={musicGenerating || musicCreditsUsed >= 5}
                 style={{
                   padding: '0.75rem 1.8rem',
-                  backgroundColor: '#5C3A1E',
+                  backgroundColor: musicCreditsUsed >= 5 ? '#a3a3a3' : '#5C3A1E',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '30px',
                   fontWeight: 600,
                   fontSize: '0.9rem',
-                  cursor: 'pointer'
+                  cursor: musicCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {musicGenerating ? '🎵 Composition en cours...' : '🎶 Générer la Musique IA (Suno)'}
+                {musicGenerating ? '🎵 Composition en cours...' : musicCreditsUsed >= 5 ? '🚫 Crédits épuisés (5/5)' : '🎶 Générer la Musique IA (Suno)'}
               </button>
             </div>
 
