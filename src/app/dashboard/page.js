@@ -858,7 +858,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.1rem', opacity: 0.7 }}>{tab.icon}</span> {tab.label}
                 </div>
-                {tab.upgrade && userOrder.plan === 'Essential' && (
+                {tab.upgrade && userOrder?.plan === 'Essential' && (
                   <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '12px' }}>Upgrade</span>
                 )}
               </button>
@@ -878,7 +878,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1rem', opacity: 0.6 }}>{tab.icon}</span> {tab.label}
                 </div>
-                {tab.upgrade && userOrder.plan === 'Essential' && (
+                {tab.upgrade && userOrder?.plan === 'Essential' && (
                   <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '12px' }}>Upgrade</span>
                 )}
               </button>
@@ -894,7 +894,7 @@ export default function Dashboard() {
             <span>🕒</span> 180 days until wedding
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#b08968', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></span> {userOrder.plan} · Draft
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></span> {userOrder?.plan || 'Standard'} · Draft
           </div>
           <button
             onClick={logout}
@@ -970,8 +970,8 @@ export default function Dashboard() {
               allEventInfo={eventInfo}
               selectedTheme={selectedTheme}
               setSelectedTheme={setSelectedTheme}
-              plan={userOrder.plan}
-              orderId={userOrder.id}
+              plan={userOrder?.plan || 'Standard'}
+              orderId={userOrder?.id || ''}
               triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)}
             />
           )}
@@ -1215,12 +1215,18 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   // Debounced auto-save timeout ref to prevent network flooding and React re-render crashes while typing
   const saveTimeoutRef = useRef(null);
 
+  const initialSlugRef = useRef(null);
+
   useEffect(() => {
-    setLocal({
-      ...defaultTabInfo,
-      ...(eventInfo || {})
-    });
-  }, [slug, eventInfo]);
+    if (initialSlugRef.current !== slug) {
+      initialSlugRef.current = slug;
+      setLocal({
+        ...defaultTabInfo,
+        ...(eventInfo || {})
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };

@@ -60,6 +60,7 @@ export default function Home() {
   const carouselRef = useRef(null);
   const heroMockupRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
+  const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
 
   const handleSimulationScroll = () => {
     if (heroMockupRef.current) {
@@ -104,39 +105,39 @@ export default function Home() {
             </div>
 
             {/* Social Proof Pill Badge */}
-            <div className="animate-fade-in-up delay-3" style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '0.75rem', 
-              backgroundColor: '#ffffff', 
-              padding: '0.45rem 1.1rem 0.45rem 0.6rem', 
-              borderRadius: '30px', 
-              border: '1px solid rgba(176, 137, 104, 0.25)', 
-              boxShadow: '0 4px 18px rgba(0,0,0,0.04)', 
+            <div className="animate-fade-in-up delay-3" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              backgroundColor: '#ffffff',
+              padding: '0.45rem 1.1rem 0.45rem 0.6rem',
+              borderRadius: '30px',
+              border: '1px solid rgba(176, 137, 104, 0.25)',
+              boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
               marginTop: '1.25rem',
               marginBottom: '0.5rem'
             }}>
               {/* Overlapping Avatars */}
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img 
-                  src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                  alt="Couple 1" 
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }} 
+                <img
+                  src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100"
+                  alt="Couple 1"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }}
                 />
-                <img 
-                  src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                  alt="Couple 2" 
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                <img
+                  src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100"
+                  alt="Couple 2"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                 />
-                <img 
-                  src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                  alt="Couple 3" 
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                <img
+                  src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100"
+                  alt="Couple 3"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                 />
-                <img 
-                  src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100" 
-                  alt="Couple 4" 
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }} 
+                <img
+                  src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100"
+                  alt="Couple 4"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
                 />
               </div>
 
@@ -175,8 +176,8 @@ export default function Home() {
               <div className={styles.phoneScreen}>
                 <div ref={heroMockupRef} className="hide-scrollbar" style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
                   <div className={styles.mockupContent}>
-                    <BordeauxTemplate 
-                      autoPlaySimulation={true} 
+                    <BordeauxTemplate
+                      autoPlaySimulation={true}
                       onEnvelopeDismissed={handleSimulationScroll}
                       editMode={false}
                       heroHeight="820px"
@@ -188,7 +189,7 @@ export default function Home() {
                           hero: "https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
                         },
                         sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true }
-                      }} 
+                      }}
                     />
                   </div>
                 </div>
@@ -215,18 +216,24 @@ export default function Home() {
             <div className="carousel-track" ref={carouselRef}>
               {carouselItems.map((item, i) => (
                 <Link href="/collections" key={i} style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}>
-                  <div className="carousel-card" style={{ paddingBottom: '2rem', transition: 'transform 0.2s' }}>
+                  <div
+                    className="carousel-card"
+                    onMouseEnter={() => setHoveredCarouselItem(i)}
+                    onMouseLeave={() => setHoveredCarouselItem(null)}
+                    style={{ paddingBottom: '2rem', transition: 'transform 0.2s' }}
+                  >
                     <div className={styles.phoneFrame} style={{ width: '240px', height: '490px', margin: '0 auto' }}>
                       <div className={styles.phoneNotch}></div>
                       <div className={styles.phoneScreen}>
-                        <TemplateHeroPreview 
-                          partner1={item.partner1} 
-                          partner2={item.partner2} 
+                        <TemplateHeroPreview
+                          partner1={item.partner1}
+                          partner2={item.partner2}
                           date={item.date}
-                          videoSrc={item.video} 
+                          videoSrc={item.video}
                           envelopeSrc={item.envelope}
                           showEnvelope={i % 3 === 0}
                           isImage={item.isImage || false}
+                          active={hoveredCarouselItem === i}
                         />
                       </div>
                     </div>
@@ -293,24 +300,24 @@ export default function Home() {
                   <li><span className={styles.checkIcon}>✓</span> Interactive RSVP form</li>
                   <li><span className={styles.checkIcon}>✓</span> Real-time guest dashboard</li>
                   <li><span className={styles.checkIcon}>✓</span> Unlimited guests included</li>
-                  <li><span className={styles.checkIcon}>✓</span> 2 design revision rounds</li>
+                  <li><span className={styles.checkIcon}>✓</span> Guest directory & table planner</li>
                 </ul>
               </div>
               <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Select Standard</Link>
             </div>
             <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
-              <div className={styles.pricingBadge}>Recommended</div>
+              <div className={styles.pricingBadge}>Most Popular</div>
               <div>
                 <h3 className="heading-md">Premium</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>The ultimate bespoke experience with elevated customization.</p>
-                <div className={styles.pricingPrice}>290 €</div>
+                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>The ultimate experience with AI backgrounds, express support & design review.</p>
+                <div className={styles.pricingPrice}>79.90 €</div>
                 <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> Template fully tailored to your style</li>
-                  <li><span className={styles.checkIcon}>✓</span> Custom typography & iconography</li>
-                  <li><span className={styles.checkIcon}>✓</span> Cover video & background music included</li>
-                  <li><span className={styles.checkIcon}>✓</span> Interactive photo gallery</li>
-                  <li><span className={styles.checkIcon}>✓</span> Unlimited blocks & revisions</li>
-                  <li><span className={styles.checkIcon}>✓</span> Direct contact with your designer</li>
+                  <li><span className={styles.checkIcon}>✓</span> Everything in Standard included</li>
+                  <li><span className={styles.checkIcon}>✓</span> AI Generated Backgrounds & Images</li>
+                  <li><span className={styles.checkIcon}>✓</span> Express 24h Dedicated Support</li>
+                  <li><span className={styles.checkIcon}>✓</span> Review by our Design Team</li>
+                  <li><span className={styles.checkIcon}>✓</span> Custom sections (boarding pass, RSVP)</li>
+                  <li><span className={styles.checkIcon}>✓</span> Unlimited revisions</li>
                 </ul>
               </div>
               <Link href="/collections" className="btn-primary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem', backgroundColor: '#ffffff', color: '#5C3A1E', borderColor: '#ffffff', fontWeight: 700 }}>Select Premium</Link>
@@ -318,14 +325,14 @@ export default function Home() {
             <div className={styles.pricingCard}>
               <div>
                 <h3 className="heading-md">Custom</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem' }}>100% bespoke design from scratch with dedicated editorial art direction.</p>
-                <div className={styles.pricingPrice}>490 €</div>
+                <p className="text-sm" style={{ marginTop: '0.5rem' }}>100% bespoke "Fait main" questionnaire onboarding, team review & site validation.</p>
+                <div className={styles.pricingPrice}>149.90 €</div>
                 <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> 100% custom layout and design</li>
-                  <li><span className={styles.checkIcon}>✓</span> Editorial art direction</li>
-                  <li><span className={styles.checkIcon}>✓</span> Advanced interactions & custom animations</li>
-                  <li><span className={styles.checkIcon}>✓</span> Personal concierge manager</li>
-                  <li><span className={styles.checkIcon}>✓</span> Full multi-language support</li>
+                  <li><span className={styles.checkIcon}>✓</span> 100% bespoke questionnaire onboarding</li>
+                  <li><span className={styles.checkIcon}>✓</span> Hand-crafted ("Fait main") art direction</li>
+                  <li><span className={styles.checkIcon}>✓</span> Custom Envelope, Hero video, Menu & Photos</li>
+                  <li><span className={styles.checkIcon}>✓</span> Direct review & validation by our team</li>
+                  <li><span className={styles.checkIcon}>✓</span> Personal concierge & priority support</li>
                   <li><span className={styles.checkIcon}>✓</span> Everything included in Premium</li>
                 </ul>
               </div>

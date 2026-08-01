@@ -1,0 +1,30 @@
+﻿3c3f628 fix: resolve dashboard null order crash, uuid query format & pre-fill checkout preview data
+c7880d8 fix: break infinite re-render loop on envelope/hero selection
+2626b4b Fix video onError loop crash and state update race condition on envelope selection
+1c28f6c Fix envelope selection in dashboard studio preview
+e3254eb Fix no active order screen on dashboard by preserving local orders and auto-provisioning user orders
+7e307ff Unify login & checkout authentication flows with English password authentication
+ed9e9ae Restore video thumbnails with metadata preload and add bulletproof onError fallbacks for template videos
+4e2be30 Add React DashboardErrorBoundary to catch and expose render crashes
+2d654da Fix triple React state update race condition causing crash on envelope selection
+a83a702 Eliminate concurrent video stream network flooding in envelope thumbnails
+56246e9 Safely handle video play promises and avoid component key destruction on envelope selection
+5922984 Fix video tag src attribute binding to prevent empty-src URL request crash on dashboard
+1d07558 Fix HoverVideoThumbnail rendering crash and bordeaux envelope URL in dashboard
+cea4b5a Fix video URL fallbacks and clean draft/published data structures on publish
+1d13188 Sync dashboard envelope and hero changes to draft object for Fullscreen preview
+35282cf Reorder envelope options so Royal Doves and Sea View appear first instead of Bordeaux
+2f5c286 Require password verification for existing accounts during checkout
+6f5176f Center pricing page cards on mobile screens and remove horizontal scroll
+bdcdf40 Position phone preview at bottom of mobile format and fix continue to payment button action
+4f1f829 Center mobile checkout preview phone frame and prevent horizontal overflow
+b1a6098 Strictly clip phone frame preview content in checkout to prevent overflow
+66eb22f Keep checkout live preview before payment for all packs; redirect Standard and Premium to dashboard and Custom to detailed questionnaire post-payment
+5f1e621 Align package flow: Standard and Premium redirect to payment and client dashboard; Custom uses bespoke questionnaire and admin validation flow
+addab4f Fix sticky phone alignment and auto envelope opening animation on checkout preview page
+3acee54 Auto-trigger envelope opening simulation on landing page hero load
+3587804 Add full multi-language translations, draft vs published workflow, and fix dashboard access for unpaid accounts
+df0117c Add multi-language selection for invitations and remove AI Magic card
+39f5173 Disable internal phone scrolling so only right panel scrolls
+652614c Make envelope opening animation transition to hero video instantly without delay
+9fc6ddd Fix sticky phone preview behavior on desktop checkout page and first-frame video posters
