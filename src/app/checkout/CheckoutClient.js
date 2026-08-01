@@ -178,6 +178,29 @@ const selectStyle = {
   paddingRight: '2.5rem',
 };
 
+const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
+  if (!url) {
+    return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
+  }
+  const isImg = url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || url.includes('Vector.png') || url.includes('romantic-moments-bea.png') || url.includes('300592484d1f31590325.png') || url.includes('hero-scratch-cover');
+  if (isImg) {
+    return <img src={url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+  }
+  if (url.includes('cloudflarestream')) {
+    return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+  }
+  const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
+  return (
+    <video
+      src={videoSrc}
+      preload="metadata"
+      muted
+      playsInline
+      style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+    />
+  );
+};
+
 const labelStyle = {
   fontSize: '0.8rem',
   color: '#888',
@@ -1009,13 +1032,7 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
-                            {env.url && env.url.includes('cloudflarestream') ? (
-                              <img src={env.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={env.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: env.color || '#5C3A1E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
-                                ✉️
-                              </div>
-                            )}
+                            {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523')}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {env.name.replace(' Envelope', '')}
@@ -1051,15 +1068,7 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
-                            {hero.url && (hero.url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || hero.url.includes('Vector.png') || hero.url.includes('romantic-moments-bea.png') || hero.url.includes('hero-scratch-cover')) ? (
-                              <img src={hero.url} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : hero.url && hero.url.includes('cloudflarestream') ? (
-                              <img src={hero.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: hero.color || '#3d4742', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
-                                🎬
-                              </div>
-                            )}
+                            {renderMediaStartingFrame(hero.url, hero.name, '#33403a')}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {hero.name}
@@ -1362,14 +1371,10 @@ export default function CheckoutClient() {
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
                             <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                              {e.url && e.url.includes('cloudflarestream') ? (
-                                <img src={e.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={e.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : e.id === 'env_custom' ? (
+                              {e.id === 'env_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
-                                <div style={{ width: '100%', height: '100%', backgroundColor: e.color || '#5C3A1E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
-                                  ✉️
-                                </div>
+                                renderMediaStartingFrame(e.url, e.name, e.color || '#4a1523')
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -1415,16 +1420,10 @@ export default function CheckoutClient() {
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
                             <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                              {h.url && (h.url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || h.url.includes('Vector.png') || h.url.includes('romantic-moments-bea.png')) ? (
-                                <img src={h.url} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : h.url && h.url.includes('cloudflarestream') ? (
-                                <img src={h.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : h.id === 'hero_custom' ? (
+                              {h.id === 'hero_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
-                                <div style={{ width: '100%', height: '100%', backgroundColor: h.color || '#3d4742', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
-                                  🎬
-                                </div>
+                                renderMediaStartingFrame(h.url, h.name, '#33403a')
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>

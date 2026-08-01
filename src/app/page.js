@@ -177,7 +177,7 @@ export default function Home() {
                 <div ref={heroMockupRef} className="hide-scrollbar" style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
                   <div className={styles.mockupContent}>
                     <BordeauxTemplate
-                      autoPlaySimulation={true}
+                      autoPlaySimulation={false}
                       onEnvelopeDismissed={handleSimulationScroll}
                       editMode={false}
                       heroHeight="820px"
