@@ -1009,10 +1009,12 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
-                            {env.url && !env.url.endsWith('.m3u8') && env.id !== 'env_custom' ? (
-                              <video src={env.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            {env.url && env.url.includes('cloudflarestream') ? (
+                              <img src={env.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={env.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: env.color }} />
+                              <div style={{ width: '100%', height: '100%', backgroundColor: env.color || '#5C3A1E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
+                                ✉️
+                              </div>
                             )}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -1049,14 +1051,14 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
-                            {hero.url && hero.id !== 'hero_custom' ? (
-                              hero.url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || hero.url.includes('Vector.png') || hero.url.includes('romantic-moments-bea.png') ? (
-                                <img src={hero.url} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
-                                <video src={hero.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              )
+                            {hero.url && (hero.url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || hero.url.includes('Vector.png') || hero.url.includes('romantic-moments-bea.png') || hero.url.includes('hero-scratch-cover')) ? (
+                              <img src={hero.url} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : hero.url && hero.url.includes('cloudflarestream') ? (
+                              <img src={hero.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: '#d9d0c7' }} />
+                              <div style={{ width: '100%', height: '100%', backgroundColor: hero.color || '#3d4742', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
+                                🎬
+                              </div>
                             )}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -1173,7 +1175,7 @@ export default function CheckoutClient() {
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen">
                     <div className="preview-phone-template-inner">
-                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={true} heroHeight="970px" />
+                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} heroHeight="970px" />
                     </div>
                   </div>
                 </div>
@@ -1360,12 +1362,14 @@ export default function CheckoutClient() {
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
                             <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                              {e.url && !e.url.endsWith('.m3u8') && e.id !== 'env_custom' ? (
-                                <video src={e.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              {e.url && e.url.includes('cloudflarestream') ? (
+                                <img src={e.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={e.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               ) : e.id === 'env_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
-                                <div style={{ width: '100%', height: '100%', backgroundColor: e.color }} />
+                                <div style={{ width: '100%', height: '100%', backgroundColor: e.color || '#5C3A1E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
+                                  ✉️
+                                </div>
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -1411,10 +1415,16 @@ export default function CheckoutClient() {
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
                             <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                              {h.url && h.id !== 'hero_custom' ? (
-                                <video src={h.url} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
+                              {h.url && (h.url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || h.url.includes('Vector.png') || h.url.includes('romantic-moments-bea.png')) ? (
+                                <img src={h.url} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : h.url && h.url.includes('cloudflarestream') ? (
+                                <img src={h.url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : h.id === 'hero_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
+                              ) : (
+                                <div style={{ width: '100%', height: '100%', backgroundColor: h.color || '#3d4742', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
+                                  🎬
+                                </div>
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
