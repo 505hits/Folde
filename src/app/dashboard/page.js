@@ -737,16 +737,16 @@ export default function Dashboard() {
   const clientEventInfo = eventInfo[clientSlug] || defaultEventInfo;
 
   const tabs = [
-    { id: 'invitation', label: 'Mon Invitation', icon: '✎' },
-    { id: 'aistudio', label: 'Studio IA', icon: '✨' },
-    { id: 'guests', label: 'Liste des Invités', icon: '👥' },
-    { id: 'rsvps', label: 'Réponses RSVP', icon: '☑' },
-    { id: 'tables', label: 'Gestion des Tables', icon: '🪑' },
-    { id: 'share', label: 'Partager mon Site', icon: '↗' },
+    { id: 'invitation', label: 'My Invitation', icon: '✎' },
+    { id: 'aistudio', label: 'AI Studio', icon: '🎨' },
+    { id: 'guests', label: 'Guest List', icon: '👥' },
+    { id: 'rsvps', label: 'RSVP Responses', icon: '☑' },
+    { id: 'tables', label: 'Table Management', icon: '🪑' },
+    { id: 'share', label: 'Share My Site', icon: '↗' },
   ];
 
   const bottomTabs = [
-    { id: 'contact', label: 'Support Client 7j/7', icon: '✉️' },
+    { id: 'contact', label: '24/7 Customer Support', icon: '✉️' },
   ];
 
   return (
@@ -888,14 +888,14 @@ export default function Dashboard() {
         </div>
 
         <div style={{ padding: '1.25rem', backgroundColor: '#faf8f5', borderTop: '1px solid rgba(0,0,0,0.04)', margin: '1rem', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Votre Mariage</div>
-          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Marié #1'} & {clientEventInfo.partner2 || 'Marié #2'}</div>
-          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.75rem' }}>{clientEventInfo.date || 'Date à venir'}</div>
+          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Your Wedding</div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Partner #1'} & {clientEventInfo.partner2 || 'Partner #2'}</div>
+          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.75rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.3rem 0.6rem', borderRadius: '20px', width: 'fit-content' }}>
-            <span>🕒</span> Compte à rebours activé
+            <span>🕒</span> Countdown active
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981' }}></span> Offre Premium · Inclus
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981' }}></span> Premium Plan · Included
           </div>
           <button
             onClick={logout}
@@ -918,7 +918,7 @@ export default function Dashboard() {
               transition: 'all 0.2s'
             }}
           >
-            <span>🚪</span> Déconnexion
+            <span>🚪</span> Log Out
           </button>
         </div>
       </aside>
@@ -929,18 +929,18 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
             <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', fontFamily: 'var(--font-heading)' }}>
-              {activeTab === 'invitation' && 'Mon Invitation'}
-              {activeTab === 'aistudio' && 'Studio IA Premium'}
-              {activeTab === 'guests' && 'Liste des Invités'}
-              {activeTab === 'rsvps' && 'Réponses RSVP'}
-              {activeTab === 'tables' && 'Gestion des Tables'}
-              {activeTab === 'share' && 'Partager mon Site'}
-              {activeTab === 'contact' && 'Support Client'}
+              {activeTab === 'invitation' && 'My Invitation'}
+              {activeTab === 'aistudio' && 'AI Studio'}
+              {activeTab === 'guests' && 'Guest List'}
+              {activeTab === 'rsvps' && 'RSVP Responses'}
+              {activeTab === 'tables' && 'Table Management'}
+              {activeTab === 'share' && 'Share My Site'}
+              {activeTab === 'contact' && 'Customer Support'}
             </h1>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', color: '#555', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-              <span>📱</span> Voir le site plein écran
+              <span>📱</span> View Live Website
             </a>
             <button
               onClick={() => {
@@ -953,9 +953,9 @@ export default function Dashboard() {
               style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(92,58,30,0.2)' }}
             >
               {isPublishing ? (
-                <>⏳ Publication...</>
+                <>⏳ Publishing...</>
               ) : (
-                <>🔒 Publier mon site</>
+                <>🔒 Publish My Website</>
               )}
             </button>
           </div>
@@ -1456,6 +1456,22 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
+      {/* Unlock AI Features Banner for Non-Premium Users */}
+      {plan !== 'Premium' && (
+        <div style={{ backgroundColor: '#fffdfa', border: '1px solid #e8ddd4', borderRadius: '16px', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+          <div>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#c5975b', marginBottom: '0.3rem' }}>Signature Exclusive</div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 0.3rem 0', fontFamily: 'var(--font-heading)' }}>Unlock AI Features</h3>
+            <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>Create custom AI photos, illustrations, and ambient soundtrack.</p>
+          </div>
+          <button
+            type="button"
+            style={{ backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '0.75rem 1.6rem', borderRadius: '30px', fontWeight: 600, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(92,58,30,0.2)' }}
+          >
+            Upgrade Plan
+          </button>
+        </div>
+      )}
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
@@ -1575,9 +1591,40 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
           {/* Hero Video Selection */}
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
               <span>🎨</span> Hero Design Template
             </h2>
+
+            {/* Custom AI Hero Active Banner with Remove Button */}
+            {eventInfo?.customHeroImage && (
+              <div style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5', borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ fontSize: '0.85rem', color: '#c2410c', fontWeight: 600 }}>
+                  🖼️ Une illustration d'art personnalisée est actuellement appliquée en arrière-plan Hero.
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof setEventInfo === 'function') {
+                      setEventInfo(prev => {
+                        const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
+                        return {
+                          ...prev,
+                          [slug]: {
+                            ...currentSlugData,
+                            customHeroImage: null,
+                            images: { ...(currentSlugData.images || {}), hero: null }
+                          }
+                        };
+                      });
+                    }
+                  }}
+                  style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  ❌ Retirer la Photo IA
+                </button>
+              </div>
+            )}
+
             <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {AVAILABLE_HERO_VIDEOS.map(hero => (
                 <div
@@ -2973,16 +3020,23 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
     if (typeof setEventInfo === 'function') {
       setEventInfo(prev => {
         const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
-        const existingGallery = currentSlugData.guestGallery || [];
+        const existingGuestGallery = currentSlugData.guestGallery || [];
+        const existingMemories = currentSlugData.galleryPhotos || currentSlugData.gallery || currentSlugData.memories || [];
+        const updatedGuestGallery = Array.from(new Set([url, ...existingGuestGallery]));
+        const updatedMemories = Array.from(new Set([url, ...existingMemories]));
         return {
           ...prev,
           [slug]: {
             ...currentSlugData,
-            guestGallery: Array.from(new Set([url, ...existingGallery]))
+            guestGallery: updatedGuestGallery,
+            galleryPhotos: updatedMemories,
+            gallery: updatedMemories,
+            memories: updatedMemories
           }
         };
       });
-      alert('🖼️ Photo IA ajoutée à la Galerie Photo de votre site !');
+      saveMediaToDatabase(undefined, undefined);
+      alert('🖼️ Photo IA ajoutée dans la section Souvenirs (Memories) et Galerie de votre site !');
     }
   };
 
@@ -3076,7 +3130,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         const data = await res.json();
         if (data.state === 'success') {
           setPhotoGenerating(false);
-          setPhotoStatus('✨ Illustration générée avec succès !');
+          setPhotoStatus('Illustration successfully generated!');
           setPhotoCreditsUsed(prev => {
             const next = prev + 1;
             if (typeof window !== 'undefined' && slug) {
@@ -3090,10 +3144,10 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           clearInterval(interval);
         } else if (data.state === 'fail') {
           setPhotoGenerating(false);
-          setPhotoError(data.failMsg || 'Génération échouée. Veuillez réessayez.');
+          setPhotoError(data.failMsg || 'Generation failed. Please try again.');
           clearInterval(interval);
         } else {
-          setPhotoStatus('Création de votre illustration IA en cours par Qwen 2 (10-25 sec)...');
+          setPhotoStatus('Generating your illustration (10-25 sec)...');
         }
       } catch (err) { }
     }, 3000);
@@ -3108,7 +3162,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         const data = await res.json();
         if (data.state === 'success') {
           setMusicGenerating(false);
-          setMusicStatus('✨ Musique générée avec succès par Suno !');
+          setMusicStatus('Music successfully composed!');
           setMusicCreditsUsed(prev => {
             const next = prev + 1;
             if (typeof window !== 'undefined' && slug) {
@@ -3122,10 +3176,10 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           clearInterval(interval);
         } else if (data.state === 'fail') {
           setMusicGenerating(false);
-          setMusicError(data.failMsg || 'Génération musicale échouée. Veuillez réessayez.');
+          setMusicError(data.failMsg || 'Music generation failed. Please try again.');
           clearInterval(interval);
         } else {
-          setMusicStatus('Composition de votre musique IA par Suno en cours (20-40 sec)...');
+          setMusicStatus('Composing your wedding soundtrack (20-40 sec)...');
         }
       } catch (err) { }
     }, 4000);
@@ -3203,14 +3257,14 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
     }
   };
 
-  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid #E8DDD4', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '16px', padding: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#5C3A1E', margin: '0 0 0.4rem 0', fontFamily: 'var(--font-heading)' }}>✨ Studio IA Premium</h2>
-        <p style={{ fontSize: '0.88rem', color: '#666', margin: 0, lineHeight: 1.5 }}>
-          Créez des illustrations romantiques exclusives avec Qwen 2 et composez votre musique de mariage sur-mesure avec Suno AI.
+      <div style={{ backgroundColor: '#FAF7F2', border: '1px solid #E8DDD4', borderRadius: '16px', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 500, color: '#5C3A1E', margin: '0 0 0.4rem 0', fontFamily: 'var(--font-heading)', letterSpacing: '0.02em' }}>Bespoke AI Studio</h2>
+        <p style={{ fontSize: '0.88rem', color: '#666', margin: 0, lineHeight: 1.6, fontFamily: 'var(--font-body)' }}>
+          Elevate your invitation with custom artwork illustrations and bespoke background music for an unforgettable guest experience.
         </p>
       </div>
 
@@ -3219,22 +3273,22 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
-              🌟 Médias IA actifs sur votre site live :
+              Active custom elements on your website:
             </div>
             <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '0.2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {eventInfo?.customHeroImage && <span>🖼️ Image Principale : <strong>Actives</strong></span>}
-              {eventInfo?.bgMusicUrl && <span>🎶 Musique de Fond : <strong>Actives</strong></span>}
+              {eventInfo?.customHeroImage && <span>🖼️ Hero Illustration: <strong>Active</strong></span>}
+              {eventInfo?.bgMusicUrl && <span>🎶 Musical Ambiance: <strong>Active</strong></span>}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {eventInfo?.customHeroImage && (
               <button onClick={handleRemoveHeroImage} style={{ background: '#fff', border: '1px solid #bbf7d0', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-                ❌ Retirer Image Principale
+                Remove Illustration
               </button>
             )}
             {eventInfo?.bgMusicUrl && (
               <button onClick={handleRemoveMusic} style={{ background: '#fff', border: '1px solid #bbf7d0', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-                🔇 Retirer la Musique
+                Remove Music
               </button>
             )}
           </div>
@@ -3242,7 +3296,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       )}
 
       {/* Sub-tab Switcher with Credit Badges */}
-      <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #E8DDD4', paddingBottom: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <button
           onClick={() => setActiveSubTab('photo')}
           style={{
@@ -3259,9 +3313,9 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             gap: '0.5rem'
           }}
         >
-          <span>🎨 Photos IA (Qwen)</span>
+          <span>🎨 Photo & Illustration Studio</span>
           <span style={{ backgroundColor: activeSubTab === 'photo' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
-            {Math.max(0, 5 - photoCreditsUsed)} / 5 crédits
+            {Math.max(0, 5 - photoCreditsUsed)} / 5 creations
           </span>
         </button>
         <button
@@ -3280,9 +3334,9 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             gap: '0.5rem'
           }}
         >
-          <span>🎵 Musique IA (Suno)</span>
+          <span>🎵 Musical Ambiance</span>
           <span style={{ backgroundColor: activeSubTab === 'music' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
-            {Math.max(0, 5 - musicCreditsUsed)} / 5 crédits
+            {Math.max(0, 5 - musicCreditsUsed)} / 5 creations
           </span>
         </button>
       </div>
@@ -3291,7 +3345,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       {activeSubTab === 'photo' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={cardStyle}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>1. Choisissez un style suggéré ou créez le vôtre</h3>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>1. Select an illustration style</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
               {PHOTO_PRESETS.map((preset, idx) => (
                 <div
@@ -3300,8 +3354,8 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   style={{
                     padding: '1rem',
                     borderRadius: '12px',
-                    border: photoPrompt === preset.prompt ? '2px solid #7b906f' : '1px solid #e0dcd7',
-                    backgroundColor: photoPrompt === preset.prompt ? '#f8fdf8' : '#faf8f5',
+                    border: photoPrompt === preset.prompt ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
+                    backgroundColor: photoPrompt === preset.prompt ? '#FAF7F2' : '#faf8f5',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -3313,77 +3367,55 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Prompt d'édition de l'image *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Description de l'illustration *</label>
               <textarea
                 rows={3}
                 value={photoPrompt}
                 onChange={e => setPhotoPrompt(e.target.value)}
-                placeholder="Décrivez la transformation ou l'illustration souhaitée..."
+                placeholder="Décrivez l'illustration ou le style souhaité..."
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }}
               />
             </div>
 
-            {/* Direct Upload & Reference Photos */}
+            {/* Reference Photos via URL */}
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem' }}>
-                📸 Transférez les photos du couple (Optionnel pour adapter les visages)
+                🔗 Links / URLs de photos de référence (Optionnel)
               </label>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                {/* Upload #1 */}
-                <div style={{ border: '2px dashed #d0c8be', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', backgroundColor: '#faf8f5', transition: 'all 0.2s' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo du Marié #1</div>
-                  {uploading1 ? (
-                    <div style={{ padding: '1rem', color: '#5C3A1E', fontSize: '0.82rem', fontWeight: 600 }}>
-                      📤 Transfert vers le serveur...
-                    </div>
-                  ) : couplePhoto1 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={couplePhoto1} alt="Preview 1" style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #5C3A1E', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
-                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}>❌ Supprimer la photo</button>
-                    </div>
-                  ) : (
-                    <div>
-                      <input type="file" accept="image/*" id="upload-photo-1" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto1, setUploading1)} />
-                      <label htmlFor="upload-photo-1" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.55rem 1.1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem', boxShadow: '0 2px 8px rgba(92,58,30,0.15)' }}>
-                        📁 Transférer une Photo
-                      </label>
-                      <input
-                        type="url"
-                        value={couplePhoto1}
-                        onChange={e => setCouplePhoto1(e.target.value)}
-                        placeholder="ou coller l'URL d'une photo web"
-                        style={{ width: '100%', padding: '0.45rem 0.6rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box', outline: 'none' }}
-                      />
+                {/* URL #1 */}
+                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.4rem' }}>Photo de référence #1 (URL Web)</div>
+                  <input
+                    type="url"
+                    value={couplePhoto1}
+                    onChange={e => setCouplePhoto1(e.target.value)}
+                    placeholder="https://domaine.com/photo1.jpg"
+                    style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
+                  />
+                  {couplePhoto1 && (
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>✓ Lien défini</span>
+                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>Effacer</button>
                     </div>
                   )}
                 </div>
 
-                {/* Upload #2 */}
-                <div style={{ border: '2px dashed #d0c8be', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', backgroundColor: '#faf8f5', transition: 'all 0.2s' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo de la Mariée #2</div>
-                  {uploading2 ? (
-                    <div style={{ padding: '1rem', color: '#5C3A1E', fontSize: '0.82rem', fontWeight: 600 }}>
-                      📤 Transfert vers le serveur...
-                    </div>
-                  ) : couplePhoto2 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={couplePhoto2} alt="Preview 2" style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #5C3A1E', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
-                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}>❌ Supprimer la photo</button>
-                    </div>
-                  ) : (
-                    <div>
-                      <input type="file" accept="image/*" id="upload-photo-2" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto2, setUploading2)} />
-                      <label htmlFor="upload-photo-2" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.55rem 1.1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem', boxShadow: '0 2px 8px rgba(92,58,30,0.15)' }}>
-                        📁 Transférer une Photo
-                      </label>
-                      <input
-                        type="url"
-                        value={couplePhoto2}
-                        onChange={e => setCouplePhoto2(e.target.value)}
-                        placeholder="ou coller l'URL d'une photo web"
-                        style={{ width: '100%', padding: '0.45rem 0.6rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box', outline: 'none' }}
-                      />
+                {/* URL #2 */}
+                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.4rem' }}>Photo de référence #2 (URL Web)</div>
+                  <input
+                    type="url"
+                    value={couplePhoto2}
+                    onChange={e => setCouplePhoto2(e.target.value)}
+                    placeholder="https://domaine.com/photo2.jpg"
+                    style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
+                  />
+                  {couplePhoto2 && (
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>✓ Lien défini</span>
+                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>Effacer</button>
                     </div>
                   )}
                 </div>
@@ -3406,7 +3438,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                 disabled={photoGenerating || photoCreditsUsed >= 5}
                 style={{
                   padding: '0.75rem 1.8rem',
-                  backgroundColor: photoCreditsUsed >= 5 ? '#a3a3a3' : '#7b906f',
+                  backgroundColor: photoCreditsUsed >= 5 ? '#a3a3a3' : '#5C3A1E',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '30px',
@@ -3415,7 +3447,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   cursor: photoCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {photoGenerating ? '🎨 Génération en cours...' : photoCreditsUsed >= 5 ? '🚫 Crédits épuisés (5/5)' : '✨ Générer la Photo IA (Qwen)'}
+                {photoGenerating ? '🎨 Génération en cours...' : photoCreditsUsed >= 5 ? '🚫 Limite atteinte (5/5)' : 'Générer l\'Illustration'}
               </button>
             </div>
 
@@ -3435,12 +3467,12 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {/* Generated Photos Gallery with Fixed Aspect Ratio */}
           {generatedPhotos.length > 0 && (
             <div style={cardStyle}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Vos Illustrations Générées</h3>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>Vos Illustrations Générées</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 {generatedPhotos.map((url, idx) => (
                   <div key={idx} style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#FAF7F2', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
                     <div style={{ width: '100%', maxHeight: '480px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAF7F2', padding: '0.5rem 0' }}>
-                      <img src={url} alt={`IA Result ${idx}`} style={{ maxWidth: '100%', maxHeight: '460px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto', borderRadius: '8px' }} />
+                      <img src={url} alt={`Illustration ${idx}`} style={{ maxWidth: '100%', maxHeight: '460px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto', borderRadius: '8px' }} />
                     </div>
                     <div style={{ padding: '1rem', backgroundColor: '#fff', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       <button
@@ -3458,7 +3490,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           boxShadow: '0 2px 6px rgba(92,58,30,0.15)'
                         }}
                       >
-                        ✨ Appliquer comme Photo Principale du site
+                        Appliquer comme Photo Principale du site
                       </button>
                       <button
                         onClick={() => handleAddToGallery(url)}
@@ -3474,7 +3506,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           cursor: 'pointer'
                         }}
                       >
-                        🖼️ Ajouter à la Galerie Photo du site
+                        Ajouter à la Galerie Photo du site
                       </button>
                       <a href={url} target="_blank" rel="noopener noreferrer" style={{ textAlign: 'center', fontSize: '0.78rem', color: '#666', textDecoration: 'none', marginTop: '0.2rem' }}>
                         📥 Télécharger HD
@@ -3492,7 +3524,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       {activeSubTab === 'music' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={cardStyle}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>1. Choisissez une ambiance musicale suggérée</h3>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>1. Choisissez une ambiance musicale</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
               {MUSIC_PRESETS.map((preset, idx) => (
                 <div
@@ -3502,7 +3534,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     padding: '1rem',
                     borderRadius: '12px',
                     border: musicPrompt === preset.prompt ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                    backgroundColor: musicPrompt === preset.prompt ? '#faf8f5' : '#fff',
+                    backgroundColor: musicPrompt === preset.prompt ? '#FAF7F2' : '#fff',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -3514,7 +3546,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Prompt Musical / Ambiance *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Style ou thématique musicale *</label>
               <textarea
                 rows={3}
                 value={musicPrompt}
@@ -3548,7 +3580,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   cursor: musicCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {musicGenerating ? '🎵 Composition en cours...' : musicCreditsUsed >= 5 ? '🚫 Crédits épuisés (5/5)' : '🎶 Générer la Musique IA (Suno)'}
+                {musicGenerating ? '🎵 Composition en cours...' : musicCreditsUsed >= 5 ? '🚫 Limite atteinte (5/5)' : 'Composer la Musique'}
               </button>
             </div>
 
@@ -3584,11 +3616,11 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     cursor: 'pointer'
                   }}
                 >
-                  🎶 Appliquer comme Musique de Fond du site
+                  Appliquer comme Musique de Fond du site
                 </button>
                 <a
                   href={generatedAudio}
-                  download="mariage-musique-suno.mp3"
+                  download="mariage-ambiance-musicale.mp3"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -3609,7 +3641,8 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             </div>
           )}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
