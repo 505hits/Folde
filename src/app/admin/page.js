@@ -10,14 +10,14 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f4f4f5', fontFamily: 'var(--font-body)', color: '#18181b' }}>
-      
+
       {/* Admin Sidebar */}
       <aside style={{ width: '250px', backgroundColor: '#18181b', color: '#fff', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
         <div style={{ marginBottom: '3rem', paddingLeft: '1rem' }}>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700 }}>Admin Portal</h1>
           <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.2rem' }}>FOLDÈ Design</p>
         </div>
-        
+
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <button
             onClick={() => setActiveTab('orders')}
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
             <span>🌐</span> Client Sites
           </button>
         </nav>
-        
+
         <div style={{ marginTop: 'auto', paddingLeft: '1rem' }}>
           <Link href="/" style={{ fontSize: '0.9rem', color: '#a1a1aa', textDecoration: 'none', fontWeight: 500 }}>
             ← Back to Main Site
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          
+
           <h2 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '2rem' }}>
             {activeTab === 'orders' ? 'Orders Management' : 'Active Client Sites'}
           </h2>
@@ -78,27 +78,27 @@ export default function AdminDashboard() {
                       <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', color: '#475569' }}>{order.plan}</td>
                       <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{order.price}$</td>
                       <td style={{ padding: '1rem 1.5rem' }}>
-                        <span style={{ 
+                        <span style={{
                           padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, display: 'inline-block', marginBottom: '0.5rem',
-                          backgroundColor: order.status === 'Live' ? '#dcfce7' : '#fef9c3',
-                          color: order.status === 'Live' ? '#166534' : '#854d0e'
+                          backgroundColor: order.status === 'Live' ? '#dcfce7' : order.status === 'Awaiting Validation' ? '#ffedd5' : '#fef9c3',
+                          color: order.status === 'Live' ? '#166534' : order.status === 'Awaiting Validation' ? '#c2410c' : '#854d0e'
                         }}>
-                          {order.status}
+                          {order.status || 'Awaiting Details'}
                         </span>
                         {order.status !== 'Live' && (
                           <button
                             onClick={() => updateOrderStatus(order.id, 'Live')}
-                            style={{ display: 'block', backgroundColor: '#18181b', color: '#fff', border: 'none', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
+                            style={{ display: 'block', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
                           >
-                            Mark as Live
+                            ✓ Validate Site (Mark Live)
                           </button>
                         )}
                         {order.status === 'Live' && (
                           <button
-                            onClick={() => updateOrderStatus(order.id, 'Awaiting Details')}
+                            onClick={() => updateOrderStatus(order.id, 'Awaiting Validation')}
                             style={{ display: 'block', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
                           >
-                            Revert
+                            Revert Status
                           </button>
                         )}
                       </td>

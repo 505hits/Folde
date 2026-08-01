@@ -51,41 +51,38 @@ const packages = [
       'Choose 1 template from over 15 options',
       'Your colors and info applied',
       'RSVP + private dashboard',
-      'All languages supported',
-      'Unlimited guests included',
-      '2 design revision rounds'
-    ]
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 290,
-    originalPrice: 490,
-    desc: 'We redesign and personalize any template to match the exact style of your wedding. All extras included.',
-    features: [
-      'Template redesigned to your style',
-      'Full invitation personalization',
-      'Custom icons, typography & illustrations',
-      'Includes Video, Music & AI Images',
-      'Unlimited blocks & revisions',
-      'Direct contact with your designer',
+      'Guest directory & table planner',
       'All languages supported',
       'Unlimited guests included'
     ]
   },
   {
+    id: 'premium',
+    name: 'Premium',
+    price: 79.90,
+    originalPrice: 149.90,
+    desc: 'Full access to standard invitation editor + AI background images, 24h express support, design review, and custom sections.',
+    features: [
+      'Everything in Standard included',
+      'AI Generated Backgrounds & Images',
+      'Express 24h Dedicated Support',
+      'Review by our Design Team',
+      'Custom sections (boarding pass, RSVP options)',
+      'Unlimited revisions'
+    ]
+  },
+  {
     id: 'Custom',
     name: 'Custom',
-    price: 490,
-    originalPrice: 890,
-    desc: '100% bespoke design from scratch with editorial art direction. A unique, one-of-a-kind piece.',
+    price: 149.90,
+    originalPrice: 290.00,
+    desc: 'Bespoke hand-crafted ("Fait main") experience with dedicated questionnaire onboarding, team review, and admin site validation.',
     features: [
-      '100% custom design from scratch',
-      'Editorial art direction',
-      'Includes Video, Music & AI Images',
-      'Personal concierge & priority support',
-      'All languages supported',
-      'Unlimited guests included',
+      '100% bespoke questionnaire onboarding',
+      'Hand-crafted ("Fait main") art direction',
+      'Custom Envelope, Hero video, Menu & Photos',
+      'Direct review & validation by our team',
+      'Concierge priority support',
       'Everything in Premium'
     ]
   }

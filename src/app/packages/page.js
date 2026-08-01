@@ -44,85 +44,85 @@ export default function Offers() {
         {/* Pricing Grid */}
         <section style={{ marginBottom: '8rem' }}>
           <div className="pricing-grid">
-            
-             {/* Standard */}
-             <div className="price-card">
-                <div className="price-header">
-                  <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Standard</h2>
-                  <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                    Choose from our +10 exclusive templates and receive a personalized digital wedding invitation.
-                  </p>
-                  <div className="price-amount">
-                    <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>99.90$</span>
-                    <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>49.90$</span>
-                  </div>
+
+            {/* Standard */}
+            <div className="price-card">
+              <div className="price-header">
+                <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Standard</h2>
+                <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
+                  Choose from our +15 exclusive templates and receive a personalized digital wedding invitation.
+                </p>
+                <div className="price-amount">
+                  <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>99.90€</span>
+                  <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>49.90€</span>
                 </div>
-                <ul className="price-features">
-                  <li><span className="check">✓</span> Choose 1 template from over 10 options</li>
-                  <li><span className="check">✓</span> Your colors and info applied</li>
-                  <li><span className="check">✓</span> RSVP + private dashboard</li>
-                  <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                  <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
-                  <li><span className="check">✓</span> 2 design revision rounds</li>
-                </ul>
-                <Link href="/checkout?plan=essential" className="price-btn btn-secondary-plan">
-                  Start with Standard
-                </Link>
-             </div>
- 
-             {/* Premium */}
-             <div className="price-card popular">
-                <div className="price-badge">Editor's Choice</div>
-                <div className="price-header">
-                  <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
-                  <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                    We redesign and personalize any template to match the exact style of your wedding. All extras included.
-                  </p>
-                  <div className="price-amount">
-                    <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>490$</span>
-                    <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>290$</span>
-                  </div>
+              </div>
+              <ul className="price-features">
+                <li><span className="check">✓</span> Choose 1 template from over 15 options</li>
+                <li><span className="check">✓</span> Your colors and info applied</li>
+                <li><span className="check">✓</span> RSVP + private dashboard</li>
+                <li><span className="check">✓</span> Guest directory & table planner</li>
+                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
+                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+              </ul>
+              <Link href="/checkout?plan=essential" className="price-btn btn-secondary-plan">
+                Start with Standard
+              </Link>
+            </div>
+
+            {/* Premium */}
+            <div className="price-card popular">
+              <div className="price-badge">Most Popular</div>
+              <div className="price-header">
+                <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
+                <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
+                  Everything in Standard + AI generated background images, express 24h support, design review, and custom sections.
+                </p>
+                <div className="price-amount">
+                  <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>149.90€</span>
+                  <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>79.90€</span>
                 </div>
-                <ul className="price-features">
-                  <li><span className="check">✓</span> Template redesigned to your style</li>
-                  <li><span className="check">✓</span> Full invitation personalization</li>
-                  <li><span className="check">✓</span> Custom icons, typography & illustrations</li>
-                  <li><span className="check">✓</span> Includes Video, Music & AI Images</li>
-                  <li><span className="check">✓</span> Unlimited blocks & revisions</li>
-                  <li><span className="check">✓</span> Direct contact with your designer</li>
-                  <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                  <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
-                </ul>
-                <Link href="/checkout?plan=premium" className="price-btn btn-primary-plan">
-                  Start with Premium
-                </Link>
-             </div>
- 
-             {/* Custom */}
-             <div className="price-card">
-                <div className="price-header">
-                  <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Custom</h2>
-                  <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                    100% bespoke design from scratch with editorial art direction. A unique, one-of-a-kind piece.
-                  </p>
-                  <div className="price-amount">
-                    <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>890$</span>
-                    <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#3D2B1F' }}>490$</span>
-                  </div>
+              </div>
+              <ul className="price-features">
+                <li><span className="check">✓</span> Everything in Standard included</li>
+                <li><span className="check">✓</span> AI Generated Backgrounds & Images</li>
+                <li><span className="check">✓</span> Express 24h Dedicated Support</li>
+                <li><span className="check">✓</span> Review by our Design Team</li>
+                <li><span className="check">✓</span> Custom sections (boarding pass, RSVP)</li>
+                <li><span className="check">✓</span> Unlimited revisions</li>
+                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
+                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+              </ul>
+              <Link href="/checkout?plan=premium" className="price-btn btn-primary-plan">
+                Start with Premium
+              </Link>
+            </div>
+
+            {/* Custom */}
+            <div className="price-card">
+              <div className="price-header">
+                <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Custom</h2>
+                <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
+                  Hand-crafted ("Fait main") bespoke questionnaire onboarding, team review, and admin site validation.
+                </p>
+                <div className="price-amount">
+                  <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>290.00€</span>
+                  <span style={{ fontSize: '3rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#3D2B1F' }}>149.90€</span>
                 </div>
-                <ul className="price-features">
-                  <li><span className="check">✓</span> 100% custom design from scratch</li>
-                  <li><span className="check">✓</span> Editorial art direction</li>
-                  <li><span className="check">✓</span> Includes Video, Music & AI Images</li>
-                  <li><span className="check">✓</span> Personal concierge & priority support</li>
-                  <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                  <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
-                  <li><span className="check">✓</span> Everything in Premium</li>
-                </ul>
-                <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
-                  Start with Custom
-                </Link>
-             </div>
+              </div>
+              <ul className="price-features">
+                <li><span className="check">✓</span> 100% bespoke questionnaire onboarding</li>
+                <li><span className="check">✓</span> Hand-crafted ("Fait main") art direction</li>
+                <li><span className="check">✓</span> Custom Envelope, Hero video, Menu & Photos</li>
+                <li><span className="check">✓</span> Direct review & validation by our team</li>
+                <li><span className="check">✓</span> Personal concierge & priority support</li>
+                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
+                <li><span className="check">✓</span> <strong>Everything in Premium</strong></li>
+              </ul>
+              <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
+                Start with Custom
+              </Link>
+            </div>
 
           </div>
         </section>
