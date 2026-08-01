@@ -738,6 +738,7 @@ export default function Dashboard() {
 
   const tabs = [
     { id: 'invitation', label: 'My Invitation', icon: '✎' },
+    { id: 'aistudio', label: 'Studio IA (Premium)', icon: '✨', upgrade: true },
     { id: 'guests', label: 'Guest List', icon: '👥', upgrade: true },
     { id: 'rsvps', label: 'RSVPs', icon: '☑', upgrade: true },
     { id: 'tables', label: 'Tables', icon: '🪑', upgrade: true },
@@ -975,6 +976,14 @@ export default function Dashboard() {
               triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)}
             />
           )}
+          {activeTab === 'aistudio' && (
+            <AiStudioTab
+              plan={userOrder?.plan}
+              eventInfo={clientEventInfo}
+              slug={clientSlug}
+              setEventInfo={setEventInfo}
+            />
+          )}
           {activeTab === 'guests' && (
             <GuestListTab slug={clientSlug} />
           )}
@@ -987,7 +996,7 @@ export default function Dashboard() {
           {activeTab === 'contact' && (
             <ContactUsTab currentUser={currentUser} />
           )}
-          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && activeTab !== 'contact' && (
+          {activeTab !== 'invitation' && activeTab !== 'aistudio' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && activeTab !== 'contact' && (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
               Section in development
             </div>
@@ -2793,6 +2802,486 @@ function ContactUsTab({ currentUser }) {
           </form>
         )}
       </div>
+    </div>
+  );
+}
+
+function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
+  const isPremium = plan === 'Premium' || plan === 'Custom' || plan === 'premium' || plan === 'custom';
+  const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
+
+  // Photo state
+  const [photoPrompt, setPhotoPrompt] = useState('');
+  const [couplePhoto1, setCouplePhoto1] = useState('');
+  const [couplePhoto2, setCouplePhoto2] = useState('');
+  const [photoRatio, setPhotoRatio] = useState('1:1');
+  const [photoGenerating, setPhotoGenerating] = useState(false);
+  const [photoTaskId, setPhotoTaskId] = useState(null);
+  const [photoStatus, setPhotoStatus] = useState('');
+  const [generatedPhotos, setGeneratedPhotos] = useState([]);
+  const [photoError, setPhotoError] = useState('');
+
+  // Music state
+  const [musicPrompt, setMusicPrompt] = useState('');
+  const [isInstrumental, setIsInstrumental] = useState(true);
+  const [musicGenerating, setMusicGenerating] = useState(false);
+  const [musicTaskId, setMusicTaskId] = useState(null);
+  const [musicStatus, setMusicStatus] = useState('');
+  const [generatedAudio, setGeneratedAudio] = useState(null);
+  const [musicError, setMusicError] = useState('');
+
+  const PHOTO_PRESETS = [
+    {
+      title: "🎨 Aquarelle Romantique",
+      desc: "Jardin de roses au pastel doux",
+      prompt: "Cute romantic watercolor painting of couple in a blooming rose garden for a wedding website, soft pastel lighting, whimsical dreamy atmosphere"
+    },
+    {
+      title: "🌟 Style Pixar 3D",
+      desc: "Personnages animés 3D mignons sous une arche florale",
+      prompt: "Charming Pixar-style 3D animated couple standing under a floral arch in wedding attire, cute face details, happy joyful expressions"
+    },
+    {
+      title: "🌅 Aventure Studio Ghibli",
+      desc: "Illustration sous un coucher de soleil doré",
+      prompt: "Dreamy Studio Ghibli style illustration of couple under golden sunset, elegant wedding dress and tuxedo, gentle breeze, anime aesthetic"
+    },
+    {
+      title: "🏛️ Tableau d'Art Vintage",
+      desc: "Portrait classique à la peinture à l'huile",
+      prompt: "Elegant vintage oil painting portrait of couple smiling warmly, artistic brush strokes, fairytale romantic vibe, warm golden tones"
+    }
+  ];
+
+  const MUSIC_PRESETS = [
+    {
+      title: "🎹 Piano & Violoncelle Calme",
+      desc: "Mélodie douce et inspirante pour fond d'invitation",
+      prompt: "A calm and inspiring acoustic piano and cello melody, romantic ambient background music for wedding invitation, peaceful emotional composition"
+    },
+    {
+      title: "🎸 Guitare Acoustique Douce",
+      desc: "Thème d'amour apaisant avec cordes légères",
+      prompt: "Gentle acoustic guitar with soft emotional strings, peaceful love theme for wedding site, warm intimate acoustic track"
+    },
+    {
+      title: "🥁 Pop Acoustique Joyeuse",
+      desc: "Morceau dynamique et chaleureux de célébration",
+      prompt: "Joyful upbeat indie acoustic pop song with happy acoustic strumming, romantic wedding celebration background music"
+    },
+    {
+      title: "🎻 Harpe & Orchestre Féérique",
+      desc: "Symphonie féérique pour un mariage de rêve",
+      prompt: "Dreamy fairytale orchestral harp and violin romantic melody for wedding website, elegant cinematic score"
+    }
+  ];
+
+  useEffect(() => {
+    if (!photoTaskId || !photoGenerating) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/ai-photo?taskId=${encodeURIComponent(photoTaskId)}`);
+        const data = await res.json();
+        if (data.state === 'success') {
+          setPhotoGenerating(false);
+          setPhotoStatus('✨ Illustration générée avec succès !');
+          if (data.resultUrls && data.resultUrls.length > 0) {
+            setGeneratedPhotos(prev => [...data.resultUrls, ...prev]);
+          }
+          clearInterval(interval);
+        } else if (data.state === 'fail') {
+          setPhotoGenerating(false);
+          setPhotoError(data.failMsg || 'Génération échouée. Veuillez réessayez.');
+          clearInterval(interval);
+        } else {
+          setPhotoStatus('Création de votre illustration IA en cours par Qwen 2 (10-25 sec)...');
+        }
+      } catch (err) { }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [photoTaskId, photoGenerating]);
+
+  useEffect(() => {
+    if (!musicTaskId || !musicGenerating) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/ai-music?taskId=${encodeURIComponent(musicTaskId)}`);
+        const data = await res.json();
+        if (data.state === 'success') {
+          setMusicGenerating(false);
+          setMusicStatus('✨ Musique générée avec succès par Suno !');
+          if (data.audioUrl) {
+            setGeneratedAudio(data.audioUrl);
+          }
+          clearInterval(interval);
+        } else if (data.state === 'fail') {
+          setMusicGenerating(false);
+          setMusicError(data.failMsg || 'Génération musicale échouée. Veuillez réessayez.');
+          clearInterval(interval);
+        } else {
+          setMusicStatus('Composition de votre musique IA par Suno en cours (20-40 sec)...');
+        }
+      } catch (err) { }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [musicTaskId, musicGenerating]);
+
+  const handleGeneratePhoto = async () => {
+    if (!photoPrompt.trim()) {
+      setPhotoError('Veuillez saisir un prompt ou en sélectionner un parmi nos suggestions.');
+      return;
+    }
+    setPhotoError('');
+    setPhotoGenerating(true);
+    setPhotoStatus('Initialisation de Qwen 2 Image Edit...');
+    try {
+      const urls = [couplePhoto1, couplePhoto2].filter(u => u && u.trim());
+      const res = await fetch('/api/ai-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: photoPrompt,
+          imageUrls: urls.length > 0 ? urls : undefined,
+          imageSize: photoRatio
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.taskId) {
+        setPhotoGenerating(false);
+        setPhotoError(data.error || 'Erreur lors de la création de la tâche');
+        return;
+      }
+      setPhotoTaskId(data.taskId);
+    } catch (err) {
+      setPhotoGenerating(false);
+      setPhotoError('Erreur réseau. Veuillez réessayer.');
+    }
+  };
+
+  const handleGenerateMusic = async () => {
+    if (!musicPrompt.trim()) {
+      setMusicError('Veuillez saisir ou sélectionner un style de musique.');
+      return;
+    }
+    setMusicError('');
+    setMusicGenerating(true);
+    setMusicStatus('Initialisation de Suno AI...');
+    try {
+      const res = await fetch('/api/ai-music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: musicPrompt,
+          instrumental: isInstrumental,
+          model: 'V4'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.taskId) {
+        setMusicGenerating(false);
+        setMusicError(data.error || 'Erreur lors de la génération de la musique');
+        return;
+      }
+      setMusicTaskId(data.taskId);
+    } catch (err) {
+      setMusicGenerating(false);
+      setMusicError('Erreur réseau. Veuillez réessayer.');
+    }
+  };
+
+  if (!isPremium) {
+    return (
+      <div style={{ backgroundColor: '#fff', padding: '3rem 2rem', borderRadius: '16px', border: '1px solid #eae5de', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✨</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.75rem', fontFamily: 'var(--font-heading)' }}>
+          Débloquez le Studio IA (Qwen & Suno) avec l'offre Premium
+        </h2>
+        <p style={{ fontSize: '0.95rem', color: '#666', maxWidth: '550px', margin: '0 auto 1.75rem auto', lineHeight: 1.6 }}>
+          Générez des illustrations romantiques sur-mesure de votre couple avec <strong>Qwen 2 IA</strong> et composez une musique de fond unique pour votre invitation avec <strong>Suno AI</strong>.
+        </p>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#fef3c7', color: '#b45309', padding: '0.5rem 1.25rem', borderRadius: '20px', fontWeight: 600, fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+          ⭐ Fonctionnalité réservée aux membres Premium
+        </div>
+        <br />
+        <a href="/packages" style={{ display: 'inline-block', backgroundColor: '#7b906f', color: '#fff', padding: '0.85rem 2rem', borderRadius: '30px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 12px rgba(123,144,111,0.3)' }}>
+          Mettre à niveau vers Premium (79.90€)
+        </a>
+      </div>
+    );
+  }
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '16px', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#5C3A1E', margin: '0 0 0.4rem 0', fontFamily: 'var(--font-heading)' }}>✨ Studio IA Premium</h2>
+        <p style={{ fontSize: '0.88rem', color: '#666', margin: 0, lineHeight: 1.5 }}>
+          Créez des illustrations romantiques exclusives avec Qwen 2 et composez votre musique de mariage sur-mesure avec Suno AI.
+        </p>
+      </div>
+
+      {/* Sub-tab Switcher */}
+      <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '0.5rem' }}>
+        <button
+          onClick={() => setActiveSubTab('photo')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '20px',
+            border: 'none',
+            backgroundColor: activeSubTab === 'photo' ? '#5C3A1E' : '#f0ede9',
+            color: activeSubTab === 'photo' ? '#fff' : '#555',
+            fontWeight: 600,
+            fontSize: '0.88rem',
+            cursor: 'pointer'
+          }}
+        >
+          🎨 Photos IA (Qwen 2)
+        </button>
+        <button
+          onClick={() => setActiveSubTab('music')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '20px',
+            border: 'none',
+            backgroundColor: activeSubTab === 'music' ? '#5C3A1E' : '#f0ede9',
+            color: activeSubTab === 'music' ? '#fff' : '#555',
+            fontWeight: 600,
+            fontSize: '0.88rem',
+            cursor: 'pointer'
+          }}
+        >
+          🎵 Musique IA (Suno)
+        </button>
+      </div>
+
+      {/* TAB 1: PHOTO IA */}
+      {activeSubTab === 'photo' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={cardStyle}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>1. Choisissez un style suggéré ou créez le vôtre</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              {PHOTO_PRESETS.map((preset, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setPhotoPrompt(preset.prompt)}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    border: photoPrompt === preset.prompt ? '2px solid #7b906f' : '1px solid #e0dcd7',
+                    backgroundColor: photoPrompt === preset.prompt ? '#f8fdf8' : '#faf8f5',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: '0.25rem' }}>{preset.title}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#666' }}>{preset.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Prompt d'édition de l'image *</label>
+              <textarea
+                rows={3}
+                value={photoPrompt}
+                onChange={e => setPhotoPrompt(e.target.value)}
+                placeholder="Décrivez la transformation ou l'illustration souhaitée..."
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>URL Photo des Mariés #1 (Optionnel)</label>
+                <input
+                  type="url"
+                  value={couplePhoto1}
+                  onChange={e => setCouplePhoto1(e.target.value)}
+                  placeholder="https://domaine.com/photo-marie.jpg"
+                  style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>URL Photo des Mariés #2 (Optionnel)</label>
+                <input
+                  type="url"
+                  value={couplePhoto2}
+                  onChange={e => setCouplePhoto2(e.target.value)}
+                  placeholder="https://domaine.com/photo-mariee.jpg"
+                  style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#555', marginRight: '0.5rem' }}>Format :</label>
+                <select value={photoRatio} onChange={e => setPhotoRatio(e.target.value)} style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #e0dcd7' }}>
+                  <option value="1:1">1:1 (Carré)</option>
+                  <option value="4:3">4:3 (Standard)</option>
+                  <option value="16:9">16:9 (Paysage)</option>
+                  <option value="9:16">9:16 (Story)</option>
+                </select>
+              </div>
+
+              <button
+                onClick={handleGeneratePhoto}
+                disabled={photoGenerating}
+                style={{
+                  padding: '0.75rem 1.8rem',
+                  backgroundColor: '#7b906f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '30px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}
+              >
+                {photoGenerating ? '🎨 Génération en cours...' : '✨ Générer la Photo IA (Qwen)'}
+              </button>
+            </div>
+
+            {photoStatus && (
+              <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#eefcf1', color: '#2e7d32', borderRadius: '8px', fontSize: '0.85rem' }}>
+                ⏳ {photoStatus}
+              </div>
+            )}
+
+            {photoError && (
+              <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#fef2f2', color: '#dc2626', borderRadius: '8px', fontSize: '0.85rem' }}>
+                ⚠️ {photoError}
+              </div>
+            )}
+          </div>
+
+          {/* Generated Photos Gallery */}
+          {generatedPhotos.length > 0 && (
+            <div style={cardStyle}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Vos Illustrations Générées</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                {generatedPhotos.map((url, idx) => (
+                  <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0dcd7' }}>
+                    <img src={url} alt={`IA Result ${idx}`} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
+                    <div style={{ padding: '0.5rem', backgroundColor: '#fff', display: 'flex', justifyContent: 'center' }}>
+                      <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.78rem', color: '#5C3A1E', fontWeight: 600, textDecoration: 'none' }}>
+                        📥 Télécharger HD
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 2: MUSIQUE IA */}
+      {activeSubTab === 'music' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={cardStyle}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>1. Choisissez une ambiance musicale suggérée</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              {MUSIC_PRESETS.map((preset, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setMusicPrompt(preset.prompt)}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    border: musicPrompt === preset.prompt ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
+                    backgroundColor: musicPrompt === preset.prompt ? '#faf8f5' : '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: '0.25rem' }}>{preset.title}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#666' }}>{preset.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Prompt Musical / Ambiance *</label>
+              <textarea
+                rows={3}
+                value={musicPrompt}
+                onChange={e => setMusicPrompt(e.target.value)}
+                placeholder="Décrivez l'instrumentation, le rythme ou le style souhaité..."
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={isInstrumental}
+                  onChange={e => setIsInstrumental(e.target.checked)}
+                />
+                Musique Instrumentale uniquement (sans voix)
+              </label>
+
+              <button
+                onClick={handleGenerateMusic}
+                disabled={musicGenerating}
+                style={{
+                  padding: '0.75rem 1.8rem',
+                  backgroundColor: '#5C3A1E',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '30px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}
+              >
+                {musicGenerating ? '🎵 Composition en cours...' : '🎶 Générer la Musique IA (Suno)'}
+              </button>
+            </div>
+
+            {musicStatus && (
+              <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#eefcf1', color: '#2e7d32', borderRadius: '8px', fontSize: '0.85rem' }}>
+                ⏳ {musicStatus}
+              </div>
+            )}
+
+            {musicError && (
+              <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#fef2f2', color: '#dc2626', borderRadius: '8px', fontSize: '0.85rem' }}>
+                ⚠️ {musicError}
+              </div>
+            )}
+          </div>
+
+          {/* Generated Music Player */}
+          {generatedAudio && (
+            <div style={cardStyle}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Votre Musique de Mariage Générée</h3>
+              <audio controls src={generatedAudio} style={{ width: '100%', marginBottom: '1rem' }} />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <a
+                  href={generatedAudio}
+                  download="mariage-musique-suno.mp3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: '0.6rem 1.2rem',
+                    backgroundColor: '#7b906f',
+                    color: '#fff',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  📥 Télécharger le fichier MP3
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
