@@ -745,7 +745,7 @@ export default function Dashboard() {
   ];
 
   const bottomTabs = [
-    { id: 'billing', label: 'Plan & Billing', icon: '💳' },
+    { id: 'contact', label: 'Contact Us', icon: '✉️' },
   ];
 
   return (
@@ -984,7 +984,10 @@ export default function Dashboard() {
           {activeTab === 'tables' && (
             <TablesTab slug={clientSlug} />
           )}
-          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && (
+          {activeTab === 'contact' && (
+            <ContactUsTab currentUser={currentUser} />
+          )}
+          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && activeTab !== 'contact' && (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
               Section in development
             </div>
@@ -2679,6 +2682,111 @@ function TablesTab({ slug }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ContactUsTab({ currentUser }) {
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sentSuccess, setSentSuccess] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setSending(true);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: currentUser?.name || 'Wedding Host',
+          email: currentUser?.email || 'host@foldedesign.com',
+          subject: subject || 'General Inquiry',
+          message: message
+        })
+      });
+    } catch (err) { }
+    setSending(false);
+    setSentSuccess(true);
+    setMessage('');
+    setSubject('');
+  };
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '16px', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#5C3A1E', margin: '0 0 0.4rem 0', fontFamily: 'var(--font-heading)' }}>✉️ Contact Us & Support</h2>
+        <p style={{ fontSize: '0.88rem', color: '#666', margin: 0, lineHeight: 1.5 }}>
+          Have a question about your wedding invitation, need a custom design adjustment, or technical assistance? Send us a message directly below and our team will get back to you within 24 hours.
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>📧</div>
+          <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#1a1a1a' }}>Direct Support</div>
+          <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>contact@foldedesign.com</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚡</div>
+          <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#1a1a1a' }}>Fast Assistance</div>
+          <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Response under 24h</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🎨</div>
+          <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#1a1a1a' }}>Custom Revisions</div>
+          <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Colors, fonts & music</div>
+        </div>
+      </div>
+
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '1.2rem', fontFamily: 'var(--font-heading)' }}>Send Us a Message</h3>
+
+        {sentSuccess ? (
+          <div style={{ backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9', borderRadius: '12px', padding: '1.5rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✅</div>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#2e7d32', fontSize: '1.1rem' }}>Message Sent Successfully!</h4>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#555' }}>Thank you for reaching out. Our team has received your message and will reply shortly.</p>
+            <button onClick={() => setSentSuccess(false)} style={{ marginTop: '1rem', padding: '0.5rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.82rem', cursor: 'pointer' }}>Send Another Message</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Your Name</label>
+                <input type="text" readOnly value={currentUser?.name || 'Wedding Host'} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Your Email</label>
+                <input type="email" readOnly value={currentUser?.email || 'host@foldedesign.com'} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', outline: 'none' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Subject / Topic *</label>
+              <select value={subject} onChange={e => setSubject(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', backgroundColor: '#fff' }}>
+                <option value="" disabled hidden>Select a topic...</option>
+                <option value="Design Customization">🎨 Custom Design / Font Request</option>
+                <option value="Technical Question">⚙️ Technical Assistance</option>
+                <option value="General Inquiry">💬 General Question</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Your Message *</label>
+              <textarea required rows={5} value={message} onChange={e => setMessage(e.target.value)} placeholder="How can we help with your wedding invitation?" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }} />
+            </div>
+
+            <button type="submit" disabled={sending} style={{ alignSelf: 'flex-end', padding: '0.75rem 1.8rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}>
+              {sending ? 'Sending...' : 'Send Message ✉️'}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
