@@ -558,6 +558,23 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }, 2500);
   };
 
+  const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
+    if (!url) return fallback;
+    if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+    if (url.includes('cloudflarestream')) {
+      return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
+    }
+    if (url.includes('bordeaux')) return '/images/bordeaux.png';
+    if (url.includes('champagne') || url.includes('golden')) return '/images/champagne.png';
+    if (url.includes('ivory')) return '/images/ivory.png';
+    if (url.includes('sage') || url.includes('olive')) return '/images/sage.png';
+    if (url.includes('terracotta') || url.includes('amber')) return '/images/terracotta.png';
+    if (url.includes('chocolate') || url.includes('mocha')) return '/images/chocolate.png';
+    if (url.includes('royalbordeaux') || url.includes('crimson')) return '/images/royalbordeaux.png';
+    if (url.includes('royalblue') || url.includes('sapphire')) return '/images/royalblue.png';
+    return fallback;
+  };
+
   const getFirstFramePoster = (url) => {
     if (!url) return undefined;
     if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
