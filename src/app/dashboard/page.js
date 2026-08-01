@@ -1307,23 +1307,20 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
         }}
       >
-        {/* Static Fallback / Image / First Frame Video */}
+        {/* Static Fallback / Image / Poster */}
         {isImage || !isHovered ? (
           isImage ? (
             <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : isVideo ? (
-            <video
-              src={url?.includes('#t=') ? url : `${url}#t=0.001`}
-              poster={url?.includes('cloudflarestream') ? url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s') : undefined}
-              preload="metadata"
-              muted
-              playsInline
+          ) : url && url.includes('cloudflarestream') ? (
+            <img
+              src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')}
+              alt="Preview"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
             <div style={{ width: '100%', height: '100%', backgroundColor: fallbackColor, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
               <span style={{ fontSize: '1.2rem' }}>🎬</span>
-              <span style={{ fontSize: '0.6rem', opacity: 0.85, textTransform: 'uppercase', marginTop: '0.1rem', fontWeight: 600 }}>Preview</span>
+              <span style={{ fontSize: '0.6rem', opacity: 0.85, textTransform: 'uppercase', marginTop: '0.1rem', fontWeight: 600 }}>Hover</span>
             </div>
           )
         ) : null}

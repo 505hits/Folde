@@ -587,21 +587,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             onClick={handleEnvelopeClick}
             style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
           >
-            {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+            {!envelopeVideoActive || (data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
               <img
-                src={data.videos.envelope}
+                src={getFirstFramePoster(data?.videos?.envelope) || getPosterForUrl(data?.videos?.envelope, '/images/bordeaux.png')}
                 alt="Envelope"
                 className={styles.envelopeVideo}
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-              />
-            ) : !envelopeVideoActive ? (
-              <video
-                src={getFirstFrameVideoSrc(data?.videos?.envelope || "/videos/bordeaux.mp4")}
-                poster={getFirstFramePoster(data?.videos?.envelope)}
-                className={styles.envelopeVideo}
-                preload="metadata"
-                muted
-                playsInline
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             ) : (
@@ -628,24 +618,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           {(() => {
             const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
             const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
-            const heroPoster = getFirstFramePoster(heroSrc);
+            const heroPoster = getFirstFramePoster(heroSrc) || getPosterForUrl(heroSrc, '/images/bordeaux.png');
 
-            if (isHeroImage) {
-              return <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
-            }
-
-            if (!heroVideoActive) {
-              return (
-                <video
-                  src={getFirstFrameVideoSrc(heroSrc)}
-                  poster={heroPoster}
-                  preload="metadata"
-                  muted
-                  playsInline
-                  className={styles.heroVideo}
-                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                />
-              );
+            if (isHeroImage || !heroVideoActive) {
+              return <img src={heroPoster} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
             }
 
             return (
