@@ -588,13 +588,13 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         <section className={styles.hero} style={{ height: heroHeight, minHeight: heroHeight }}>
 
           {/* Background Audio */}
-          {sounds.bgMusic && (
-            <audio ref={audioRef} src={sounds.bgMusic} loop muted={isMuted} />
+          {(data?.bgMusicUrl || data?.musicUrl || sounds.bgMusic) && (
+            <audio ref={audioRef} src={data?.bgMusicUrl || data?.musicUrl || sounds.bgMusic} loop muted={isMuted} />
           )}
 
           {(() => {
-            const heroSrc = images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
-            const isHeroImage = images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
+            const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
+            const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
             return isHeroImage ? (
               <img src={heroSrc} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
             ) : (

@@ -2807,7 +2807,8 @@ function ContactUsTab({ currentUser }) {
 }
 
 function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
-  const isPremium = plan === 'Premium' || plan === 'Custom' || plan === 'premium' || plan === 'custom';
+  // Always unlocked for users inside the dashboard
+  const isPremium = true;
   const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
 
   // Photo state
@@ -2829,6 +2830,96 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [musicStatus, setMusicStatus] = useState('');
   const [generatedAudio, setGeneratedAudio] = useState(null);
   const [musicError, setMusicError] = useState('');
+
+  // File Upload Helper to convert images to compressed Data URLs
+  const handleFileUpload = (e, setPhotoUrl) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setPhotoUrl(dataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Actions for applying images / music to eventInfo
+  const handleApplyHeroImage = (url) => {
+    if (typeof setEventInfo === 'function') {
+      setEventInfo(prev => ({
+        ...prev,
+        customHeroImage: url,
+        images: { ...(prev?.images || {}), hero: url }
+      }));
+      alert('✨ Photo IA appliquée comme image principale (Hero) de votre invitation !');
+    }
+  };
+
+  const handleRemoveHeroImage = () => {
+    if (typeof setEventInfo === 'function') {
+      setEventInfo(prev => ({
+        ...prev,
+        customHeroImage: null,
+        images: { ...(prev?.images || {}), hero: null }
+      }));
+      alert('❌ Image principale IA retirée du site.');
+    }
+  };
+
+  const handleAddToGallery = (url) => {
+    if (typeof setEventInfo === 'function') {
+      setEventInfo(prev => ({
+        ...prev,
+        guestGallery: Array.from(new Set([url, ...(prev?.guestGallery || [])]))
+      }));
+      alert('🖼️ Photo IA ajoutée à la Galerie Photo de votre site !');
+    }
+  };
+
+  const handleApplyMusic = (audioUrl) => {
+    if (typeof setEventInfo === 'function') {
+      setEventInfo(prev => ({
+        ...prev,
+        bgMusicUrl: audioUrl,
+        musicEnabled: true
+      }));
+      alert('🎶 Musique IA appliquée comme musique de fond du site !');
+    }
+  };
+
+  const handleRemoveMusic = () => {
+    if (typeof setEventInfo === 'function') {
+      setEventInfo(prev => ({
+        ...prev,
+        bgMusicUrl: '',
+        musicEnabled: false
+      }));
+      alert('🔇 Musique retirée du site.');
+    }
+  };
 
   const PHOTO_PRESETS = [
     {
@@ -2989,27 +3080,6 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
     }
   };
 
-  if (!isPremium) {
-    return (
-      <div style={{ backgroundColor: '#fff', padding: '3rem 2rem', borderRadius: '16px', border: '1px solid #eae5de', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✨</div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.75rem', fontFamily: 'var(--font-heading)' }}>
-          Débloquez le Studio IA (Qwen & Suno) avec l'offre Premium
-        </h2>
-        <p style={{ fontSize: '0.95rem', color: '#666', maxWidth: '550px', margin: '0 auto 1.75rem auto', lineHeight: 1.6 }}>
-          Générez des illustrations romantiques sur-mesure de votre couple avec <strong>Qwen 2 IA</strong> et composez une musique de fond unique pour votre invitation avec <strong>Suno AI</strong>.
-        </p>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#fef3c7', color: '#b45309', padding: '0.5rem 1.25rem', borderRadius: '20px', fontWeight: 600, fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-          ⭐ Fonctionnalité réservée aux membres Premium
-        </div>
-        <br />
-        <a href="/packages" style={{ display: 'inline-block', backgroundColor: '#7b906f', color: '#fff', padding: '0.85rem 2rem', borderRadius: '30px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 12px rgba(123,144,111,0.3)' }}>
-          Mettre à niveau vers Premium (79.90€)
-        </a>
-      </div>
-    );
-  }
-
   const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
 
   return (
@@ -3020,6 +3090,33 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           Créez des illustrations romantiques exclusives avec Qwen 2 et composez votre musique de mariage sur-mesure avec Suno AI.
         </p>
       </div>
+
+      {/* Active Website Media Summary Banner */}
+      {(eventInfo?.customHeroImage || eventInfo?.bgMusicUrl) && (
+        <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
+              🌟 Médias IA actifs sur votre site live :
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '0.2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {eventInfo?.customHeroImage && <span>🖼️ Image Principale : <strong>Actives</strong></span>}
+              {eventInfo?.bgMusicUrl && <span>🎶 Musique de Fond : <strong>Actives</strong></span>}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {eventInfo?.customHeroImage && (
+              <button onClick={handleRemoveHeroImage} style={{ background: '#fff', border: '1px solid #bbf7d0', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
+                ❌ Retirer Image Principale
+              </button>
+            )}
+            {eventInfo?.bgMusicUrl && (
+              <button onClick={handleRemoveMusic} style={{ background: '#fff', border: '1px solid #bbf7d0', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
+                🔇 Retirer la Musique
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Sub-tab Switcher */}
       <div style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid #e0dcd7', paddingBottom: '0.5rem' }}>
@@ -3091,26 +3188,62 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>URL Photo des Mariés #1 (Optionnel)</label>
-                <input
-                  type="url"
-                  value={couplePhoto1}
-                  onChange={e => setCouplePhoto1(e.target.value)}
-                  placeholder="https://domaine.com/photo-marie.jpg"
-                  style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>URL Photo des Mariés #2 (Optionnel)</label>
-                <input
-                  type="url"
-                  value={couplePhoto2}
-                  onChange={e => setCouplePhoto2(e.target.value)}
-                  placeholder="https://domaine.com/photo-mariee.jpg"
-                  style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }}
-                />
+            {/* Direct Upload & Reference Photos */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                📸 Transférez les photos du couple (Optionnel pour adapter les visages)
+              </label>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                {/* Upload #1 */}
+                <div style={{ border: '1px dashed #d0c8be', borderRadius: '12px', padding: '1rem', textAlign: 'center', backgroundColor: '#faf8f5' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo du Marié #1</div>
+                  {couplePhoto1 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <img src={couplePhoto1} alt="Preview 1" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }} />
+                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}>Changer la photo</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <input type="file" accept="image/*" id="upload-photo-1" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto1)} />
+                      <label htmlFor="upload-photo-1" style={{ display: 'inline-block', backgroundColor: '#fff', border: '1px solid #e0dcd7', color: '#555', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem' }}>
+                        📁 Choisir un fichier
+                      </label>
+                      <input
+                        type="url"
+                        value={couplePhoto1}
+                        onChange={e => setCouplePhoto1(e.target.value)}
+                        placeholder="ou coller l'URL d'une image"
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload #2 */}
+                <div style={{ border: '1px dashed #d0c8be', borderRadius: '12px', padding: '1rem', textAlign: 'center', backgroundColor: '#faf8f5' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo de la Mariée #2</div>
+                  {couplePhoto2 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <img src={couplePhoto2} alt="Preview 2" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }} />
+                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}>Changer la photo</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <input type="file" accept="image/*" id="upload-photo-2" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto2)} />
+                      <label htmlFor="upload-photo-2" style={{ display: 'inline-block', backgroundColor: '#fff', border: '1px solid #e0dcd7', color: '#555', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem' }}>
+                        📁 Choisir un fichier
+                      </label>
+                      <input
+                        type="url"
+                        value={couplePhoto2}
+                        onChange={e => setCouplePhoto2(e.target.value)}
+                        placeholder="ou coller l'URL d'une image"
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -3160,12 +3293,44 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {generatedPhotos.length > 0 && (
             <div style={cardStyle}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Vos Illustrations Générées</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
                 {generatedPhotos.map((url, idx) => (
-                  <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0dcd7' }}>
-                    <img src={url} alt={`IA Result ${idx}`} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-                    <div style={{ padding: '0.5rem', backgroundColor: '#fff', display: 'flex', justifyContent: 'center' }}>
-                      <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.78rem', color: '#5C3A1E', fontWeight: 600, textDecoration: 'none' }}>
+                  <div key={idx} style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5' }}>
+                    <img src={url} alt={`IA Result ${idx}`} style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
+                    <div style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => handleApplyHeroImage(url)}
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#5C3A1E',
+                          color: '#fff',
+                          border: 'none',
+                          padding: '0.55rem',
+                          borderRadius: '8px',
+                          fontWeight: 600,
+                          fontSize: '0.8rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✨ Appliquer comme Photo Principale du site
+                      </button>
+                      <button
+                        onClick={() => handleAddToGallery(url)}
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#fff',
+                          color: '#5C3A1E',
+                          border: '1px solid #5C3A1E',
+                          padding: '0.55rem',
+                          borderRadius: '8px',
+                          fontWeight: 600,
+                          fontSize: '0.8rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🖼️ Ajouter à la Galerie Photo du site
+                      </button>
+                      <a href={url} target="_blank" rel="noopener noreferrer" style={{ textAlign: 'center', fontSize: '0.78rem', color: '#666', textDecoration: 'none', marginTop: '0.2rem' }}>
                         📥 Télécharger HD
                       </a>
                     </div>
@@ -3258,24 +3423,41 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {generatedAudio && (
             <div style={cardStyle}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Votre Musique de Mariage Générée</h3>
-              <audio controls src={generatedAudio} style={{ width: '100%', marginBottom: '1rem' }} />
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <audio controls src={generatedAudio} style={{ width: '100%', marginBottom: '1.25rem' }} />
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => handleApplyMusic(generatedAudio)}
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: '#5C3A1E',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontWeight: 600,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🎶 Appliquer comme Musique de Fond du site
+                </button>
                 <a
                   href={generatedAudio}
                   download="mariage-musique-suno.mp3"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    padding: '0.6rem 1.2rem',
+                    padding: '0.75rem 1.5rem',
                     backgroundColor: '#7b906f',
                     color: '#fff',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     textDecoration: 'none',
                     fontWeight: 600,
-                    fontSize: '0.85rem'
+                    fontSize: '0.88rem',
+                    display: 'inline-flex',
+                    alignItems: 'center'
                   }}
                 >
-                  📥 Télécharger le fichier MP3
+                  📥 Télécharger le MP3
                 </a>
               </div>
             </div>
