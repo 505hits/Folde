@@ -27,7 +27,8 @@ export default function TemplateHeroPreview({
   envelopeSrc,
   showEnvelope = false,
   isImage = false,
-  previewImage
+  previewImage,
+  active = false
 }) {
   const [envelopeDismissed, setEnvelopeDismissed] = useState(!showEnvelope);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
@@ -38,48 +39,81 @@ export default function TemplateHeroPreview({
 
   const heroPoster = previewImage || getFirstFramePoster(videoSrc);
   const envelopePoster = getFirstFramePoster(envelopeSrc);
+  const isHeroImg = isImage || (videoSrc && videoSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
+  const isEnvImg = envelopeSrc && envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i);
 
   const handleActivateVideo = (e) => {
-    e.stopPropagation();
     if (!videoActive) {
+      e.preventDefault();
+      e.stopPropagation();
       setVideoActive(true);
     }
   };
 
   useEffect(() => {
-    if (videoActive && showEnvelope && envelopeSrc && !envelopeDismissed) {
-      const video = envelopeVideoRef.current;
-      if (!video) return;
+    if (active) {
+      setVideoActive(true);
+    } else {
+      setVideoActive(false);
+      setEnvelopeOpen(false);
+      if (showEnvelope) {
+        setEnvelopeDismissed(false);
+      }
+    }
+  }, [active, showEnvelope]);
 
-      let hls;
-      const cleanEnvelopeSrc = envelopeSrc.replace(/#t=.*$/, '');
+  useEffect(() => {
+    const video = envelopeVideoRef.current;
+    if (!video || isEnvImg || !envelopeSrc) return;
+
+    let hls;
+    const cleanEnvelopeSrc = envelopeSrc.replace(/#t=.*$/, '');
+
+    if (videoActive && showEnvelope && !envelopeDismissed) {
       if (cleanEnvelopeSrc.endsWith('.m3u8') && Hls.isSupported()) {
         hls = new Hls({ startLevel: -1, capLevelToPlayerSize: true });
         hls.loadSource(cleanEnvelopeSrc);
         hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(e => console.log("HLS play on click error:", e));
+        });
       } else {
         video.src = cleanEnvelopeSrc;
+        video.preload = "auto";
+        if (typeof video.load === 'function') video.load();
+        video.play().catch(e => console.log("Video play on click error:", e));
       }
 
       setEnvelopeOpen(true);
-      video.play().catch(e => console.log("Video play on click error:", e));
       const timer = setTimeout(() => setEnvelopeDismissed(true), 12000);
 
       return () => {
         clearTimeout(timer);
         if (hls) hls.destroy();
       };
+    } else if (!videoActive) {
+      if (cleanEnvelopeSrc.endsWith('.m3u8')) {
+        if (Hls.isSupported()) {
+          hls = new Hls({ startLevel: -1, capLevelToPlayerSize: true });
+          hls.loadSource(cleanEnvelopeSrc);
+          hls.attachMedia(video);
+        }
+      } else {
+        video.src = getFirstFrameVideoSrc(envelopeSrc);
+        video.preload = "metadata";
+        if (typeof video.load === 'function') video.load();
+      }
+      return () => {
+        if (hls) hls.destroy();
+      };
     }
-  }, [videoActive, showEnvelope, envelopeSrc, envelopeDismissed]);
+  }, [videoActive, showEnvelope, envelopeSrc, envelopeDismissed, isEnvImg]);
 
   const handleVideoEnded = () => {
     setTimeout(() => {
       setEnvelopeDismissed(true);
     }, 2000);
   };
-
-  const isHeroImg = isImage || (videoSrc && videoSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
-  const isEnvImg = envelopeSrc && envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i);
 
   return (
     <div
@@ -110,22 +144,11 @@ export default function TemplateHeroPreview({
               alt="Envelope Preview"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-          ) : !videoActive ? (
-            <video
-              src={getFirstFrameVideoSrc(envelopeSrc)}
-              poster={envelopePoster}
-              preload="metadata"
-              muted
-              playsInline
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
           ) : (
             <video
               ref={envelopeVideoRef}
-              autoPlay
               muted
               playsInline
-              preload="auto"
               onEnded={handleVideoEnded}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />

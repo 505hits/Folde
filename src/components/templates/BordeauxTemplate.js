@@ -440,8 +440,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
       return () => hls.destroy();
     } else {
       // Fallback for Safari which natively supports HLS, or direct mp4/webm links
-      video.src = src;
-      video.preload = "auto";
+      const videoSrc = src.includes('#t=') ? src : `${src}#t=0.001`;
+      video.src = videoSrc;
+      video.preload = "metadata";
       if (typeof video.load === 'function') video.load();
     }
   }, [data?.videos?.envelope]);
@@ -604,9 +605,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             onClick={handleEnvelopeClick}
             style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
           >
-            {!envelopeVideoActive || (data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+            {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) ? (
               <img
-                src={getFirstFramePoster(data?.videos?.envelope) || getPosterForUrl(data?.videos?.envelope, '/images/bordeaux.png')}
+                src={data?.videos?.envelope || '/images/bordeaux.png'}
                 alt="Envelope"
                 className={styles.envelopeVideo}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
@@ -619,6 +620,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 playsInline
                 preload="metadata"
                 onEnded={handleVideoEnded}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             )}
           </div>
