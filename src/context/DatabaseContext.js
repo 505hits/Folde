@@ -371,13 +371,38 @@ export function DatabaseProvider({ children }) {
   // Fetch guests from server API (/api/rsvp) with fallback to Supabase / local
   const fetchGuests = useCallback(async (slug) => {
     if (!slug) return [];
+
+    let localList = [];
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`guests_${slug}`);
+      if (saved) {
+        try { localList = JSON.parse(saved); } catch (e) { }
+      }
+    }
+
     try {
       const res = await fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`);
       const result = await res.json();
 
       if (result.success && Array.isArray(result.guests)) {
-        setGuests(prev => ({ ...prev, [slug]: result.guests }));
-        return result.guests;
+        const combinedMap = new Map();
+        result.guests.forEach(g => {
+          if (g.name) combinedMap.set(g.name.toLowerCase().trim(), g);
+        });
+        localList.forEach(g => {
+          if (g.name) {
+            const key = g.name.toLowerCase().trim();
+            if (!combinedMap.has(key) || g.status !== 'Pending') {
+              combinedMap.set(key, g);
+            }
+          }
+        });
+        const finalMerged = Array.from(combinedMap.values());
+        setGuests(prev => ({ ...prev, [slug]: finalMerged }));
+        if (typeof window !== 'undefined') {
+          try { localStorage.setItem(`guests_${slug}`, JSON.stringify(finalMerged)); } catch (e) { }
+        }
+        return finalMerged;
       }
     } catch (err) {
       console.warn('fetchGuests API error:', err);
@@ -404,16 +429,61 @@ export function DatabaseProvider({ children }) {
           accompaniedStatus: g.accompanied_status || 'alone',
           message: g.message || ''
         }));
-        setGuests(prev => ({ ...prev, [slug]: mapped }));
-        return mapped;
+
+        const combinedMap = new Map();
+        mapped.forEach(g => combinedMap.set(g.name.toLowerCase().trim(), g));
+        localList.forEach(g => {
+          const key = g.name.toLowerCase().trim();
+          if (!combinedMap.has(key) || g.status !== 'Pending') {
+            combinedMap.set(key, g);
+          }
+        });
+        const finalMerged = Array.from(combinedMap.values());
+        setGuests(prev => ({ ...prev, [slug]: finalMerged }));
+        if (typeof window !== 'undefined') {
+          try { localStorage.setItem(`guests_${slug}`, JSON.stringify(finalMerged)); } catch (e) { }
+        }
+        return finalMerged;
       }
     } catch (e) { }
 
-    return guests[slug] || [];
+    setGuests(prev => ({ ...prev, [slug]: localList }));
+    return localList;
   }, []);
 
-  // Add guest: sends to /api/rsvp first
+  // Add guest: sends to /api/rsvp first and persists locally
   const addGuest = async (slug, newGuest) => {
+    const cleanName = newGuest.name ? newGuest.name.trim() : '';
+    const tempGuest = {
+      id: `guest_${Date.now()}`,
+      name: cleanName,
+      email: newGuest.email || '',
+      status: newGuest.status || 'Attending',
+      side: newGuest.side || 'Both',
+      meal: newGuest.meal || '-',
+      hasPlusOne: newGuest.hasPlusOne || false,
+      plusOneName: newGuest.plusOneName || '',
+      accompaniedStatus: newGuest.accompaniedStatus || 'alone',
+      message: newGuest.message || '',
+      tableId: newGuest.tableId || null
+    };
+
+    setGuests(prev => {
+      const currentList = prev[slug] || [];
+      const existingIdx = currentList.findIndex(g => (g.name || '').toLowerCase().trim() === cleanName.toLowerCase());
+      let updated;
+      if (existingIdx !== -1) {
+        updated = [...currentList];
+        updated[existingIdx] = { ...updated[existingIdx], ...tempGuest };
+      } else {
+        updated = [tempGuest, ...currentList];
+      }
+      if (typeof window !== 'undefined') {
+        try { localStorage.setItem(`guests_${slug}`, JSON.stringify(updated)); } catch (e) { }
+      }
+      return { ...prev, [slug]: updated };
+    });
+
     try {
       const res = await fetch('/api/rsvp', {
         method: 'POST',
@@ -437,7 +507,11 @@ export function DatabaseProvider({ children }) {
         const added = result.guest;
         setGuests(prev => {
           const currentList = prev[slug] || [];
-          return { ...prev, [slug]: [added, ...currentList] };
+          const updated = currentList.map(g => (g.name || '').toLowerCase().trim() === cleanName.toLowerCase() ? { ...g, id: added.id } : g);
+          if (typeof window !== 'undefined') {
+            try { localStorage.setItem(`guests_${slug}`, JSON.stringify(updated)); } catch (e) { }
+          }
+          return { ...prev, [slug]: updated };
         });
         return { success: true, guest: added };
       }
@@ -445,13 +519,7 @@ export function DatabaseProvider({ children }) {
       console.warn('addGuest API error:', err);
     }
 
-    // Fallback to local update
-    const fallbackGuest = { ...newGuest, id: `local_${Date.now()}` };
-    setGuests(prev => {
-      const currentList = prev[slug] || [];
-      return { ...prev, [slug]: [fallbackGuest, ...currentList] };
-    });
-    return { success: true, source: 'local' };
+    return { success: true, guest: tempGuest };
   };
 
   // ============ EVENT INFO ============

@@ -21,11 +21,24 @@ export async function GET(request) {
 
         let dbGuests = [];
         try {
-            const { data, error } = await supabase
-                .from('guests')
-                .select('*')
-                .eq('slug', slug)
-                .order('created_at', { ascending: false });
+            let invId = null;
+            try {
+                const { data: inv } = await supabase
+                    .from('invitations')
+                    .select('id')
+                    .eq('slug', slug)
+                    .maybeSingle();
+                if (inv) invId = inv.id;
+            } catch (e) { }
+
+            let query = supabase.from('guests').select('*');
+            if (invId) {
+                query = query.or(`slug.eq.${slug},invitation_id.eq.${invId}`);
+            } else {
+                query = query.eq('slug', slug);
+            }
+
+            const { data, error } = await query.order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data)) {
                 dbGuests = data.map(g => ({
