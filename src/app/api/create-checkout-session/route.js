@@ -7,10 +7,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const PRICE_MAP = {
   essential: 'price_1Tw4pSDepfiMdtp4CtFaXDs9',
   Standard: 'price_1Tw4pSDepfiMdtp4CtFaXDs9',
-  premium: 'price_1Tw4q7DepfiMdtp4ezofU3Ur',
-  Premium: 'price_1Tw4q7DepfiMdtp4ezofU3Ur',
-  Custom: 'price_1Tw4qfDepfiMdtp4r9k0bNpP',
-  custom: 'price_1Tw4qfDepfiMdtp4r9k0bNpP',
+  premium: 'price_1TzgWtDepfiMdtp4XOkG0Mvj',
+  Premium: 'price_1TzgWtDepfiMdtp4XOkG0Mvj',
+  Custom: 'price_1TzgY5DepfiMdtp4r6cTJAK2',
+  custom: 'price_1TzgY5DepfiMdtp4r6cTJAK2',
 };
 
 export async function POST(request) {
