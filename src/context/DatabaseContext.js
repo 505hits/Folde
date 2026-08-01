@@ -368,8 +368,22 @@ export function DatabaseProvider({ children }) {
     ]
   });
 
-  // Fetch guests from Supabase for a given slug
+  // Fetch guests from server API (/api/rsvp) with fallback to Supabase / local
   const fetchGuests = useCallback(async (slug) => {
+    if (!slug) return [];
+    try {
+      const res = await fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`);
+      const result = await res.json();
+
+      if (result.success && Array.isArray(result.guests)) {
+        setGuests(prev => ({ ...prev, [slug]: result.guests }));
+        return result.guests;
+      }
+    } catch (err) {
+      console.warn('fetchGuests API error:', err);
+    }
+
+    // Direct Supabase fallback
     try {
       const { data, error } = await supabase
         .from('guests')
@@ -377,104 +391,67 @@ export function DatabaseProvider({ children }) {
         .eq('slug', slug)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.warn('Supabase fetchGuests failed:', error.message);
-        return guests[slug] || [];
+      if (!error && Array.isArray(data)) {
+        const mapped = data.map(g => ({
+          id: g.id,
+          name: g.name,
+          email: g.email || '',
+          status: g.status,
+          side: g.side || 'Both',
+          meal: g.meal || '-',
+          hasPlusOne: g.has_plus_one || false,
+          plusOneName: g.plus_one_name || '',
+          accompaniedStatus: g.accompanied_status || 'alone',
+          message: g.message || ''
+        }));
+        setGuests(prev => ({ ...prev, [slug]: mapped }));
+        return mapped;
       }
+    } catch (e) { }
 
-      // Map Supabase format to app format
-      const mapped = data.map(g => ({
-        id: g.id,
-        name: g.name,
-        email: g.email || '',
-        status: g.status,
-        side: g.side || 'Both',
-        meal: g.meal || '-',
-        hasPlusOne: g.has_plus_one || false,
-        plusOneName: g.plus_one_name || '',
-        accompaniedStatus: g.accompanied_status || 'alone',
-        message: g.message || ''
-      }));
+    return guests[slug] || [];
+  }, []);
 
-      // Update local state too
-      setGuests(prev => ({ ...prev, [slug]: mapped }));
-      return mapped;
-    } catch (err) {
-      console.warn('fetchGuests error:', err);
-      return guests[slug] || [];
-    }
-  }, [guests]);
-
-  // Add guest: writes to Supabase first, falls back to local
+  // Add guest: sends to /api/rsvp first
   const addGuest = async (slug, newGuest) => {
-    // First, we need the invitation_id for this slug
     try {
-      // Try to find the invitation by slug
-      const { data: invitation, error: invError } = await supabase
-        .from('invitations')
-        .select('id')
-        .eq('slug', slug)
-        .single();
-
-      const invitationId = invitation?.id || null;
-
-      const { data, error } = await supabase
-        .from('guests')
-        .insert({
-          invitation_id: invitationId,
-          slug: slug,
+      const res = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug,
           name: newGuest.name,
-          email: newGuest.email || null,
-          status: newGuest.status === 'yes' ? 'Attending' : newGuest.status === 'no' ? 'Declined' : newGuest.status || 'Pending',
-          side: newGuest.side || 'Both',
-          meal: newGuest.meal || '-',
-          has_plus_one: newGuest.hasPlusOne || (newGuest.accompaniedStatus && newGuest.accompaniedStatus !== 'alone') || false,
-          plus_one_name: newGuest.plusOneName || null,
-          accompanied_status: newGuest.accompaniedStatus || 'alone',
-          message: newGuest.message || null
+          email: newGuest.email,
+          status: newGuest.status,
+          meal: newGuest.meal,
+          hasPlusOne: newGuest.hasPlusOne,
+          plusOneName: newGuest.plusOneName,
+          accompaniedStatus: newGuest.accompaniedStatus,
+          side: newGuest.side,
+          message: newGuest.message
         })
-        .select()
-        .single();
+      });
 
-      if (error) {
-        console.warn('Supabase addGuest failed, saving locally:', error.message);
-        // Fallback to local
+      const result = await res.json();
+      if (result.success && result.guest) {
+        const added = result.guest;
         setGuests(prev => {
           const currentList = prev[slug] || [];
-          return { ...prev, [slug]: [...currentList, { ...newGuest, id: Date.now() }] };
+          return { ...prev, [slug]: [added, ...currentList] };
         });
-        return { success: true, source: 'local' };
+        return { success: true, guest: added };
       }
-
-      // Update local state with the Supabase record
-      const mappedGuest = {
-        id: data.id,
-        name: data.name,
-        email: data.email || '',
-        status: data.status,
-        side: data.side || 'Both',
-        meal: data.meal || '-',
-        hasPlusOne: data.has_plus_one || false,
-        plusOneName: data.plus_one_name || '',
-        accompaniedStatus: data.accompanied_status || 'alone',
-        message: data.message || ''
-      };
-
-      setGuests(prev => {
-        const currentList = prev[slug] || [];
-        return { ...prev, [slug]: [...currentList, mappedGuest] };
-      });
-
-      return { success: true, source: 'supabase', guest: mappedGuest };
     } catch (err) {
-      console.warn('addGuest error:', err);
-      // Fallback to local
-      setGuests(prev => {
-        const currentList = prev[slug] || [];
-        return { ...prev, [slug]: [...currentList, { ...newGuest, id: Date.now() }] };
-      });
-      return { success: true, source: 'local' };
+      console.warn('addGuest API error:', err);
     }
+
+    // Fallback to local update
+    const fallbackGuest = { ...newGuest, id: `local_${Date.now()}` };
+    setGuests(prev => {
+      const currentList = prev[slug] || [];
+      return { ...prev, [slug]: [fallbackGuest, ...currentList] };
+    });
+    return { success: true, source: 'local' };
   };
 
   // ============ EVENT INFO ============
