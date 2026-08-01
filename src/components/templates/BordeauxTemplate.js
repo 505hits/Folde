@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { supabase } from '@/lib/supabase';
+import { useDatabase } from '@/context/DatabaseContext';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
 import FlipCountdown from '../FlipCountdown';
@@ -298,6 +299,8 @@ const themes = {
 };
 
 function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
+  const dbContext = useDatabase();
+  const addGuest = dbContext?.addGuest;
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
 
@@ -321,45 +324,48 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     setRsvpError('');
 
     const slug = data?.slug || '';
-
-    // Determine status
     const status = rsvpAttending === 'yes' ? 'Attending' : 'Declined';
     const hasPlusOne = accompaniedStatus === 'plusOne' || accompaniedStatus === 'family';
 
-    // Try to find invitation_id by slug
-    let invitationId = null;
     try {
-      const { data: inv } = await supabase
-        .from('invitations')
-        .select('id')
-        .eq('slug', slug)
-        .single();
-      invitationId = inv?.id || null;
-    } catch (err) {
-      // Invitation might not exist yet, continue without it
-    }
-
-    try {
-      const { error } = await supabase
-        .from('guests')
-        .insert({
-          invitation_id: invitationId,
-          slug: slug,
+      if (addGuest && slug) {
+        await addGuest(slug, {
           name: rsvpName.trim(),
           email: rsvpEmail.trim() || null,
           status: status,
           meal: rsvpMeal || '-',
-          has_plus_one: hasPlusOne,
-          plus_one_name: rsvpPlusOneName.trim() || null,
-          accompanied_status: accompaniedStatus || 'alone',
+          hasPlusOne: hasPlusOne,
+          plusOneName: rsvpPlusOneName.trim() || null,
+          accompaniedStatus: accompaniedStatus || 'alone',
           side: 'Both'
         });
+      } else {
+        // Direct Supabase insert fallback if addGuest is not available
+        let invitationId = null;
+        try {
+          const { data: inv } = await supabase
+            .from('invitations')
+            .select('id')
+            .eq('slug', slug)
+            .single();
+          invitationId = inv?.id || null;
+        } catch (err) { }
 
-      if (error) {
-        console.error('Supabase RSVP insert error:', error);
-        setRsvpError('An error occurred. Please try again.');
-        setRsvpSubmitting(false);
-        return;
+        const { error } = await supabase
+          .from('guests')
+          .insert({
+            invitation_id: invitationId,
+            slug: slug,
+            name: rsvpName.trim(),
+            email: rsvpEmail.trim() || null,
+            status: status,
+            meal: rsvpMeal || '-',
+            has_plus_one: hasPlusOne,
+            plus_one_name: rsvpPlusOneName.trim() || null,
+            accompanied_status: accompaniedStatus || 'alone',
+            side: 'Both'
+          });
+        if (error) console.error('Supabase RSVP insert error:', error);
       }
 
       setRsvpSubmitted(true);
@@ -875,7 +881,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <p className={styles.rsvpDate}>Please reply by March 30th, 2026</p>
+              <p className={styles.rsvpDate}>Please reply by {t.rsvpDeadline || "March 30th, 2026"}</p>
             </AnimatedSection>
 
             {rsvpSubmitted ? (

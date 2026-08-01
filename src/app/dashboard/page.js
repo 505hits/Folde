@@ -1904,9 +1904,15 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <input type="text" value={local.partner2 || ''} onChange={e => handleChange('partner2', e.target.value)} style={inputStyle} placeholder="Partner 2 Name" />
             </div>
           </div>
-          <div>
-            <label style={labelStyle}>Displayed Wedding Date</label>
-            <input type="text" value={local.date || ''} onChange={e => handleChange('date', e.target.value)} style={inputStyle} placeholder="MAY 27, 2026" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>Displayed Wedding Date</label>
+              <input type="text" value={local.date || ''} onChange={e => handleChange('date', e.target.value)} style={inputStyle} placeholder="MAY 27, 2026" />
+            </div>
+            <div>
+              <label style={labelStyle}>RSVP Deadline Date (Date limite de réponse)</label>
+              <input type="text" value={local.rsvpDeadline || ''} onChange={e => handleChange('rsvpDeadline', e.target.value)} style={inputStyle} placeholder="e.g. March 30th, 2026" />
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
