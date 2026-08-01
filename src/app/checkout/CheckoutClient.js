@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
@@ -299,6 +299,26 @@ export default function CheckoutClient() {
     }
   }, []);
 
+  // Debounced preview state to prevent video re-initialization memory leaks while typing
+  const [debouncedAccount, setDebouncedAccount] = useState(account);
+  const [debouncedPreviewDate, setDebouncedPreviewDate] = useState(previewDate);
+  const [debouncedPreviewVenue, setDebouncedPreviewVenue] = useState(previewVenue);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedAccount(account), 300);
+    return () => clearTimeout(timer);
+  }, [account.name, account.partnerName]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedPreviewDate(previewDate), 300);
+    return () => clearTimeout(timer);
+  }, [previewDate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedPreviewVenue(previewVenue), 300);
+    return () => clearTimeout(timer);
+  }, [previewVenue]);
+
   const total = selectedPackage.price;
   const originalTotal = selectedPackage.originalPrice;
   const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
@@ -313,13 +333,13 @@ export default function CheckoutClient() {
   const envObj = ENVELOPE_OPTIONS.find(e => e.id === selectedEnvelope);
   const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === selectedHeroVideo);
 
-  const previewData = {
-    partner1: account.name || 'Your Name',
-    partner2: account.partnerName || "Partner's Name",
-    date: formatPreviewDate(previewDate),
+  const previewData = useMemo(() => ({
+    partner1: debouncedAccount.name || 'Your Name',
+    partner2: debouncedAccount.partnerName || "Partner's Name",
+    date: formatPreviewDate(debouncedPreviewDate),
     time: '16:00',
-    ceremonyVenue: previewVenue || 'Your Dream Venue',
-    receptionVenue: previewVenue || '',
+    ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
+    receptionVenue: debouncedPreviewVenue || '',
     themeId: selectedTheme,
     videos: {
       envelope: envObj?.url || '',
@@ -347,7 +367,7 @@ export default function CheckoutClient() {
       showDressCode: false,
     },
     images: {},
-  };
+  }), [debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
   const handleNextStep = async () => {
     setAuthError('');

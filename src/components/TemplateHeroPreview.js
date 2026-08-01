@@ -11,13 +11,8 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
   const containerRef = useRef(null);
   const envelopeVideoRef = useRef(null);
 
-  // Lazy loading observer: Only start downloading video when card is near viewport
+  // Lazy loading observer: Only download/play video when card is inside or near viewport
   useEffect(() => {
-    if (showEnvelope) {
-      setIsVisible(true);
-      return;
-    }
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -25,7 +20,7 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           observer.unobserve(entry.target);
         }
       },
-      { rootMargin: '300px' }
+      { rootMargin: '150px' }
     );
 
     if (containerRef.current) {
@@ -33,7 +28,7 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
     }
 
     return () => observer.disconnect();
-  }, [showEnvelope]);
+  }, []);
 
   useEffect(() => {
     if (showEnvelope && envelopeSrc && !envelopeDismissed && isVisible) {
@@ -59,7 +54,7 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           setTimeout(() => setEnvelopeDismissed(true), 15000);
         }
       }, 1000);
-      
+
       return () => {
         clearTimeout(timer);
         if (hls) hls.destroy();
@@ -75,15 +70,15 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      style={{ 
-        position: 'relative', 
-        width: '100%', 
-        height: '100%', 
-        overflow: 'hidden', 
-        backgroundColor: '#1c1714', 
-        containerType: 'inline-size' 
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        backgroundColor: '#1c1714',
+        containerType: 'inline-size'
       }}
     >
       {/* ENVELOPE OVERLAY */}
@@ -97,13 +92,13 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
           visibility: envelopeDismissed ? 'hidden' : 'visible'
         }}>
           {envelopeSrc.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-            <img 
-              src={envelopeSrc} 
-              alt="Envelope" 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            <img
+              src={envelopeSrc}
+              alt="Envelope"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
-            <video 
+            <video
               ref={envelopeVideoRef}
               autoPlay
               muted
@@ -118,39 +113,39 @@ export default function TemplateHeroPreview({ partner1 = "Emma", partner2 = "Lia
 
       {/* HERO CONTENT */}
       {isImage ? (
-        <img 
-          src={isVisible ? videoSrc : undefined} 
-          alt="Preview" 
+        <img
+          src={isVisible ? videoSrc : undefined}
+          alt="Preview"
           loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isVisible ? 1 : 0, transition: 'opacity 0.5s ease' }} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isVisible ? 1 : 0, transition: 'opacity 0.5s ease' }}
         />
       ) : (
         isVisible && (
-          <video 
-            src={videoSrc} 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
+          <video
+            src={videoSrc}
+            autoPlay
+            loop
+            muted
+            playsInline
             preload="auto"
             onLoadedData={() => setVideoLoaded(true)}
-            style={{ 
-              width: '100%', 
-              height: '100%', 
+            style={{
+              width: '100%',
+              height: '100%',
               objectFit: 'cover',
               opacity: videoLoaded ? 1 : 0.8,
               transition: 'opacity 0.4s ease'
-            }} 
+            }}
           />
         )
       )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.25)', zIndex: 1 }} />
-      
+
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', textAlign: 'center', paddingTop: '3em', fontSize: '3.8cqw', zIndex: 2 }}>
         <h3 style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.6em', letterSpacing: '0.1em', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}>
-          {partner1.toUpperCase()}<br/>
-          <span style={{ fontSize: '1.2em', fontStyle: 'italic', fontWeight: 300 }}>&amp;</span><br/>
+          {partner1.toUpperCase()}<br />
+          <span style={{ fontSize: '1.2em', fontStyle: 'italic', fontWeight: 300 }}>&amp;</span><br />
           {partner2.toUpperCase()}
         </h3>
         <div style={{ marginTop: '1.5em' }}>

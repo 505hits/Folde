@@ -297,7 +297,7 @@ const themes = {
   }
 };
 
-export default function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
+function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
 
@@ -597,7 +597,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                 autoPlay
                 muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 onEnded={handleVideoEnded}
               />
             )}
@@ -624,7 +624,7 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
                 loop
                 muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 className={styles.heroVideo}
                 src={heroSrc}
               />
@@ -1089,3 +1089,5 @@ export default function BordeauxTemplate({ data, editMode = false, autoPlaySimul
     </div>
   );
 }
+
+export default React.memo(BordeauxTemplate);
