@@ -420,14 +420,10 @@ export default function CheckoutClient() {
           if (isExists) {
             const loginRes = await login(account.email, account.password || 'test123');
             if (!loginRes.success) {
-              const fallbackUser = { email: account.email, name: account.name, partnerName: account.partnerName };
-              setCurrentUser(fallbackUser);
-              if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
+              // Fallback: continue to payment anyway
             }
           } else if (isRateLimit || isInvalid) {
-            const fallbackUser = { email: account.email, name: account.name, partnerName: account.partnerName };
-            setCurrentUser(fallbackUser);
-            if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
+            // Fallback: continue to payment anyway
           } else {
             setAuthError(result.error); return;
           }
