@@ -740,13 +740,11 @@ export default function Dashboard() {
     { id: 'invitation', label: 'My Invitation', icon: '✎' },
     { id: 'guests', label: 'Guest List', icon: '👥', upgrade: true },
     { id: 'rsvps', label: 'RSVPs', icon: '☑', upgrade: true },
+    { id: 'tables', label: 'Tables', icon: '🪑', upgrade: true },
     { id: 'share', label: 'Share', icon: '↗' },
   ];
 
   const bottomTabs = [
-    { id: 'knowledge', label: 'Knowledge', icon: '📊', upgrade: true },
-    { id: 'settings', label: 'RSVP Settings', icon: '⚙', upgrade: true },
-    { id: 'download', label: 'Download Data', icon: '⬇', upgrade: true },
     { id: 'billing', label: 'Plan & Billing', icon: '💳' },
   ];
 
@@ -983,7 +981,10 @@ export default function Dashboard() {
           {activeTab === 'rsvps' && (
             <RsvpsTab slug={clientSlug} />
           )}
-          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && (
+          {activeTab === 'tables' && (
+            <TablesTab slug={clientSlug} />
+          )}
+          {activeTab !== 'invitation' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
               Section in development
             </div>
@@ -1023,8 +1024,8 @@ export default function Dashboard() {
             <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '28px', overflow: 'hidden', position: 'relative' }}>
               {/* Live rendering of the template with correct overflow handling */}
               <div style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
-                <div style={{ width: '450px', zoom: 0.6133 }}>
-                  <BordeauxTemplate key={envelopeKey} data={{ ...clientEventInfo, slug: clientSlug }} editMode={true} />
+                <div style={{ width: '450px', zoom: 0.6133, minHeight: '972px', height: '972px' }}>
+                  <BordeauxTemplate key={envelopeKey} data={{ ...clientEventInfo, slug: clientSlug }} editMode={true} heroHeight="972px" />
                 </div>
               </div>
 
@@ -2098,7 +2099,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 }
 
 function GuestListTab({ slug }) {
-  const { guests, addGuest, fetchGuests } = useDatabase();
+  const { guests, addGuest, fetchGuests, deleteGuest } = useDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sideFilter, setSideFilter] = useState('all');
@@ -2218,12 +2219,13 @@ function GuestListTab({ slug }) {
                 <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Status</th>
                 <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Plus One</th>
                 <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Meal</th>
+                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
+                  <td colSpan={6} style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
                     No guests found. Click <strong>+ Add Guest</strong> to add one!
                   </td>
                 </tr>
@@ -2255,6 +2257,19 @@ function GuestListTab({ slug }) {
                     </td>
                     <td style={{ padding: '0.9rem 1rem', color: '#555' }}>
                       {g.meal || '-'}
+                    </td>
+                    <td style={{ padding: '0.9rem 1rem' }}>
+                      <button
+                        onClick={async () => {
+                          if (confirm(`Delete ${g.name} from guest list?`)) {
+                            await deleteGuest(slug, g.id || g.name);
+                          }
+                        }}
+                        style={{ border: 'none', backgroundColor: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, padding: '0.3rem 0.6rem', borderRadius: '6px' }}
+                        title="Delete guest"
+                      >
+                        🗑 Delete
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -2470,6 +2485,200 @@ function RsvpsTab({ slug }) {
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+function TablesTab({ slug }) {
+  const dbContext = useDatabase();
+  const guestsMap = dbContext?.guests || {};
+  const guestList = guestsMap[slug] || [];
+  const attendingGuests = guestList.filter(g => (g.status || '').toLowerCase() === 'attending');
+
+  const [tables, setTables] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`tables_${slug}`);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { }
+      }
+    }
+    return [
+      { id: 't1', name: 'Table 1 - Famille', capacity: 10, assignedGuestNames: [] },
+      { id: 't2', name: 'Table 2 - Amis', capacity: 10, assignedGuestNames: [] },
+      { id: 't3', name: 'Table 3 - VIP & Honneur', capacity: 8, assignedGuestNames: [] }
+    ];
+  });
+
+  const [showAddTableModal, setShowAddTableModal] = useState(false);
+  const [newTableName, setNewTableName] = useState('');
+  const [newTableCapacity, setNewTableCapacity] = useState(10);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`tables_${slug}`, JSON.stringify(tables));
+    }
+  }, [tables, slug]);
+
+  const handleAddTable = (e) => {
+    e.preventDefault();
+    if (!newTableName.trim()) return;
+    const newTable = {
+      id: `table_${Date.now()}`,
+      name: newTableName.trim(),
+      capacity: parseInt(newTableCapacity) || 10,
+      assignedGuestNames: []
+    };
+    setTables(prev => [...prev, newTable]);
+    setNewTableName('');
+    setNewTableCapacity(10);
+    setShowAddTableModal(false);
+  };
+
+  const handleRemoveTable = (tableId) => {
+    if (confirm('Delete this table?')) {
+      setTables(prev => prev.filter(t => t.id !== tableId));
+    }
+  };
+
+  const handleAssignGuest = (tableId, guestName) => {
+    setTables(prev => prev.map(t => {
+      const cleaned = t.assignedGuestNames.filter(n => n !== guestName);
+      if (t.id === tableId && guestName) {
+        return { ...t, assignedGuestNames: [...cleaned, guestName] };
+      }
+      return { ...t, assignedGuestNames: cleaned };
+    }));
+  };
+
+  const handleUnassignGuest = (guestName) => {
+    setTables(prev => prev.map(t => ({
+      ...t,
+      assignedGuestNames: t.assignedGuestNames.filter(n => n !== guestName)
+    })));
+  };
+
+  const assignedSet = new Set(tables.flatMap(t => t.assignedGuestNames));
+  const unassignedGuests = attendingGuests.filter(g => !assignedSet.has(g.name));
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header Metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Attending Guests</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{attendingGuests.length}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
+          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>Seated Guests</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{assignedSet.size}</div>
+        </div>
+        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
+          <div style={{ fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>Unassigned Guests</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#b45309', marginTop: '0.2rem' }}>{unassignedGuests.length}</div>
+        </div>
+      </div>
+
+      {/* Main Seating Plan */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>🪑 Table Seating Planner</h2>
+            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Organize your wedding tables and assign your confirmed guests.</p>
+          </div>
+          <button
+            onClick={() => setShowAddTableModal(true)}
+            style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <span>+</span> Add Table
+          </button>
+        </div>
+
+        {/* Unassigned Guests Quick Bar */}
+        {unassignedGuests.length > 0 && (
+          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.88rem', color: '#b45309', fontWeight: 600 }}>Unseated Attending Guests ({unassignedGuests.length})</h4>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {unassignedGuests.map(g => (
+                <div key={g.id || g.name} style={{ backgroundColor: '#fff', border: '1px solid #fcd34d', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 500, color: '#92400e', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>{g.name}</span>
+                  <select
+                    onChange={(e) => handleAssignGuest(e.target.value, g.name)}
+                    defaultValue=""
+                    style={{ fontSize: '0.75rem', padding: '0.1rem 0.3rem', borderRadius: '4px', border: '1px solid #d97706', outline: 'none' }}
+                  >
+                    <option value="" disabled>Assign to table...</option>
+                    {tables.map(t => (
+                      <option key={t.id} value={t.id}>{t.name} ({t.assignedGuestNames.length}/{t.capacity})</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Table Cards Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+          {tables.map(table => {
+            const currentCount = table.assignedGuestNames.length;
+            const isFull = currentCount >= table.capacity;
+            return (
+              <div key={table.id} style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.25rem', backgroundColor: '#faf8f5', position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#1a1a1a' }}>{table.name}</h3>
+                  <button onClick={() => handleRemoveTable(table.id)} style={{ border: 'none', background: 'none', color: '#999', cursor: 'pointer', fontSize: '0.9rem' }} title="Delete table">✕</button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.78rem', color: isFull ? '#dc2626' : '#555', fontWeight: 600 }}>
+                  <span>{currentCount} / {table.capacity} seats</span>
+                  <span style={{ backgroundColor: isFull ? '#fef2f2' : '#eefcf1', color: isFull ? '#dc2626' : '#2e7d32', padding: '0.15rem 0.5rem', borderRadius: '10px' }}>
+                    {isFull ? 'Full' : 'Available'}
+                  </span>
+                </div>
+
+                {/* Assigned Guests List */}
+                <div style={{ minHeight: '80px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '8px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                  {table.assignedGuestNames.length === 0 ? (
+                    <span style={{ fontSize: '0.78rem', color: '#aaa', fontStyle: 'italic', textAlign: 'center', margin: 'auto' }}>No guests assigned yet</span>
+                  ) : (
+                    table.assignedGuestNames.map((name, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', padding: '0.25rem 0.5rem', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
+                        <span>👤 {name}</span>
+                        <button onClick={() => handleUnassignGuest(name)} style={{ border: 'none', background: 'none', color: '#c0392b', cursor: 'pointer', fontSize: '0.75rem' }}>✕</button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Add Table Modal */}
+      {showAddTableModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '20px', maxWidth: '380px', width: '90%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>Add New Table</h3>
+            <form onSubmit={handleAddTable} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Table Name *</label>
+                <input type="text" required value={newTableName} onChange={e => setNewTableName(e.target.value)} placeholder="e.g. Table 4 - Collègues" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Capacity (Seats)</label>
+                <input type="number" min="1" max="30" value={newTableCapacity} onChange={e => setNewTableCapacity(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button type="button" onClick={() => setShowAddTableModal(false)} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#f0ede9', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Create Table</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -38,7 +38,8 @@ export async function GET(request) {
                     hasPlusOne: g.has_plus_one || false,
                     plusOneName: g.plus_one_name || '',
                     accompaniedStatus: g.accompanied_status || 'alone',
-                    message: g.message || ''
+                    message: g.message || '',
+                    tableId: g.table_id || null
                 }));
             } else if (error) {
                 console.warn('[API /api/rsvp GET] Supabase select notice:', error.message);
@@ -47,14 +48,14 @@ export async function GET(request) {
             console.warn('[API /api/rsvp GET] Exception:', err);
         }
 
-        // Merge in-memory guests for this slug (deduplicate by id/name)
+        // Merge in-memory guests for this slug
         const localList = inMemoryGuests[slug] || [];
         const combinedMap = new Map();
 
-        dbGuests.forEach(g => combinedMap.set(g.id || g.name.toLowerCase(), g));
+        dbGuests.forEach(g => combinedMap.set(g.name.toLowerCase().trim(), g));
         localList.forEach(g => {
-            const key = g.id || g.name.toLowerCase();
-            if (!combinedMap.has(key)) {
+            const key = g.name.toLowerCase().trim();
+            if (!combinedMap.has(key) || g.status !== 'Pending') {
                 combinedMap.set(key, g);
             }
         });
@@ -81,7 +82,8 @@ export async function POST(request) {
             plusOneName,
             accompaniedStatus,
             message,
-            side
+            side,
+            tableId
         } = body;
 
         if (!slug || !name) {
@@ -92,7 +94,7 @@ export async function POST(request) {
         const formattedStatus = (status === 'yes' || status === 'Attending') ? 'Attending' : (status === 'no' || status === 'Declined') ? 'Declined' : status || 'Attending';
         const guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
-        const newGuestObj = {
+        let newGuestObj = {
             id: guestId,
             name: cleanName,
             email: email ? email.trim() : '',
@@ -102,16 +104,35 @@ export async function POST(request) {
             hasPlusOne: hasPlusOne || false,
             plusOneName: plusOneName ? plusOneName.trim() : '',
             accompaniedStatus: accompaniedStatus || 'alone',
-            message: message || ''
+            message: message || '',
+            tableId: tableId || null
         };
 
-        // 1. Always store in server fallback memory first
         if (!inMemoryGuests[slug]) {
             inMemoryGuests[slug] = [];
         }
-        inMemoryGuests[slug].unshift(newGuestObj);
 
-        // 2. Try inserting into Supabase DB
+        const existingIdx = inMemoryGuests[slug].findIndex(
+            g => g.name.toLowerCase().trim() === cleanName.toLowerCase()
+        );
+
+        if (existingIdx !== -1) {
+            inMemoryGuests[slug][existingIdx] = {
+                ...inMemoryGuests[slug][existingIdx],
+                status: formattedStatus,
+                email: email ? email.trim() : inMemoryGuests[slug][existingIdx].email,
+                meal: meal || inMemoryGuests[slug][existingIdx].meal,
+                hasPlusOne: hasPlusOne || inMemoryGuests[slug][existingIdx].hasPlusOne,
+                plusOneName: plusOneName ? plusOneName.trim() : inMemoryGuests[slug][existingIdx].plusOneName,
+                accompaniedStatus: accompaniedStatus || inMemoryGuests[slug][existingIdx].accompaniedStatus,
+                message: message || inMemoryGuests[slug][existingIdx].message,
+                tableId: tableId !== undefined ? tableId : inMemoryGuests[slug][existingIdx].tableId
+            };
+            newGuestObj = inMemoryGuests[slug][existingIdx];
+        } else {
+            inMemoryGuests[slug].unshift(newGuestObj);
+        }
+
         try {
             let invitationId = null;
             const { data: inv } = await supabase
@@ -121,37 +142,85 @@ export async function POST(request) {
                 .single();
             invitationId = inv?.id || null;
 
-            const { data, error } = await supabase
+            const { data: existingDb } = await supabase
                 .from('guests')
-                .insert({
-                    invitation_id: invitationId,
-                    slug: slug,
-                    name: cleanName,
-                    email: email ? email.trim() : null,
-                    status: formattedStatus,
-                    meal: meal || '-',
-                    has_plus_one: hasPlusOne || false,
-                    plus_one_name: plusOneName ? plusOneName.trim() : null,
-                    accompanied_status: accompaniedStatus || 'alone',
-                    side: side || 'Both',
-                    message: message || null
-                })
-                .select()
-                .single();
+                .select('id')
+                .eq('slug', slug)
+                .ilike('name', cleanName);
 
-            if (error) {
-                console.warn('[API /api/rsvp POST] Supabase insert warning:', error.message);
-            } else if (data) {
-                console.log('[API /api/rsvp POST] Supabase insert success:', data.id);
-                newGuestObj.id = data.id;
+            if (existingDb && existingDb.length > 0) {
+                const dbId = existingDb[0].id;
+                await supabase
+                    .from('guests')
+                    .update({
+                        status: formattedStatus,
+                        email: email ? email.trim() : null,
+                        meal: meal || '-',
+                        has_plus_one: hasPlusOne || false,
+                        plus_one_name: plusOneName ? plusOneName.trim() : null,
+                        accompanied_status: accompaniedStatus || 'alone',
+                        side: side || 'Both',
+                        message: message || null
+                    })
+                    .eq('id', dbId);
+                newGuestObj.id = dbId;
+            } else {
+                const { data } = await supabase
+                    .from('guests')
+                    .insert({
+                        invitation_id: invitationId,
+                        slug: slug,
+                        name: cleanName,
+                        email: email ? email.trim() : null,
+                        status: formattedStatus,
+                        meal: meal || '-',
+                        has_plus_one: hasPlusOne || false,
+                        plus_one_name: plusOneName ? plusOneName.trim() : null,
+                        accompanied_status: accompaniedStatus || 'alone',
+                        side: side || 'Both',
+                        message: message || null
+                    })
+                    .select()
+                    .single();
+
+                if (data) newGuestObj.id = data.id;
             }
         } catch (err) {
-            console.warn('[API /api/rsvp POST] Supabase insert exception:', err);
+            console.warn('[API /api/rsvp POST] Supabase exception:', err);
         }
 
         return NextResponse.json({ success: true, guest: newGuestObj });
     } catch (error) {
         console.error('[API /api/rsvp POST] Critical error:', error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
+
+export async function DELETE(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const slug = searchParams.get('slug');
+        const guestId = searchParams.get('id');
+
+        if (!slug || !guestId) {
+            return NextResponse.json({ success: false, error: 'Slug and id are required' }, { status: 400 });
+        }
+
+        // 1. Remove from in-memory fallback
+        if (inMemoryGuests[slug]) {
+            inMemoryGuests[slug] = inMemoryGuests[slug].filter(g => String(g.id) !== String(guestId) && g.name !== guestId);
+        }
+
+        // 2. Remove from Supabase DB
+        try {
+            await supabase.from('guests').delete().eq('slug', slug).eq('id', guestId);
+        } catch (err) {
+            console.warn('[API /api/rsvp DELETE] Supabase delete notice:', err.message);
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('[API /api/rsvp DELETE] Critical error:', error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

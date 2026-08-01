@@ -305,7 +305,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
 
   // ===== RSVP Form State =====
-  const [rsvpName, setRsvpName] = useState('');
+  const [rsvpFirstName, setRsvpFirstName] = useState('');
+  const [rsvpLastName, setRsvpLastName] = useState('');
   const [rsvpEmail, setRsvpEmail] = useState('');
   const [rsvpAttending, setRsvpAttending] = useState('');
   const [rsvpMeal, setRsvpMeal] = useState('');
@@ -316,8 +317,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
   const handleRsvpSubmit = async (e) => {
     e.preventDefault();
-    if (!rsvpName.trim() || !rsvpAttending) {
-      setRsvpError('Please fill in your name and attendance.');
+    const fullName = `${rsvpFirstName.trim()} ${rsvpLastName.trim()}`.trim();
+    if (!rsvpFirstName.trim() || !rsvpLastName.trim() || !rsvpAttending) {
+      setRsvpError('Please fill in both your First Name, Last Name, and attendance.');
       return;
     }
     setRsvpSubmitting(true);
@@ -337,7 +339,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     try {
       if (addGuest && slug) {
         await addGuest(slug, {
-          name: rsvpName.trim(),
+          name: fullName,
           email: rsvpEmail.trim() || null,
           status: status,
           meal: rsvpMeal || '-',
@@ -439,41 +441,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }
   }, [data?.videos?.envelope]);
 
-  useEffect(() => {
-    // Only auto-play envelope in simulation mode (hero mockup on landing page & checkout preview)
-    // In real mode (!editMode), the envelope is triggered by user click
-    if (autoPlaySimulation) {
-      let fallbackTimer = null;
-
-      const timer = setTimeout(() => {
-        setEnvelopeOpen(true);
-        const video = envelopeVideoRef.current;
-        if (video && typeof video.play === 'function') {
-          video.muted = true;
-          video.play().catch(e => {
-            console.log("Video play failed or blocked:", e);
-          });
-
-          // Fallback safety timer: guarantee dismissal after 4.5s if onEnded never fires or network is slow
-          fallbackTimer = setTimeout(() => {
-            setEnvelopeDismissed(true);
-            if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 4500);
-        } else {
-          // Image envelope or no video ref — dismiss after 3.5s
-          fallbackTimer = setTimeout(() => {
-            setEnvelopeDismissed(true);
-            if (onEnvelopeDismissed) onEnvelopeDismissed();
-          }, 3500);
-        }
-      }, 500);
-
-      return () => {
-        clearTimeout(timer);
-        if (fallbackTimer) clearTimeout(fallbackTimer);
-      };
-    }
-  }, [autoPlaySimulation, data?.videos?.envelope]);
+  // Envelope opening is strictly user-touch triggered across all pages & previews
 
   useEffect(() => {
     if (audioRef.current) {
@@ -584,17 +552,17 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   };
 
   return (
-    <div className={styles.main} style={styleVariables}>
+    <div className={styles.main} style={{ ...styleVariables, height: heroHeight || '100%', minHeight: heroHeight || '100%' }}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? heroHeight : undefined, minHeight: !envelopeDismissed ? heroHeight : undefined }}>
+      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (heroHeight || '100%') : undefined, minHeight: !envelopeDismissed ? (heroHeight || '100%') : undefined }}>
 
         {/* ================= ENVELOPE OVERLAY ================= */}
         {!envelopeDismissed && (
           <div
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
-            style={{ height: heroHeight || '100vh', minHeight: heroHeight || '100vh' }}
+            style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%' }}
           >
             {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png)$/i) ? (
               <img
@@ -607,16 +575,12 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               <video
                 ref={envelopeVideoRef}
                 className={styles.envelopeVideo}
-                autoPlay
                 muted
                 playsInline
                 preload="metadata"
                 onEnded={handleVideoEnded}
               />
             )}
-            <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(92,58,30,0.85)', color: '#fff', padding: '0.6rem 1.4rem', borderRadius: '30px', fontSize: '0.78rem', letterSpacing: '2px', textTransform: 'uppercase', pointerEvents: 'none', backdropFilter: 'blur(4px)', boxShadow: '0 4px 15px rgba(0,0,0,0.15)', fontWeight: 600 }}>
-              Toucher pour ouvrir ✉️
-            </div>
           </div>
         )}
 
@@ -908,16 +872,29 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             ) : (
               <form onSubmit={handleRsvpSubmit}>
                 <AnimatedSection type="fade">
-                  <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Full name *</label>
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      className={styles.formInput}
-                      value={rsvpName}
-                      onChange={(e) => setRsvpName(e.target.value)}
-                      required
-                    />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Prénom (First name) *</label>
+                      <input
+                        type="text"
+                        placeholder="Prénom"
+                        className={styles.formInput}
+                        value={rsvpFirstName}
+                        onChange={(e) => setRsvpFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Nom (Last name) *</label>
+                      <input
+                        type="text"
+                        placeholder="Nom"
+                        className={styles.formInput}
+                        value={rsvpLastName}
+                        onChange={(e) => setRsvpLastName(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 </AnimatedSection>
 

@@ -531,6 +531,22 @@ export function DatabaseProvider({ children }) {
     }
   }, []);
 
+  // Delete guest: calls /api/rsvp DELETE and updates local state
+  const deleteGuest = async (slug, guestId) => {
+    try {
+      await fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}&id=${encodeURIComponent(guestId)}`, {
+        method: 'DELETE'
+      });
+    } catch (err) {
+      console.warn('deleteGuest API error:', err);
+    }
+
+    setGuests(prev => {
+      const currentList = prev[slug] || [];
+      return { ...prev, [slug]: currentList.filter(g => String(g.id) !== String(guestId) && g.name !== guestId) };
+    });
+  };
+
   return (
     <DatabaseContext.Provider value={{
       // Auth
@@ -538,7 +554,7 @@ export function DatabaseProvider({ children }) {
       // Orders
       orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, fetchOrders,
       // Guests
-      guests, addGuest, fetchGuests,
+      guests, addGuest, fetchGuests, deleteGuest,
       // Event Info
       eventInfo, setEventInfo,
       // Revisions
