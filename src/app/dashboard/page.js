@@ -158,7 +158,7 @@ export default function Dashboard() {
           slug: clientSlug,
           revisionNumber: nextNumber,
           comment: revisionComment.trim(),
-          origin: typeof window !== 'undefined' ? window.location.origin : 'https://foldedesign.com'
+          origin: typeof window !== 'undefined' ? window.location.origin : 'https://folde-wedding.com'
         }),
       });
 
@@ -750,19 +750,23 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="dashboard-layout" style={{ backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)', color: '#1a1a1a' }}>
+    <div className="dashboard-layout">
       <style>{`
         .dashboard-layout {
           display: flex;
           min-height: 100vh;
+          background-color: #FAF8F6;
+          font-family: var(--font-body), 'Outfit', 'Inter', sans-serif;
+          color: #1a1a1a;
         }
         .dashboard-sidebar {
-          width: 260px;
-          background-color: #fff;
-          border-right: 1px solid rgba(0,0,0,0.06);
+          width: 280px;
+          background: linear-gradient(180deg, #FDFCFC 0%, #F5F2EE 100%);
+          border-right: 1px solid rgba(176,137,104,0.12);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
+          transition: all 0.3s ease;
         }
         .dashboard-main {
           flex: 1;
@@ -770,17 +774,64 @@ export default function Dashboard() {
           flex-direction: column;
           height: 100vh;
           overflow-y: auto;
+          background-color: #FAF8F6;
         }
         .dashboard-preview {
-          width: 400px;
-          background-color: #f5f1ea;
-          border-left: 1px solid rgba(0,0,0,0.06);
+          width: 440px;
+          background-color: #F3EFE7;
+          border-left: 1px solid rgba(176,137,104,0.12);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
           height: 100vh;
           position: sticky;
           top: 0;
+        }
+        .sidebar-nav-btn {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.75rem 1.25rem;
+          margin: 0.25rem 1rem;
+          border: none;
+          cursor: pointer;
+          font-size: 0.88rem;
+          font-weight: 500;
+          border-radius: 12px;
+          background-color: transparent;
+          color: #5C4A3C;
+          text-align: left;
+          font-family: inherit;
+          transition: all 0.2s ease-in-out;
+        }
+        .sidebar-nav-btn:hover {
+          color: #1A120B;
+          background-color: rgba(176, 137, 104, 0.08);
+          transform: translateX(3px);
+        }
+        .sidebar-nav-btn.active {
+          font-weight: 600;
+          background-color: #5C3A1E;
+          color: #ffffff;
+          box-shadow: 0 4px 15px rgba(92, 58, 30, 0.12);
+        }
+        .sidebar-nav-btn.active:hover {
+          transform: none;
+          color: #ffffff;
+          background-color: #5C3A1E;
+        }
+        .sidebar-card-bottom {
+          padding: 1.25rem;
+          background: #ffffff;
+          border: 1px solid rgba(176, 137, 104, 0.16);
+          margin: 1rem;
+          border-radius: 16px;
+          box-shadow: 0 10px 25px rgba(92, 58, 30, 0.03);
+          transition: all 0.3s ease;
+        }
+        .sidebar-card-bottom:hover {
+          box-shadow: 0 12px 30px rgba(92, 58, 30, 0.06);
+          border-color: rgba(176, 137, 104, 0.25);
         }
         .mobile-menu-btn {
           display: none;
@@ -792,6 +843,23 @@ export default function Dashboard() {
         }
         .mobile-close-btn {
           display: none;
+        }
+        .premium-grad-button {
+          background: linear-gradient(135deg, #b08968 0%, #8b6e5a 100%);
+          transition: all 0.25s ease;
+          border: none;
+          box-shadow: 0 4px 14px rgba(176,137,104,0.3);
+        }
+        .premium-grad-button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(176,137,104,0.4);
+          opacity: 0.95;
+        }
+        .glass-header {
+          background: rgba(254, 253, 252, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(176,137,104,0.08);
         }
         @media (max-width: 1024px) {
           .mobile-menu-btn {
@@ -848,16 +916,13 @@ export default function Dashboard() {
         <div style={{ padding: '1rem 0', flex: 1, overflowY: 'auto' }}>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {tabs.map(tab => (
-              <button key={tab.id} onClick={() => { setActiveTab(tab.id); setIsMobileMenuOpen(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 1.5rem',
-                  border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: activeTab === tab.id ? 600 : 500,
-                  backgroundColor: activeTab === tab.id ? '#f3f4f6' : 'transparent',
-                  color: activeTab === tab.id ? '#1a1a1a' : '#555',
-                  textAlign: 'left', fontFamily: 'inherit', borderLeft: activeTab === tab.id ? '3px solid #5C3A1E' : '3px solid transparent'
-                }}>
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setIsMobileMenuOpen(false); }}
+                className={`sidebar-nav-btn ${activeTab === tab.id ? 'active' : ''}`}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.1rem', opacity: 0.7 }}>{tab.icon}</span> {tab.label}
+                  <span style={{ fontSize: '1.15rem', opacity: activeTab === tab.id ? 1 : 0.75 }}>{tab.icon}</span> {tab.label}
                 </div>
                 {tab.upgrade && userOrder?.plan === 'Essential' && (
                   <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '12px' }}>Upgrade</span>
@@ -866,56 +931,64 @@ export default function Dashboard() {
             ))}
           </nav>
 
-          <div style={{ margin: '1.5rem 1.5rem', height: '1px', backgroundColor: '#f0ede9' }}></div>
+          <div style={{ margin: '1.25rem 1.5rem', height: '1px', backgroundColor: 'rgba(176,137,104,0.08)' }}></div>
 
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {bottomTabs.map(tab => (
-              <button key={tab.id} onClick={() => { setActiveTab(tab.id); setIsMobileMenuOpen(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 1.5rem',
-                  border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500,
-                  backgroundColor: 'transparent', color: '#666', textAlign: 'left', fontFamily: 'inherit'
-                }}>
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setIsMobileMenuOpen(false); }}
+                className={`sidebar-nav-btn ${activeTab === tab.id ? 'active' : ''}`}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1rem', opacity: 0.6 }}>{tab.icon}</span> {tab.label}
+                  <span style={{ fontSize: '1.1rem', opacity: 0.75 }}>{tab.icon}</span> {tab.label}
                 </div>
-                {tab.upgrade && userOrder?.plan === 'Essential' && (
-                  <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '12px' }}>Upgrade</span>
-                )}
               </button>
             ))}
           </nav>
         </div>
 
-        <div style={{ padding: '1.25rem', backgroundColor: '#faf8f5', borderTop: '1px solid rgba(0,0,0,0.04)', margin: '1rem', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Your Wedding</div>
-          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Partner #1'} & {clientEventInfo.partner2 || 'Partner #2'}</div>
-          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.75rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.3rem 0.6rem', borderRadius: '20px', width: 'fit-content' }}>
-            <span>🕒</span> Countdown active
+        {/* Floating Wedding Profile Card */}
+        <div className="sidebar-card-bottom">
+          <div style={{ fontSize: '0.72rem', color: '#b08968', fontWeight: 700, marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Wedding Space</div>
+          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#2C1B10', marginBottom: '0.25rem', fontFamily: 'var(--font-heading)' }}>
+            {clientEventInfo.partner1 || 'Partner #1'} & {clientEventInfo.partner2 || 'Partner #2'}
           </div>
-          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981' }}></span> Premium Plan · Included
+          <div style={{ fontSize: '0.8rem', color: '#7E6B5C', marginBottom: '0.85rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.35rem 0.65rem', borderRadius: '20px', width: 'fit-content', fontWeight: 600, border: '1px solid #d1fae5', marginBottom: '0.65rem' }}>
+            <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', animation: 'pulse 2s infinite' }}></span>
+            Live Invite Link
+          </div>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            👔 Premium Plan
           </div>
           <button
             onClick={logout}
             style={{
               width: '100%',
-              marginTop: '1rem',
-              padding: '0.5rem 0.8rem',
-              borderRadius: '8px',
-              border: '1px solid #e0dcd7',
-              backgroundColor: '#fff',
+              marginTop: '1.1rem',
+              padding: '0.55rem 0.8rem',
+              borderRadius: '10px',
+              border: '1px solid rgba(220, 38, 38, 0.15)',
+              backgroundColor: 'rgba(254, 242, 242, 0.5)',
               color: '#dc2626',
               cursor: 'pointer',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.4rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s ease-in-out'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = '#fee2e2';
+              e.currentTarget.style.borderColor = '#f87171';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(254, 242, 242, 0.5)';
+              e.currentTarget.style.borderColor = 'rgba(220, 38, 38, 0.15)';
             }}
           >
             <span>🚪</span> Log Out
@@ -925,22 +998,22 @@ export default function Dashboard() {
 
       {/* 2. Main Content */}
       <main className="dashboard-main">
-        <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', backgroundColor: '#fff', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 10, flexWrap: 'wrap', gap: '1rem' }}>
+        <header className="glass-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 2rem', position: 'sticky', top: 0, zIndex: 10, flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', fontFamily: 'var(--font-heading)' }}>
-              {activeTab === 'invitation' && 'My Invitation'}
-              {activeTab === 'aistudio' && 'AI Studio'}
-              {activeTab === 'guests' && 'Guest List'}
-              {activeTab === 'rsvps' && 'RSVP Responses'}
-              {activeTab === 'tables' && 'Table Management'}
-              {activeTab === 'share' && 'Share My Site'}
-              {activeTab === 'contact' && 'Customer Support'}
+            <h1 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', fontFamily: 'var(--font-heading)', letterSpacing: '0.5px' }}>
+              {activeTab === 'invitation' && 'Wedding Details'}
+              {activeTab === 'aistudio' && 'AI Personalization Studio'}
+              {activeTab === 'guests' && 'Guest List Organizer'}
+              {activeTab === 'rsvps' && 'Real-Time RSVP Responses'}
+              {activeTab === 'tables' && 'Table & Seating Plan'}
+              {activeTab === 'share' && 'Share Digital Invitation'}
+              {activeTab === 'contact' && 'Concierge Support'}
             </h1>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', color: '#555', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-              <span>📱</span> View Live Website
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fff', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(92,58,30,0.02)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#faf8f5'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}>
+              <span>📱</span> Live Preview Website
             </a>
             <button
               onClick={() => {
@@ -950,12 +1023,13 @@ export default function Dashboard() {
                   setShowPublishModal(true);
                 }, 1500);
               }}
-              style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(92,58,30,0.2)' }}
+              className="premium-grad-button"
+              style={{ padding: '0.65rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               {isPublishing ? (
                 <>⏳ Publishing...</>
               ) : (
-                <>🔒 Publish My Website</>
+                <>🔒 Publish Invite Site</>
               )}
             </button>
           </div>
@@ -1013,40 +1087,99 @@ export default function Dashboard() {
 
       {/* 3. Right Preview Panel */}
       <aside className="dashboard-preview">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden', position: 'relative' }}>
+
+          {/* Subtle Ambient Background Glow */}
+          <div style={{ position: 'absolute', width: '250px', height: '250px', borderRadius: '50%', backgroundColor: 'rgba(176,137,104,0.06)', filter: 'blur(60px)', top: '15%', left: '15%', zIndex: 0, pointerEvents: 'none' }}></div>
+          <div style={{ position: 'absolute', width: '280px', height: '280px', borderRadius: '50%', backgroundColor: 'rgba(92,58,30,0.04)', filter: 'blur(80px)', bottom: '15%', right: '10%', zIndex: 0, pointerEvents: 'none' }}></div>
+
           <button
             onClick={() => setEnvelopeKey(prev => prev + 1)}
             style={{
-              marginBottom: '1rem',
-              padding: '0.45rem 1rem',
-              borderRadius: '20px',
-              border: '1px solid #e0dcd7',
+              marginBottom: '1.5rem',
+              padding: '0.55rem 1.25rem',
+              borderRadius: '30px',
+              border: '1px solid rgba(176, 137, 104, 0.22)',
               backgroundColor: '#fff',
               color: '#5C3A1E',
-              fontSize: '0.78rem',
+              fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              transition: 'all 0.2s ease'
+              gap: '0.45rem',
+              boxShadow: '0 4px 15px rgba(92, 58, 30, 0.05)',
+              transition: 'all 0.2s ease',
+              zIndex: 1,
+              fontFamily: 'inherit',
+              letterSpacing: '0.3px'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#faf8f5'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#5C3A1E';
+              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.borderColor = '#5C3A1E';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#fff';
+              e.currentTarget.style.color = '#5C3A1E';
+              e.currentTarget.style.borderColor = 'rgba(176, 137, 104, 0.22)';
+            }}
           >
             <span>✉️</span> Replay Envelope Opening
           </button>
-          {/* Phone Mockup */}
-          <div style={{ width: '300px', height: '620px', backgroundColor: '#111', borderRadius: '40px', padding: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', position: 'relative' }}>
-            <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '28px', overflow: 'hidden', position: 'relative' }}>
-              {/* Live rendering of the template with correct overflow handling */}
+
+          {/* Premium Smartphone Mockup (2026 thin bezel) */}
+          <div style={{
+            width: '310px',
+            height: '630px',
+            backgroundColor: '#000000',
+            borderRadius: '46px',
+            padding: '10px',
+            boxShadow: '0 25px 60px rgba(92, 58, 30, 0.12), 0 5px 15px rgba(0,0,0,0.08), inset 0 0 2px 2px rgba(255,255,255,0.15)',
+            position: 'relative',
+            zIndex: 1,
+            border: '1px solid rgba(255,255,255,0.08)'
+          }}>
+            {/* Glossy Bezel shine overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              left: '12px',
+              right: '12px',
+              bottom: '12px',
+              borderRadius: '35px',
+              boxShadow: 'inset 0 0 10px rgba(255,255,255,0.03)',
+              pointerEvents: 'none',
+              zIndex: 10
+            }}></div>
+
+            {/* Dynamic Island Screen notch */}
+            <div style={{
+              position: 'absolute',
+              top: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '85px',
+              height: '24px',
+              backgroundColor: '#000000',
+              borderRadius: '15px',
+              zIndex: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: 'inset 0 0 2px rgba(255,255,255,0.1)'
+            }}>
+              {/* Camera reflex */}
+              <div style={{ width: '6.5px', height: '6.5px', borderRadius: '50%', backgroundColor: '#1a1f38', opacity: 0.8, marginRight: '30px' }}></div>
+            </div>
+
+            {/* Phone Screen Canvas */}
+            <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '36px', overflow: 'hidden', position: 'relative' }}>
               <div style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
-                <div style={{ width: '450px', zoom: 0.6133, minHeight: '972px', height: '972px' }}>
-                  <BordeauxTemplate key={envelopeKey} data={{ ...clientEventInfo, slug: clientSlug }} editMode={true} heroHeight="972px" />
+                <div style={{ width: '450px', zoom: 0.644, minHeight: '946px', height: '946px' }}>
+                  <BordeauxTemplate key={envelopeKey} data={{ ...clientEventInfo, slug: clientSlug }} editMode={true} heroHeight="946px" />
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -1416,9 +1549,37 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     handleChange('accommodations', newAcc);
   };
 
-  const inputStyle = { width: '100%', padding: '0.85rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.95rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#faf8f5', color: '#1a1a1a' };
-  const labelStyle = { display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' };
-  const sectionStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '2rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', marginBottom: '1.5rem' };
+  const inputStyle = {
+    width: '100%',
+    padding: '0.85rem 1.15rem',
+    borderRadius: '12px',
+    border: '1px solid rgba(176,137,104,0.22)',
+    fontSize: '0.92rem',
+    outline: 'none',
+    fontFamily: 'inherit',
+    backgroundColor: '#FAF9F6',
+    color: '#2C1B10',
+    transition: 'all 0.2s ease-in-out',
+    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.02)'
+  };
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    color: '#5C4A3C',
+    marginBottom: '0.45rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  };
+  const sectionStyle = {
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    padding: '2.5rem 2.25rem',
+    border: '1px solid rgba(176,137,104,0.15)',
+    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+    marginBottom: '2.25rem',
+    transition: 'all 0.3s ease'
+  };
 
   const AVAILABLE_TEMPLATES = [
     { id: 'bordeaux', name: 'Bordeaux Elegant', desc: 'Une célébration moderne, dramatique et élégante' },
@@ -2328,58 +2489,78 @@ function GuestListTab({ slug }) {
     setLoading(false);
   };
 
-  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+  const cardStyle = {
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    padding: '2rem 1.75rem',
+    border: '1px solid rgba(176,137,104,0.15)',
+    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+  };
+
+  const inputStyle = {
+    padding: '0.65rem 1.1rem',
+    borderRadius: '12px',
+    border: '1px solid rgba(176,137,104,0.22)',
+    fontSize: '0.88rem',
+    outline: 'none',
+    fontFamily: 'inherit',
+    backgroundColor: '#FAF9F6',
+    color: '#2C1B10',
+    transition: 'all 0.2s',
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
       {/* Header Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.25rem' }}>
         <div style={cardStyle}>
-          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Total Invited</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1a1a1a', marginTop: '0.2rem' }}>{totalCount}</div>
+          <div style={{ fontSize: '0.75rem', color: '#7E6B5C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Invited</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#2C1B10', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{totalCount}</div>
         </div>
-        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
-          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>Confirmed Attending</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{attendingCount}</div>
+        <div style={{ ...cardStyle, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Confirmed Attending</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#166534', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{attendingCount}</div>
         </div>
-        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
-          <div style={{ fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>Pending Response</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#b45309', marginTop: '0.2rem' }}>{pendingCount}</div>
+        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fef3c7' }}>
+          <div style={{ fontSize: '0.75rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Pending Response</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#b45309', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{pendingCount}</div>
         </div>
         <div style={{ ...cardStyle, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
-          <div style={{ fontSize: '0.8rem', color: '#dc2626', fontWeight: 600 }}>Declined</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>{declinedCount}</div>
+          <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Declined</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#dc2626', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{declinedCount}</div>
         </div>
       </div>
 
       {/* Main Table Card */}
       <div style={cardStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>👥 Guest Directory</h2>
-            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Manage your invitees and track who is attending your wedding.</p>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', margin: 0, fontFamily: 'var(--font-heading)' }}>👥 Guest Directory</h2>
+            <p style={{ fontSize: '0.85rem', color: '#7E6B5C', marginTop: '0.25rem' }}>Manage your invitees and track who is attending your wedding.</p>
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            style={{ padding: '0.65rem 1.35rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.45rem', boxShadow: '0 4px 12px rgba(92,58,30,0.15)', transition: 'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 0.95}
+            onMouseLeave={e => e.currentTarget.style.opacity = 1}
           >
             <span>+</span> Add Guest
           </button>
         </div>
 
         {/* Filter Controls */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
           <input
             type="text"
             placeholder="🔍 Search guests..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: 1, minWidth: '200px', padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', fontSize: '0.88rem' }}
+            style={{ ...inputStyle, flex: 1, minWidth: '200px' }}
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.88rem', backgroundColor: '#fff' }}
+            style={{ ...inputStyle, cursor: 'pointer' }}
           >
             <option value="all">All Statuses</option>
             <option value="attending">Attending</option>
@@ -2548,7 +2729,25 @@ function RsvpsTab({ slug }) {
     }
   });
 
-  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+  const cardStyle = {
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    padding: '2rem 1.75rem',
+    border: '1px solid rgba(176,137,104,0.15)',
+    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+  };
+
+  const inputStyle = {
+    padding: '0.55rem 1rem',
+    borderRadius: '12px',
+    border: '1px solid rgba(176,137,104,0.22)',
+    fontSize: '0.88rem',
+    outline: 'none',
+    fontFamily: 'inherit',
+    backgroundColor: '#FAF9F6',
+    color: '#2C1B10',
+    transition: 'all 0.2s',
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -2564,29 +2763,29 @@ function RsvpsTab({ slug }) {
 
       {/* Metrics Summary */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
-          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>🎉 Confirmed Attending</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{totalAttending}</div>
+        <div style={{ ...cardStyle, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🎉 Confirmed Attending</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#166534', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{totalAttending}</div>
         </div>
         <div style={{ ...cardStyle, backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
-          <div style={{ fontSize: '0.8rem', color: '#dc2626', fontWeight: 600 }}>🤍 Regretfully Declined</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>{totalDeclined}</div>
+          <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🤍 Regretfully Declined</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#dc2626', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{totalDeclined}</div>
         </div>
         <div style={{ ...cardStyle }}>
-          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>✉️ Total Responses</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1a1a1a', marginTop: '0.2rem' }}>{totalResponses}</div>
+          <div style={{ fontSize: '0.75rem', color: '#7E6B5C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>✉️ Total Responses</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#2C1B10', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{totalResponses}</div>
         </div>
       </div>
 
       {/* Meal Breakdown Widget */}
       {Object.keys(mealCounts).length > 0 && (
         <div style={cardStyle}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>🍽️ Meal Preference Breakdown</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#2C1B10', marginBottom: '1.25rem', fontFamily: 'var(--font-heading)' }}>🍽️ Meal Preference Breakdown</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem' }}>
             {Object.entries(mealCounts).map(([dish, count]) => (
-              <div key={dish} style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', padding: '0.75rem 1.25rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div key={dish} style={{ backgroundColor: '#FAF9F6', border: '1px solid rgba(176,137,104,0.18)', padding: '0.75rem 1.25rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 2px 8px rgba(92,58,30,0.02)' }}>
                 <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#5C3A1E' }}>{count}×</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1a1a1a' }}>{dish}</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#2C1B10' }}>{dish}</span>
               </div>
             ))}
           </div>
@@ -2595,23 +2794,23 @@ function RsvpsTab({ slug }) {
 
       {/* RSVP Table */}
       <div style={cardStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>✉️ Submitted RSVPs</h2>
-            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Detailed list of all guest responses submitted via the web form.</p>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', margin: 0, fontFamily: 'var(--font-heading)' }}>✉️ Submitted RSVPs</h2>
+            <p style={{ fontSize: '0.85rem', color: '#7E6B5C', marginTop: '0.25rem' }}>Detailed list of all guest responses submitted via the web form.</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <input
               type="text"
               placeholder="🔍 Search guest name..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              style={{ padding: '0.55rem 0.9rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', fontSize: '0.85rem' }}
+              style={inputStyle}
             />
             <select
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value)}
-              style={{ padding: '0.55rem 0.9rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.85rem', backgroundColor: '#fff' }}
+              style={{ ...inputStyle, cursor: 'pointer' }}
             >
               <option value="all">All Responses</option>
               <option value="attending">Attending Only</option>
@@ -2749,36 +2948,44 @@ function TablesTab({ slug }) {
   const assignedSet = new Set(tables.flatMap(t => t.assignedGuestNames));
   const unassignedGuests = attendingGuests.filter(g => !assignedSet.has(g.name));
 
-  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+  const cardStyle = {
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    padding: '2rem 1.75rem',
+    border: '1px solid rgba(176,137,104,0.15)',
+    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
       {/* Header Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
         <div style={cardStyle}>
-          <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Attending Guests</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{attendingGuests.length}</div>
+          <div style={{ fontSize: '0.75rem', color: '#7E6B5C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Attending Guests</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#2C1B10', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{attendingGuests.length}</div>
         </div>
-        <div style={{ ...cardStyle, backgroundColor: '#f4fbf4', border: '1px solid #c8e6c9' }}>
-          <div style={{ fontSize: '0.8rem', color: '#2e7d32', fontWeight: 600 }}>Seated Guests</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2e7d32', marginTop: '0.2rem' }}>{assignedSet.size}</div>
+        <div style={{ ...cardStyle, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Seated Guests</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#166534', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{assignedSet.size}</div>
         </div>
-        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
-          <div style={{ fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>Unassigned Guests</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#b45309', marginTop: '0.2rem' }}>{unassignedGuests.length}</div>
+        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fef3c7' }}>
+          <div style={{ fontSize: '0.75rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unassigned Guests</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#b45309', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{unassignedGuests.length}</div>
         </div>
       </div>
 
       {/* Main Seating Plan */}
       <div style={cardStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>🪑 Table Seating Planner</h2>
-            <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>Organize your wedding tables and assign your confirmed guests.</p>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', margin: 0, fontFamily: 'var(--font-heading)' }}>🪑 Table Seating Planner</h2>
+            <p style={{ fontSize: '0.85rem', color: '#7E6B5C', marginTop: '0.25rem' }}>Organize your wedding tables and assign your confirmed guests.</p>
           </div>
           <button
             onClick={() => setShowAddTableModal(true)}
-            style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            style={{ padding: '0.65rem 1.35rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.45rem', boxShadow: '0 4px 12px rgba(92,58,30,0.15)', transition: 'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 0.95}
+            onMouseLeave={e => e.currentTarget.style.opacity = 1}
           >
             <span>+</span> Add Table
           </button>
@@ -2874,7 +3081,7 @@ function TablesTab({ slug }) {
 
 function ShareTab({ slug }) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/invite/${slug}` : `https://mariage-folde.vercel.app/invite/${slug}`;
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/invite/${slug}` : `https://folde-wedding.com/invite/${slug}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareUrl)}`;
 
   const handleCopyLink = () => {
@@ -3037,7 +3244,7 @@ function ContactUsTab({ currentUser }) {
         <div style={cardStyle}>
           <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>📧</div>
           <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#1a1a1a' }}>Direct Support</div>
-          <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>contact@foldedesign.com</div>
+          <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>contact@folde-wedding.com</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚡</div>

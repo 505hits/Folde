@@ -4,10 +4,10 @@ import SiteLayout from "@/components/SiteLayout";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
-const zenOldMincho = Zen_Old_Mincho({ 
-  weight: ['400', '700'], 
-  subsets: ["latin"], 
-  variable: "--font-heading" 
+const zenOldMincho = Zen_Old_Mincho({
+  weight: ['400', '700'],
+  subsets: ["latin"],
+  variable: "--font-heading"
 });
 
 export const metadata = {
@@ -16,11 +16,11 @@ export const metadata = {
   openGraph: {
     title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
     description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
-    url: "https://www.foldedesign.com",
+    url: "https://www.folde-wedding.com",
     siteName: "FOLDÈ Design",
     images: [
       {
-        url: "https://www.foldedesign.com/images/logo.png",
+        url: "https://www.folde-wedding.com/images/logo.png",
         width: 800,
         height: 600,
         alt: "FOLDÈ Design Logo"
@@ -33,7 +33,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
     description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
-    images: ["https://www.foldedesign.com/images/logo.png"],
+    images: ["https://www.folde-wedding.com/images/logo.png"],
   }
 };
 
@@ -41,9 +41,9 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "FOLDÈ Design",
-  "image": "https://www.foldedesign.com/images/logo.png",
-  "@id": "https://www.foldedesign.com/#website",
-  "url": "https://www.foldedesign.com",
+  "image": "https://www.folde-wedding.com/images/logo.png",
+  "@id": "https://www.folde-wedding.com/#website",
+  "url": "https://www.folde-wedding.com",
   "telephone": "+33100000000",
   "priceRange": "$$",
   "address": {

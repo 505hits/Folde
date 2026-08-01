@@ -24,7 +24,7 @@ export async function POST(request) {
     }
 
     // Déterminer l'URL de base
-    const origin = request.headers.get('origin') || 'https://foldedesign.com';
+    const origin = request.headers.get('origin') || 'https://folde-wedding.com';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

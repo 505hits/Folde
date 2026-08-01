@@ -10,7 +10,7 @@ export async function POST(request) {
     }
 
     const resendKey = process.env.RESEND_API_KEY;
-    const siteLink = `${origin || 'https://foldedesign.com'}/invite/${slug}`;
+    const siteLink = `${origin || 'https://folde-wedding.com'}/invite/${slug}`;
     const subject = `[REVISION REQUEST ${revisionNumber}/2] — ${coupleName} (${userEmail})`;
 
     const emailHtml = `

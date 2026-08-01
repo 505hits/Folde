@@ -385,7 +385,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     }
     setRsvpSubmitting(false);
   };
-  const [currentUrl, setCurrentUrl] = useState('https://foldedesign.com');
+  const [currentUrl, setCurrentUrl] = useState('https://folde-wedding.com');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1113,7 +1113,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
         {/* ================= VIRAL BADGE ================= */}
         <div style={{ padding: '2.5rem 1rem 3.5rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-          <a href="https://foldedesign.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease', margin: '0 auto' }}
+          <a href="https://folde-wedding.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease', margin: '0 auto' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
           >
