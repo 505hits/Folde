@@ -8,6 +8,7 @@ import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
+import { getTranslation } from '@/lib/translations';
 import styles from './BordeauxTemplate.module.css';
 
 // Hook for scroll animations

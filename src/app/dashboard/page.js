@@ -1267,6 +1267,73 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     }
   };
 
+  function HoverVideoThumbnail({ url, fallbackColor = '#5C3A1E' }) {
+    const [isHovered, setIsHovered] = useState(false);
+    const videoRef = useRef(null);
+
+    const isVideo = url && (url.endsWith('.mp4') || url.endsWith('.m3u8') || url.includes('/video/') || url.includes('/videos/') || url.includes('cloudflarestream'));
+    const isImage = url && (url.endsWith('.jpg') || url.endsWith('.png') || url.endsWith('.webp') || url.startsWith('data:image'));
+
+    const handleMouseEnter = () => {
+      setIsHovered(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => { });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setIsHovered(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+
+    return (
+      <div
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          position: 'relative',
+          backgroundColor: fallbackColor,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid rgba(0,0,0,0.1)',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+        }}
+      >
+        {/* Static Fallback / Image */}
+        {isImage || !isHovered ? (
+          isImage ? (
+            <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', backgroundColor: fallbackColor, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+              <span style={{ fontSize: '1.2rem' }}>🎬</span>
+              <span style={{ fontSize: '0.6rem', opacity: 0.85, textTransform: 'uppercase', marginTop: '0.1rem', fontWeight: 600 }}>Hover</span>
+            </div>
+          )
+        ) : null}
+
+        {/* Video element plays ONLY when hovered */}
+        {isVideo && isHovered && (
+          <video
+            ref={videoRef}
+            src={url}
+            muted
+            loop
+            playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+          />
+        )}
+      </div>
+    );
+  }
+
   const handleTimelineChange = (index, field, value) => {
     const current = local.timeline || [
       { time: "2:00 PM", title: "Welcome Cocktail" },
@@ -2010,6 +2077,25 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             <div>
               <label style={labelStyle}>RSVP Deadline Date (Date limite de réponse)</label>
               <input type="text" value={local.rsvpDeadline || ''} onChange={e => handleChange('rsvpDeadline', e.target.value)} style={inputStyle} placeholder="e.g. March 30th, 2026" />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>🌍 Wedding Invitation Language (Langue de l'invitation)</label>
+              <select
+                value={local.language || 'en'}
+                onChange={e => handleChange('language', e.target.value)}
+                style={{ ...inputStyle, backgroundColor: '#fff', cursor: 'pointer', fontWeight: 500 }}
+              >
+                <option value="en">🇬🇧 English</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="pt">🇵🇹 Português</option>
+                <option value="ar">🇦🇪 العربية (Arabic)</option>
+                <option value="ru">🇷🇺 Русский (Russian)</option>
+              </select>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
