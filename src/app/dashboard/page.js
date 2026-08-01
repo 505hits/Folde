@@ -737,16 +737,16 @@ export default function Dashboard() {
   const clientEventInfo = eventInfo[clientSlug] || defaultEventInfo;
 
   const tabs = [
-    { id: 'invitation', label: 'My Invitation', icon: '✎' },
-    { id: 'aistudio', label: 'Studio IA (Premium)', icon: '✨', upgrade: true },
-    { id: 'guests', label: 'Guest List', icon: '👥', upgrade: true },
-    { id: 'rsvps', label: 'RSVPs', icon: '☑', upgrade: true },
-    { id: 'tables', label: 'Tables', icon: '🪑', upgrade: true },
-    { id: 'share', label: 'Share', icon: '↗' },
+    { id: 'invitation', label: 'Mon Invitation', icon: '✎' },
+    { id: 'aistudio', label: 'Studio IA', icon: '✨' },
+    { id: 'guests', label: 'Liste des Invités', icon: '👥' },
+    { id: 'rsvps', label: 'Réponses RSVP', icon: '☑' },
+    { id: 'tables', label: 'Gestion des Tables', icon: '🪑' },
+    { id: 'share', label: 'Partager mon Site', icon: '↗' },
   ];
 
   const bottomTabs = [
-    { id: 'contact', label: 'Contact Us', icon: '✉️' },
+    { id: 'contact', label: 'Support Client 7j/7', icon: '✉️' },
   ];
 
   return (
@@ -888,14 +888,14 @@ export default function Dashboard() {
         </div>
 
         <div style={{ padding: '1.25rem', backgroundColor: '#faf8f5', borderTop: '1px solid rgba(0,0,0,0.04)', margin: '1rem', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem' }}>Your Wedding</div>
-          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Partner 1'} & {clientEventInfo.partner2 || 'Partner 2'}</div>
-          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.75rem' }}>{clientEventInfo.date || 'TBD'}</div>
+          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Votre Mariage</div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.25rem' }}>{clientEventInfo.partner1 || 'Marié #1'} & {clientEventInfo.partner2 || 'Marié #2'}</div>
+          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.75rem' }}>{clientEventInfo.date || 'Date à venir'}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.3rem 0.6rem', borderRadius: '20px', width: 'fit-content' }}>
-            <span>🕒</span> 180 days until wedding
+            <span>🕒</span> Compte à rebours activé
           </div>
-          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#b08968', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></span> {userOrder?.plan || 'Standard'} · Draft
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981' }}></span> Offre Premium · Inclus
           </div>
           <button
             onClick={logout}
@@ -918,7 +918,7 @@ export default function Dashboard() {
               transition: 'all 0.2s'
             }}
           >
-            <span>🚪</span> Sign Out
+            <span>🚪</span> Déconnexion
           </button>
         </div>
       </aside>
@@ -928,11 +928,19 @@ export default function Dashboard() {
         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', backgroundColor: '#fff', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 10, flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#1a1a1a' }}>My Invitation</h1>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', fontFamily: 'var(--font-heading)' }}>
+              {activeTab === 'invitation' && 'Mon Invitation'}
+              {activeTab === 'aistudio' && 'Studio IA Premium'}
+              {activeTab === 'guests' && 'Liste des Invités'}
+              {activeTab === 'rsvps' && 'Réponses RSVP'}
+              {activeTab === 'tables' && 'Gestion des Tables'}
+              {activeTab === 'share' && 'Partager mon Site'}
+              {activeTab === 'contact' && 'Support Client'}
+            </h1>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', borderRadius: '30px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', color: '#555', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-              <span>📱</span> View Fullscreen
+              <span>📱</span> Voir le site plein écran
             </a>
             <button
               onClick={() => {
@@ -940,26 +948,26 @@ export default function Dashboard() {
                 setTimeout(() => {
                   setIsPublishing(false);
                   setShowPublishModal(true);
-                }, 1500); // Simulate publish delay
+                }, 1500);
               }}
-              style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#7b906f', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(92,58,30,0.2)' }}
             >
               {isPublishing ? (
-                <>⏳ Publishing...</>
+                <>⏳ Publication...</>
               ) : (
-                <>🔒 Publish My Website</>
+                <>🔒 Publier mon site</>
               )}
             </button>
           </div>
         </header>
 
-        <div style={{ padding: '1.5rem', maxWidth: '800px', width: '100%', margin: '0 auto' }}>
+        <div style={{ padding: '1.5rem', maxWidth: '850px', width: '100%', margin: '0 auto' }}>
 
-          <div style={{ backgroundColor: '#f8fdf8', border: '1px solid #e2f2e5', borderRadius: '12px', padding: '1.25rem', display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-            <div style={{ fontSize: '1.2rem', color: '#7b906f' }}>🕒</div>
+          <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+            <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#2e5b32', marginBottom: '0.2rem' }}>Start sharing early</div>
-              <div style={{ fontSize: '0.85rem', color: '#555' }}>Hosts who publish more than 4 months in advance get the best response rates.</div>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Conseil pour vos invités</div>
+              <div style={{ fontSize: '0.82rem', color: '#666' }}>Les mariés qui personnalisent leur musique et photos plusieurs mois à l'avance obtiennent le meilleur taux d'engagement de leurs proches.</div>
             </div>
           </div>
 
@@ -2815,6 +2823,8 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [photoPrompt, setPhotoPrompt] = useState('');
   const [couplePhoto1, setCouplePhoto1] = useState('');
   const [couplePhoto2, setCouplePhoto2] = useState('');
+  const [uploading1, setUploading1] = useState(false);
+  const [uploading2, setUploading2] = useState(false);
   const [photoRatio, setPhotoRatio] = useState('1:1');
   const [photoGenerating, setPhotoGenerating] = useState(false);
   const [photoTaskId, setPhotoTaskId] = useState(null);
@@ -2831,10 +2841,35 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [generatedAudio, setGeneratedAudio] = useState(null);
   const [musicError, setMusicError] = useState('');
 
-  // File Upload Helper to convert images to compressed Data URLs
-  const handleFileUpload = (e, setPhotoUrl) => {
+  // File Upload Helper to upload images directly to Supabase Storage
+  const handleFileUpload = async (e, setPhotoUrl, setUploadingState) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploadingState(true);
+    setPhotoError('');
+
+    try {
+      const fileExt = file.name ? file.name.split('.').pop().toLowerCase() : 'jpg';
+      const fileName = `couple_${Date.now()}_${Math.random().toString(36).substring(2, 6)}.${fileExt}`;
+      const filePath = `couple_photos/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+      if (!error && data) {
+        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
+        if (publicUrlData?.publicUrl) {
+          setPhotoUrl(publicUrlData.publicUrl);
+          setUploadingState(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase Storage upload error, using local compressed fallback:", err);
+    }
+
+    // Canvas Compression Fallback
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
@@ -2860,6 +2895,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         ctx.drawImage(img, 0, 0, width, height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         setPhotoUrl(dataUrl);
+        setUploadingState(false);
       };
       img.src = event.target.result;
     };
@@ -3196,50 +3232,58 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 {/* Upload #1 */}
-                <div style={{ border: '1px dashed #d0c8be', borderRadius: '12px', padding: '1rem', textAlign: 'center', backgroundColor: '#faf8f5' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo du Marié #1</div>
-                  {couplePhoto1 ? (
+                <div style={{ border: '2px dashed #d0c8be', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', backgroundColor: '#faf8f5', transition: 'all 0.2s' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo du Marié #1</div>
+                  {uploading1 ? (
+                    <div style={{ padding: '1rem', color: '#5C3A1E', fontSize: '0.82rem', fontWeight: 600 }}>
+                      📤 Transfert vers le serveur...
+                    </div>
+                  ) : couplePhoto1 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={couplePhoto1} alt="Preview 1" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }} />
-                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}>Changer la photo</button>
+                      <img src={couplePhoto1} alt="Preview 1" style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #5C3A1E', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
+                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}>❌ Supprimer la photo</button>
                     </div>
                   ) : (
                     <div>
-                      <input type="file" accept="image/*" id="upload-photo-1" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto1)} />
-                      <label htmlFor="upload-photo-1" style={{ display: 'inline-block', backgroundColor: '#fff', border: '1px solid #e0dcd7', color: '#555', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem' }}>
-                        📁 Choisir un fichier
+                      <input type="file" accept="image/*" id="upload-photo-1" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto1, setUploading1)} />
+                      <label htmlFor="upload-photo-1" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.55rem 1.1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem', boxShadow: '0 2px 8px rgba(92,58,30,0.15)' }}>
+                        📁 Transférer une Photo
                       </label>
                       <input
                         type="url"
                         value={couplePhoto1}
                         onChange={e => setCouplePhoto1(e.target.value)}
-                        placeholder="ou coller l'URL d'une image"
-                        style={{ width: '100%', padding: '0.4rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box' }}
+                        placeholder="ou coller l'URL d'une photo web"
+                        style={{ width: '100%', padding: '0.45rem 0.6rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box', outline: 'none' }}
                       />
                     </div>
                   )}
                 </div>
 
                 {/* Upload #2 */}
-                <div style={{ border: '1px dashed #d0c8be', borderRadius: '12px', padding: '1rem', textAlign: 'center', backgroundColor: '#faf8f5' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo de la Mariée #2</div>
-                  {couplePhoto2 ? (
+                <div style={{ border: '2px dashed #d0c8be', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', backgroundColor: '#faf8f5', transition: 'all 0.2s' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.5rem' }}>Photo de la Mariée #2</div>
+                  {uploading2 ? (
+                    <div style={{ padding: '1rem', color: '#5C3A1E', fontSize: '0.82rem', fontWeight: 600 }}>
+                      📤 Transfert vers le serveur...
+                    </div>
+                  ) : couplePhoto2 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={couplePhoto2} alt="Preview 2" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }} />
-                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}>Changer la photo</button>
+                      <img src={couplePhoto2} alt="Preview 2" style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #5C3A1E', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
+                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}>❌ Supprimer la photo</button>
                     </div>
                   ) : (
                     <div>
-                      <input type="file" accept="image/*" id="upload-photo-2" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto2)} />
-                      <label htmlFor="upload-photo-2" style={{ display: 'inline-block', backgroundColor: '#fff', border: '1px solid #e0dcd7', color: '#555', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem' }}>
-                        📁 Choisir un fichier
+                      <input type="file" accept="image/*" id="upload-photo-2" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, setCouplePhoto2, setUploading2)} />
+                      <label htmlFor="upload-photo-2" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.55rem 1.1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', marginBottom: '0.5rem', boxShadow: '0 2px 8px rgba(92,58,30,0.15)' }}>
+                        📁 Transférer une Photo
                       </label>
                       <input
                         type="url"
                         value={couplePhoto2}
                         onChange={e => setCouplePhoto2(e.target.value)}
-                        placeholder="ou coller l'URL d'une image"
-                        style={{ width: '100%', padding: '0.4rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box' }}
+                        placeholder="ou coller l'URL d'une photo web"
+                        style={{ width: '100%', padding: '0.45rem 0.6rem', borderRadius: '6px', border: '1px solid #e0dcd7', fontSize: '0.75rem', boxSizing: 'border-box', outline: 'none' }}
                       />
                     </div>
                   )}
