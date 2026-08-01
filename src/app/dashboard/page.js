@@ -966,8 +966,8 @@ export default function Dashboard() {
           <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Conseil pour vos invités</div>
-              <div style={{ fontSize: '0.82rem', color: '#666' }}>Les mariés qui personnalisent leur musique et photos plusieurs mois à l'avance obtiennent le meilleur taux d'engagement de leurs proches.</div>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Pro Tip for Your Guests</div>
+              <div style={{ fontSize: '0.82rem', color: '#666' }}>Couples who customize their background music and photos several months in advance see the highest guest engagement and RSVP response rates.</div>
             </div>
           </div>
 
@@ -1001,13 +1001,11 @@ export default function Dashboard() {
           {activeTab === 'tables' && (
             <TablesTab slug={clientSlug} />
           )}
+          {activeTab === 'share' && (
+            <ShareTab slug={clientSlug} />
+          )}
           {activeTab === 'contact' && (
             <ContactUsTab currentUser={currentUser} />
-          )}
-          {activeTab !== 'invitation' && activeTab !== 'aistudio' && activeTab !== 'guests' && activeTab !== 'rsvps' && activeTab !== 'tables' && activeTab !== 'contact' && (
-            <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
-              Section in development
-            </div>
           )}
 
         </div>
@@ -1929,71 +1927,65 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
         </div>
       </div>
 
-      {/* AI Magic Section (Signature Only) */}
-      <div style={sectionStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>✨ AI Magic</h2>
-          {plan !== 'Signature' && (
+      {/* AI Magic Section (Only for non-Premium / non-Signature users) */}
+      {plan !== 'Premium' && plan !== 'Signature' && (
+        <div style={sectionStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>✨ AI Magic</h2>
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#b45309', backgroundColor: '#fef3c7', padding: '0.4rem 0.8rem', borderRadius: '20px' }}>
               Signature Exclusive
             </span>
-          )}
-        </div>
+          </div>
 
-        {plan !== 'Signature' ? (
           <div style={{ backgroundColor: '#fff8f6', border: '1px solid #fce8e6', borderRadius: '12px', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ fontSize: '2rem' }}>🔒</div>
               <div>
                 <h3 style={{ fontSize: '1.05rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>Unlock AI Features</h3>
-                <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>Create custom AI videos, images, and ambient sounds.</p>
+                <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>Create custom AI photos, illustrations, and ambient sounds.</p>
               </div>
             </div>
             <button style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
               Upgrade Plan
             </button>
           </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Seedance Remix Mock */}
-            <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎬 AI Video Remix (Seedance)</h3>
-              <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>Upload two clear face photos to remix yourselves into the Hero Video.</p>
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 1 Face</label>
-                  <StyledFileInput accept="image/*" label="Upload Face 1" />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 2 Face</label>
-                  <StyledFileInput accept="image/*" label="Upload Face 2" />
-                </div>
-              </div>
-              <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>✨ Remix Video</button>
+        </div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {/* Seedance Remix Mock */}
+        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎬 AI Video Remix (Seedance)</h3>
+          <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>Upload two clear face photos to remix yourselves into the Hero Video.</p>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 1 Face</label>
+              <StyledFileInput accept="image/*" label="Upload Face 1" />
             </div>
-
-            {/* Nano Banana Image Gen Mock */}
-            <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎨 AI Image Generator (Max 10)</h3>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <input type="text" placeholder="e.g. Elegant watercolor glasses of champagne..." style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={() => alert("Simulating AI Image Gen... Image would be added to the gallery array.")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
-              </div>
-            </div>
-
-            {/* Suno Audio Gen Mock */}
-            <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎵 AI Sound Generator (Max 5)</h3>
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                <input type="text" placeholder="e.g. Soft romantic acoustic guitar..." style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={() => alert("Simulating AI Sound Gen... Audio would be set to data.sounds.intro")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
-              </div>
-              {local.sounds?.intro && (
-                <div style={{ fontSize: '0.85rem', color: '#2e7d32' }}>✅ Custom AI intro sound is active.</div>
-              )}
+            <div style={{ flex: 1 }}>
+              <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 2 Face</label>
+              <StyledFileInput accept="image/*" label="Upload Face 2" />
             </div>
           </div>
-        )}
+          <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>✨ Remix Video</button>
+        </div>
+
+        {/* Nano Banana Image Gen Mock */}
+        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎨 AI Image Generator (Max 10)</h3>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <input type="text" placeholder="e.g. Elegant watercolor glasses of champagne..." style={{ ...inputStyle, flex: 1 }} />
+            <button onClick={() => alert("Simulating AI Image Gen... Image would be added to the gallery array.")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
+          </div>
+        </div>
+
+        {/* Suno Audio Gen Mock */}
+        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎵 AI Sound Generator (Max 5)</h3>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <input type="text" placeholder="e.g. Soft romantic acoustic guitar..." style={{ ...inputStyle, flex: 1 }} />
+            <button onClick={() => alert("Simulating AI Sound Gen... Audio would be set to data.sounds.intro")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
+          </div>
+        </div>
       </div>
 
       {/* Wedding Details */}
@@ -2199,7 +2191,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -2784,6 +2776,128 @@ function TablesTab({ slug }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ShareTab({ slug }) {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/invite/${slug}` : `https://mariage-folde.vercel.app/invite/${slug}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareUrl)}`;
+
+  const handleCopyLink = () => {
+    try {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (e) { }
+  };
+
+  const cardStyle = { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header Banner */}
+      <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '16px', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#5C3A1E', margin: '0 0 0.4rem 0', fontFamily: 'var(--font-heading)' }}>↗️ Share Your Wedding Site</h2>
+        <p style={{ fontSize: '0.88rem', color: '#666', margin: 0, lineHeight: 1.5 }}>
+          Share your online wedding invitation with your friends, family, and loved ones. Send your unique link or print your customized QR code for your physical invitations.
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        {/* Card 1: Direct Link Sharing */}
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>🔗 Invitation Link</h3>
+          <p style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem' }}>Copy and send this direct web address to your guests:</p>
+
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            <input
+              type="text"
+              readOnly
+              value={shareUrl}
+              style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', backgroundColor: '#faf8f5', fontSize: '0.85rem', color: '#333', outline: 'none' }}
+            />
+            <button
+              onClick={handleCopyLink}
+              style={{
+                padding: '0.75rem 1.2rem',
+                backgroundColor: copied ? '#2e7d32' : '#5C3A1E',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {copied ? 'Copied! 📋' : 'Copy Link 📋'}
+            </button>
+          </div>
+
+          <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#444', marginBottom: '0.75rem' }}>Quick Share Options</h4>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent('You are warmly invited to our wedding! View details and RSVP online here: ' + shareUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ padding: '0.6rem 1rem', backgroundColor: '#25D366', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              💬 WhatsApp
+            </a>
+            <a
+              href={`mailto:?subject=${encodeURIComponent('Wedding Invitation')}&body=${encodeURIComponent('We would love for you to join us on our special day! View details & RSVP here: ' + shareUrl)}`}
+              style={{ padding: '0.6rem 1rem', backgroundColor: '#4285F4', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              ✉️ Email
+            </a>
+            <a
+              href={`sms:?&body=${encodeURIComponent('Check out our wedding website and RSVP here: ' + shareUrl)}`}
+              style={{ padding: '0.6rem 1rem', backgroundColor: '#34A853', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              📱 SMS
+            </a>
+          </div>
+        </div>
+
+        {/* Card 2: QR Code Card */}
+        <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)', width: '100%', textAlign: 'left' }}>📱 Printable QR Code</h3>
+          <p style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1.25rem', width: '100%', textAlign: 'left' }}>Guests can scan this QR code with their mobile phone to open your wedding site instantly:</p>
+
+          <div style={{ padding: '1rem', backgroundColor: '#fff', border: '2px solid #5C3A1E', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', marginBottom: '1.25rem' }}>
+            <img
+              src={qrCodeUrl}
+              alt="Wedding Invitation QR Code"
+              style={{ width: '160px', height: '160px', display: 'block' }}
+            />
+          </div>
+
+          <a
+            href={qrCodeUrl}
+            download={`wedding-qr-code-${slug}.png`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: '0.65rem 1.4rem',
+              backgroundColor: '#faf8f5',
+              border: '1px solid #e0dcd7',
+              color: '#5C3A1E',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem'
+            }}
+          >
+            📥 Download QR Code PNG
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
