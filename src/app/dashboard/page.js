@@ -3870,38 +3870,58 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
               </label>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                {/* URL #1 */}
-                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.4rem' }}>Photo de référence #1 (URL Web)</div>
-                  <input
-                    type="url"
-                    value={couplePhoto1}
-                    onChange={e => setCouplePhoto1(e.target.value)}
-                    placeholder="https://domaine.com/photo1.jpg"
-                    style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
-                  />
-                  {couplePhoto1 && (
-                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>✓ Lien défini</span>
-                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>Effacer</button>
+                {/* Photo #1 */}
+                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Photo de référence #1</div>
+
+                  {couplePhoto1 ? (
+                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#eee' }}>
+                      <img src={couplePhoto1} alt="Reference 1" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button type="button" onClick={() => setCouplePhoto1('')} style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.75rem', backgroundColor: '#5C3A1E', color: '#fff', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: uploading1 ? 'wait' : 'pointer', transition: 'all 0.2s', opacity: uploading1 ? 0.7 : 1 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        {uploading1 ? 'Upload...' : 'Uploader image'}
+                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, setCouplePhoto1, setUploading1)} style={{ display: 'none' }} disabled={uploading1} />
+                      </label>
+                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OU</div>
+                      <input
+                        type="url"
+                        value={couplePhoto1}
+                        onChange={e => setCouplePhoto1(e.target.value)}
+                        placeholder="Coller URL"
+                        style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
+                      />
                     </div>
                   )}
                 </div>
 
-                {/* URL #2 */}
-                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.4rem' }}>Photo de référence #2 (URL Web)</div>
-                  <input
-                    type="url"
-                    value={couplePhoto2}
-                    onChange={e => setCouplePhoto2(e.target.value)}
-                    placeholder="https://domaine.com/photo2.jpg"
-                    style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
-                  />
-                  {couplePhoto2 && (
-                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>✓ Lien défini</span>
-                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>Effacer</button>
+                {/* Photo #2 */}
+                <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Photo de référence #2</div>
+
+                  {couplePhoto2 ? (
+                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#eee' }}>
+                      <img src={couplePhoto2} alt="Reference 2" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button type="button" onClick={() => setCouplePhoto2('')} style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.75rem', backgroundColor: '#5C3A1E', color: '#fff', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: uploading2 ? 'wait' : 'pointer', transition: 'all 0.2s', opacity: uploading2 ? 0.7 : 1 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        {uploading2 ? 'Upload...' : 'Uploader image'}
+                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, setCouplePhoto2, setUploading2)} style={{ display: 'none' }} disabled={uploading2} />
+                      </label>
+                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OU</div>
+                      <input
+                        type="url"
+                        value={couplePhoto2}
+                        onChange={e => setCouplePhoto2(e.target.value)}
+                        placeholder="Coller URL"
+                        style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
+                      />
                     </div>
                   )}
                 </div>
