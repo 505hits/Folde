@@ -616,7 +616,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 className={styles.envelopeVideo}
                 muted
                 playsInline
-                preload="metadata"
+                preload="none"
                 onEnded={handleVideoEnded}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -648,7 +648,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload={heroVideoActive ? "auto" : "none"}
                 className={styles.heroVideo}
                 src={heroSrc ? heroSrc.replace(/#t=.*$/, '') : ''}
               />

@@ -106,7 +106,7 @@ export default function TemplateHeroPreview({
       } else {
         if (!video.src || !video.src.includes(srcBase)) {
           video.src = firstFrameSrc;
-          video.preload = "metadata";
+          video.preload = "none";
           if (typeof video.load === 'function') video.load();
         }
       }
@@ -171,13 +171,10 @@ export default function TemplateHeroPreview({
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
         />
       ) : !videoActive ? (
-        <video
-          ref={heroVideoRef}
-          src={getFirstFrameVideoSrc(videoSrc)}
-          poster={heroPoster}
-          preload="metadata"
-          muted
-          playsInline
+        <img
+          src={heroPoster}
+          alt="Hero"
+          loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       ) : (
