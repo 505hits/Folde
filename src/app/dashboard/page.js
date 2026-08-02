@@ -1450,6 +1450,14 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               alt="Preview"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
+          ) : isVideo ? (
+            <video
+              src={url.includes('#t=') ? url : `${url}#t=0.001`}
+              preload="metadata"
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+            />
           ) : (
             <div style={{ width: '100%', height: '100%', backgroundColor: fallbackColor, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
               <span style={{ fontSize: '1.2rem' }}>🎬</span>
@@ -3321,6 +3329,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [photoGenerating, setPhotoGenerating] = useState(false);
   const [photoTaskId, setPhotoTaskId] = useState(null);
   const [photoStatus, setPhotoStatus] = useState('');
+  const [photoError, setPhotoError] = useState('');
   const [generatedPhotos, setGeneratedPhotos] = useState(() => {
     if (typeof window !== 'undefined' && slug) {
       try {
