@@ -44,6 +44,7 @@ export default function Templates() {
   const [filter, setFilter] = useState('All');
   const [selectedId, setSelectedId] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
+  const [playingTemplate, setPlayingTemplate] = useState(null);
 
   const PreviewIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
   const SelectIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>;
@@ -55,11 +56,9 @@ export default function Templates() {
     : filter === 'Popular' ? templates.filter(t => t.popular)
       : templates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
 
-  const handleContinue = () => {
-    if (selectedId) {
-      localStorage.setItem('selectedTemplate', selectedId);
-      router.push('/checkout');
-    }
+  const handleSelectAndContinue = (id) => {
+    localStorage.setItem('selectedTemplate', id);
+    router.push('/checkout');
   };
 
   const openPreview = (e, t) => {
@@ -128,14 +127,14 @@ export default function Templates() {
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 2rem 6rem' }}>
         <div className="tpl-grid">
           {filtered.map(t => (
-            <div key={t.id} className="tpl-card" onClick={() => setSelectedId(t.id)} style={{
-              borderColor: selectedId === t.id ? '#5C3A1E' : 'rgba(0,0,0,0.05)',
-              borderWidth: selectedId === t.id ? '2px' : '1px'
+            <div key={t.id} className="tpl-card" onClick={() => handleSelectAndContinue(t.id)} style={{
+              borderColor: 'rgba(0,0,0,0.05)',
+              borderWidth: '1px'
             }}>
               <div className="tpl-img-wrap">
                 {t.popular && <div className="tpl-popular">⭐ POPULAR</div>}
                 <button className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
-                <div className="tpl-phone">
+                <div className="tpl-phone" onClick={(e) => { e.stopPropagation(); setPlayingTemplate(t.id); }}>
                   <div className="tpl-notch"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden', WebkitMaskImage: '-webkit-radial-gradient(white, black)', maskImage: 'radial-gradient(white, black)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
                     <TemplateHeroPreview
@@ -146,6 +145,7 @@ export default function Templates() {
                       showEnvelope={!!t.envelope}
                       isImage={t.isImage || false}
                       previewImage={t.image}
+                      active={playingTemplate === t.id}
                     />
                   </div>
                 </div>
@@ -158,11 +158,11 @@ export default function Templates() {
                 <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.5 }}>{t.desc}</p>
               </div>
               <div className="tpl-actions">
-                <button onClick={(e) => openPreview(e, t)}>
+                <button onClick={(e) => { e.stopPropagation(); openPreview(e, t); }}>
                   <PreviewIcon /> Preview
                 </button>
-                <button style={{ color: selectedId === t.id ? '#5C3A1E' : '#555', fontWeight: selectedId === t.id ? 700 : 500 }}>
-                  <SelectIcon /> {selectedId === t.id ? 'Selected' : 'Select'}
+                <button onClick={(e) => { e.stopPropagation(); handleSelectAndContinue(t.id); }} style={{ color: '#555', fontWeight: 500 }}>
+                  <SelectIcon /> Select
                 </button>
               </div>
             </div>
@@ -170,26 +170,7 @@ export default function Templates() {
         </div>
       </div>
 
-      {/* Sticky bottom CTA for selection */}
-      <div style={{
-        position: 'fixed', bottom: '1.8rem', left: '50%', zIndex: 999,
-        transform: `translateX(-50%) ${selectedId ? 'translateY(0) scale(1)' : 'translateY(150%) scale(0.9)'}`,
-        opacity: selectedId ? 1 : 0,
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        pointerEvents: selectedId ? 'auto' : 'none',
-        maxWidth: 'calc(100vw - 2rem)'
-      }}>
-        <button onClick={handleContinue} style={{
-          backgroundColor: '#5C3A1E', color: '#fff', border: '1px solid rgba(255,255,255,0.15)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
-          padding: '0.9rem 1.6rem', borderRadius: '40px', cursor: 'pointer',
-          boxShadow: '0 10px 32px rgba(92, 58, 30, 0.38), 0 4px 12px rgba(0,0,0,0.12)',
-          fontWeight: 600, fontSize: '0.95rem', fontFamily: 'inherit',
-          letterSpacing: '0.3px', whiteSpace: 'nowrap'
-        }}>
-          Customize Your Invitation →
-        </button>
-      </div>
+
 
     </div>
   );
