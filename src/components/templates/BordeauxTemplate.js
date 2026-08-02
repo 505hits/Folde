@@ -616,7 +616,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 className={styles.envelopeVideo}
                 muted
                 playsInline
-                preload="none"
+                preload="metadata"
                 onEnded={handleVideoEnded}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -635,22 +635,22 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           {(() => {
             const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
             const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
-            const heroPoster = getFirstFramePoster(heroSrc) || getPosterForUrl(heroSrc, '/images/bordeaux.png');
 
-            if (isHeroImage || !heroVideoActive) {
+            if (isHeroImage) {
+              const heroPoster = heroSrc.includes('bordeaux.png') ? '/images/bordeaux.png' : heroSrc;
               return <img src={heroPoster} alt="Hero" className={styles.heroVideo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
             }
 
             return (
               <video
                 ref={heroVideoRef}
-                autoPlay
+                autoPlay={heroVideoActive}
                 loop
                 muted
                 playsInline
-                preload={heroVideoActive ? "auto" : "none"}
+                preload={heroVideoActive ? "auto" : "metadata"}
                 className={styles.heroVideo}
-                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') : ''}
+                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') + (heroVideoActive ? '' : '#t=0.001') : ''}
               />
             );
           })()}
