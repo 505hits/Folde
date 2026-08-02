@@ -84,7 +84,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision } = useDatabase();
+  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision, publishOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
@@ -1012,16 +1012,19 @@ export default function Dashboard() {
             </h1>
           </div>
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <a href={`/invite/${clientSlug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fff', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(92,58,30,0.02)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#faf8f5'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}>
+            <a href={`/invite/${clientSlug}?preview=true`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fff', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(92,58,30,0.02)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#faf8f5'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}>
               <span>📱</span> Live Preview Website
             </a>
             <button
-              onClick={() => {
+              onClick={async () => {
                 setIsPublishing(true);
+                if (publishOrderDetails && clientSlug) {
+                  await publishOrderDetails(clientSlug);
+                }
                 setTimeout(() => {
                   setIsPublishing(false);
                   setShowPublishModal(true);
-                }, 1500);
+                }, 1000);
               }}
               className="premium-grad-button"
               style={{ padding: '0.65rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}

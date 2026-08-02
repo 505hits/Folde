@@ -365,6 +365,23 @@ export function DatabaseProvider({ children }) {
     }
   };
 
+  const publishOrderDetails = async (slug) => {
+    // Takes the current draft details (eventInfo[slug]) and saves them into a nested "publishedData" object.
+    setEventInfo(prev => {
+      const currentDraft = prev[slug] || {};
+      const publishedData = { ...currentDraft };
+      delete publishedData.publishedData; // Ensure no infinite nesting
+      const updatedDetails = { ...currentDraft, publishedData };
+
+      // Update supabase entirely with the new structure
+      supabase.from('orders').update({ details: updatedDetails }).eq('slug', slug).catch(err => {
+        console.warn('publishOrderDetails Supabase error:', err);
+      });
+
+      return { ...prev, [slug]: updatedDetails };
+    });
+  };
+
   // ============ GUESTS (Supabase + local fallback) ============
   const [guests, setGuests] = useState({
     "emma-et-lucas": [
@@ -626,7 +643,7 @@ export function DatabaseProvider({ children }) {
       // Auth
       currentUser, users, register, login, loginWithGoogle, loginWithMagicLink, logout,
       // Orders
-      orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, fetchOrders,
+      orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, publishOrderDetails, fetchOrders,
       // Guests
       guests, addGuest, fetchGuests, deleteGuest,
       // Event Info
