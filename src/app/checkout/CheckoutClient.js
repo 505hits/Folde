@@ -392,6 +392,14 @@ export default function CheckoutClient() {
   const handleNextStep = async () => {
     setAuthError('');
     if (step === 1) {
+      if (!selectedEnvelope) {
+        setAuthError('Please select an envelope animation to continue.');
+        return;
+      }
+      if (!selectedHeroVideo) {
+        setAuthError('Please select a hero theme video to continue.');
+        return;
+      }
       if (!account.name || !account.partnerName) {
         setAuthError('Please enter both names to continue.');
         return;
@@ -1166,8 +1174,6 @@ export default function CheckoutClient() {
                   </div>
                 </div>
 
-                {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '0.75rem', textAlign: 'center', padding: '0.75rem', backgroundColor: '#fef2f2', borderRadius: '10px' }}>{authError}</div>}
-
                 {/* Trust indicators */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
                   {['Unlimited guests', 'RSVP included', 'Live in 24h'].map(t => (
@@ -1580,6 +1586,11 @@ export default function CheckoutClient() {
       {step <= 3 && (
         <div className="checkout-bottom-bar" style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
           <div style={{ height: '20px', background: 'linear-gradient(to top, #faf8f5, transparent)', pointerEvents: 'none' }}></div>
+          {authError && (
+            <div style={{ position: 'absolute', bottom: 'calc(100% - 10px)', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#dc2626', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '30px', fontSize: '0.85rem', fontWeight: 600, boxShadow: '0 4px 16px rgba(220, 38, 38, 0.4)', zIndex: 101, textAlign: 'center', maxWidth: '90vw', whiteSpace: 'nowrap' }}>
+              {authError}
+            </div>
+          )}
           <div className="checkout-bottom-bar-inner">
             <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '600px' }}>
               <button onClick={handleBack} className="checkout-back-btn" aria-label="Back">←</button>
