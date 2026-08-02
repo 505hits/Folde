@@ -2196,42 +2196,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        {/* Seedance Remix Mock */}
-        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎬 AI Video Remix (Seedance)</h3>
-          <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>Upload two clear face photos to remix yourselves into the Hero Video.</p>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 1 Face</label>
-              <StyledFileInput accept="image/*" label="Upload Face 1" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.5rem' }}>Partner 2 Face</label>
-              <StyledFileInput accept="image/*" label="Upload Face 2" />
-            </div>
-          </div>
-          <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>✨ Remix Video</button>
-        </div>
 
-        {/* Nano Banana Image Gen Mock */}
-        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎨 AI Image Generator (Max 10)</h3>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <input type="text" placeholder="e.g. Elegant watercolor glasses of champagne..." style={{ ...inputStyle, flex: 1 }} />
-            <button onClick={() => alert("Simulating AI Image Gen... Image would be added to the gallery array.")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
-          </div>
-        </div>
-
-        {/* Suno Audio Gen Mock */}
-        <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>🎵 AI Sound Generator (Max 5)</h3>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <input type="text" placeholder="e.g. Soft romantic acoustic guitar..." style={{ ...inputStyle, flex: 1 }} />
-            <button onClick={() => alert("Simulating AI Sound Gen... Audio would be set to data.sounds.intro")} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#1a1a1a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Generate</button>
-          </div>
-        </div>
-      </div>
 
       {/* Wedding Details */}
       <div style={sectionStyle}>
@@ -3802,7 +3767,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             gap: '0.5rem'
           }}
         >
-          <span>🎨 Photo & Illustration Studio</span>
+          <span>🎨 AI Image Generator</span>
           <span style={{ backgroundColor: activeSubTab === 'photo' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
             {Math.max(0, 5 - photoCreditsUsed)} / 5 creations
           </span>
@@ -3823,10 +3788,28 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             gap: '0.5rem'
           }}
         >
-          <span>🎵 Musical Ambiance</span>
+          <span>🎵 AI Sound Generator</span>
           <span style={{ backgroundColor: activeSubTab === 'music' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
             {Math.max(0, 5 - musicCreditsUsed)} / 5 creations
           </span>
+        </button>
+        <button
+          onClick={() => setActiveSubTab('video')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '20px',
+            border: 'none',
+            backgroundColor: activeSubTab === 'video' ? '#5C3A1E' : '#f0ede9',
+            color: activeSubTab === 'video' ? '#fff' : '#555',
+            fontWeight: 600,
+            fontSize: '0.88rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <span>🎬 AI Video Remix</span>
         </button>
       </div>
 
@@ -4149,6 +4132,35 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB 3: VIDEO IA */}
+      {activeSubTab === 'video' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={cardStyle}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>🎬 AI Video Remix (Seedance)</h3>
+            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.25rem' }}>Upload two clear face photos to remix yourselves into the Hero Video.</p>
+
+            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 200px' }}>
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem', color: '#1a1a1a' }}>Partner 1 Face</label>
+                <div style={{ padding: '1rem', border: '1px dashed #e0dcd7', borderRadius: '12px', textAlign: 'center', backgroundColor: '#faf8f5' }}>
+                  <StyledFileInput accept="image/*" label="Upload Face 1" />
+                </div>
+              </div>
+              <div style={{ flex: '1 1 200px' }}>
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem', color: '#1a1a1a' }}>Partner 2 Face</label>
+                <div style={{ padding: '1rem', border: '1px dashed #e0dcd7', borderRadius: '12px', textAlign: 'center', backgroundColor: '#faf8f5' }}>
+                  <StyledFileInput accept="image/*" label="Upload Face 2" />
+                </div>
+              </div>
+            </div>
+
+            <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.75rem 1.8rem', backgroundColor: '#5C3A1E', color: 'white', border: 'none', borderRadius: '30px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+              ✨ Remix Video
+            </button>
+          </div>
         </div>
       )}
     </div>
