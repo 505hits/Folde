@@ -776,6 +776,12 @@ export default function CheckoutClient() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+          -webkit-backface-visibility: hidden;
+          -moz-backface-visibility: hidden;
+          backface-visibility: hidden;
+          transform: translateZ(0);
         }
         .preview-phone-screen::-webkit-scrollbar {
           display: none;

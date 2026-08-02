@@ -68,6 +68,9 @@ export default function TemplateHeroPreview({
 
     let hls;
     const cleanEnvelopeSrc = envelopeSrc.replace(/#t=.*$/, '');
+    const firstFrameSrc = getFirstFrameVideoSrc(envelopeSrc);
+    // basic check avoiding fully qualified URL mismatch issues
+    const srcBase = cleanEnvelopeSrc.split('?')[0].split('#')[0].split('/').pop();
 
     if (videoActive && showEnvelope && !envelopeDismissed) {
       if (cleanEnvelopeSrc.endsWith('.m3u8') && Hls.isSupported()) {
@@ -78,9 +81,11 @@ export default function TemplateHeroPreview({
           video.play().catch(e => console.log("HLS play on click error:", e));
         });
       } else {
-        video.src = cleanEnvelopeSrc;
-        video.preload = "auto";
-        if (typeof video.load === 'function') video.load();
+        if (!video.src || !video.src.includes(srcBase)) {
+          video.src = firstFrameSrc;
+          video.preload = "auto";
+          if (typeof video.load === 'function') video.load();
+        }
         video.play().catch(e => console.log("Video play on click error:", e));
       }
 
@@ -99,9 +104,11 @@ export default function TemplateHeroPreview({
           hls.attachMedia(video);
         }
       } else {
-        video.src = getFirstFrameVideoSrc(envelopeSrc);
-        video.preload = "metadata";
-        if (typeof video.load === 'function') video.load();
+        if (!video.src || !video.src.includes(srcBase)) {
+          video.src = firstFrameSrc;
+          video.preload = "metadata";
+          if (typeof video.load === 'function') video.load();
+        }
       }
       return () => {
         if (hls) hls.destroy();
@@ -111,9 +118,7 @@ export default function TemplateHeroPreview({
 
   const handleVideoEnded = () => {
     if (!envelopeOpen && !videoActive) return;
-    setTimeout(() => {
-      setEnvelopeDismissed(true);
-    }, 2000);
+    setEnvelopeDismissed(true);
   };
 
   return (

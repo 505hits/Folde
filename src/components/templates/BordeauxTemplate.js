@@ -553,11 +553,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
   const handleVideoEnded = () => {
     if (!envelopeOpen && !envelopeVideoActive) return;
-    // Hold the opened envelope on screen for 2.5s so the user can see the full reveal before transitioning to hero
-    setTimeout(() => {
-      setEnvelopeDismissed(true);
-      if (onEnvelopeDismissed) onEnvelopeDismissed();
-    }, 2500);
+    setEnvelopeDismissed(true);
+    if (onEnvelopeDismissed) onEnvelopeDismissed();
   };
 
   const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
