@@ -19,6 +19,41 @@ export const getFirstFrameVideoSrc = (url) => {
   return `${url}#t=0.001`;
 };
 
+const LazyVideo = ({ src, poster, style, className, muted, playsInline, preload = "metadata" }) => {
+  const [inView, setInView] = React.useState(false);
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '300px' });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} style={{ width: '100%', height: '100%' }}>
+      {inView ? (
+        <video
+          src={src}
+          poster={poster}
+          muted={muted}
+          playsInline={playsInline}
+          preload={preload}
+          style={style}
+          className={className}
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />
+      )}
+    </div>
+  );
+};
+
 export default function TemplateHeroPreview({
   partner1 = "Emma",
   partner2 = "Liam",
@@ -171,10 +206,12 @@ export default function TemplateHeroPreview({
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
         />
       ) : !videoActive ? (
-        <img
-          src={heroPoster}
-          alt="Hero"
-          loading="lazy"
+        <LazyVideo
+          src={getFirstFrameVideoSrc(videoSrc)}
+          poster={heroPoster}
+          preload="metadata"
+          muted
+          playsInline
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       ) : (
