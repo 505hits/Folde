@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
@@ -178,6 +178,39 @@ const selectStyle = {
   paddingRight: '2.5rem',
 };
 
+const LazyThumbnail = ({ src }) => {
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '300px' });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} style={{ width: '100%', height: '100%' }}>
+      {inView ? (
+        <video
+          src={src}
+          preload="metadata"
+          muted
+          playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#222' }} />
+      )}
+    </div>
+  );
+};
+
 const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
   if (!url) {
     return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
@@ -190,15 +223,7 @@ const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
     return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
   }
   const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
-  return (
-    <video
-      src={videoSrc}
-      preload="metadata"
-      muted
-      playsInline
-      style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
-    />
-  );
+  return <LazyThumbnail src={videoSrc} />;
 };
 
 const labelStyle = {
