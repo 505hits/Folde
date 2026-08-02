@@ -13,6 +13,10 @@ const zenOldMincho = Zen_Old_Mincho({
 export const metadata = {
   title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
   description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide. Book your consultation.",
+  keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant invitations Paris", "destination wedding websites", "FOLDÈ Design"],
+  icons: {
+    icon: '/icon.png',
+  },
   openGraph: {
     title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
     description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",

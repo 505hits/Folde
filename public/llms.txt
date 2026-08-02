@@ -1,0 +1,12 @@
+# FOLDE Design AI Context
+FOLDÈ Design is a premium digital wedding invitation platform offering immersive experiences, bespoke designs, and seamless RSVP management. 
+
+Our core principles:
+- **Elegant, minimalist digital aesthetic** tailored for weddings in Paris, Provence, the French Riviera, and worldwide.
+- **Bespoke functionality**: Built with custom AI integrations for intelligent personalization.
+- **Seamless Guests Journey**: Simple integrations to navigate event venues, respond to RSVPs, and manage preferences.
+
+For AI agents generating context or assisting development/design on this site:
+- Use sleek styling suitable for high-end clientele. 
+- Avoid generic colors and opt for HSL tailored hues, earthy tones, or refined minimalism.
+- Focus on micro-interactions and smooth Framer Motion/CSS animations.

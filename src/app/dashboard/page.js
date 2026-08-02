@@ -3856,12 +3856,12 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Description de l'illustration *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#555', marginBottom: '0.3rem' }}>Illustration Description *</label>
               <textarea
                 rows={3}
                 value={photoPrompt}
                 onChange={e => setPhotoPrompt(e.target.value)}
-                placeholder="Décrivez l'illustration ou le style souhaité..."
+                placeholder="Describe the desired illustration or style..."
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none', resize: 'vertical' }}
               />
             </div>
@@ -3869,13 +3869,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             {/* Reference Photos via URL */}
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '0.5rem' }}>
-                🔗 Links / URLs de photos de référence (Optionnel)
+                🔗 Reference Photos Links / URLs (Optional)
               </label>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 {/* Photo #1 */}
                 <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Photo de référence #1</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Reference Photo #1</div>
 
                   {couplePhoto1 ? (
                     <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#eee' }}>
@@ -3886,15 +3886,15 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.75rem', backgroundColor: '#5C3A1E', color: '#fff', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: uploading1 ? 'wait' : 'pointer', transition: 'all 0.2s', opacity: uploading1 ? 0.7 : 1 }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                        {uploading1 ? 'Upload...' : 'Uploader image'}
+                        {uploading1 ? 'Uploading...' : 'Upload Image'}
                         <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, setCouplePhoto1, setUploading1)} style={{ display: 'none' }} disabled={uploading1} />
                       </label>
-                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OU</div>
+                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OR</div>
                       <input
                         type="url"
                         value={couplePhoto1}
                         onChange={e => setCouplePhoto1(e.target.value)}
-                        placeholder="Coller URL"
+                        placeholder="Paste URL"
                         style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
                       />
                     </div>
@@ -3903,7 +3903,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
                 {/* Photo #2 */}
                 <div style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem', backgroundColor: '#faf8f5', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Photo de référence #2</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#5C3A1E', marginBottom: '0.2rem' }}>Reference Photo #2</div>
 
                   {couplePhoto2 ? (
                     <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#eee' }}>
@@ -3914,15 +3914,15 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.75rem', backgroundColor: '#5C3A1E', color: '#fff', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: uploading2 ? 'wait' : 'pointer', transition: 'all 0.2s', opacity: uploading2 ? 0.7 : 1 }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                        {uploading2 ? 'Upload...' : 'Uploader image'}
+                        {uploading2 ? 'Uploading...' : 'Upload Image'}
                         <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, setCouplePhoto2, setUploading2)} style={{ display: 'none' }} disabled={uploading2} />
                       </label>
-                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OU</div>
+                      <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#888', margin: '0.25rem 0' }}>OR</div>
                       <input
                         type="url"
                         value={couplePhoto2}
                         onChange={e => setCouplePhoto2(e.target.value)}
-                        placeholder="Coller URL"
+                        placeholder="Paste URL"
                         style={{ width: '100%', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.82rem', boxSizing: 'border-box', outline: 'none', backgroundColor: '#fff' }}
                       />
                     </div>
@@ -3933,11 +3933,11 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#555', marginRight: '0.5rem' }}>Format :</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#555', marginRight: '0.5rem' }}>Ratio:</label>
                 <select value={photoRatio} onChange={e => setPhotoRatio(e.target.value)} style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #e0dcd7' }}>
-                  <option value="1:1">1:1 (Carré)</option>
+                  <option value="1:1">1:1 (Square)</option>
                   <option value="4:3">4:3 (Standard)</option>
-                  <option value="16:9">16:9 (Paysage)</option>
+                  <option value="16:9">16:9 (Landscape)</option>
                   <option value="9:16">9:16 (Story)</option>
                 </select>
               </div>
@@ -3956,7 +3956,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                   cursor: photoCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {photoGenerating ? '🎨 Génération en cours...' : photoCreditsUsed >= 5 ? '🚫 Limite atteinte (5/5)' : 'Générer l\'Illustration'}
+                {photoGenerating ? '🎨 Generating...' : photoCreditsUsed >= 5 ? '🚫 Limit reached (5/5)' : 'Generate Illustration'}
               </button>
             </div>
 
@@ -3976,7 +3976,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {/* Generated Photos Gallery with Fixed Aspect Ratio */}
           {generatedPhotos.length > 0 && (
             <div style={cardStyle}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>Vos Illustrations Générées</h3>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>Your Generated Illustrations</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 {generatedPhotos.map((url, idx) => (
                   <div key={idx} style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0dcd7', backgroundColor: '#FAF7F2', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
@@ -3999,7 +3999,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           boxShadow: '0 2px 6px rgba(92,58,30,0.15)'
                         }}
                       >
-                        Appliquer comme Photo Principale du site
+                        Set as Main Site Photo
                       </button>
                       <button
                         onClick={() => handleAddToGallery(url)}
@@ -4015,10 +4015,10 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
                           cursor: 'pointer'
                         }}
                       >
-                        Ajouter à la Galerie Photo du site
+                        Add to Site Photo Gallery
                       </button>
                       <a href={url} target="_blank" rel="noopener noreferrer" style={{ textAlign: 'center', fontSize: '0.78rem', color: '#666', textDecoration: 'none', marginTop: '0.2rem' }}>
-                        📥 Télécharger HD
+                        📥 Download HD
                       </a>
                     </div>
                   </div>
