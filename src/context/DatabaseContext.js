@@ -366,20 +366,24 @@ export function DatabaseProvider({ children }) {
   };
 
   const publishOrderDetails = async (slug) => {
-    // Takes the current draft details (eventInfo[slug]) and saves them into a nested "publishedData" object.
+    let updatedDetails = null;
+
     setEventInfo(prev => {
       const currentDraft = prev[slug] || {};
       const publishedData = { ...currentDraft };
       delete publishedData.publishedData; // Ensure no infinite nesting
-      const updatedDetails = { ...currentDraft, publishedData };
-
-      // Update supabase entirely with the new structure
-      supabase.from('orders').update({ details: updatedDetails }).eq('slug', slug).catch(err => {
-        console.warn('publishOrderDetails Supabase error:', err);
-      });
+      updatedDetails = { ...currentDraft, publishedData };
 
       return { ...prev, [slug]: updatedDetails };
     });
+
+    if (updatedDetails) {
+      try {
+        await supabase.from('orders').update({ details: updatedDetails }).eq('slug', slug);
+      } catch (err) {
+        console.warn('publishOrderDetails Supabase error:', err);
+      }
+    }
   };
 
   // ============ GUESTS (Supabase + local fallback) ============
