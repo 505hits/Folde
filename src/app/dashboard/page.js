@@ -1038,7 +1038,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div style={{ padding: '1.5rem', maxWidth: '850px', width: '100%', margin: '0 auto' }}>
+        <div style={{ padding: '1.5rem', maxWidth: '850px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 
           <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>

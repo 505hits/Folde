@@ -616,7 +616,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 className={styles.envelopeVideo}
                 muted
                 playsInline
-                preload="metadata"
+                preload={envelopeVideoActive ? "auto" : "none"}
                 onEnded={handleVideoEnded}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -1013,28 +1013,14 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
                 <AnimatedSection type="fade">
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Which dish do you prefer? *</label>
-                    <div className={styles.selectWrapper}>
-                      <select
-                        className={styles.formSelect}
-                        value={rsvpMeal}
-                        onChange={(e) => setRsvpMeal(e.target.value)}
-                      >
-                        <option value="" disabled hidden>Please select</option>
-                        {menu && menu.length > 0 ? (
-                          menu.map((m, idx) => (
-                            <option key={idx} value={m.dish}>{m.course ? `${m.course}: ` : ''}{m.dish}</option>
-                          ))
-                        ) : (
-                          <>
-                            <option value="Meat">Meat Option</option>
-                            <option value="Fish">Fish Option</option>
-                            <option value="Vegetarian">Vegetarian Option</option>
-                          </>
-                        )}
-                      </select>
-                      <ChevronIcon />
-                    </div>
+                    <label className={styles.formLabel}>Allergies & Food Intolerances</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. None, Peanuts, Vegan..."
+                      className={styles.formInput}
+                      value={rsvpMeal}
+                      onChange={(e) => setRsvpMeal(e.target.value)}
+                    />
                   </div>
                 </AnimatedSection>
 
