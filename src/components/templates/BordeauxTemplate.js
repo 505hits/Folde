@@ -617,6 +617,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 muted
                 playsInline
                 preload={envelopeVideoActive ? "auto" : "none"}
+                poster={getPosterForUrl(data?.videos?.envelope || "/videos/bordeaux.mp4", "/images/bordeaux.png")}
                 onEnded={handleVideoEnded}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -648,9 +649,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 loop
                 muted
                 playsInline
-                preload={heroVideoActive ? "auto" : "metadata"}
+                preload={heroVideoActive ? "auto" : "none"}
+                poster={getPosterForUrl(heroSrc)}
                 className={styles.heroVideo}
-                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') + (heroVideoActive ? '' : '#t=0.001') : ''}
+                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') + (heroVideoActive ? '' : '#t=0.1') : ''}
               />
             );
           })()}

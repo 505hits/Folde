@@ -1424,6 +1424,20 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       }
     };
 
+    const derivePoster = (vidUrl) => {
+      if (!vidUrl) return undefined;
+      if (vidUrl.includes('cloudflarestream')) return vidUrl.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
+      if (vidUrl.includes('bordeaux')) return '/images/bordeaux.png';
+      if (vidUrl.includes('champagne') || vidUrl.includes('golden')) return '/images/champagne.png';
+      if (vidUrl.includes('ivory')) return '/images/ivory.png';
+      if (vidUrl.includes('sage') || vidUrl.includes('olive')) return '/images/sage.png';
+      if (vidUrl.includes('terracotta') || vidUrl.includes('amber')) return '/images/terracotta.png';
+      if (vidUrl.includes('chocolate') || vidUrl.includes('mocha')) return '/images/chocolate.png';
+      if (vidUrl.includes('royalbordeaux') || vidUrl.includes('crimson')) return '/images/royalbordeaux.png';
+      if (vidUrl.includes('royalblue') || vidUrl.includes('sapphire')) return '/images/royalblue.png';
+      return undefined;
+    };
+
     return (
       <div
         onMouseEnter={handleMouseEnter}
@@ -1455,8 +1469,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             />
           ) : isVideo ? (
             <video
-              src={url.includes('#t=') ? url : `${url}#t=0.001`}
-              preload="metadata"
+              src={url.includes('#t=') ? url : `${url}#t=0.1`}
+              preload="auto"
+              poster={derivePoster(url)}
               muted
               playsInline
               style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
@@ -2172,30 +2187,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
         </div>
       </div>
 
-      {/* AI Magic Section (Only for non-Premium / non-Signature users) */}
-      {plan !== 'Premium' && plan !== 'Signature' && (
-        <div style={sectionStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>✨ AI Magic</h2>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#b45309', backgroundColor: '#fef3c7', padding: '0.4rem 0.8rem', borderRadius: '20px' }}>
-              Signature Exclusive
-            </span>
-          </div>
-
-          <div style={{ backgroundColor: '#fff8f6', border: '1px solid #fce8e6', borderRadius: '12px', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ fontSize: '2rem' }}>🔒</div>
-              <div>
-                <h3 style={{ fontSize: '1.05rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>Unlock AI Features</h3>
-                <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>Create custom AI photos, illustrations, and ambient sounds.</p>
-              </div>
-            </div>
-            <button style={{ padding: '0.6rem 1.5rem', borderRadius: '30px', border: 'none', backgroundColor: '#5C3A1E', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              Upgrade Plan
-            </button>
-          </div>
-        </div>
-      )}
 
 
       {/* Wedding Details */}
