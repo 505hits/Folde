@@ -616,8 +616,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 className={styles.envelopeVideo}
                 muted
                 playsInline
-                preload={envelopeVideoActive ? "auto" : "none"}
-                poster={getPosterForUrl(data?.videos?.envelope || "/videos/bordeaux.mp4", "/images/bordeaux.png")}
+                preload={envelopeVideoActive ? "auto" : "metadata"}
+                poster={getFirstFramePoster(data?.videos?.envelope || "/videos/bordeaux.mp4")}
+                src={(data?.videos?.envelope || "/videos/bordeaux.mp4").replace(/#t=.*$/, '') + '#t=0.001'}
                 onEnded={handleVideoEnded}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -649,10 +650,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 loop
                 muted
                 playsInline
-                preload={heroVideoActive ? "auto" : "none"}
-                poster={getPosterForUrl(heroSrc)}
+                preload={heroVideoActive ? "auto" : "metadata"}
+                poster={getFirstFramePoster(heroSrc)}
                 className={styles.heroVideo}
-                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') + (heroVideoActive ? '' : '#t=0.1') : ''}
+                src={heroSrc ? heroSrc.replace(/#t=.*$/, '') + '#t=0.001' : ''}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             );
           })()}
@@ -920,10 +922,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 <AnimatedSection type="fade">
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Prénom (First name) *</label>
+                      <label className={styles.formLabel}>First name *</label>
                       <input
                         type="text"
-                        placeholder="Prénom"
+                        placeholder="First name"
                         className={styles.formInput}
                         value={rsvpFirstName}
                         onChange={(e) => setRsvpFirstName(e.target.value)}
@@ -931,10 +933,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Nom (Last name) *</label>
+                      <label className={styles.formLabel}>Last name *</label>
                       <input
                         type="text"
-                        placeholder="Nom"
+                        placeholder="Last name"
                         className={styles.formInput}
                         value={rsvpLastName}
                         onChange={(e) => setRsvpLastName(e.target.value)}

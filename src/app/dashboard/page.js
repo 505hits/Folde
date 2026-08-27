@@ -1194,8 +1194,8 @@ export default function Dashboard() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div style={{ backgroundColor: '#fff', padding: '3rem', borderRadius: '24px', maxWidth: '450px', width: '90%', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-            <h2 style={{ fontSize: '1.8rem', color: '#1a1a1a', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem' }}>Bravo !</h2>
-            <p style={{ color: '#666', marginBottom: '2rem' }}>Votre site de mariage est maintenant public et prêt à être partagé avec vos invités.</p>
+            <h2 style={{ fontSize: '1.8rem', color: '#1a1a1a', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem' }}>Congratulations!</h2>
+            <p style={{ color: '#666', marginBottom: '2rem' }}>Your wedding website is now public and ready to be shared with your guests.</p>
 
             <div style={{ backgroundColor: '#f5f5f5', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', border: '1px solid #e0e0e0' }}>
               <span style={{ fontSize: '0.9rem', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1204,17 +1204,17 @@ export default function Dashboard() {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
-                  alert("Lien copié dans le presse-papier !");
+                  alert("Link copied to clipboard!");
                 }}
                 style={{ background: 'none', border: 'none', color: '#7b906f', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
-                Copier
+                Copy
               </button>
             </div>
 
             <button
               onClick={() => setShowPublishModal(false)}
               style={{ width: '100%', padding: '1rem', backgroundColor: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>
-              Continuer à modifier
+              Continue editing
             </button>
           </div>
         </div>
@@ -1403,101 +1403,53 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     }
   };
 
-  function HoverVideoThumbnail({ url, fallbackColor = '#5C3A1E' }) {
-    const [isHovered, setIsHovered] = useState(false);
-    const videoRef = useRef(null);
+  const LazyThumbnail = ({ src }) => {
+    const [inView, setInView] = useState(false);
+    const ref = useRef(null);
 
-    const isVideo = url && (url.endsWith('.mp4') || url.endsWith('.m3u8') || url.includes('/video/') || url.includes('/videos/') || url.includes('cloudflarestream'));
-    const isImage = url && (url.endsWith('.jpg') || url.endsWith('.png') || url.endsWith('.webp') || url.startsWith('data:image'));
+    useEffect(() => {
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      }, { rootMargin: '300px' });
 
-    const handleMouseEnter = () => {
-      setIsHovered(true);
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => { });
-      }
-    };
-
-    const handleMouseLeave = () => {
-      setIsHovered(false);
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    };
-
-    const derivePoster = (vidUrl) => {
-      if (!vidUrl) return undefined;
-      if (vidUrl.includes('cloudflarestream')) return vidUrl.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
-      if (vidUrl.includes('bordeaux')) return '/images/bordeaux.png';
-      if (vidUrl.includes('champagne') || vidUrl.includes('golden')) return '/images/champagne.png';
-      if (vidUrl.includes('ivory')) return '/images/ivory.png';
-      if (vidUrl.includes('sage') || vidUrl.includes('olive')) return '/images/sage.png';
-      if (vidUrl.includes('terracotta') || vidUrl.includes('amber')) return '/images/terracotta.png';
-      if (vidUrl.includes('chocolate') || vidUrl.includes('mocha')) return '/images/chocolate.png';
-      if (vidUrl.includes('royalbordeaux') || vidUrl.includes('crimson')) return '/images/royalbordeaux.png';
-      if (vidUrl.includes('royalblue') || vidUrl.includes('sapphire')) return '/images/royalblue.png';
-      return undefined;
-    };
+      if (ref.current) observer.observe(ref.current);
+      return () => observer.disconnect();
+    }, []);
 
     return (
-      <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '10px',
-          overflow: 'hidden',
-          position: 'relative',
-          backgroundColor: fallbackColor,
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px solid rgba(0,0,0,0.1)',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-        }}
-      >
-        {/* Static Fallback / Image / Poster */}
-        {isImage || !isHovered ? (
-          isImage ? (
-            <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : url && url.includes('cloudflarestream') ? (
-            <img
-              src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')}
-              alt="Preview"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          ) : isVideo ? (
-            <video
-              src={url.includes('#t=') ? url : `${url}#t=0.1`}
-              preload="auto"
-              poster={derivePoster(url)}
-              muted
-              playsInline
-              style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
-            />
-          ) : (
-            <div style={{ width: '100%', height: '100%', backgroundColor: fallbackColor, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-              <span style={{ fontSize: '1.2rem' }}>🎬</span>
-              <span style={{ fontSize: '0.6rem', opacity: 0.85, textTransform: 'uppercase', marginTop: '0.1rem', fontWeight: 600 }}>Hover</span>
-            </div>
-          )
-        ) : null}
-
-        {/* Video element plays ONLY when hovered */}
-        {isVideo && isHovered && (
+      <div ref={ref} style={{ width: '100%', height: '100%' }}>
+        {inView ? (
           <video
-            ref={videoRef}
-            src={url}
+            src={src}
+            preload="metadata"
             muted
-            loop
             playsInline
-            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
           />
+        ) : (
+          <div style={{ width: '100%', height: '100%', backgroundColor: '#222' }} />
         )}
       </div>
     );
-  }
+  };
+
+  const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
+    if (!url) {
+      return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
+    }
+    const isImg = url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || url.includes('Vector.png') || url.includes('romantic-moments-bea.png') || url.includes('300592484d1f31590325.png') || url.includes('hero-scratch-cover');
+    if (isImg) {
+      return <img src={url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+    }
+    if (url.includes('cloudflarestream')) {
+      return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+    }
+    const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
+    return <LazyThumbnail src={videoSrc} />;
+  };
 
   const handleTimelineChange = (index, field, value) => {
     const current = local.timeline || [
@@ -1795,56 +1747,57 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> Envelope Design Template
             </h2>
-            <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {AVAILABLE_ENVELOPE_VIDEOS.map(env => (
-                <div
-                  key={env.id}
-                  onClick={() => {
-                    const newState = { ...(local.videos || {}) };
-                    if (env.url === 'custom') {
-                      newState.envelope = 'custom';
-                    } else {
-                      newState.envelope = env.url;
-                    }
-                    handleChange('videos', newState);
-                    if (triggerReplayEnvelope) triggerReplayEnvelope();
-                  }}
-                  style={{
-                    minWidth: '280px',
-                    border: local.videos?.envelope === env.url || (local.videos?.envelope && !AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos.envelope) && env.id === 'env_custom') || (local.videos?.envelope === 'custom' && env.id === 'env_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                    borderRadius: '12px',
-                    padding: '1rem',
-                    cursor: 'pointer',
-                    backgroundColor: local.videos?.envelope === env.url ? '#fbf8f9' : '#fff',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    gap: '1rem',
-                    alignItems: 'center'
-                  }}
-                >
-                  <HoverVideoThumbnail url={env.url} fallbackColor={env.color} />
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{env.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#888', lineHeight: 1.3 }}>{env.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {local.videos?.envelope === 'custom' || (!AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos?.envelope) && local.videos?.envelope && local.videos?.envelope !== 'custom') ? (
-              <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <StyledFileInput accept="video/*" label="Upload Envelope Video" onChange={e => {
-                  if (e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
+            <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
+              {AVAILABLE_ENVELOPE_VIDEOS.map(env => {
+                const isSelected = local.videos?.envelope === env.url || (local.videos?.envelope && !AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos.envelope) && env.id === 'env_custom') || (local.videos?.envelope === 'custom' && env.id === 'env_custom');
+                return (
+                  <div
+                    key={env.id}
+                    onClick={() => {
                       const newState = { ...(local.videos || {}) };
-                      newState.envelope = reader.result;
+                      if (env.url === 'custom') {
+                        newState.envelope = 'custom';
+                      } else {
+                        newState.envelope = env.url;
+                      }
                       handleChange('videos', newState);
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                  }
-                }} />
-              </div>
-            ) : null}
+                      if (typeof triggerReplayEnvelope !== 'undefined' && triggerReplayEnvelope) triggerReplayEnvelope();
+                    }}
+                    style={{
+                      flex: '0 0 105px',
+                      border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                      borderRadius: '14px', padding: '0.35rem', cursor: 'pointer',
+                      backgroundColor: isSelected ? '#faf5f6' : '#fff',
+                      transition: 'all 0.2s', textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
+                      {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523')}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                      {env.name.replace(' Envelope', '')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {
+              local.videos?.envelope === 'custom' || (!AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos?.envelope) && local.videos?.envelope && local.videos?.envelope !== 'custom') ? (
+                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <StyledFileInput accept="video/*" label="Upload Envelope Video" onChange={e => {
+                    if (e.target.files[0]) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const newState = { ...(local.videos || {}) };
+                        newState.envelope = reader.result;
+                        handleChange('videos', newState);
+                      };
+                      reader.readAsDataURL(e.target.files[0]);
+                    }
+                  }} />
+                </div>
+              ) : null
+            }
           </div>
 
           {/* Hero Video Selection */}
@@ -1883,39 +1836,38 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               </div>
             )}
 
-            <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {AVAILABLE_HERO_VIDEOS.map(hero => (
-                <div
-                  key={hero.id}
-                  onClick={() => {
-                    const newState = { ...(local.videos || {}) };
-                    if (hero.url === 'custom') {
-                      newState.hero = 'custom';
-                    } else {
-                      newState.hero = hero.url;
-                    }
-                    handleChange('videos', newState);
-                  }}
-                  style={{
-                    minWidth: '280px',
-                    border: local.videos?.hero === hero.url || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom') ? '2px solid #5C3A1E' : '1px solid #e0dcd7',
-                    borderRadius: '12px',
-                    padding: '1rem',
-                    cursor: 'pointer',
-                    backgroundColor: local.videos?.hero === hero.url ? '#fbf8f9' : '#fff',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    gap: '1rem',
-                    alignItems: 'center'
-                  }}
-                >
-                  <HoverVideoThumbnail url={hero.url} fallbackColor={hero.color} />
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{hero.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#888', lineHeight: 1.3 }}>{hero.desc}</div>
+            <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
+              {AVAILABLE_HERO_VIDEOS.map(hero => {
+                const isSelected = local.videos?.hero === hero.url || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom');
+                return (
+                  <div
+                    key={hero.id}
+                    onClick={() => {
+                      const newState = { ...(local.videos || {}) };
+                      if (hero.url === 'custom') {
+                        newState.hero = 'custom';
+                      } else {
+                        newState.hero = hero.url;
+                      }
+                      handleChange('videos', newState);
+                    }}
+                    style={{
+                      flex: '0 0 105px',
+                      border: isSelected ? '2.5px solid #5C3A1E' : '1px solid #e0dcd7',
+                      borderRadius: '14px', padding: '0.35rem', cursor: 'pointer',
+                      backgroundColor: isSelected ? '#faf5f6' : '#fff',
+                      transition: 'all 0.2s', textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
+                      {renderMediaStartingFrame(hero.url, hero.name, '#33403a')}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                      {hero.name}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             {local.videos?.hero === 'custom' || (!AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos?.hero) && local.videos?.hero && local.videos?.hero !== 'custom') ? (
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
