@@ -509,6 +509,7 @@ export default function CheckoutClient() {
         }
         await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
         if (selectedPackage.id === 'Custom' || selectedPackage.id === 'custom') {
+          setPaymentProcessing(false);
           setStep(4);
         } else {
           router.push('/dashboard');
@@ -516,6 +517,7 @@ export default function CheckoutClient() {
         return;
       } catch (err) {
         console.warn('Fast test payment bypass failed:', err);
+        setPaymentProcessing(false);
       }
     }
 
