@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     const data = await request.json();
-    
+
     const {
       packageName,
       price,
@@ -27,8 +27,8 @@ export async function POST(request) {
       attachments,
     } = data;
 
-    const sectionsText = sectionsWanted && sectionsWanted.length > 0 
-      ? sectionsWanted.join(', ') 
+    const sectionsText = sectionsWanted && sectionsWanted.length > 0
+      ? sectionsWanted.join(', ')
       : 'Not specified';
 
     const attachmentSummary = attachments && attachments.length > 0
@@ -136,22 +136,26 @@ export async function POST(request) {
 
     // Try sending via Resend if API key is available
     const resendKey = process.env.RESEND_API_KEY;
-    
+
     if (resendKey) {
+      const emailPayload = {
+        from: 'FOLDÈ Design <onboarding@resend.dev>',
+        to: ['folde.wedding@gmail.com'],
+        subject: `[CUSTOM ORDER] - ${packageName} — ${name} & ${partnerName}`,
+        html: emailBody,
+        reply_to: email,
+      };
+      if (attachments && attachments.length > 0) {
+        emailPayload.attachments = attachments;
+      }
+
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${resendKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          from: 'FOLDÈ Design <onboarding@resend.dev>',
-          to: ['folde.wedding@gmail.com'],
-          subject: `new order — ${packageName} — ${name} & ${partnerName}`,
-          html: emailBody,
-          reply_to: email,
-          attachments: attachments || [],
-        }),
+        body: JSON.stringify(emailPayload),
       });
 
       if (!res.ok) {
@@ -162,7 +166,7 @@ export async function POST(request) {
         return NextResponse.json({ success: true, method: 'resend' });
       }
     }
-    
+
     // Fallback: use built-in NodeMailer-like approach via SMTP
     const formData = new URLSearchParams();
     formData.append('to', 'folde.wedding@gmail.com');
@@ -174,11 +178,11 @@ export async function POST(request) {
     console.log(JSON.stringify(data, null, 2));
     console.log('=========================');
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       method: 'logged',
       message: 'Order received. Please configure RESEND_API_KEY for email delivery.',
-      data 
+      data
     });
 
   } catch (error) {

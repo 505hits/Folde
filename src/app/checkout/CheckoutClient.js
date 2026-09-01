@@ -1412,7 +1412,7 @@ export default function CheckoutClient() {
                               backgroundColor: isSelected ? '#faf5f6' : '#fff',
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
-                            <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                            <div style={{ height: '160px', borderRadius: '8px', overflow: 'hidden', backgroundColor: e.color || '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                               {e.id === 'env_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
@@ -1461,7 +1461,7 @@ export default function CheckoutClient() {
                               backgroundColor: isSelected ? '#faf5f6' : '#fff',
                               transition: 'all 0.2s', textAlign: 'center'
                             }}>
-                            <div style={{ height: '70px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                            <div style={{ height: '160px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                               {h.id === 'hero_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
