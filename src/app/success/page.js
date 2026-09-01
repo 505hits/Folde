@@ -42,7 +42,7 @@ function SuccessContent() {
         const pendingRaw = typeof window !== 'undefined' && localStorage.getItem('pendingOrder');
         let pending = null;
         if (pendingRaw) {
-          try { pending = JSON.parse(pendingRaw); } catch (e) {}
+          try { pending = JSON.parse(pendingRaw); } catch (e) { }
         }
 
         // Use Stripe metadata as fallback if localStorage is empty
@@ -116,7 +116,7 @@ function SuccessContent() {
   }
 
   // Success
-  const isPremiumOrCustom = orderData?.planId === 'premium' || orderData?.planId === 'Custom' || orderData?.planId === 'custom';
+  const isCustom = orderData?.planId === 'Custom' || orderData?.planId === 'custom';
 
   return (
     <div style={{ backgroundColor: '#F5F0E8', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', color: '#3D2B1F', padding: '2rem' }}>
@@ -126,13 +126,13 @@ function SuccessContent() {
         </div>
         <h1 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '1rem' }}>Payment Validated!</h1>
         <p style={{ color: '#666', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-          {isPremiumOrCustom
-            ? `Welcome ${orderData?.name || ''}! Your ${orderData?.plan} order is confirmed. Access your dashboard to start customizing, and our team will reach out within 24h.`
+          {isCustom
+            ? `Welcome ${orderData?.name || ''}! Your ${orderData?.plan} order is confirmed. Please complete your customization questionnaire so we can start crafting your design.`
             : `Your order has been successfully confirmed. Welcome to FOLDÈ Design! You can now access your private dashboard to start personalizing your invitation.`
           }
         </p>
-        <Link href="/dashboard" style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
-          ACCESS MY DASHBOARD →
+        <Link href={isCustom ? `/checkout?step=4&plan=${orderData?.planId}` : "/dashboard"} style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
+          {isCustom ? "FILL OUT THE QUESTIONNAIRE →" : "ACCESS MY DASHBOARD →"}
         </Link>
       </div>
     </div>

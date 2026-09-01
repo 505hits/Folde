@@ -903,7 +903,11 @@ export default function Dashboard() {
             position: relative;
             padding-bottom: 3rem;
           }
+          .dashboard-content-wrapper { padding: 0.5rem; }
+          .preview-container { padding: 1rem 0; }
         }
+        .dashboard-content-wrapper { padding: 1.5rem; }
+        .preview-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; overflow: hidden; position: relative; }
       `}</style>
 
       {/* 1. Left Sidebar */}
@@ -961,7 +965,7 @@ export default function Dashboard() {
             Live Invite Link
           </div>
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            👔 Premium Plan
+            👔 {userOrder?.plan ? `${userOrder.plan} Plan` : 'Standard Plan'}
           </div>
           <button
             onClick={logout}
@@ -1038,7 +1042,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div style={{ padding: '1.5rem', maxWidth: '850px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        <div className="dashboard-content-wrapper" style={{ maxWidth: '850px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 
           <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
@@ -1090,7 +1094,7 @@ export default function Dashboard() {
 
       {/* 3. Right Preview Panel */}
       <aside className="dashboard-preview">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden', position: 'relative' }}>
+        <div className="preview-container">
 
           {/* Subtle Ambient Background Glow */}
           <div style={{ position: 'absolute', width: '250px', height: '250px', borderRadius: '50%', backgroundColor: 'rgba(176,137,104,0.06)', filter: 'blur(60px)', top: '15%', left: '15%', zIndex: 0, pointerEvents: 'none' }}></div>

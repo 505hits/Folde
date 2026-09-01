@@ -325,7 +325,7 @@ export default function CheckoutClient() {
     }
   };
 
-  const isPremiumOrCustom = selectedPackage.id === 'premium' || selectedPackage.id === 'Custom';
+  const isCustomOnly = selectedPackage.id === 'Custom' || selectedPackage.id === 'custom';
 
   // Note: checkout fields intentionally start empty — the client enters their own details.
 
@@ -340,6 +340,9 @@ export default function CheckoutClient() {
       if (plan) {
         const found = packages.find(p => p.id.toLowerCase() === plan.toLowerCase());
         if (found) setSelectedPackage(found);
+      }
+      if (params.get('step') === '4') {
+        setStep(4);
       }
     }
   }, []);
@@ -505,7 +508,11 @@ export default function CheckoutClient() {
           await register(account.email, account.password || 'test123', account.name, account.partnerName);
         }
         await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
-        router.push('/dashboard');
+        if (selectedPackage.id === 'Custom' || selectedPackage.id === 'custom') {
+          setStep(4);
+        } else {
+          router.push('/dashboard');
+        }
         return;
       } catch (err) {
         console.warn('Fast test payment bypass failed:', err);
@@ -576,9 +583,9 @@ export default function CheckoutClient() {
         body: JSON.stringify({
           packageName: selectedPackage.name,
           price: total,
-          name: account.name,
-          partnerName: account.partnerName,
-          email: account.email,
+          name: account.name || currentUser?.name || 'Client',
+          partnerName: account.partnerName || currentUser?.partnerName || 'Partenaire',
+          email: account.email || currentUser?.email,
           phone: premiumForm.phone,
           weddingDate: premiumForm.weddingDate,
           weddingVenue: premiumForm.weddingVenue,
