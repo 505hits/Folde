@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 
+
 const themes = [
   { id: 'bordeaux', name: 'Bordeaux' },
   { id: 'champagne', name: 'Champagne' },
@@ -237,7 +238,7 @@ const labelStyle = {
 
 export default function CheckoutClient() {
   const router = useRouter();
-  const { currentUser, register, login, createOrder } = useDatabase();
+  const { currentUser, register, login, createOrder, saveOrderDetails } = useDatabase();
 
   // Flow: 1=Package, 2=Preview+Personalize, 3=Email+Pay → /success
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
@@ -272,7 +273,9 @@ export default function CheckoutClient() {
 
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sendError, setSendError] = useState('');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [createdOrderSlug, setCreatedOrderSlug] = useState('');
 
   // Preview step state
   const [previewDate, setPreviewDate] = useState('');
@@ -343,6 +346,8 @@ export default function CheckoutClient() {
       }
       if (params.get('step') === '4') {
         setStep(4);
+        const slugParam = params.get('slug');
+        if (slugParam) setCreatedOrderSlug(slugParam);
       }
     }
   }, []);
@@ -507,7 +512,8 @@ export default function CheckoutClient() {
         if (!currentUser) {
           await register(account.email, account.password || 'test123', account.name, account.partnerName);
         }
-        await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
+        const newOrder = await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
+        if (newOrder?.slug) setCreatedOrderSlug(newOrder.slug);
         if (selectedPackage.id === 'Custom' || selectedPackage.id === 'custom') {
           setPaymentProcessing(false);
           setStep(4);
@@ -553,9 +559,12 @@ export default function CheckoutClient() {
 
   const handleSendOrder = async () => {
     setSending(true);
+    setSendError('');
     try {
-      const envName = ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice)?.name || premiumForm.envelopeChoice || 'Not specified';
-      const heroName = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice)?.name || premiumForm.heroVideoChoice || 'Not specified';
+      const envObj = ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice);
+      const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice);
+      const envName = envObj?.name || premiumForm.envelopeChoice || 'Not specified';
+      const heroName = heroObj?.name || premiumForm.heroVideoChoice || 'Not specified';
 
       const attachments = [];
       if (premiumForm.menuFile) {
@@ -579,7 +588,8 @@ export default function CheckoutClient() {
         });
       }
 
-      await fetch('/api/send-order', {
+      // ── 1. Send the recap email to Foldè Wedding ──
+      const emailRes = await fetch('/api/send-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -607,10 +617,85 @@ export default function CheckoutClient() {
           attachments,
         }),
       });
+      const emailData = await emailRes.json();
+      if (!emailData.success) {
+        console.error('Email send failed:', emailData);
+      }
+
+      // ── 2. Auto-create the Expert site with questionnaire data ──
+      const slug = createdOrderSlug;
+      if (slug && saveOrderDetails) {
+        // Format the wedding date for display
+        let formattedDate = '';
+        if (premiumForm.weddingDate) {
+          const d = new Date(premiumForm.weddingDate + 'T00:00:00');
+          if (!isNaN(d.getTime())) {
+            formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+          }
+        }
+
+        // Map section keys to section flags
+        const sectionsMap = {};
+        SECTION_OPTIONS.forEach(s => {
+          const key = 'show' + s.key.charAt(0).toUpperCase() + s.key.slice(1);
+          sectionsMap[key] = premiumForm.sectionsWanted.includes(s.key);
+        });
+
+        const siteDetails = {
+          partner1: account.name || currentUser?.name || '',
+          partner2: account.partnerName || currentUser?.partnerName || '',
+          date: formattedDate || 'TBD',
+          time: '16:00',
+          ceremonyVenue: premiumForm.weddingVenue || '',
+          receptionVenue: premiumForm.weddingCity || '',
+          themeId: selectedTheme,
+          videos: {
+            envelope: envObj?.url || '',
+            hero: heroObj?.url || '',
+          },
+          sections: {
+            showIntro: sectionsMap.showIntro !== false,
+            showVenue: sectionsMap.showVenue !== false,
+            showSchedule: sectionsMap.showSchedule !== false,
+            showRSVP: sectionsMap.showRsvp !== false,
+            showGallery: sectionsMap.showGallery || false,
+            showDressCode: sectionsMap.showDressCode || false,
+            showMenu: true,
+            showBoardingPass: false,
+          },
+          timeline: [
+            { time: '15:00', title: 'Ceremony' },
+            { time: '16:30', title: 'Cocktail' },
+            { time: '19:00', title: 'Dinner' },
+            { time: '22:00', title: 'Party' },
+          ],
+          menu: premiumForm.menuDetails ? [
+            { course: 'Details', dish: premiumForm.menuDetails }
+          ] : [
+            { course: 'Starter', dish: '...' },
+            { course: 'Main', dish: '...' },
+            { course: 'Dessert', dish: '...' },
+          ],
+          accommodations: [],
+          images: {},
+          colorPreferences: premiumForm.colorPreferences || '',
+          languages: premiumForm.languages || '',
+          specialRequests: premiumForm.specialRequests || '',
+          inspirationLinks: premiumForm.inspirationLinks || '',
+        };
+
+        try {
+          await saveOrderDetails(slug, siteDetails);
+          console.log('Expert site auto-created for slug:', slug);
+        } catch (siteErr) {
+          console.error('Failed to auto-create Expert site:', siteErr);
+        }
+      }
+
       setSent(true);
     } catch (err) {
-      console.error(err);
-      setSent(true); // Still mark as sent
+      console.error('handleSendOrder error:', err);
+      setSendError('An error occurred while sending your details. Please try again.');
     } finally {
       setSending(false);
     }
@@ -1340,14 +1425,20 @@ export default function CheckoutClient() {
           <div style={{ padding: '2rem 1.5rem 3rem' }}>
 
             {sent ? (
-              <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '4rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center', maxWidth: '540px', margin: '2rem auto' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 16px rgba(92,58,30,0.2)' }}>✓</div>
-                <h2 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '1rem' }}>Details Sent Successfully!</h2>
-                <p style={{ color: '#666', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-                  Thank you! Our design team has received your wedding details. Your bespoke invitation is now being crafted (estimated delivery: 3 days). You can access your private dashboard right now.
+              <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '4rem 2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid #fef3c7', textAlign: 'center', maxWidth: '540px', margin: '2rem auto', backgroundImage: 'linear-gradient(to bottom, #fffdfa, #fff)' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 16px rgba(217,119,6,0.15)' }}>✨</div>
+                <h2 style={{ fontSize: '1.9rem', fontFamily: 'var(--font-heading)', color: '#5C3A1E', marginBottom: '1rem' }}>Your Bespoke Invitation is Being Crafted</h2>
+                <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                  Our Paris design studio has received all your details and your invitation site has been generated with your selections.
+                </p>
+                <div style={{ display: 'inline-block', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', padding: '0.75rem 1.5rem', borderRadius: '14px', color: '#8b6e5a', fontSize: '0.95rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+                  ⏳ Estimated review & delivery: <strong>3 Business Days</strong>
+                </div>
+                <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                  Our team will review, refine, and validate your custom invitation. You'll receive a notification email at <strong>{account.email || currentUser?.email}</strong> when it's ready. You can also check the status from your studio space.
                 </p>
                 <button onClick={() => router.push('/dashboard')} style={{ width: '100%', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1.1rem 2rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(92,58,30,0.25)' }}>
-                  ACCESS MY DASHBOARD →
+                  VIEW MY STUDIO SPACE →
                 </button>
               </div>
             ) : (
@@ -1592,8 +1683,13 @@ export default function CheckoutClient() {
                     }}>
                     {sending ? 'SENDING...' : 'SEND MY DETAILS →'}
                   </button>
+                  {sendError && (
+                    <div style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 500, border: '1px solid #fecaca', marginTop: '0.5rem', textAlign: 'center' }}>
+                      {sendError}
+                    </div>
+                  )}
                   <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#aaa' }}>
-                    Our team will contact you within 24 hours
+                    Our team will review and validate within 3 business days
                   </p>
                 </div>
               </>

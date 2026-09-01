@@ -63,14 +63,15 @@ function SuccessContent() {
         }
 
         // 4. Create the order
-        createOrder(email, name, partnerName, theme, plan, price);
+        const newOrder = await createOrder(email, name, partnerName, theme, plan, price);
+        const orderSlug = newOrder?.slug || '';
 
         // 5. Clean up
         if (typeof window !== 'undefined') {
           localStorage.removeItem('pendingOrder');
         }
 
-        setOrderData({ name, partnerName, plan, planId, email });
+        setOrderData({ name, partnerName, plan, planId, email, slug: orderSlug });
         setStatus('success');
 
       } catch (error) {
@@ -131,7 +132,7 @@ function SuccessContent() {
             : `Your order has been successfully confirmed. Welcome to FOLDÈ Design! You can now access your private dashboard to start personalizing your invitation.`
           }
         </p>
-        <Link href={isCustom ? `/checkout?step=4&plan=${orderData?.planId}` : "/dashboard"} style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
+        <Link href={isCustom ? `/checkout?step=4&plan=${orderData?.planId}&slug=${orderData?.slug || ''}` : "/dashboard"} style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
           {isCustom ? "FILL OUT THE QUESTIONNAIRE →" : "ACCESS MY DASHBOARD →"}
         </Link>
       </div>
