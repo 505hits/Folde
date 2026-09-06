@@ -3341,7 +3341,9 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
         reader.readAsDataURL(file);
       });
       const image = await new Promise((resolve, reject) => {
-        const img = new Image();
+        // `Image` is also imported from next/image in this module; explicitly
+        // use the browser constructor for canvas compression.
+        const img = new window.Image();
         const timer = setTimeout(() => reject(new Error('This image format is not supported. Please use JPG, PNG, or WebP.')), 10000);
         img.onload = () => { clearTimeout(timer); resolve(img); };
         img.onerror = () => { clearTimeout(timer); reject(new Error('This image format is not supported. Please use JPG, PNG, or WebP.')); };
