@@ -3,23 +3,32 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Hls from 'hls.js';
 
-export const getFirstFramePoster = (url) => {
+export const getFirstFramePoster = (url, useEnvelopePoster = false) => {
   if (!url) return undefined;
   if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
   if (url.includes('cloudflarestream')) {
     return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
   }
-  const localPoster = [
-    ['bordeaux', '/images/bordeaux.png'], ['golden-palace', '/images/champagne.png'],
-    ['ivory', '/images/ivory.png'], ['celestial', '/images/royalblue.png'],
-    ['royal-blue', '/images/royalblue.png'], ['royal-bordeaux', '/images/royalbordeaux.png'],
-    ['horizon-bordeaux', '/images/royalbordeaux.png'], ['sage', '/images/sage.png'],
-    ['terracotta', '/images/terracotta.png'], ['chocolate', '/images/chocolate.png'],
-    ['cisnes', '/images/dress_code_floral.png'], ['bloom', '/images/dress_code_floral.png'],
-    ['romantic-garden', '/images/dress_code_floral.png'], ['wax-seal-blue', '/images/royalblue.png'],
-    ['tropical', '/images/sage.png'], ['soft-scratch', '/images/ivory.png']
+  if (!useEnvelopePoster) return undefined;
+  const posterFile = [
+    ['horizon-bordeaux', 'horizon-bordeaux'], ['golden-palace', 'golden-palace'],
+    ['imperial-light', 'imperial-light'], ['celestial-veil', 'celestial-veil'],
+    ['royal-doves', 'royal-doves'], ['royal-bordeaux', 'royal-bordeaux'],
+    ['royal-blue', 'royal-blue'], ['oriental-palace', 'oriental-palace'],
+    ['ivory-veil', 'ivory-veil'], ['rose-veil', 'rose-veil'],
+    ['1777314873141', 'seaview'], ['1777312876430', 'floral'], ['1777287974328', 'royal'],
+    ['rs-bow-v2', 'rose-bow'], ['majestic-template', 'majestic'],
+    ['savethedate-lejardin', 'lejardin'],
+    ['savethedate-lacephotoscratch', 'lacephotoscratch'], ['savethedate-oasisroyale', 'oasisroyale'],
+    ['savethedate-photo-scratch', 'photoscratch'], ['pressed-love-envelope', 'pressed-love'],
+    ['wax-seal-yellow', 'big-entrance-gold'],
+    ['como/blue', 'como-blue-seal'], ['wax-seal-blue', 'como-blue-seal'],
+    ['romantic-garden', 'romanticgarden'], ['floral-garden-intro', 'romanticgarden'],
+    ['soft-scratch', 'soft-scratch'], ['cisnes', 'cisnes'], ['bloom', 'bloom'],
+    ['tropical', 'tropical'], ['terracotta', 'terracotta'], ['chocolate', 'chocolate'],
+    ['champagne', 'champagne'], ['ivory', 'ivory'], ['sage', 'sage'], ['bordeaux', 'bordeaux']
   ].find(([needle]) => url.toLowerCase().includes(needle));
-  if (localPoster) return localPoster[1];
+  if (posterFile) return `/images/envelope-posters/${posterFile[1]}.webp`;
   return undefined;
 };
 
@@ -50,7 +59,7 @@ export default function TemplateHeroPreview({
   const heroVideoRef = useRef(null);
 
   const heroPoster = previewImage || getFirstFramePoster(videoSrc);
-  const envelopePoster = getFirstFramePoster(envelopeSrc);
+  const envelopePoster = getFirstFramePoster(envelopeSrc, true);
   const isHeroImg = isImage || (videoSrc && videoSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
   const isEnvImg = envelopeSrc && envelopeSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i);
 

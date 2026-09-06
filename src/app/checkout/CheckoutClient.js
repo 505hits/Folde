@@ -188,7 +188,7 @@ const selectStyle = {
   paddingRight: '2.5rem',
 };
 
-const LazyThumbnail = ({ src }) => {
+const LazyThumbnail = ({ src, isEnvelope = false }) => {
   const [inView, setInView] = useState(true);
   const ref = useRef(null);
 
@@ -209,7 +209,7 @@ const LazyThumbnail = ({ src }) => {
       {inView ? (
         <video
           src={src}
-          poster={getFirstFramePoster(src)}
+          poster={getFirstFramePoster(src, isEnvelope)}
           preload="auto"
           fetchPriority="high"
           muted
@@ -223,7 +223,7 @@ const LazyThumbnail = ({ src }) => {
   );
 };
 
-const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
+const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelope = false) => {
   if (!url) {
     return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
   }
@@ -235,7 +235,7 @@ const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
     return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
   }
   const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
-  return <LazyThumbnail src={videoSrc} />;
+  return <LazyThumbnail src={videoSrc} isEnvelope={isEnvelope} />;
 };
 
 const labelStyle = {
@@ -1178,7 +1178,7 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
-                            {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523')}
+                            {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523', true)}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {env.name.replace(' Envelope', '')}
