@@ -287,6 +287,7 @@ export default function CheckoutClient() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [sendError, setSendError] = useState('');
+  const [emailDeliveryWarning, setEmailDeliveryWarning] = useState('');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [createdOrderSlug, setCreatedOrderSlug] = useState('');
 
@@ -573,6 +574,7 @@ export default function CheckoutClient() {
   const handleSendOrder = async () => {
     setSending(true);
     setSendError('');
+    setEmailDeliveryWarning('');
     try {
       const envObj = ORDERED_ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice);
       const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice);
@@ -601,45 +603,13 @@ export default function CheckoutClient() {
         });
       }
 
-      // ── 1. Send the recap email to Foldè Wedding ──
-      const emailRes = await fetch('/api/send-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          packageName: selectedPackage.name,
-          price: total,
-          name: account.name || currentUser?.name || 'Client',
-          partnerName: account.partnerName || currentUser?.partnerName || 'Partenaire',
-          email: account.email || currentUser?.email,
-          phone: premiumForm.phone,
-          weddingDate: premiumForm.weddingDate,
-          weddingVenue: premiumForm.weddingVenue,
-          weddingCity: premiumForm.weddingCity,
-          guestCount: premiumForm.guestCount,
-          selectedTheme: themeName,
-          envelopeChoice: envName,
-          heroVideoChoice: heroName,
-          languages: premiumForm.languages,
-          colorPreferences: premiumForm.colorPreferences,
-          specialRequests: premiumForm.specialRequests,
-          inspirationLinks: premiumForm.inspirationLinks,
-          designStory: premiumForm.designStory,
-          creativeDirection: premiumForm.creativeDirection,
-          sectionsWanted: premiumForm.sectionsWanted.map(
-            k => SECTION_OPTIONS.find(s => s.key === k)?.label || k
-          ),
-          menuDetails: premiumForm.menuDetails,
-          attachments,
-        }),
-      });
-      const emailData = await emailRes.json();
-      if (!emailRes.ok || !emailData.success || emailData.method !== 'resend') {
-        throw new Error(emailData.error || 'We could not deliver your brief to the design studio. Please try again.');
+      // ── 1. Auto-create the Expert site with questionnaire data ──
+      const slug = createdOrderSlug;
+      if (!slug || !saveOrderDetails) {
+        throw new Error('We could not identify your order. Please sign in again and retry.');
       }
 
-      // ── 2. Auto-create the Expert site with questionnaire data ──
-      const slug = createdOrderSlug;
-      if (slug && saveOrderDetails) {
+      {
         // Format the wedding date for display
         let formattedDate = '';
         if (premiumForm.weddingDate) {
@@ -701,18 +671,60 @@ export default function CheckoutClient() {
           creativeDirection: premiumForm.creativeDirection || '',
         };
 
-        try {
-          await saveOrderDetails(slug, siteDetails);
-          console.log('Expert site auto-created for slug:', slug);
-        } catch (siteErr) {
-          console.error('Failed to auto-create Expert site:', siteErr);
+        const wasSaved = await saveOrderDetails(slug, siteDetails);
+        if (!wasSaved) {
+          throw new Error('We could not save your invitation details. Please try again.');
         }
+        console.log('Expert site auto-created for slug:', slug);
       }
 
+      // ── 2. Notify the Foldè studio. A mail issue must never lose the brief. ──
+      let deliveryWarning = '';
+      try {
+        const emailRes = await fetch('/api/send-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            packageName: selectedPackage.name,
+            price: total,
+            name: account.name || currentUser?.name || 'Client',
+            partnerName: account.partnerName || currentUser?.partnerName || 'Partner',
+            email: account.email || currentUser?.email,
+            phone: premiumForm.phone,
+            weddingDate: premiumForm.weddingDate,
+            weddingVenue: premiumForm.weddingVenue,
+            weddingCity: premiumForm.weddingCity,
+            guestCount: premiumForm.guestCount,
+            selectedTheme: themeName,
+            envelopeChoice: envName,
+            heroVideoChoice: heroName,
+            languages: premiumForm.languages,
+            colorPreferences: premiumForm.colorPreferences,
+            specialRequests: premiumForm.specialRequests,
+            inspirationLinks: premiumForm.inspirationLinks,
+            designStory: premiumForm.designStory,
+            creativeDirection: premiumForm.creativeDirection,
+            sectionsWanted: premiumForm.sectionsWanted.map(
+              k => SECTION_OPTIONS.find(s => s.key === k)?.label || k
+            ),
+            menuDetails: premiumForm.menuDetails,
+            attachments,
+          }),
+        });
+        const emailData = await emailRes.json().catch(() => ({}));
+        if (!emailRes.ok || !emailData.success || emailData.method !== 'resend') {
+          deliveryWarning = emailData.error || 'The studio notification could not be sent automatically.';
+        }
+      } catch (emailErr) {
+        console.error('Expert studio notification error:', emailErr);
+        deliveryWarning = 'The studio notification could not be sent automatically.';
+      }
+
+      setEmailDeliveryWarning(deliveryWarning);
       setSent(true);
     } catch (err) {
       console.error('handleSendOrder error:', err);
-      setSendError('An error occurred while sending your details. Please try again.');
+      setSendError(err?.message || 'We could not save your details. Please try again.');
     } finally {
       setSending(false);
     }
@@ -1448,6 +1460,11 @@ export default function CheckoutClient() {
                 <p style={{ color: '#555', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
                   Our Paris design studio has received all your details and your invitation site has been generated with your selections.
                 </p>
+                {emailDeliveryWarning && (
+                  <p style={{ color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.85rem 1rem', fontSize: '0.88rem', lineHeight: 1.45, marginBottom: '1.5rem' }}>
+                    Your details are safely saved. {emailDeliveryWarning}
+                  </p>
+                )}
                 <div style={{ display: 'inline-block', backgroundColor: '#faf5f0', border: '1px solid #e8ddd4', padding: '0.75rem 1.5rem', borderRadius: '14px', color: '#8b6e5a', fontSize: '0.95rem', fontWeight: 600, marginBottom: '1.5rem' }}>
                   ⏳ Estimated review & delivery: <strong>3 Business Days</strong>
                 </div>

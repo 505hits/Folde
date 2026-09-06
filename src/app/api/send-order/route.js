@@ -161,14 +161,18 @@ export async function POST(request) {
     }
 
     const emailPayload = {
-        from: 'FOLDÈ Design <onboarding@resend.dev>',
+        from: process.env.RESEND_FROM_EMAIL || 'FOLDÈ Design <onboarding@resend.dev>',
         to: ['folde.wedding@gmail.com'],
         subject: `[CUSTOM ORDER] - ${packageName} — ${name} & ${partnerName}`,
         html: emailBody,
-        reply_to: email,
       };
+      if (email) emailPayload.reply_to = email;
       if (attachments && attachments.length > 0) {
-        emailPayload.attachments = attachments;
+        emailPayload.attachments = attachments.map(({ filename, content }) => ({
+          filename,
+          // Resend expects raw base64 content, not a browser data-URL prefix.
+          content: typeof content === 'string' ? content.replace(/^data:[^;]+;base64,/, '') : content,
+        }));
       }
 
     const res = await fetch('https://api.resend.com/emails', {
@@ -181,9 +185,10 @@ export async function POST(request) {
       });
 
     if (!res.ok) {
-      const errorData = await res.text();
+      const errorData = await res.json().catch(() => ({}));
+      const resendMessage = errorData?.message || errorData?.name || 'Resend rejected the email request.';
       console.error('Resend error:', errorData);
-      return NextResponse.json({ success: false, error: 'Unable to send the order notification.' }, { status: 502 });
+      return NextResponse.json({ success: false, error: `Email notification failed: ${resendMessage}` }, { status: 502 });
     }
     const resendData = await res.json();
     return NextResponse.json({ success: true, method: 'resend', emailId: resendData.id });
