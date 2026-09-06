@@ -3372,6 +3372,16 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
       const { data, error } = await Promise.race([upload, timeout]);
 
       if (!error && data) {
+        // The media bucket can be private. A signed URL works for both the
+        // preview and KIE, whereas getPublicUrl() only creates a broken URL
+        // when public bucket access has not been enabled.
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+          .from('media')
+          .createSignedUrl(filePath, 60 * 60);
+        if (!signedUrlError && signedUrlData?.signedUrl) {
+          setPhotoUrl(signedUrlData.signedUrl);
+          return;
+        }
         const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
         if (publicUrlData?.publicUrl) {
           setPhotoUrl(publicUrlData.publicUrl);
