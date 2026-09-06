@@ -3364,33 +3364,24 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
         }, 'image/jpeg', 0.86);
       });
 
-      const fileName = `couple_${Date.now()}_${Math.random().toString(36).substring(2, 6)}.jpg`;
-      const filePath = `couple_photos/${fileName}`;
-
-      const upload = supabase.storage.from('media').upload(filePath, uploadBlob, {
-        cacheControl: '31536000', upsert: true, contentType: 'image/jpeg'
-      });
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 20000));
-      const { data, error } = await Promise.race([upload, timeout]);
-
-      if (!error && data) {
-        // The media bucket can be private. A signed URL works for both the
-        // preview and KIE, whereas getPublicUrl() only creates a broken URL
-        // when public bucket access has not been enabled.
-        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-          .from('media')
-          .createSignedUrl(filePath, 60 * 60);
-        if (!signedUrlError && signedUrlData?.signedUrl) {
-          setPhotoUrl(signedUrlData.signedUrl);
-          return;
-        }
-        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
-        if (publicUrlData?.publicUrl) {
-          setPhotoUrl(publicUrlData.publicUrl);
-          return;
-        }
+      // Upload through the server so users never need a direct Storage RLS
+      // policy. The response is a time-limited URL that KIE can fetch.
+      const body = new FormData();
+      body.append('file', uploadBlob, `reference-${Date.now()}.jpg`);
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await Promise.race([
+        fetch('/api/ai-reference-upload', {
+          method: 'POST', body,
+          headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 20000))
+      ]);
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.url) {
+        throw new Error(result.error || 'The image could not be uploaded. Please try again.');
       }
-      throw error || new Error('Storage did not return a public image URL.');
+      setPhotoUrl(result.url);
+      return;
     } catch (err) {
       console.warn('AI Studio image upload error:', err);
       setPhotoError(err?.message || 'The image could not be uploaded. Please try again.');
