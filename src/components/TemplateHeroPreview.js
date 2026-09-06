@@ -9,6 +9,17 @@ export const getFirstFramePoster = (url) => {
   if (url.includes('cloudflarestream')) {
     return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
   }
+  const localPoster = [
+    ['bordeaux', '/images/bordeaux.png'], ['golden-palace', '/images/champagne.png'],
+    ['ivory', '/images/ivory.png'], ['celestial', '/images/royalblue.png'],
+    ['royal-blue', '/images/royalblue.png'], ['royal-bordeaux', '/images/royalbordeaux.png'],
+    ['horizon-bordeaux', '/images/royalbordeaux.png'], ['sage', '/images/sage.png'],
+    ['terracotta', '/images/terracotta.png'], ['chocolate', '/images/chocolate.png'],
+    ['cisnes', '/images/dress_code_floral.png'], ['bloom', '/images/dress_code_floral.png'],
+    ['romantic-garden', '/images/dress_code_floral.png'], ['wax-seal-blue', '/images/royalblue.png'],
+    ['tropical', '/images/sage.png'], ['soft-scratch', '/images/ivory.png']
+  ].find(([needle]) => url.toLowerCase().includes(needle));
+  if (localPoster) return localPoster[1];
   return undefined;
 };
 
@@ -140,6 +151,7 @@ export default function TemplateHeroPreview({
               src={preloadEnvelopeFrame ? getFirstFrameVideoSrc(envelopeSrc) : undefined}
               muted
               playsInline
+              poster={envelopePoster}
               preload={preloadEnvelopeFrame ? "auto" : "none"}
               fetchPriority={preloadEnvelopeFrame ? "high" : "auto"}
               onEnded={handleVideoEnded}

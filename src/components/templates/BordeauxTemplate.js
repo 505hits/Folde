@@ -117,16 +117,6 @@ const VenueImage = ({ src }) => {
 
 // Interactive Swatches & Custom Styled Dress Code Component
 const DressCodeSection = ({ t, accentColor }) => {
-  const [selectedColor, setSelectedColor] = React.useState(null);
-
-  const colors = [
-    { hex: '#5C3A1E', name: 'Warm Espresso', desc: 'Deep, rich earthy tones' },
-    { hex: '#C2A37B', name: 'Champagne', desc: 'Warm metallic elegance' },
-    { hex: '#8C9A86', name: 'Sage Green', desc: 'Earthy, natural pastel' },
-    { hex: '#CFA79F', name: 'Rosy Dust', desc: 'Romantic muted blush pink' },
-    { hex: '#EAE5D8', name: 'Soft Sand', desc: 'Clean, neutral highlights' }
-  ];
-
   return (
     <section className={styles.dressCode} style={{ padding: '5rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
       <AnimatedSection type="fade">
@@ -135,60 +125,6 @@ const DressCodeSection = ({ t, accentColor }) => {
       <AnimatedSection type="fade">
         <p className={styles.dressSubtitle}>Elegant &amp; Formal</p>
       </AnimatedSection>
-
-      <AnimatedSection type="zoom">
-        <div className={styles.dressSplit} style={{ margin: '2.5rem 0' }}>
-          <div className={styles.dressCol} style={{ flex: 1 }}>
-            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#999', marginBottom: '0.5rem', fontWeight: 600 }}>Ladies</p>
-            <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.1rem', color: '#2c2c2c', fontStyle: 'italic', margin: 0 }}>Elegant cocktail dress or long gown</p>
-          </div>
-          <div className={styles.dressDivider}></div>
-          <div className={styles.dressCol} style={{ flex: 1 }}>
-            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#999', marginBottom: '0.5rem', fontWeight: 600 }}>Gentlemen</p>
-            <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.1rem', color: '#2c2c2c', fontStyle: 'italic', margin: 0 }}>Classic suit or refined tuxedo</p>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      <AnimatedSection type="fade">
-        <p className={styles.colorsLabel} style={{ fontWeight: 600, letterSpacing: '0.15em', fontSize: '0.75rem', color: '#888', minHeight: '20px' }}>
-          {selectedColor ? selectedColor.name : 'Hover or tap colors for details'}
-        </p>
-        <div className={styles.colorsRow} style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center', gap: '1.25rem' }}>
-          {colors.map((c, i) => (
-            <div
-              key={i}
-              className={styles.colorDot}
-              style={{
-                backgroundColor: c.hex,
-                cursor: 'pointer',
-                transform: selectedColor?.hex === c.hex ? 'scale(1.2)' : 'scale(1)',
-                transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                boxShadow: selectedColor?.hex === c.hex ? `0 0 15px ${c.hex}88` : 'none'
-              }}
-              onMouseEnter={() => setSelectedColor(c)}
-              onMouseLeave={() => setSelectedColor(null)}
-              onClick={() => setSelectedColor(selectedColor?.hex === c.hex ? null : c)}
-            />
-          ))}
-        </div>
-      </AnimatedSection>
-
-      {selectedColor && (
-        <div style={{
-          maxWidth: '300px',
-          margin: '-2.5rem auto 2.5rem',
-          padding: '0.8rem 1.5rem',
-          backgroundColor: '#fbfbf9',
-          borderRadius: '20px',
-          border: '1px solid rgba(0,0,0,0.04)',
-          animation: 'fadeIn 0.3s ease forwards',
-        }}>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>
-            {selectedColor.desc}
-          </p>
-        </div>
-      )}
 
       <AnimatedSection type="zoom">
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
@@ -442,7 +378,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
       // Fallback for Safari which natively supports HLS, or direct mp4/webm links
       const videoSrc = src.includes('#t=') ? src : `${src}#t=0.001`;
       video.src = videoSrc;
-      video.preload = "metadata";
+      video.preload = "auto";
       if (typeof video.load === 'function') video.load();
     }
   }, [data?.videos?.envelope]);
@@ -580,6 +516,17 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     if (url.includes('cloudflarestream')) {
       return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
     }
+    const localPoster = [
+      ['bordeaux', '/images/bordeaux.png'], ['golden-palace', '/images/champagne.png'],
+      ['ivory', '/images/ivory.png'], ['celestial', '/images/royalblue.png'],
+      ['royal-blue', '/images/royalblue.png'], ['royal-bordeaux', '/images/royalbordeaux.png'],
+      ['horizon-bordeaux', '/images/royalbordeaux.png'], ['sage', '/images/sage.png'],
+      ['terracotta', '/images/terracotta.png'], ['chocolate', '/images/chocolate.png'],
+      ['cisnes', '/images/dress_code_floral.png'], ['bloom', '/images/dress_code_floral.png'],
+      ['romantic-garden', '/images/dress_code_floral.png'], ['wax-seal-blue', '/images/royalblue.png'],
+      ['tropical', '/images/sage.png'], ['soft-scratch', '/images/ivory.png']
+    ].find(([needle]) => url.toLowerCase().includes(needle));
+    if (localPoster) return localPoster[1];
     return undefined;
   };
 

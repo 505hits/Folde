@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
+import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 
 
 const themes = [
@@ -188,7 +189,7 @@ const selectStyle = {
 };
 
 const LazyThumbnail = ({ src }) => {
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(true);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -208,6 +209,7 @@ const LazyThumbnail = ({ src }) => {
       {inView ? (
         <video
           src={src}
+          poster={getFirstFramePoster(src)}
           preload="auto"
           fetchPriority="high"
           muted

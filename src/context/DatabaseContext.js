@@ -359,9 +359,12 @@ export function DatabaseProvider({ children }) {
   const saveOrderDetails = async (slug, details) => {
     setEventInfo(prev => ({ ...prev, [slug]: { ...(prev[slug] || {}), ...details } }));
     try {
-      await supabase.from('orders').update({ details }).eq('slug', slug);
+      const { error } = await supabase.from('orders').update({ details }).eq('slug', slug);
+      if (error) throw error;
+      return true;
     } catch (err) {
       console.warn('saveOrderDetails Supabase error:', err);
+      return false;
     }
   };
 

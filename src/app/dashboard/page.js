@@ -84,7 +84,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision, publishOrderDetails } = useDatabase();
+  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
@@ -1094,6 +1094,7 @@ export default function Dashboard() {
               eventInfo={clientEventInfo}
               slug={clientSlug}
               setEventInfo={setEventInfo}
+              saveOrderDetails={saveOrderDetails}
             />
           )}
           {activeTab === 'guests' && (
@@ -3247,7 +3248,7 @@ function ContactUsTab({ currentUser }) {
   );
 }
 
-function AiStudioTab({ eventInfo, slug, setEventInfo }) {
+function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
   // Always unlocked for users inside the dashboard
   const isPremium = true;
   const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
@@ -3282,7 +3283,7 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
     if (typeof window !== 'undefined' && slug) {
       try { localStorage.setItem(`generated_photos_${slug}`, JSON.stringify(newPhotos)); } catch (e) { }
     }
-    saveMediaToDatabase(undefined, undefined, newPhotos);
+    saveMediaToDatabase({ aiPhotos: newPhotos, generatedPhotos: newPhotos });
   };
 
   // 5 Credits Limit Tracking
@@ -3317,6 +3318,16 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
   const handleFileUpload = async (e, setPhotoUrl, setUploadingState) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('Please select an image file.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      setPhotoError('Please choose an image smaller than 12 MB.');
+      e.target.value = '';
+      return;
+    }
     setUploadingState(true);
     setPhotoError('');
 
@@ -3325,9 +3336,11 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
       const fileName = `couple_${Date.now()}_${Math.random().toString(36).substring(2, 6)}.${fileExt}`;
       const filePath = `couple_photos/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const upload = supabase.storage
         .from('media')
         .upload(filePath, file, { cacheControl: '3600', upsert: true });
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), 15000));
+      const { data, error } = await Promise.race([upload, timeout]);
 
       if (!error && data) {
         const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
@@ -3337,11 +3350,12 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           return;
         }
       }
+      throw error || new Error('Storage did not return a public image URL.');
     } catch (err) {
       console.warn("Supabase Storage upload error, using local compressed fallback:", err);
     }
 
-    // Canvas Compression Fallback
+    // Local compression fallback keeps the studio usable if storage is unavailable.
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
@@ -3365,26 +3379,38 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
         setPhotoUrl(dataUrl);
+        setUploadingState(false);
+      };
+      img.onerror = () => {
+        setPhotoError('This image could not be read. Please try a different file.');
         setUploadingState(false);
       };
       img.src = event.target.result;
     };
+    reader.onerror = () => {
+      setPhotoError('This image could not be read. Please try again.');
+      setUploadingState(false);
+    };
     reader.readAsDataURL(file);
   };
 
-  // Save custom media directly to Supabase DB orders table
-  const saveMediaToDatabase = async (heroUrl, musicUrl, aiPhotosArray) => {
+  // Store media in the order details JSON so it survives logout and future sessions.
+  const saveMediaToDatabase = async (detailsPatch = {}) => {
     if (!slug) return;
     try {
-      const payload = {};
-      if (heroUrl !== undefined) payload.custom_hero_image = heroUrl;
-      if (musicUrl !== undefined) payload.bg_music_url = musicUrl;
-      if (aiPhotosArray !== undefined) payload.ai_photos = aiPhotosArray;
-      await supabase.from('orders').update(payload).eq('slug', slug);
+      const nextDetails = { ...(eventInfo || {}), ...detailsPatch };
+      if (typeof saveOrderDetails === 'function') {
+        return await saveOrderDetails(slug, nextDetails);
+      } else {
+        const { error } = await supabase.from('orders').update({ details: nextDetails }).eq('slug', slug);
+        if (error) throw error;
+        return true;
+      }
     } catch (err) {
-      console.warn("Supabase order update notice:", err);
+      console.warn("Supabase media persistence notice:", err);
+      return false;
     }
   };
 
@@ -3402,7 +3428,7 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           }
         };
       });
-      saveMediaToDatabase(url, undefined);
+      saveMediaToDatabase({ customHeroImage: url, images: { ...(eventInfo?.images || {}), hero: url } });
       alert('✨ Your AI photo has been applied as the main hero image for your invitation.');
     }
   };
@@ -3420,19 +3446,19 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           }
         };
       });
-      saveMediaToDatabase(null, undefined);
+      saveMediaToDatabase({ customHeroImage: null, images: { ...(eventInfo?.images || {}), hero: null } });
       alert('❌ The main AI image has been removed from your site.');
     }
   };
 
-  const handleAddToGallery = (url) => {
+  const handleAddToGallery = async (url) => {
     if (typeof setEventInfo === 'function') {
+      const existingGuestGallery = eventInfo?.guestGallery || [];
+      const existingMemories = eventInfo?.galleryPhotos || eventInfo?.gallery || eventInfo?.memories || [];
+      const updatedGuestGallery = Array.from(new Set([url, ...existingGuestGallery]));
+      const updatedMemories = Array.from(new Set([url, ...existingMemories]));
       setEventInfo(prev => {
         const currentSlugData = (prev && prev[slug]) ? prev[slug] : {};
-        const existingGuestGallery = currentSlugData.guestGallery || [];
-        const existingMemories = currentSlugData.galleryPhotos || currentSlugData.gallery || currentSlugData.memories || [];
-        const updatedGuestGallery = Array.from(new Set([url, ...existingGuestGallery]));
-        const updatedMemories = Array.from(new Set([url, ...existingMemories]));
         return {
           ...prev,
           [slug]: {
@@ -3444,8 +3470,8 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           }
         };
       });
-      saveMediaToDatabase(undefined, undefined);
-      alert('🖼️ Your AI photo has been added to the Memories and Gallery sections of your site.');
+      const saved = await saveMediaToDatabase({ guestGallery: updatedGuestGallery, galleryPhotos: updatedMemories, gallery: updatedMemories, memories: updatedMemories });
+      alert(saved ? '🖼️ Your AI photo has been saved to Memories and Gallery.' : '🖼️ The photo was added locally, but could not be saved to your account. Please try again.');
     }
   };
 
@@ -3462,7 +3488,7 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           }
         };
       });
-      saveMediaToDatabase(undefined, audioUrl);
+      saveMediaToDatabase({ bgMusicUrl: audioUrl, musicEnabled: true });
       if (typeof setLocalData === 'function') {
         setLocalData(prev => ({
           ...prev,
@@ -3486,7 +3512,7 @@ function AiStudioTab({ eventInfo, slug, setEventInfo }) {
           }
         };
       });
-      saveMediaToDatabase(undefined, '');
+      saveMediaToDatabase({ bgMusicUrl: '', musicEnabled: false });
       if (typeof setLocalData === 'function') {
         setLocalData(prev => ({
           ...prev,
