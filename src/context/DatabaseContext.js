@@ -263,6 +263,7 @@ export function DatabaseProvider({ children }) {
           status: o.status,
           paid: o.paid,
           date: o.date,
+          createdAt: o.created_at,
           theme: o.theme,
           details: o.details || {}
         }));
@@ -301,6 +302,13 @@ export function DatabaseProvider({ children }) {
 
     const isStandard = plan === 'Standard' || plan === 'Essential' || plan === 'essential';
     const orderId = `ORD-${String(orders.length + 1).padStart(3, '0')}`;
+    // Keep checkout names in the order itself. This makes the invitation
+    // independent from any old browser profile or demo data.
+    const orderDetails = {
+      ...details,
+      partner1: details.partner1 || name,
+      partner2: details.partner2 || partnerName,
+    };
 
     const newOrder = {
       id: orderId,
@@ -312,8 +320,9 @@ export function DatabaseProvider({ children }) {
       status: isStandard ? "Live" : "In Creation",
       paid: true,
       date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
       theme,
-      details
+      details: orderDetails
     };
 
     // 1. Save locally immediately
@@ -334,7 +343,7 @@ export function DatabaseProvider({ children }) {
           paid: true,
           date: new Date().toISOString().split('T')[0],
           theme: theme,
-          details: details
+          details: orderDetails
         });
 
       if (error) {
@@ -358,6 +367,7 @@ export function DatabaseProvider({ children }) {
 
   const saveOrderDetails = async (slug, details) => {
     setEventInfo(prev => ({ ...prev, [slug]: { ...(prev[slug] || {}), ...details } }));
+    setOrders(prev => prev.map(order => order.slug === slug ? { ...order, details: { ...(order.details || {}), ...details } } : order));
     try {
       const { error } = await supabase.from('orders').update({ details }).eq('slug', slug);
       if (error) throw error;

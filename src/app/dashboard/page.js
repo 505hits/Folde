@@ -118,7 +118,14 @@ export default function Dashboard() {
     theme: 'bordeaux'
   };
 
-  const userOrder = (currentUser ? orders.find(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid) : null) || fallbackOrder;
+  const matchingPaidOrders = currentUser
+    ? orders.filter(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid)
+    : [];
+  const userOrder = matchingPaidOrders
+    .sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0] || fallbackOrder;
+  const orderCoupleNames = String(userOrder?.couple || '').split(/\s+et\s+/i);
+  const orderPartner1 = userOrder?.details?.partner1 || orderCoupleNames[0] || currentUser?.name || 'Partner #1';
+  const orderPartner2 = userOrder?.details?.partner2 || orderCoupleNames[1] || currentUser?.partnerName || 'Partner #2';
   const [selectedTheme, setSelectedTheme] = useState(userOrder?.theme || 'bordeaux');
 
   // Fetch guests from Supabase when dashboard loads
@@ -707,8 +714,8 @@ export default function Dashboard() {
     time: '14:00',
     ceremonyVenue: 'Ocean front beach House',
     receptionVenue: 'South Dixie Highway, Homestead',
-    partner1: currentUser.name || '',
-    partner2: currentUser.partnerName || '',
+    partner1: orderPartner1,
+    partner2: orderPartner2,
     timeline: [
       { time: "14:00", title: "Lunch" },
       { time: "18:00", title: "Ceremony" },
@@ -734,7 +741,14 @@ export default function Dashboard() {
     },
     images: {}
   };
-  const clientEventInfo = eventInfo[clientSlug] || defaultEventInfo;
+  const clientEventInfo = {
+    ...defaultEventInfo,
+    ...(eventInfo[clientSlug] || {}),
+    // The paid order is authoritative for the couple's names. This prevents
+    // stale local/demo values from appearing after checkout.
+    partner1: orderPartner1,
+    partner2: orderPartner2,
+  };
 
   const tabs = [
     { id: 'invitation', label: 'My Invitation', icon: '✎' },
