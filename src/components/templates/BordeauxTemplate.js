@@ -454,6 +454,13 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     "/images/couple_forest_walk_1782995203954.png",
     "/images/couple_cafe_smile_1782995212728.png"
   ];
+  const guestUploadUrl = (() => {
+    try {
+      return `${new URL(currentUrl).origin}/guest-upload/${encodeURIComponent(t.slug || 'wedding')}`;
+    } catch {
+      return `https://folde-wedding.com/guest-upload/${encodeURIComponent(t.slug || 'wedding')}`;
+    }
+  })();
 
   const ChevronIcon = () => (
     <svg className={styles.selectChevron} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1028,22 +1035,22 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-                  <button type="button" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.1rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease', margin: '0 auto' }}>
+                  <a href={guestUploadUrl} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.1rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease', margin: '0 auto', textDecoration: 'none' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
                       <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
                       <circle cx="12" cy="13" r="3"></circle>
                     </svg>
                     Add your photos & videos
-                  </button>
+                  </a>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', margin: '0.5rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(guestUploadUrl)}`}
                       alt="QR Code to upload photos"
                       style={{ width: '130px', height: '130px', objectFit: 'contain' }}
                     />
                     <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
-                      Scan to add your photos via this link
+                      Scan to add your photos to this wedding gallery
                     </p>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', margin: '1rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>

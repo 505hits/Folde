@@ -24,7 +24,7 @@ export default function InvitePage({ params }) {
 
   // En mode preview, on affiche toutes les modifs. 
   // En mode live, on affiche 'publishedData' si ça existe, sinon fullData (pour la compatibilité des anciens).
-  const data = isPreview ? fullData : (fullData.publishedData || fullData);
+  const data = { ...(isPreview ? fullData : (fullData.publishedData || fullData)), slug };
 
   return <BordeauxTemplate data={data} editMode={false} autoPlaySimulation={true} />;
 }
