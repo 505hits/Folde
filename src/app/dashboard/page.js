@@ -3332,68 +3332,61 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
     setPhotoError('');
 
     try {
-      const fileExt = file.name ? file.name.split('.').pop().toLowerCase() : 'jpg';
-      const fileName = `couple_${Date.now()}_${Math.random().toString(36).substring(2, 6)}.${fileExt}`;
+      // Resize before upload: this keeps uploads quick and gives KIE a small, web-safe JPEG.
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        const timer = setTimeout(() => reject(new Error('The image took too long to read.')), 10000);
+        reader.onload = () => { clearTimeout(timer); resolve(reader.result); };
+        reader.onerror = () => { clearTimeout(timer); reject(new Error('This image could not be read.')); };
+        reader.readAsDataURL(file);
+      });
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        const timer = setTimeout(() => reject(new Error('This image format is not supported. Please use JPG, PNG, or WebP.')), 10000);
+        img.onload = () => { clearTimeout(timer); resolve(img); };
+        img.onerror = () => { clearTimeout(timer); reject(new Error('This image format is not supported. Please use JPG, PNG, or WebP.')); };
+        img.src = dataUrl;
+      });
+      const maxDim = 1400;
+      const scale = Math.min(1, maxDim / Math.max(image.width, image.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+      const uploadBlob = await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('The image took too long to prepare.')), 10000);
+        canvas.toBlob((blob) => {
+          clearTimeout(timer);
+          if (blob) resolve(blob);
+          else reject(new Error('The image could not be prepared for upload.'));
+        }, 'image/jpeg', 0.86);
+      });
+
+      const fileName = `couple_${Date.now()}_${Math.random().toString(36).substring(2, 6)}.jpg`;
       const filePath = `couple_photos/${fileName}`;
 
-      const upload = supabase.storage
-        .from('media')
-        .upload(filePath, file, { cacheControl: '3600', upsert: true });
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), 15000));
+      const upload = supabase.storage.from('media').upload(filePath, uploadBlob, {
+        cacheControl: '31536000', upsert: true, contentType: 'image/jpeg'
+      });
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 20000));
       const { data, error } = await Promise.race([upload, timeout]);
 
       if (!error && data) {
         const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
         if (publicUrlData?.publicUrl) {
           setPhotoUrl(publicUrlData.publicUrl);
-          setUploadingState(false);
           return;
         }
       }
       throw error || new Error('Storage did not return a public image URL.');
     } catch (err) {
-      console.warn("Supabase Storage upload error, using local compressed fallback:", err);
-    }
-
-    // Local compression fallback keeps the studio usable if storage is unavailable.
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        const maxDim = 800;
-        if (width > height) {
-          if (width > maxDim) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          }
-        } else {
-          if (height > maxDim) {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        setPhotoUrl(dataUrl);
-        setUploadingState(false);
-      };
-      img.onerror = () => {
-        setPhotoError('This image could not be read. Please try a different file.');
-        setUploadingState(false);
-      };
-      img.src = event.target.result;
-    };
-    reader.onerror = () => {
-      setPhotoError('This image could not be read. Please try again.');
+      console.warn('AI Studio image upload error:', err);
+      setPhotoError(err?.message || 'The image could not be uploaded. Please try again.');
+    } finally {
+      // Never leave either reference card in an endless loading state.
       setUploadingState(false);
-    };
-    reader.readAsDataURL(file);
+      e.target.value = '';
+    }
   };
 
   // Store media in the order details JSON so it survives logout and future sessions.
@@ -3571,6 +3564,7 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
 
   useEffect(() => {
     if (!photoTaskId || !photoGenerating) return;
+    let attempts = 0;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/ai-photo?taskId=${encodeURIComponent(photoTaskId)}`);
@@ -3594,15 +3588,30 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
           setPhotoError(data.failMsg || 'Generation failed. Please try again.');
           clearInterval(interval);
         } else {
+          attempts += 1;
+          if (!res.ok || attempts >= 60) {
+            setPhotoGenerating(false);
+            setPhotoError(data.error || 'The illustration is taking longer than expected. Please try again.');
+            clearInterval(interval);
+            return;
+          }
           setPhotoStatus('Generating your illustration (10-25 sec)...');
         }
-      } catch (err) { }
+      } catch (err) {
+        attempts += 1;
+        if (attempts >= 3) {
+          setPhotoGenerating(false);
+          setPhotoError('We could not check the illustration status. Please try again.');
+          clearInterval(interval);
+        }
+      }
     }, 3000);
     return () => clearInterval(interval);
   }, [photoTaskId, photoGenerating, slug]);
 
   useEffect(() => {
     if (!musicTaskId || !musicGenerating) return;
+    let attempts = 0;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/ai-music?taskId=${encodeURIComponent(musicTaskId)}`);
@@ -3629,9 +3638,23 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
           setMusicError(data.failMsg || 'Music generation failed. Please try again.');
           clearInterval(interval);
         } else {
+          attempts += 1;
+          if (!res.ok || attempts >= 60) {
+            setMusicGenerating(false);
+            setMusicError(data.error || 'The soundtrack is taking longer than expected. Please try again.');
+            clearInterval(interval);
+            return;
+          }
           setMusicStatus('Composing your wedding soundtrack (20-40 sec)...');
         }
-      } catch (err) { }
+      } catch (err) {
+        attempts += 1;
+        if (attempts >= 3) {
+          setMusicGenerating(false);
+          setMusicError('We could not check the soundtrack status. Please try again.');
+          clearInterval(interval);
+        }
+      }
     }, 4000);
     return () => clearInterval(interval);
   }, [musicTaskId, musicGenerating, slug]);

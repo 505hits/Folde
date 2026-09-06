@@ -18,8 +18,7 @@ export async function POST(req) {
             prompt: prompt.trim().slice(0, 500),
             customMode: false,
             instrumental: Boolean(instrumental),
-            model: model || 'V4',
-            callBackUrl: 'https://folde-gamma.vercel.app/api/ai-music-callback'
+            model: model || 'V4'
         };
 
         if (style) payload.style = style;
@@ -64,7 +63,9 @@ export async function GET(req) {
             return NextResponse.json({ error: 'taskId parameter is required' }, { status: 400 });
         }
 
-        const response = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`, {
+        // Music tasks use KIE's music-specific status endpoint. The generic jobs
+        // endpoint does not expose the generated Suno audio URLs.
+        const response = await fetch(`https://api.kie.ai/api/v1/generate/record-info?taskId=${encodeURIComponent(taskId)}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${KIE_API_KEY}`
@@ -78,24 +79,21 @@ export async function GET(req) {
         }
 
         const record = data.data || {};
-        let audioUrl = null;
-
-        if (record.state === 'success' && record.resultJson) {
-            try {
-                const parsed = JSON.parse(record.resultJson);
-                const candidate = parsed.audioUrl || parsed.resultUrls?.[0] || parsed.audio_url || parsed.data?.audioUrl || null;
-                audioUrl = Array.isArray(candidate) ? candidate[0] : candidate;
-            } catch (e) {
-                console.warn('Failed to parse music resultJson:', e);
-            }
-        }
+        const rawState = String(record.status || record.state || '').toUpperCase();
+        const tracks = record.response?.sunoData || record.response?.data || record.sunoData || [];
+        const firstTrack = Array.isArray(tracks) ? tracks[0] : null;
+        const audioUrl = firstTrack?.audioUrl || firstTrack?.audio_url || firstTrack?.streamAudioUrl || firstTrack?.stream_audio_url || null;
+        const failedStates = ['FAIL', 'FAILED', 'GENERATE_AUDIO_FAILED', 'CREATE_TASK_FAILED', 'CALLBACK_EXCEPTION', 'SENSITIVE_WORD_ERROR'];
+        const state = rawState === 'SUCCESS' || rawState === 'FIRST_SUCCESS'
+            ? 'success'
+            : failedStates.includes(rawState) ? 'fail' : 'processing';
 
         return NextResponse.json({
             success: true,
-            state: record.state, // 'waiting', 'success', 'fail'
+            state,
             audioUrl,
-            resultJson: record.resultJson,
-            failMsg: record.failMsg,
+            coverImageUrl: firstTrack?.imageUrl || firstTrack?.image_url || null,
+            failMsg: record.errorMessage || record.failMsg,
             costTime: record.costTime
         });
 
