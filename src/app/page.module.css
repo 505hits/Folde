@@ -60,15 +60,15 @@
 
 /* Phone Mockup */
 .heroPhone {
-  flex: 0 0 320px;
+  flex: 0 0 340px;
   display: flex;
   justify-content: center;
   animation: float 6s ease-in-out infinite;
 }
 
 .phoneFrame {
-  width: 280px;
-  height: 485px;
+  width: 296px;
+  height: 640px;
   background: #121212;
   border-radius: 42px;
   padding: 4px;
@@ -107,7 +107,8 @@
 
 .mockupContent {
   width: 450px;
-  zoom: 0.6044;
+  min-height: 970px;
+  zoom: 0.658;
   margin: 0 auto;
 }
 
@@ -140,25 +141,25 @@
   }
 
   .phoneFrame {
-    width: 240px;
-    height: 425px;
+    width: 272px;
+    height: 590px;
   }
 
   .mockupContent {
-    zoom: 0.5155;
+    zoom: 0.604;
   }
 }
 
 @media (max-width: 480px) {
   .phoneFrame {
-    width: 210px;
-    height: 360px;
+    width: 238px;
+    height: 516px;
     border-radius: 36px;
     padding: 4px;
   }
 
   .mockupContent {
-    zoom: 0.4488;
+    zoom: 0.529;
   }
 
   .phoneScreen {

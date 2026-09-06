@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-export default function StyledFileInput({ accept, onChange, label = "Choisir un fichier", multiple = false, style }) {
+export default function StyledFileInput({ accept, onChange, label = "Choose a file", multiple = false, style }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState('');
 

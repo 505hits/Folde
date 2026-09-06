@@ -98,12 +98,12 @@ export default function Offers() {
               </Link>
             </div>
 
-            {/* Custom */}
+            {/* Expert */}
             <div className="price-card">
               <div className="price-header">
-                <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Custom</h2>
+                <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Expert</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  Hand-crafted ("Fait main") bespoke questionnaire onboarding, team review, and admin site validation.
+                  A hand-crafted bespoke experience with a dedicated creative brief, team review, and studio validation.
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>290.00€</span>
@@ -112,7 +112,7 @@ export default function Offers() {
               </div>
               <ul className="price-features">
                 <li><span className="check">✓</span> 100% bespoke questionnaire onboarding</li>
-                <li><span className="check">✓</span> Hand-crafted ("Fait main") art direction</li>
+                <li><span className="check">✓</span> Hand-crafted art direction</li>
                 <li><span className="check">✓</span> Custom Envelope, Hero video, Menu & Photos</li>
                 <li><span className="check">✓</span> Direct review & validation by our team</li>
                 <li><span className="check">✓</span> Personal concierge & priority support</li>
@@ -120,7 +120,7 @@ export default function Offers() {
                 <li><span className="check">✓</span> <strong>Everything in Premium</strong></li>
               </ul>
               <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
-                Start with Custom
+                Start with Expert
               </Link>
             </div>
 

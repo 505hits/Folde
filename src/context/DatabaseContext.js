@@ -389,9 +389,9 @@ export function DatabaseProvider({ children }) {
   // ============ GUESTS (Supabase + local fallback) ============
   const [guests, setGuests] = useState({
     "emma-et-lucas": [
-      { id: 1, name: 'Alice Dupont', status: 'Attending', meal: 'Beef Wellington', side: 'Bride', hasPlusOne: true, plusOneName: 'Marc Dupont', message: 'Tellement hâte de célébrer avec vous !' },
+      { id: 1, name: 'Alice Dupont', status: 'Attending', meal: 'Beef Wellington', side: 'Bride', hasPlusOne: true, plusOneName: 'Marc Dupont', message: 'We cannot wait to celebrate with you!' },
       { id: 2, name: 'Jean Martin', status: 'Pending', meal: '-', side: 'Groom' },
-      { id: 3, name: 'Sophie Bernard', status: 'Attending', meal: 'Saumon', side: 'Bride', hasPlusOne: false, message: 'Félicitations pour ce beau projet !' },
+      { id: 3, name: 'Sophie Bernard', status: 'Attending', meal: 'Salmon', side: 'Bride', hasPlusOne: false, message: 'Congratulations on your beautiful celebration!' },
     ]
   });
 

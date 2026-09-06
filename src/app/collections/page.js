@@ -28,6 +28,7 @@ const templates = [
   { id: 'cisnes', name: 'Cisnes', tag: 'ELEGANT', desc: 'Elegant swans romance.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', isImage: false, scratchCover: 'https://savethedate-cisnes.thedigitalyes.com/assets/hero-scratch-cover-BPeuVyTP.png', envelope: 'https://savethedate-cisnes.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Clara', partner2: 'Hugo', date: 'OCT 18, 2026' },
   { id: 'bloom', name: 'Bloom', tag: 'NATURAL', desc: 'Blossoming love.', video: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', isImage: false, scratchCover: 'https://savethedate-bloom.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png', envelope: 'https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Lily', partner2: 'James', date: 'JUN 21, 2026' },
   { id: 'floral', name: 'Floral', tag: 'NATURAL', desc: 'A bed of flowers.', video: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', isImage: false, scratchCover: 'https://savethedate-floral.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png', envelope: 'https://savethedate-floral.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Rose', partner2: 'Jack', date: 'MAY 15, 2026' },
+  { id: 'romanticgarden', name: 'Romantic Garden', tag: 'ROMANTIC', desc: 'Enchanted floral garden romance.', video: 'https://eftesa.com/assets/themes/romantic-garden/cover-video.mp4', isImage: false, envelope: 'https://eftesa.com/assets/themes/romantic-garden/Floral-garden-intro-video.mp4', partner1: 'Julien', partner2: 'Camille', date: 'JUN 18, 2026', popular: true },
   { id: 'dolcevita', name: 'Dolce Vita', tag: 'ROMANTIC', desc: 'Italian coast & sun-drenched romance.', video: 'https://static.tildacdn.net/tild3733-3133-4232-b033-623736623262/romantic-moments-bea.png', isImage: true, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', partner1: 'Matteo', partner2: 'Chiara', date: 'AUG 20, 2026', popular: true },
   { id: 'webgencytemplate5', name: 'Velvet Garden', tag: 'ELEGANT', desc: 'Sleek modern luxury with botanical details.', video: 'https://static.tildacdn.net/tild3338-6332-4463-b639-623665353237/300592484d1f31590325.png', isImage: true, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Enzo', partner2: 'Manon', date: 'SEP 14, 2026', popular: false },
   { id: 'tildatemplate2', name: 'Noir Gold', tag: 'MINIMAL', desc: 'Minimalist dark luxury with gold accents.', video: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', isImage: false, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777287974328.mp4', partner1: 'Lucas', partner2: 'Inès', date: 'OCT 02, 2026', popular: false },
@@ -38,6 +39,13 @@ const templates = [
   { id: 'pressedlovefloral', name: 'Botanical Floral', tag: 'NATURAL', desc: 'Soft floral petals and garden blooming.', video: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', partner1: 'Carlos', partner2: 'María', date: 'OCT 15, 2026', popular: false },
   { id: 'pressedlovebigentrance', name: 'Big Entrance', tag: 'DRAMATIC', desc: 'Cinematic debut and regal golden seal.', video: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', partner1: 'Raphaël', partner2: 'Victoria', date: 'NOV 08, 2026', popular: true },
 ];
+
+const FEATURED_TEMPLATE_IDS = ['cisnes', 'bloom', 'romanticgarden', 'pressedlovecomo', 'tropical', 'softscratch'];
+const orderedTemplates = [...templates].sort((a, b) => {
+  const aIndex = FEATURED_TEMPLATE_IDS.indexOf(a.id);
+  const bIndex = FEATURED_TEMPLATE_IDS.indexOf(b.id);
+  return (aIndex === -1 ? FEATURED_TEMPLATE_IDS.length : aIndex) - (bIndex === -1 ? FEATURED_TEMPLATE_IDS.length : bIndex);
+});
 
 export default function Templates() {
   const router = useRouter();
@@ -52,9 +60,9 @@ export default function Templates() {
 
   const tags = ['All', 'Popular', 'Elegant', 'Romantic', 'Warm', 'New'];
 
-  const filtered = filter === 'All' ? templates
-    : filter === 'Popular' ? templates.filter(t => t.popular)
-      : templates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
+  const filtered = filter === 'All' ? orderedTemplates
+    : filter === 'Popular' ? orderedTemplates.filter(t => t.popular)
+      : orderedTemplates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
 
   const handleSelectAndContinue = (id) => {
     localStorage.setItem('selectedTemplate', id);
@@ -134,7 +142,12 @@ export default function Templates() {
               <div className="tpl-img-wrap">
                 {t.popular && <div className="tpl-popular">⭐ POPULAR</div>}
                 <button className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
-                <div className="tpl-phone" onClick={(e) => { e.stopPropagation(); setPlayingTemplate(t.id); }}>
+                <div
+                  className="tpl-phone"
+                  onMouseEnter={() => setPlayingTemplate(t.id)}
+                  onMouseLeave={() => setPlayingTemplate(null)}
+                  onClick={(e) => { e.stopPropagation(); setPlayingTemplate(t.id); }}
+                >
                   <div className="tpl-notch"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden', WebkitMaskImage: '-webkit-radial-gradient(white, black)', maskImage: 'radial-gradient(white, black)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
                     <TemplateHeroPreview
@@ -146,6 +159,7 @@ export default function Templates() {
                       isImage={t.isImage || false}
                       previewImage={t.image}
                       active={playingTemplate === t.id}
+                      preloadEnvelopeFrame
                     />
                   </div>
                 </div>

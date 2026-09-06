@@ -1,5 +1,16 @@
 import { NextResponse } from 'next/server';
 
+const escapeHtml = (value = '') => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+export async function GET() {
+  return NextResponse.json({ configured: Boolean(process.env.RESEND_API_KEY) });
+}
+
 export async function POST(request) {
   try {
     const data = await request.json();
@@ -22,6 +33,8 @@ export async function POST(request) {
       colorPreferences,
       specialRequests,
       inspirationLinks,
+      designStory,
+      creativeDirection,
       sectionsWanted,
       menuDetails,
       attachments,
@@ -123,6 +136,14 @@ export async function POST(request) {
           <div class="note-box">${specialRequests}</div>
         </div>
         ` : ''}
+
+        ${designStory || creativeDirection ? `
+        <div class="section">
+          <div class="section-title">✦ Expert Creative Brief</div>
+          ${designStory ? `<div class="label">Celebration Story</div><div class="note-box">${escapeHtml(designStory)}</div>` : ''}
+          ${creativeDirection ? `<div class="label" style="margin-top: 1rem; display: block;">Creative Direction</div><div class="note-box">${escapeHtml(creativeDirection)}</div>` : ''}
+        </div>
+        ` : ''}
       </div>
 
       <div class="footer">
@@ -134,11 +155,12 @@ export async function POST(request) {
 </html>
     `.trim();
 
-    // Try sending via Resend if API key is available
     const resendKey = process.env.RESEND_API_KEY;
+    if (!resendKey) {
+      return NextResponse.json({ success: false, error: 'Email delivery is not configured.' }, { status: 503 });
+    }
 
-    if (resendKey) {
-      const emailPayload = {
+    const emailPayload = {
         from: 'FOLDÈ Design <onboarding@resend.dev>',
         to: ['folde.wedding@gmail.com'],
         subject: `[CUSTOM ORDER] - ${packageName} — ${name} & ${partnerName}`,
@@ -149,7 +171,7 @@ export async function POST(request) {
         emailPayload.attachments = attachments;
       }
 
-      const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${resendKey}`,
@@ -158,32 +180,13 @@ export async function POST(request) {
         body: JSON.stringify(emailPayload),
       });
 
-      if (!res.ok) {
-        const errorData = await res.text();
-        console.error('Resend error:', errorData);
-        // Fall through to fallback
-      } else {
-        return NextResponse.json({ success: true, method: 'resend' });
-      }
+    if (!res.ok) {
+      const errorData = await res.text();
+      console.error('Resend error:', errorData);
+      return NextResponse.json({ success: false, error: 'Unable to send the order notification.' }, { status: 502 });
     }
-
-    // Fallback: use built-in NodeMailer-like approach via SMTP
-    const formData = new URLSearchParams();
-    formData.append('to', 'folde.wedding@gmail.com');
-    formData.append('subject', `new order — ${packageName} — ${name} & ${partnerName}`);
-    formData.append('body', `New order ${packageName} (${price}$)\n\nClient: ${name} & ${partnerName}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\n\nDate: ${weddingDate || 'N/A'}\nVenue: ${weddingVenue || 'N/A'}, ${weddingCity || 'N/A'}\nGuests: ${guestCount || 'N/A'}\nLanguages: ${languages || 'N/A'}\n\nTheme: ${selectedTheme || 'N/A'}\nEnvelope: ${envelopeChoice || 'N/A'}\nHero Video: ${heroVideoChoice || 'N/A'}\nColors: ${colorPreferences || 'N/A'}\n\nSections: ${sectionsText}\n\nMenu: ${menuDetails || 'N/A'}\nFiles: ${(attachments || []).map(a => a.filename).join(', ') || 'None'}\n\nInspiration: ${inspirationLinks || 'N/A'}\nSpecial Requests: ${specialRequests || 'N/A'}`);
-
-    // Store order data as JSON for admin review
-    console.log('=== NEW ORDER RECEIVED ===');
-    console.log(JSON.stringify(data, null, 2));
-    console.log('=========================');
-
-    return NextResponse.json({
-      success: true,
-      method: 'logged',
-      message: 'Order received. Please configure RESEND_API_KEY for email delivery.',
-      data
-    });
+    const resendData = await res.json();
+    return NextResponse.json({ success: true, method: 'resend', emailId: resendData.id });
 
   } catch (error) {
     console.error('Error processing order:', error);

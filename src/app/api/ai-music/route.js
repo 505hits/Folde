@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 
-const KIE_API_KEY = process.env.KIE_API_KEY || '58d40e4696f76ab670356400c189d948';
+const KIE_API_KEY = process.env.KIE_API_KEY;
 
 export async function POST(req) {
     try {
+        if (!KIE_API_KEY) {
+            return NextResponse.json({ error: 'AI music is not configured.' }, { status: 503 });
+        }
         const body = await req.json();
         const { prompt, instrumental = true, model = 'V4', style, title } = body;
 
@@ -51,6 +54,9 @@ export async function POST(req) {
 
 export async function GET(req) {
     try {
+        if (!KIE_API_KEY) {
+            return NextResponse.json({ error: 'AI music is not configured.' }, { status: 503 });
+        }
         const { searchParams } = new URL(req.url);
         const taskId = searchParams.get('taskId');
 
@@ -77,7 +83,8 @@ export async function GET(req) {
         if (record.state === 'success' && record.resultJson) {
             try {
                 const parsed = JSON.parse(record.resultJson);
-                audioUrl = parsed.audioUrl || parsed.resultUrls?.[0] || parsed.audio_url || null;
+                const candidate = parsed.audioUrl || parsed.resultUrls?.[0] || parsed.audio_url || parsed.data?.audioUrl || null;
+                audioUrl = Array.isArray(candidate) ? candidate[0] : candidate;
             } catch (e) {
                 console.warn('Failed to parse music resultJson:', e);
             }

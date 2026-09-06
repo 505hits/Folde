@@ -74,13 +74,13 @@ const packages = [
   },
   {
     id: 'Custom',
-    name: 'Custom',
+    name: 'Expert',
     price: 149.90,
     originalPrice: 290.00,
-    desc: 'Bespoke hand-crafted ("Fait main") experience with dedicated questionnaire onboarding, team review, and admin site validation.',
+    desc: 'A bespoke hand-crafted experience with a dedicated creative brief, team review, and studio validation.',
     features: [
       '100% bespoke questionnaire onboarding',
-      'Hand-crafted ("Fait main") art direction',
+      'Hand-crafted art direction',
       'Custom Envelope, Hero video, Menu & Photos',
       'Direct review & validation by our team',
       'Concierge priority support',
@@ -120,6 +120,14 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744' },
   { id: 'env_custom', name: "I'll provide my own", color: '#888' },
 ];
+
+const FEATURED_ENVELOPE_IDS = ['env_cisnes', 'env_bloom', 'env_romanticgarden', 'env_pressedlovecomo', 'env_tropical', 'env_softscratch'];
+const prioritizedEnvelopes = (items) => [...items].sort((a, b) => {
+  const aIndex = FEATURED_ENVELOPE_IDS.indexOf(a.id);
+  const bIndex = FEATURED_ENVELOPE_IDS.indexOf(b.id);
+  return (aIndex === -1 ? FEATURED_ENVELOPE_IDS.length : aIndex) - (bIndex === -1 ? FEATURED_ENVELOPE_IDS.length : bIndex);
+});
+const ORDERED_ENVELOPE_OPTIONS = prioritizedEnvelopes(ENVELOPE_OPTIONS);
 
 const HERO_VIDEO_OPTIONS = [
   { id: 'hero_couple', name: 'Kissing Couple', url: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4' },
@@ -200,7 +208,8 @@ const LazyThumbnail = ({ src }) => {
       {inView ? (
         <video
           src={src}
-          preload="metadata"
+          preload="auto"
+          fetchPriority="high"
           muted
           playsInline
           style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
@@ -264,6 +273,8 @@ export default function CheckoutClient() {
     colorPreferences: '',
     specialRequests: '',
     inspirationLinks: '',
+    designStory: '',
+    creativeDirection: '',
     sectionsWanted: ['intro', 'venue', 'schedule', 'rsvp', 'gallery'],
     menuDetails: '',
     menuFile: null,        // { name, content (base64) }
@@ -280,7 +291,7 @@ export default function CheckoutClient() {
   // Preview step state
   const [previewDate, setPreviewDate] = useState('');
   const [previewVenue, setPreviewVenue] = useState('');
-  const [selectedEnvelope, setSelectedEnvelope] = useState(ENVELOPE_OPTIONS[0].id);
+  const [selectedEnvelope, setSelectedEnvelope] = useState(ORDERED_ENVELOPE_OPTIONS[0].id);
   const [selectedHeroVideo, setSelectedHeroVideo] = useState(HERO_VIDEO_OPTIONS[0].id);
   const [envelopeKey, setEnvelopeKey] = useState(0);
 
@@ -383,7 +394,7 @@ export default function CheckoutClient() {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   };
 
-  const envObj = ENVELOPE_OPTIONS.find(e => e.id === selectedEnvelope);
+  const envObj = ORDERED_ENVELOPE_OPTIONS.find(e => e.id === selectedEnvelope);
   const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === selectedHeroVideo);
 
   const previewData = useMemo(() => ({
@@ -561,7 +572,7 @@ export default function CheckoutClient() {
     setSending(true);
     setSendError('');
     try {
-      const envObj = ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice);
+      const envObj = ORDERED_ENVELOPE_OPTIONS.find(e => e.id === premiumForm.envelopeChoice);
       const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === premiumForm.heroVideoChoice);
       const envName = envObj?.name || premiumForm.envelopeChoice || 'Not specified';
       const heroName = heroObj?.name || premiumForm.heroVideoChoice || 'Not specified';
@@ -610,6 +621,8 @@ export default function CheckoutClient() {
           colorPreferences: premiumForm.colorPreferences,
           specialRequests: premiumForm.specialRequests,
           inspirationLinks: premiumForm.inspirationLinks,
+          designStory: premiumForm.designStory,
+          creativeDirection: premiumForm.creativeDirection,
           sectionsWanted: premiumForm.sectionsWanted.map(
             k => SECTION_OPTIONS.find(s => s.key === k)?.label || k
           ),
@@ -618,8 +631,8 @@ export default function CheckoutClient() {
         }),
       });
       const emailData = await emailRes.json();
-      if (!emailData.success) {
-        console.error('Email send failed:', emailData);
+      if (!emailRes.ok || !emailData.success || emailData.method !== 'resend') {
+        throw new Error(emailData.error || 'We could not deliver your brief to the design studio. Please try again.');
       }
 
       // ── 2. Auto-create the Expert site with questionnaire data ──
@@ -682,6 +695,8 @@ export default function CheckoutClient() {
           languages: premiumForm.languages || '',
           specialRequests: premiumForm.specialRequests || '',
           inspirationLinks: premiumForm.inspirationLinks || '',
+          designStory: premiumForm.designStory || '',
+          creativeDirection: premiumForm.creativeDirection || '',
         };
 
         try {
@@ -1143,7 +1158,7 @@ export default function CheckoutClient() {
                     <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
                   </div>
                   <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
-                    {ENVELOPE_OPTIONS.map(env => {
+                    {ORDERED_ENVELOPE_OPTIONS.map(env => {
                       const isSelected = selectedEnvelope === env.id;
                       return (
                         <div
@@ -1311,7 +1326,7 @@ export default function CheckoutClient() {
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen">
                     <div className="preview-phone-template-inner">
-                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} heroHeight="970px" />
+                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} activateEnvelopeOnHover heroHeight="970px" />
                     </div>
                   </div>
                 </div>
@@ -1489,11 +1504,29 @@ export default function CheckoutClient() {
                     <input type="tel" placeholder="+33 6 12 34 56 78" value={premiumForm.phone} onChange={e => setPremiumForm({ ...premiumForm, phone: e.target.value })} style={inputStyle} />
                   </div>
 
+                  {isCustomOnly && (
+                    <div className="checkout-box" style={{ background: 'linear-gradient(135deg, #fffaf5, #f6ecdf)', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(92,58,30,0.06)', border: '1px solid rgba(176,137,104,0.25)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '0.55rem' }}>
+                        <span style={{ fontSize: '1.3rem' }}>✦</span>
+                        <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', fontWeight: 700 }}>Expert Creative Brief</div>
+                      </div>
+                      <p style={{ margin: '0 0 1.5rem', color: '#765f4c', fontSize: '0.9rem', lineHeight: 1.55 }}>This exclusive brief is shared directly with our art direction team, so your invitation feels unmistakably yours.</p>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={labelStyle}>Your celebration story</label>
+                        <textarea placeholder="Tell us about your story, your wedding atmosphere, and the feeling you want guests to experience..." value={premiumForm.designStory} onChange={e => setPremiumForm({ ...premiumForm, designStory: e.target.value })} rows={4} style={{ ...inputStyle, resize: 'vertical', backgroundColor: '#fffdfb' }} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Creative direction: must-haves and avoid</label>
+                        <textarea placeholder="Examples: cinematic black-and-white photography, a wax seal, no pastel colours, editorial typography..." value={premiumForm.creativeDirection} onChange={e => setPremiumForm({ ...premiumForm, creativeDirection: e.target.value })} rows={4} style={{ ...inputStyle, resize: 'vertical', backgroundColor: '#fffdfb' }} />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Design Preferences (Visual selectors) */}
                   <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
                     <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.5rem', fontWeight: 600 }}>Envelope Choice</div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
-                      {ENVELOPE_OPTIONS.map(e => {
+                      {ORDERED_ENVELOPE_OPTIONS.map(e => {
                         const isSelected = premiumForm.envelopeChoice === e.id;
                         return (
                           <div key={e.id} onClick={() => setPremiumForm({ ...premiumForm, envelopeChoice: e.id })}

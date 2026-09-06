@@ -299,7 +299,7 @@ const themes = {
   }
 };
 
-function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh' }) {
+function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false }) {
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
   const [isMuted, setIsMuted] = useState(true);
@@ -601,6 +601,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           <div
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
+            onMouseEnter={() => activateEnvelopeOnHover && handleEnvelopeClick()}
             style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
           >
             {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) ? (
@@ -616,7 +617,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 className={styles.envelopeVideo}
                 muted
                 playsInline
-                preload={envelopeVideoActive ? "auto" : "metadata"}
+                preload="auto"
+                fetchPriority="high"
                 poster={getFirstFramePoster(data?.videos?.envelope || "/videos/bordeaux.mp4")}
                 src={(data?.videos?.envelope || "/videos/bordeaux.mp4").replace(/#t=.*$/, '') + '#t=0.001'}
                 onEnded={handleVideoEnded}

@@ -19,41 +19,6 @@ export const getFirstFrameVideoSrc = (url) => {
   return `${url}#t=0.001`;
 };
 
-const LazyVideo = ({ src, poster, style, className, muted, playsInline, preload = "metadata" }) => {
-  const [inView, setInView] = React.useState(false);
-  const ref = React.useRef(null);
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setInView(true);
-        observer.disconnect();
-      }
-    }, { rootMargin: '300px' });
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref} style={{ width: '100%', height: '100%' }}>
-      {inView ? (
-        <video
-          src={src}
-          poster={poster}
-          muted={muted}
-          playsInline={playsInline}
-          preload={preload}
-          style={style}
-          className={className}
-        />
-      ) : (
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />
-      )}
-    </div>
-  );
-};
-
 export default function TemplateHeroPreview({
   partner1 = "Emma",
   partner2 = "Liam",
@@ -63,7 +28,8 @@ export default function TemplateHeroPreview({
   showEnvelope = false,
   isImage = false,
   previewImage,
-  active = false
+  active = false,
+  preloadEnvelopeFrame = false
 }) {
   const [envelopeDismissed, setEnvelopeDismissed] = useState(!showEnvelope);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
@@ -131,23 +97,6 @@ export default function TemplateHeroPreview({
         clearTimeout(timer);
         if (hls) hls.destroy();
       };
-    } else if (!videoActive) {
-      if (cleanEnvelopeSrc.endsWith('.m3u8')) {
-        if (Hls.isSupported()) {
-          hls = new Hls({ startLevel: -1, capLevelToPlayerSize: true });
-          hls.loadSource(cleanEnvelopeSrc);
-          hls.attachMedia(video);
-        }
-      } else {
-        if (!video.src || !video.src.includes(srcBase)) {
-          video.src = firstFrameSrc;
-          video.preload = "none";
-          if (typeof video.load === 'function') video.load();
-        }
-      }
-      return () => {
-        if (hls) hls.destroy();
-      };
     }
   }, [videoActive, showEnvelope, envelopeSrc, envelopeDismissed, isEnvImg]);
 
@@ -188,8 +137,11 @@ export default function TemplateHeroPreview({
           ) : (
             <video
               ref={envelopeVideoRef}
+              src={preloadEnvelopeFrame ? getFirstFrameVideoSrc(envelopeSrc) : undefined}
               muted
               playsInline
+              preload={preloadEnvelopeFrame ? "auto" : "none"}
+              fetchPriority={preloadEnvelopeFrame ? "high" : "auto"}
               onEnded={handleVideoEnded}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
@@ -206,13 +158,12 @@ export default function TemplateHeroPreview({
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
         />
       ) : !videoActive ? (
-        <LazyVideo
-          src={getFirstFrameVideoSrc(videoSrc)}
-          poster={heroPoster}
-          preload="metadata"
-          muted
-          playsInline
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        <div
+          aria-hidden="true"
+          style={{
+            width: '100%', height: '100%',
+            background: heroPoster ? `center / cover no-repeat url("${heroPoster}")` : 'linear-gradient(145deg, #332720, #88745f)',
+          }}
         />
       ) : (
         <video
@@ -251,7 +202,7 @@ export default function TemplateHeroPreview({
           gap: '4px',
           backdropFilter: 'blur(4px)'
         }}>
-          <span>▶</span> Click to play video
+          <span>▶</span> Tap to play video
         </div>
       )}
 

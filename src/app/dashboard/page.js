@@ -478,7 +478,7 @@ export default function Dashboard() {
   }
 
   // ========== CUSTOM / SUR MESURE STUDIO DASHBOARD ==========
-  const isCustomOnly = userOrder.plan === 'Custom' || userOrder.plan === 'custom';
+  const isCustomOnly = ['Custom', 'custom', 'Expert', 'expert'].includes(userOrder.plan);
   const clientSlug = userOrder.slug;
   const clientGuests = guests[clientSlug] || [];
 
@@ -755,18 +755,20 @@ export default function Dashboard() {
         .dashboard-layout {
           display: flex;
           min-height: 100vh;
-          background-color: #FAF8F6;
+          background: #f7f5f1;
           font-family: var(--font-body), 'Outfit', 'Inter', sans-serif;
-          color: #1a1a1a;
+          color: #2a211d;
         }
         .dashboard-sidebar {
-          width: 280px;
-          background: linear-gradient(180deg, #FDFCFC 0%, #F5F2EE 100%);
-          border-right: 1px solid rgba(176,137,104,0.12);
+          width: 264px;
+          background: radial-gradient(circle at 10% 0%, #584238 0%, #30211e 45%, #211714 100%);
+          border-right: 1px solid rgba(255,255,255,0.08);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
           transition: all 0.3s ease;
+          color: #f8f1e8;
+          padding: 0.75rem 0;
         }
         .dashboard-main {
           flex: 1;
@@ -774,12 +776,14 @@ export default function Dashboard() {
           flex-direction: column;
           height: 100vh;
           overflow-y: auto;
-          background-color: #FAF8F6;
+          background:
+            radial-gradient(circle at 75% -10%, rgba(212, 177, 142, 0.21), transparent 33rem),
+            #f8f7f4;
         }
         .dashboard-preview {
-          width: 440px;
-          background-color: #F3EFE7;
-          border-left: 1px solid rgba(176,137,104,0.12);
+          width: 400px;
+          background: linear-gradient(145deg, #eee7dc 0%, #dcd0c1 100%);
+          border-left: 1px solid rgba(92,58,30,0.11);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
@@ -791,47 +795,50 @@ export default function Dashboard() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.75rem 1.25rem;
-          margin: 0.25rem 1rem;
+          padding: 0.8rem 1rem;
+          margin: 0.16rem 0.75rem;
           border: none;
           cursor: pointer;
           font-size: 0.88rem;
           font-weight: 500;
           border-radius: 12px;
           background-color: transparent;
-          color: #5C4A3C;
+          color: rgba(255, 248, 240, 0.66);
           text-align: left;
           font-family: inherit;
           transition: all 0.2s ease-in-out;
         }
         .sidebar-nav-btn:hover {
-          color: #1A120B;
-          background-color: rgba(176, 137, 104, 0.08);
-          transform: translateX(3px);
+          color: #fffaf5;
+          background-color: rgba(255,255,255,0.09);
+          transform: translateX(2px);
         }
         .sidebar-nav-btn.active {
           font-weight: 600;
-          background-color: #5C3A1E;
-          color: #ffffff;
-          box-shadow: 0 4px 15px rgba(92, 58, 30, 0.12);
+          background: linear-gradient(100deg, #c89f78, #a97955);
+          color: #2d1b12;
+          box-shadow: 0 10px 22px rgba(0,0,0,0.2);
         }
         .sidebar-nav-btn.active:hover {
           transform: none;
           color: #ffffff;
-          background-color: #5C3A1E;
+          background: linear-gradient(100deg, #c89f78, #a97955);
         }
+        .dashboard-brand { padding: 1.4rem 1.5rem !important; border-color: rgba(255,255,255,0.09) !important; }
+        .dashboard-brand-title { color: #fffaf5 !important; letter-spacing: 0.13em; font-size: 1.05rem !important; }
+        .dashboard-nav-caption { color: rgba(255,248,240,0.4); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; padding: 0 1.65rem 0.6rem; }
         .sidebar-card-bottom {
-          padding: 1.25rem;
-          background: #ffffff;
-          border: 1px solid rgba(176, 137, 104, 0.16);
-          margin: 1rem;
-          border-radius: 16px;
-          box-shadow: 0 10px 25px rgba(92, 58, 30, 0.03);
+          padding: 1rem;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.12);
+          margin: 0.9rem 0.75rem 0.25rem;
+          border-radius: 18px;
+          box-shadow: none;
           transition: all 0.3s ease;
         }
         .sidebar-card-bottom:hover {
-          box-shadow: 0 12px 30px rgba(92, 58, 30, 0.06);
-          border-color: rgba(176, 137, 104, 0.25);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+          border-color: rgba(255,255,255,0.22);
         }
         .mobile-menu-btn {
           display: none;
@@ -856,11 +863,19 @@ export default function Dashboard() {
           opacity: 0.95;
         }
         .glass-header {
-          background: rgba(254, 253, 252, 0.85);
+          background: rgba(248,247,244,0.78);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(176,137,104,0.08);
+          border-bottom: 1px solid rgba(92,58,30,0.08);
+          min-height: 76px;
         }
+        .dashboard-content-wrapper { padding: 2rem 2.25rem 3rem; }
+        .dashboard-content-wrapper > div { animation: dashboard-enter .38s ease both; }
+        .dashboard-tip { background: linear-gradient(100deg, #fffaf3, #f5eadb) !important; border: 1px solid rgba(193,145,105,0.25) !important; border-radius: 18px !important; box-shadow: 0 10px 28px rgba(90,58,34,0.05); padding: 1.05rem 1.2rem !important; }
+        .dashboard-preview-title { color: #6f5039; font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 800; }
+        .preview-container { padding: 1.5rem 1rem 2rem; }
+        .dashboard-phone-frame { box-shadow: 0 26px 52px rgba(47,31,22,0.27), 0 2px 0 rgba(255,255,255,0.3) inset !important; }
+        @keyframes dashboard-enter { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 1024px) {
           .mobile-menu-btn {
             display: block;
@@ -876,9 +891,10 @@ export default function Dashboard() {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
+            width: min(88vw, 340px);
             height: 100vh;
             z-index: 100;
+            box-shadow: 22px 0 55px rgba(25, 16, 12, 0.32);
           }
           .mobile-close-btn {
             display: block;
@@ -889,7 +905,7 @@ export default function Dashboard() {
             position: absolute;
             top: 1.25rem;
             right: 1.5rem;
-            color: #1a1a1a;
+            color: #fffaf5;
           }
           .dashboard-main {
             height: auto;
@@ -903,21 +919,31 @@ export default function Dashboard() {
             position: relative;
             padding-bottom: 3rem;
           }
-          .dashboard-content-wrapper { padding: 0.5rem; }
+          .dashboard-content-wrapper { padding: 1.25rem; }
           .preview-container { padding: 1rem 0; }
         }
-        .dashboard-content-wrapper { padding: 1.5rem; }
-        .preview-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; overflow: hidden; position: relative; }
+        @media (max-width: 640px) {
+          .glass-header { padding: 1rem !important; align-items: flex-start !important; }
+          .dashboard-content-wrapper { padding: 1rem !important; }
+          .dashboard-content-wrapper [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+          .dashboard-content-wrapper [style*="minmax(220px"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+          .dashboard-preview { overflow: hidden; }
+          .dashboard-phone-frame { transform: scale(0.86); transform-origin: top center; margin-bottom: -88px; }
+          .sidebar-nav-btn { min-height: 48px; }
+          .dashboard-tip { align-items: flex-start !important; }
+        }
+        .preview-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; }
       `}</style>
 
       {/* 1. Left Sidebar */}
       <aside className={`dashboard-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
+        <div className="dashboard-brand" style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="dashboard-brand-title" style={{ fontSize: '1.2rem', fontWeight: 600, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>FOLDÈ</div>
           <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
 
         <div style={{ padding: '1rem 0', flex: 1, overflowY: 'auto' }}>
+          <div className="dashboard-nav-caption">Workspace</div>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {tabs.map(tab => (
               <button
@@ -928,15 +954,13 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.15rem', opacity: activeTab === tab.id ? 1 : 0.75 }}>{tab.icon}</span> {tab.label}
                 </div>
-                {tab.upgrade && userOrder?.plan === 'Essential' && (
-                  <span style={{ fontSize: '0.65rem', fontWeight: 700, backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '12px' }}>Upgrade</span>
-                )}
               </button>
             ))}
           </nav>
 
-          <div style={{ margin: '1.25rem 1.5rem', height: '1px', backgroundColor: 'rgba(176,137,104,0.08)' }}></div>
+          <div style={{ margin: '1.25rem 1.5rem', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
 
+          <div className="dashboard-nav-caption">Support</div>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {bottomTabs.map(tab => (
               <button
@@ -954,17 +978,17 @@ export default function Dashboard() {
 
         {/* Floating Wedding Profile Card */}
         <div className="sidebar-card-bottom">
-          <div style={{ fontSize: '0.72rem', color: '#b08968', fontWeight: 700, marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Wedding Space</div>
-          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#2C1B10', marginBottom: '0.25rem', fontFamily: 'var(--font-heading)' }}>
+          <div style={{ fontSize: '0.68rem', color: '#d9b693', fontWeight: 700, marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Wedding Space</div>
+          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#fffaf5', marginBottom: '0.25rem', fontFamily: 'var(--font-heading)' }}>
             {clientEventInfo.partner1 || 'Partner #1'} & {clientEventInfo.partner2 || 'Partner #2'}
           </div>
-          <div style={{ fontSize: '0.8rem', color: '#7E6B5C', marginBottom: '0.85rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
+          <div style={{ fontSize: '0.8rem', color: 'rgba(255,248,240,0.6)', marginBottom: '0.85rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.35rem 0.65rem', borderRadius: '20px', width: 'fit-content', fontWeight: 600, border: '1px solid #d1fae5', marginBottom: '0.65rem' }}>
             <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', animation: 'pulse 2s infinite' }}></span>
             Live Invite Link
           </div>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5C3A1E', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f4d6b7', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
             👔 {userOrder?.plan ? `${userOrder.plan} Plan` : 'Standard Plan'}
           </div>
           <button
@@ -975,8 +999,8 @@ export default function Dashboard() {
               padding: '0.55rem 0.8rem',
               borderRadius: '10px',
               border: '1px solid rgba(220, 38, 38, 0.15)',
-              backgroundColor: 'rgba(254, 242, 242, 0.5)',
-              color: '#dc2626',
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              color: '#f5c5bd',
               cursor: 'pointer',
               fontSize: '0.78rem',
               fontWeight: 600,
@@ -987,11 +1011,11 @@ export default function Dashboard() {
               transition: 'all 0.2s ease-in-out'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.backgroundColor = '#fee2e2';
-              e.currentTarget.style.borderColor = '#f87171';
+              e.currentTarget.style.backgroundColor = 'rgba(220, 38, 38, 0.2)';
+              e.currentTarget.style.borderColor = 'rgba(252, 165, 165, 0.65)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.backgroundColor = 'rgba(254, 242, 242, 0.5)';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
               e.currentTarget.style.borderColor = 'rgba(220, 38, 38, 0.15)';
             }}
           >
@@ -1016,7 +1040,7 @@ export default function Dashboard() {
             </h1>
           </div>
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <a href={`/invite/${clientSlug}?preview=true`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fff', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(92,58,30,0.02)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#faf8f5'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}>
+            <a href={`/invite/${clientSlug}?preview=true`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fffdfb', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 7px 18px rgba(92,58,30,0.06)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5eadc'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fffdfb'}>
               <span>📱</span> Live Preview Website
             </a>
             <button
@@ -1031,7 +1055,7 @@ export default function Dashboard() {
                 }, 1000);
               }}
               className="premium-grad-button"
-              style={{ padding: '0.65rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              style={{ padding: '0.7rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               {isPublishing ? (
                 <>⏳ Publishing...</>
@@ -1042,9 +1066,9 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="dashboard-content-wrapper" style={{ maxWidth: '850px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        <div className="dashboard-content-wrapper" style={{ maxWidth: '980px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 
-          <div style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+          <div className="dashboard-tip" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
             <div>
               <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Pro Tip for Your Guests</div>
@@ -1067,7 +1091,6 @@ export default function Dashboard() {
           )}
           {activeTab === 'aistudio' && (
             <AiStudioTab
-              plan={userOrder?.plan}
               eventInfo={clientEventInfo}
               slug={clientSlug}
               setEventInfo={setEventInfo}
@@ -1136,7 +1159,7 @@ export default function Dashboard() {
           </button>
 
           {/* Premium Smartphone Mockup (2026 thin bezel) */}
-          <div style={{
+          <div className="dashboard-phone-frame" style={{
             width: '310px',
             height: '630px',
             backgroundColor: '#000000',
@@ -1533,13 +1556,13 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   const inputStyle = {
     width: '100%',
-    padding: '0.85rem 1.15rem',
+    padding: '0.9rem 1rem',
     borderRadius: '12px',
-    border: '1px solid rgba(176,137,104,0.22)',
+    border: '1px solid #e5ddd4',
     fontSize: '0.92rem',
     outline: 'none',
     fontFamily: 'inherit',
-    backgroundColor: '#FAF9F6',
+    backgroundColor: '#fcfbf9',
     color: '#2C1B10',
     transition: 'all 0.2s ease-in-out',
     boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.02)'
@@ -1554,47 +1577,47 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     letterSpacing: '0.5px'
   };
   const sectionStyle = {
-    backgroundColor: '#ffffff',
-    borderRadius: '20px',
-    padding: '2.5rem 2.25rem',
-    border: '1px solid rgba(176,137,104,0.15)',
-    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
-    marginBottom: '2.25rem',
+    backgroundColor: '#fffdfb',
+    borderRadius: '22px',
+    padding: '2rem',
+    border: '1px solid rgba(111,80,57,0.13)',
+    boxShadow: '0 16px 42px rgba(72, 50, 33, 0.07)',
+    marginBottom: '1.4rem',
     transition: 'all 0.3s ease'
   };
 
   const AVAILABLE_TEMPLATES = [
-    { id: 'bordeaux', name: 'Bordeaux Elegant', desc: 'Une célébration moderne, dramatique et élégante' },
-    { id: 'champagne', name: 'Champagne / Luxe Gold', desc: 'Sophistication royale avec une chaleur dorée' },
-    { id: 'ivory', name: 'Ivory / Pearl', desc: 'Pur et délicat, un classique intemporel' },
-    { id: 'sage', name: 'Sage / Olive Grove', desc: 'Organique et raffiné avec une touche botanique' },
-    { id: 'terracotta', name: 'Terracotta / Amber', desc: 'Chaleur ensoleillée pour une ambiance méditerranéenne' },
-    { id: 'chocolate', name: 'Chocolate / Mocha', desc: 'Chaleur riche et caractère chaleureux' },
-    { id: 'royalbordeaux', name: 'Crimson Royal', desc: 'Bordeaux impérial dramatique et prestigieux' },
-    { id: 'royalblue', name: 'Sapphire / Royal Blue', desc: 'Bleu océanique et raffiné' },
-    { id: 'rosebow', name: 'Blush Ribbon', desc: 'Révélation romantique avec ruban de soie' },
-    { id: 'majestic', name: 'Grand Heritage', desc: 'Une entrée cérémonielle majestueuse' },
-    { id: 'thelaceedit', name: 'The Lace Edit', desc: 'Dentelle délicate et romance intemporelle' },
-    { id: 'lejardin', name: 'Le Jardin', desc: 'Une célébration dans un jardin verdoyant' },
-    { id: 'lacephotoscratch', name: 'Lace Photo Scratch', desc: 'Révélation à gratter élégante' },
-    { id: 'oasisroyale', name: 'Oasis Royale', desc: 'Célébration grandiose dans une oasis du désert' },
-    { id: 'tropical', name: 'Tropical', desc: 'Paradis tropical vibrant et naturel' },
-    { id: 'photoscratch', name: 'Photo Scratch', desc: 'Révélation photo interactive' },
-    { id: 'softscratch', name: 'Soft Scratch', desc: 'Effet grattage doux et élégant' },
-    { id: 'cisnes', name: 'Cisnes', desc: 'Romance des cygnes élégants' },
-    { id: 'bloom', name: 'Bloom', desc: 'Éclosion florale romantique' },
-    { id: 'floral', name: 'Floral', desc: 'Un lit de fleurs raffiné' },
-    { id: 'romanticgarden', name: 'Romantic Garden', desc: 'Jardin floral enchanté et poétique' },
-    { id: 'blossomoud', name: 'Blossom Oud', desc: 'Esthétique orientale florale & oud d\'exception' },
-    { id: 'dolcevita', name: 'Dolce Vita', desc: 'Romance ensoleillée sur la côte italienne' },
-    { id: 'webgencytemplate5', name: 'Velvet Garden', desc: 'Luxe moderne avec détails botaniques' },
-    { id: 'tildatemplate2', name: 'Noir Gold', desc: 'Luxe sombre minimaliste aux détails dorés' },
-    { id: 'pressedlovecomo', name: 'Como', desc: 'Élégance de la villa du lac de Côme' },
-    { id: 'pressedloveteatro', name: 'Teatro', desc: 'Début théâtral avec rideau et dorures' },
-    { id: 'pressedlovethevenue', name: 'The Venue', desc: 'Célébration dans un domaine d\'exception' },
-    { id: 'pressedlovesweetlove', name: 'Sweet Love', desc: 'Tons doux pêche & crème et romance délicate' },
-    { id: 'pressedlovefloral', name: 'Botanical Floral', desc: 'Pétales floraux et éclosion romantique' },
-    { id: 'pressedlovebigentrance', name: 'Big Entrance', desc: 'Entrée majestueuse et sceau de cire doré' },
+    { id: 'bordeaux', name: 'Bordeaux Elegant', desc: 'A modern, dramatic, and elegant celebration' },
+    { id: 'champagne', name: 'Champagne / Luxe Gold', desc: 'Royal sophistication with golden warmth' },
+    { id: 'ivory', name: 'Ivory / Pearl', desc: 'Pure and delicate, a timeless classic' },
+    { id: 'sage', name: 'Sage / Olive Grove', desc: 'Organic and refined with a botanical touch' },
+    { id: 'terracotta', name: 'Terracotta / Amber', desc: 'Sunlit warmth for a Mediterranean atmosphere' },
+    { id: 'chocolate', name: 'Chocolate / Mocha', desc: 'Rich warmth and soulful character' },
+    { id: 'royalbordeaux', name: 'Crimson Royal', desc: 'A dramatic and prestigious imperial bordeaux design' },
+    { id: 'royalblue', name: 'Sapphire / Royal Blue', desc: 'Refined ocean-blue elegance' },
+    { id: 'rosebow', name: 'Blush Ribbon', desc: 'A romantic silk-ribbon reveal' },
+    { id: 'majestic', name: 'Grand Heritage', desc: 'A majestic ceremonial entrance' },
+    { id: 'thelaceedit', name: 'The Lace Edit', desc: 'Delicate lace and timeless romance' },
+    { id: 'lejardin', name: 'Le Jardin', desc: 'A celebration in a lush garden' },
+    { id: 'lacephotoscratch', name: 'Lace Photo Scratch', desc: 'An elegant scratch-to-reveal experience' },
+    { id: 'oasisroyale', name: 'Oasis Royale', desc: 'A grand celebration in a desert oasis' },
+    { id: 'tropical', name: 'Tropical', desc: 'A vibrant natural tropical paradise' },
+    { id: 'photoscratch', name: 'Photo Scratch', desc: 'An interactive photo reveal' },
+    { id: 'softscratch', name: 'Soft Scratch', desc: 'A soft, elegant scratch reveal' },
+    { id: 'cisnes', name: 'Cisnes', desc: 'An elegant swan romance' },
+    { id: 'bloom', name: 'Bloom', desc: 'A romantic floral bloom' },
+    { id: 'floral', name: 'Floral', desc: 'A refined bed of flowers' },
+    { id: 'romanticgarden', name: 'Romantic Garden', desc: 'An enchanted, poetic floral garden' },
+    { id: 'blossomoud', name: 'Blossom Oud', desc: 'An exceptional floral and oud aesthetic' },
+    { id: 'dolcevita', name: 'Dolce Vita', desc: 'Sunlit romance on the Italian coast' },
+    { id: 'webgencytemplate5', name: 'Velvet Garden', desc: 'Modern luxury with botanical details' },
+    { id: 'tildatemplate2', name: 'Noir Gold', desc: 'Minimal dark luxury with golden details' },
+    { id: 'pressedlovecomo', name: 'Como', desc: 'Lake Como villa elegance' },
+    { id: 'pressedloveteatro', name: 'Teatro', desc: 'A theatrical opening with curtain and gold accents' },
+    { id: 'pressedlovethevenue', name: 'The Venue', desc: 'A celebration at an exceptional estate' },
+    { id: 'pressedlovesweetlove', name: 'Sweet Love', desc: 'Soft peach and cream tones with delicate romance' },
+    { id: 'pressedlovefloral', name: 'Botanical Floral', desc: 'Floral petals and a romantic bloom' },
+    { id: 'pressedlovebigentrance', name: 'Big Entrance', desc: 'A majestic entrance with a golden wax seal' },
   ];
 
   const AVAILABLE_ENVELOPE_VIDEOS = [
@@ -1629,6 +1652,13 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744', desc: 'Regal golden wax seal opening' },
     { id: 'env_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own envelope video' },
   ];
+
+  const FEATURED_ENVELOPE_IDS = ['env_cisnes', 'env_bloom', 'env_romanticgarden', 'env_pressedlovecomo', 'env_tropical', 'env_softscratch'];
+  const orderedEnvelopeVideos = [...AVAILABLE_ENVELOPE_VIDEOS].sort((a, b) => {
+    const aIndex = FEATURED_ENVELOPE_IDS.indexOf(a.id);
+    const bIndex = FEATURED_ENVELOPE_IDS.indexOf(b.id);
+    return (aIndex === -1 ? FEATURED_ENVELOPE_IDS.length : aIndex) - (bIndex === -1 ? FEATURED_ENVELOPE_IDS.length : bIndex);
+  });
 
   const AVAILABLE_HERO_VIDEOS = [
     { id: 'hero_couple', name: 'Kissing Couple', url: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', color: '#1a1a1a', desc: 'Romantic couple embrace' },
@@ -1669,23 +1699,6 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-      {/* Unlock AI Features Banner for Non-Premium Users */}
-      {plan !== 'Premium' && (
-        <div style={{ backgroundColor: '#fffdfa', border: '1px solid #e8ddd4', borderRadius: '16px', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-          <div>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#c5975b', marginBottom: '0.3rem' }}>Signature Exclusive</div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 0.3rem 0', fontFamily: 'var(--font-heading)' }}>Unlock AI Features</h3>
-            <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>Create custom AI photos, illustrations, and ambient soundtrack.</p>
-          </div>
-          <button
-            type="button"
-            style={{ backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '0.75rem 1.6rem', borderRadius: '30px', fontWeight: 600, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(92,58,30,0.2)' }}
-          >
-            Upgrade Plan
-          </button>
-        </div>
-      )}
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
@@ -1752,7 +1765,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <span>🎨</span> Envelope Design Template
             </h2>
             <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
-              {AVAILABLE_ENVELOPE_VIDEOS.map(env => {
+              {orderedEnvelopeVideos.map(env => {
                 const isSelected = local.videos?.envelope === env.url || (local.videos?.envelope && !AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos.envelope) && env.id === 'env_custom') || (local.videos?.envelope === 'custom' && env.id === 'env_custom');
                 return (
                   <div
@@ -1814,7 +1827,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             {eventInfo?.customHeroImage && (
               <div style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5', borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div style={{ fontSize: '0.85rem', color: '#c2410c', fontWeight: 600 }}>
-                  🖼️ Une illustration d'art personnalisée est actuellement appliquée en arrière-plan Hero.
+                  🖼️ A custom AI illustration is currently applied as your hero background.
                 </div>
                 <button
                   type="button"
@@ -1835,7 +1848,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   }}
                   style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
                 >
-                  ❌ Retirer la Photo IA
+                  ❌ Remove AI Photo
                 </button>
               </div>
             )}
@@ -2025,7 +2038,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>👔 Dress Code</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Description du Dress Code</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Dress Code Description</label>
             <input
               type="text"
               value={local.dressCode?.text || ''}
@@ -2165,20 +2178,20 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               <input type="text" value={local.date || ''} onChange={e => handleChange('date', e.target.value)} style={inputStyle} placeholder="MAY 27, 2026" />
             </div>
             <div>
-              <label style={labelStyle}>RSVP Deadline Date (Date limite de réponse)</label>
+              <label style={labelStyle}>RSVP Deadline</label>
               <input type="text" value={local.rsvpDeadline || ''} onChange={e => handleChange('rsvpDeadline', e.target.value)} style={inputStyle} placeholder="e.g. March 30th, 2026" />
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>🌍 Wedding Invitation Language (Langue de l'invitation)</label>
+              <label style={labelStyle}>🌍 Wedding Invitation Language</label>
               <select
                 value={local.language || 'en'}
                 onChange={e => handleChange('language', e.target.value)}
                 style={{ ...inputStyle, backgroundColor: '#fff', cursor: 'pointer', fontWeight: 500 }}
               >
                 <option value="en">🇬🇧 English</option>
-                <option value="fr">🇫🇷 Français</option>
+                <option value="fr">🇫🇷 French</option>
                 <option value="es">🇪🇸 Español</option>
                 <option value="it">🇮🇹 Italiano</option>
                 <option value="de">🇩🇪 Deutsch</option>
@@ -2413,21 +2426,21 @@ function GuestListTab({ slug }) {
   };
 
   const cardStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fffdfb',
     borderRadius: '20px',
-    padding: '2rem 1.75rem',
-    border: '1px solid rgba(176,137,104,0.15)',
-    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+    padding: '1.65rem',
+    border: '1px solid rgba(111,80,57,0.13)',
+    boxShadow: '0 14px 34px rgba(72, 50, 33, 0.06)',
   };
 
   const inputStyle = {
     padding: '0.65rem 1.1rem',
     borderRadius: '12px',
-    border: '1px solid rgba(176,137,104,0.22)',
+    border: '1px solid #e5ddd4',
     fontSize: '0.88rem',
     outline: 'none',
     fontFamily: 'inherit',
-    backgroundColor: '#FAF9F6',
+    backgroundColor: '#fcfbf9',
     color: '#2C1B10',
     transition: 'all 0.2s',
   };
@@ -2653,21 +2666,21 @@ function RsvpsTab({ slug }) {
   });
 
   const cardStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fffdfb',
     borderRadius: '20px',
-    padding: '2rem 1.75rem',
-    border: '1px solid rgba(176,137,104,0.15)',
-    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+    padding: '1.65rem',
+    border: '1px solid rgba(111,80,57,0.13)',
+    boxShadow: '0 14px 34px rgba(72, 50, 33, 0.06)',
   };
 
   const inputStyle = {
     padding: '0.55rem 1rem',
     borderRadius: '12px',
-    border: '1px solid rgba(176,137,104,0.22)',
+    border: '1px solid #e5ddd4',
     fontSize: '0.88rem',
     outline: 'none',
     fontFamily: 'inherit',
-    backgroundColor: '#FAF9F6',
+    backgroundColor: '#fcfbf9',
     color: '#2C1B10',
     transition: 'all 0.2s',
   };
@@ -2805,18 +2818,23 @@ function TablesTab({ slug }) {
   const guestsMap = dbContext?.guests || {};
   const guestList = guestsMap[slug] || [];
   const attendingGuests = guestList.filter(g => (g.status || '').toLowerCase() === 'attending');
+  const translateLegacyTableName = (name) => String(name || '')
+    .replace('Famille', 'Family')
+    .replace('Amis', 'Friends')
+    .replace('Honneur', 'Honour')
+    .replace('Collègues', 'Colleagues');
 
   const [tables, setTables] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(`tables_${slug}`);
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) { }
+        try { return JSON.parse(saved).map(table => ({ ...table, name: translateLegacyTableName(table.name) })); } catch (e) { }
       }
     }
     return [
-      { id: 't1', name: 'Table 1 - Famille', capacity: 10, assignedGuestNames: [] },
-      { id: 't2', name: 'Table 2 - Amis', capacity: 10, assignedGuestNames: [] },
-      { id: 't3', name: 'Table 3 - VIP & Honneur', capacity: 8, assignedGuestNames: [] }
+      { id: 't1', name: 'Table 1 - Family', capacity: 10, assignedGuestNames: [] },
+      { id: 't2', name: 'Table 2 - Friends', capacity: 10, assignedGuestNames: [] },
+      { id: 't3', name: 'Table 3 - VIP & Honour', capacity: 8, assignedGuestNames: [] }
     ];
   });
 
@@ -2872,11 +2890,11 @@ function TablesTab({ slug }) {
   const unassignedGuests = attendingGuests.filter(g => !assignedSet.has(g.name));
 
   const cardStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fffdfb',
     borderRadius: '20px',
-    padding: '2rem 1.75rem',
-    border: '1px solid rgba(176,137,104,0.15)',
-    boxShadow: '0 12px 40px rgba(92, 58, 30, 0.03), 0 2px 10px rgba(0, 0, 0, 0.01)',
+    padding: '1.65rem',
+    border: '1px solid rgba(111,80,57,0.13)',
+    boxShadow: '0 14px 34px rgba(72, 50, 33, 0.06)',
   };
 
   return (
@@ -2984,7 +3002,7 @@ function TablesTab({ slug }) {
             <form onSubmit={handleAddTable} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Table Name *</label>
-                <input type="text" required value={newTableName} onChange={e => setNewTableName(e.target.value)} placeholder="e.g. Table 4 - Collègues" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
+                <input type="text" required value={newTableName} onChange={e => setNewTableName(e.target.value)} placeholder="e.g. Table 4 - Colleagues" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Capacity (Seats)</label>
@@ -3229,7 +3247,7 @@ function ContactUsTab({ currentUser }) {
   );
 }
 
-function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
+function AiStudioTab({ eventInfo, slug, setEventInfo }) {
   // Always unlocked for users inside the dashboard
   const isPremium = true;
   const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
@@ -3292,6 +3310,8 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
   const [musicStatus, setMusicStatus] = useState('');
   const [generatedAudio, setGeneratedAudio] = useState(null);
   const [musicError, setMusicError] = useState('');
+  const musicPreviewRef = useRef(null);
+  const [isMusicPreviewPlaying, setIsMusicPreviewPlaying] = useState(false);
 
   // File Upload Helper to upload images directly to Supabase Storage
   const handleFileUpload = async (e, setPhotoUrl, setUploadingState) => {
@@ -3383,7 +3403,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         };
       });
       saveMediaToDatabase(url, undefined);
-      alert('✨ Photo IA appliquée comme image principale (Hero) de votre invitation !');
+      alert('✨ Your AI photo has been applied as the main hero image for your invitation.');
     }
   };
 
@@ -3401,7 +3421,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         };
       });
       saveMediaToDatabase(null, undefined);
-      alert('❌ Image principale IA retirée du site.');
+      alert('❌ The main AI image has been removed from your site.');
     }
   };
 
@@ -3425,7 +3445,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         };
       });
       saveMediaToDatabase(undefined, undefined);
-      alert('🖼️ Photo IA ajoutée dans la section Souvenirs (Memories) et Galerie de votre site !');
+      alert('🖼️ Your AI photo has been added to the Memories and Gallery sections of your site.');
     }
   };
 
@@ -3479,46 +3499,46 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
   const PHOTO_PRESETS = [
     {
-      title: "🎨 Aquarelle Romantique",
-      desc: "Jardin de roses au pastel doux",
+      title: "🎨 Romantic Watercolor",
+      desc: "A soft pastel rose garden",
       prompt: "Cute romantic watercolor painting of couple in a blooming rose garden for a wedding website, soft pastel lighting, whimsical dreamy atmosphere"
     },
     {
-      title: "🌟 Style Pixar 3D",
-      desc: "Personnages animés 3D mignons sous une arche florale",
+      title: "🌟 Pixar-Style 3D",
+      desc: "Charming 3D characters beneath a floral arch",
       prompt: "Charming Pixar-style 3D animated couple standing under a floral arch in wedding attire, cute face details, happy joyful expressions"
     },
     {
-      title: "🌅 Aventure Studio Ghibli",
-      desc: "Illustration sous un coucher de soleil doré",
+      title: "🌅 Studio Ghibli Adventure",
+      desc: "An illustration beneath a golden sunset",
       prompt: "Dreamy Studio Ghibli style illustration of couple under golden sunset, elegant wedding dress and tuxedo, gentle breeze, anime aesthetic"
     },
     {
-      title: "🏛️ Tableau d'Art Vintage",
-      desc: "Portrait classique à la peinture à l'huile",
+      title: "🏛️ Vintage Art Portrait",
+      desc: "A classic oil-painted portrait",
       prompt: "Elegant vintage oil painting portrait of couple smiling warmly, artistic brush strokes, fairytale romantic vibe, warm golden tones"
     }
   ];
 
   const MUSIC_PRESETS = [
     {
-      title: "🎹 Piano & Violoncelle Calme",
-      desc: "Mélodie douce et inspirante pour fond d'invitation",
+      title: "🎹 Calm Piano & Cello",
+      desc: "A soft, inspiring invitation soundtrack",
       prompt: "A calm and inspiring acoustic piano and cello melody, romantic ambient background music for wedding invitation, peaceful emotional composition"
     },
     {
-      title: "🎸 Guitare Acoustique Douce",
-      desc: "Thème d'amour apaisant avec cordes légères",
+      title: "🎸 Soft Acoustic Guitar",
+      desc: "A peaceful love theme with light strings",
       prompt: "Gentle acoustic guitar with soft emotional strings, peaceful love theme for wedding site, warm intimate acoustic track"
     },
     {
-      title: "🥁 Pop Acoustique Joyeuse",
-      desc: "Morceau dynamique et chaleureux de célébration",
+      title: "🥁 Joyful Acoustic Pop",
+      desc: "An upbeat, warm celebration track",
       prompt: "Joyful upbeat indie acoustic pop song with happy acoustic strumming, romantic wedding celebration background music"
     },
     {
-      title: "🎻 Harpe & Orchestre Féérique",
-      desc: "Symphonie féérique pour un mariage de rêve",
+      title: "🎻 Fairytale Harp & Orchestra",
+      desc: "A dreamlike symphony for your wedding",
       prompt: "Dreamy fairytale orchestral harp and violin romantic melody for wedding website, elegant cinematic score"
     }
   ];
@@ -3563,6 +3583,11 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         const data = await res.json();
         if (data.state === 'success') {
           setMusicGenerating(false);
+          if (!data.audioUrl) {
+            setMusicError('The music service completed without a playable audio file. Please generate it again.');
+            clearInterval(interval);
+            return;
+          }
           setMusicStatus('Music successfully composed!');
           setMusicCreditsUsed(prev => {
             const next = prev + 1;
@@ -3571,9 +3596,7 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
             }
             return next;
           });
-          if (data.audioUrl) {
-            setGeneratedAudio(data.audioUrl);
-          }
+          setGeneratedAudio(data.audioUrl);
           clearInterval(interval);
         } else if (data.state === 'fail') {
           setMusicGenerating(false);
@@ -3589,16 +3612,16 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
 
   const handleGeneratePhoto = async () => {
     if (photoCreditsUsed >= 5) {
-      setPhotoError('Vous avez atteint la limite maximale de 5 illustrations IA (5/5).');
+      setPhotoError('You have reached the maximum of 5 AI illustrations (5/5).');
       return;
     }
     if (!photoPrompt.trim()) {
-      setPhotoError('Veuillez saisir un prompt ou en sélectionner un parmi nos suggestions.');
+      setPhotoError('Please enter a prompt or choose one of our suggestions.');
       return;
     }
     setPhotoError('');
     setPhotoGenerating(true);
-    setPhotoStatus('Initialisation de Qwen 2 Image Edit...');
+    setPhotoStatus('Preparing your AI illustration...');
     try {
       const urls = [couplePhoto1, couplePhoto2].filter(u => u && u.trim());
       const res = await fetch('/api/ai-photo', {
@@ -3613,28 +3636,28 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       const data = await res.json();
       if (!res.ok || !data.taskId) {
         setPhotoGenerating(false);
-        setPhotoError(data.error || 'Erreur lors de la création de la tâche');
+        setPhotoError(data.error || 'Unable to create the AI image task.');
         return;
       }
       setPhotoTaskId(data.taskId);
     } catch (err) {
       setPhotoGenerating(false);
-      setPhotoError('Erreur réseau. Veuillez réessayer.');
+      setPhotoError('Network error. Please try again.');
     }
   };
 
   const handleGenerateMusic = async () => {
     if (musicCreditsUsed >= 5) {
-      setMusicError('Vous avez atteint la limite maximale de 5 musiques IA (5/5).');
+      setMusicError('You have reached the maximum of 5 AI soundtracks (5/5).');
       return;
     }
     if (!musicPrompt.trim()) {
-      setMusicError('Veuillez saisir ou sélectionner un style de musique.');
+      setMusicError('Please enter or select a music style.');
       return;
     }
     setMusicError('');
     setMusicGenerating(true);
-    setMusicStatus('Initialisation de Suno AI...');
+    setMusicStatus('Preparing your AI soundtrack...');
     try {
       const res = await fetch('/api/ai-music', {
         method: 'POST',
@@ -3648,13 +3671,13 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
       const data = await res.json();
       if (!res.ok || !data.taskId) {
         setMusicGenerating(false);
-        setMusicError(data.error || 'Erreur lors de la génération de la musique');
+        setMusicError(data.error || 'Unable to generate the soundtrack.');
         return;
       }
       setMusicTaskId(data.taskId);
     } catch (err) {
       setMusicGenerating(false);
-      setMusicError('Erreur réseau. Veuillez réessayer.');
+      setMusicError('Network error. Please try again.');
     }
   };
 
@@ -3739,24 +3762,6 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           <span style={{ backgroundColor: activeSubTab === 'music' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
             {Math.max(0, 5 - musicCreditsUsed)} / 5 creations
           </span>
-        </button>
-        <button
-          onClick={() => setActiveSubTab('video')}
-          style={{
-            padding: '0.6rem 1.2rem',
-            borderRadius: '20px',
-            border: 'none',
-            backgroundColor: activeSubTab === 'video' ? '#5C3A1E' : '#f0ede9',
-            color: activeSubTab === 'video' ? '#fff' : '#555',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <span>🎬 AI Video Remix</span>
         </button>
       </div>
 
@@ -4040,8 +4045,19 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
           {generatedAudio && (
             <div style={cardStyle}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1a1a', margin: '0 0 1rem 0' }}>Your Generated Wedding Music</h3>
-              <audio controls src={generatedAudio} style={{ width: '100%', marginBottom: '1.25rem' }} />
+              <audio ref={musicPreviewRef} controls src={generatedAudio} onPlay={() => setIsMusicPreviewPlaying(true)} onPause={() => setIsMusicPreviewPlaying(false)} onEnded={() => setIsMusicPreviewPlaying(false)} style={{ width: '100%', marginBottom: '1.25rem' }} />
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => {
+                    const player = musicPreviewRef.current;
+                    if (!player) return;
+                    if (player.paused) player.play().catch(() => setMusicError('Unable to play this track. Please try again.'));
+                    else player.pause();
+                  }}
+                  style={{ padding: '0.75rem 1.25rem', backgroundColor: '#f0ede9', color: '#5C3A1E', border: '1px solid #dfd2c4', borderRadius: '10px', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer' }}
+                >
+                  {isMusicPreviewPlaying ? '❚❚ Pause Preview' : '▶ Play Preview'}
+                </button>
                 <button
                   onClick={() => handleApplyMusic(generatedAudio)}
                   style={{
@@ -4082,34 +4098,6 @@ function AiStudioTab({ plan, eventInfo, slug, setEventInfo }) {
         </div>
       )}
 
-      {/* TAB 3: VIDEO IA */}
-      {activeSubTab === 'video' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={cardStyle}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 500, color: '#3E2723', margin: '0 0 1rem 0', fontFamily: 'var(--font-heading)' }}>🎬 AI Video Remix (Seedance)</h3>
-            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.25rem' }}>Upload two clear face photos to remix yourselves into the Hero Video.</p>
-
-            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 200px' }}>
-                <label style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem', color: '#1a1a1a' }}>Partner 1 Face</label>
-                <div style={{ padding: '1rem', border: '1px dashed #e0dcd7', borderRadius: '12px', textAlign: 'center', backgroundColor: '#faf8f5' }}>
-                  <StyledFileInput accept="image/*" label="Upload Face 1" />
-                </div>
-              </div>
-              <div style={{ flex: '1 1 200px' }}>
-                <label style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem', color: '#1a1a1a' }}>Partner 2 Face</label>
-                <div style={{ padding: '1rem', border: '1px dashed #e0dcd7', borderRadius: '12px', textAlign: 'center', backgroundColor: '#faf8f5' }}>
-                  <StyledFileInput accept="image/*" label="Upload Face 2" />
-                </div>
-              </div>
-            </div>
-
-            <button onClick={() => alert("Simulating Seedance AI Video Remix... this would replace data.videos.hero")} style={{ padding: '0.75rem 1.8rem', backgroundColor: '#5C3A1E', color: 'white', border: 'none', borderRadius: '30px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
-              ✨ Remix Video
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

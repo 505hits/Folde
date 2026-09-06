@@ -41,6 +41,13 @@ const carouselItems = [
   { name: 'Big Entrance', desc: 'Cinematic debut and regal golden seal.', video: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', partner1: 'Raphaël', partner2: 'Victoria', date: 'NOV 08, 2026' },
 ];
 
+const FEATURED_TEMPLATE_NAMES = ['Cisnes', 'Bloom', 'Romantic Garden', 'Como', 'Tropical', 'Soft Scratch'];
+const orderedCarouselItems = [...carouselItems].sort((a, b) => {
+  const aIndex = FEATURED_TEMPLATE_NAMES.indexOf(a.name);
+  const bIndex = FEATURED_TEMPLATE_NAMES.indexOf(b.name);
+  return (aIndex === -1 ? FEATURED_TEMPLATE_NAMES.length : aIndex) - (bIndex === -1 ? FEATURED_TEMPLATE_NAMES.length : bIndex);
+});
+
 const testimonials = [
   { name: "Isabelle & Hugo", text: "FOLDÈ transformed our vision into a breathtaking digital experience. All of our guests were captivated the moment they opened it.", rating: 5 },
   { name: "Priya & Daniel", text: "The level of elegance and craftsmanship is extraordinary. Our invitation felt like a work of art, and the RSVP system made managing responses effortless.", rating: 5 },
@@ -180,7 +187,7 @@ export default function Home() {
                       autoPlaySimulation={false}
                       onEnvelopeDismissed={handleSimulationScroll}
                       editMode={false}
-                      heroHeight="820px"
+                      heroHeight="970px"
                       data={{
                         partner1: "Anna",
                         partner2: "Tom",
@@ -214,7 +221,7 @@ export default function Home() {
           </button>
           <div className="carousel-wrapper">
             <div className="carousel-track" ref={carouselRef}>
-              {carouselItems.map((item, i) => (
+              {orderedCarouselItems.map((item, i) => (
                 <Link href="/collections" key={i} style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}>
                   <div
                     className="carousel-card"
@@ -231,9 +238,10 @@ export default function Home() {
                           date={item.date}
                           videoSrc={item.video}
                           envelopeSrc={item.envelope}
-                          showEnvelope={i % 3 === 0}
+                          showEnvelope
                           isImage={item.isImage || false}
                           active={hoveredCarouselItem === i}
+                          preloadEnvelopeFrame
                         />
                       </div>
                     </div>

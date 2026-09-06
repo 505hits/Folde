@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const KIE_API_KEY = process.env.KIE_API_KEY || '58d40e4696f76ab670356400c189d948';
+const KIE_API_KEY = process.env.KIE_API_KEY;
 
 export async function POST(req) {
     try {
@@ -11,16 +11,35 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
         }
 
+        if (!KIE_API_KEY) {
+            return NextResponse.json({ error: 'AI image generation is not configured.' }, { status: 503 });
+        }
+
         const defaultImage = "https://static.aiquickdraw.com/tools/example/1773473208660_6EO8TFjh.webp";
         const formattedUrls = Array.isArray(imageUrls) && imageUrls.length > 0
-            ? imageUrls.filter(url => url && typeof url === 'string')
+            ? imageUrls.filter(url => url && typeof url === 'string').slice(0, 2)
             : [defaultImage];
 
-        const payload = {
+        const hasTwoReferences = formattedUrls.length === 2;
+        const payload = hasTwoReferences ? {
+            // Qwen3 supports an image_urls array; Qwen2 accepts only one image_url.
+            model: "qwen3/image-to-image",
+            input: {
+                prompt: `Use both reference photos as two distinct people. Preserve each person's facial identity, features, and skin tone. ${prompt.trim()}`,
+                image_urls: formattedUrls,
+                resolution: "1K",
+                image_size: imageSize,
+                output_format: outputFormat,
+                prompt_extend: true,
+                negative_prompt: "missing person, duplicate person, merged faces, distorted face, blurry, low quality",
+                seed: Math.floor(Math.random() * 1000000),
+                nsfw_checker: true
+            }
+        } : {
             model: "qwen2/image-edit",
             input: {
                 prompt: prompt.trim(),
-                image_url: formattedUrls.length > 0 ? formattedUrls : [defaultImage],
+                image_url: formattedUrls[0] || defaultImage,
                 image_size: imageSize,
                 output_format: outputFormat,
                 seed: Math.floor(Math.random() * 1000000),
