@@ -14,11 +14,14 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
         }
 
+        const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://folde-wedding.com';
         const payload = {
             prompt: prompt.trim().slice(0, 500),
             customMode: false,
             instrumental: Boolean(instrumental),
-            model: model || 'V4'
+            model: model || 'V4',
+            // Required by KIE. Polling still retrieves the result for the UI.
+            callBackUrl: `${productionUrl.replace(/\/$/, '')}/api/ai-music-callback`
         };
 
         if (style) payload.style = style;
