@@ -107,7 +107,7 @@ export default function Home() {
               Designed in Paris, FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
-              <Link href="/collections" className="btn-primary">Design Your Invitation</Link>
+              <Link href="/checkout" className="btn-primary">Design Your Invitation</Link>
               <Link href="/collections" className="btn-secondary">Explore Collections</Link>
             </div>
 
@@ -480,8 +480,8 @@ export default function Home() {
                 </li>
               </ul>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Link href="/collections" className="btn-primary">Order Now</Link>
-                <Link href="/collections" className="btn-secondary">Explore Studio</Link>
+                <Link href="/checkout" className="btn-primary">Order Now</Link>
+                <Link href="/checkout" className="btn-secondary">Start Live Preview</Link>
               </div>
             </div>
           </div>
@@ -512,7 +512,7 @@ export default function Home() {
         <div className="container" style={{ textAlign: 'center' }}>
           <h2 className="heading-lg">Bring Your Invitation to Life</h2>
           <p className="text-lg" style={{ marginTop: '0.5rem' }}>Bespoke digital creations starting at €49.90</p>
-          <Link href="/collections" className="btn-primary" style={{ marginTop: '2rem' }}>Design Your Invitation</Link>
+          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>Design Your Invitation</Link>
         </div>
       </section>
 

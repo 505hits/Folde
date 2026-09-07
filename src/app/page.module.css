@@ -9,11 +9,11 @@
 }
 
 .heroInner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
   align-items: center;
-  gap: 2rem;
+  gap: clamp(2rem, 6vw, 7rem);
   min-height: 75vh;
-  justify-content: space-between;
 }
 
 .heroText {
@@ -60,9 +60,10 @@
 
 /* Phone Mockup */
 .heroPhone {
-  flex: 0 0 340px;
+  width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   animation: float 6s ease-in-out infinite;
 }
 
@@ -114,6 +115,7 @@
 
 @media (max-width: 900px) {
   .heroInner {
+    display: flex;
     flex-direction: column;
     text-align: center;
     gap: 3rem;
