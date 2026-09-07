@@ -318,13 +318,13 @@ export default function Home() {
               <div className={styles.pricingBadge}>Most Popular</div>
               <div>
                 <h3 className="heading-md">Premium</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>The ultimate experience with AI backgrounds, express support & design review.</p>
+                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>A self-service invitation dashboard with AI credits and priority support.</p>
                 <div className={styles.pricingPrice}>79.90 €</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> Everything in Standard included</li>
                   <li><span className={styles.checkIcon}>✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> Express 24h Dedicated Support</li>
-                  <li><span className={styles.checkIcon}>✓</span> Review by our Design Team</li>
+                  <li><span className={styles.checkIcon}>✓</span> Self-service dashboard + priority support</li>
                   <li><span className={styles.checkIcon}>✓</span> Custom sections (boarding pass, RSVP)</li>
                   <li><span className={styles.checkIcon}>✓</span> Unlimited revisions</li>
                 </ul>
@@ -341,6 +341,7 @@ export default function Home() {
                   <li><span className={styles.checkIcon}>✓</span> Hand-crafted ("Fait main") art direction</li>
                   <li><span className={styles.checkIcon}>✓</span> Custom Envelope, Hero video, Menu & Photos</li>
                   <li><span className={styles.checkIcon}>✓</span> Direct review & validation by our team</li>
+                  <li><span className={styles.checkIcon}>✓</span> Studio crafts and publishes your invitation after approval</li>
                   <li><span className={styles.checkIcon}>✓</span> Personal concierge & priority support</li>
                   <li><span className={styles.checkIcon}>✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> Everything included in Premium</li>

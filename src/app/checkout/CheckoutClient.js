@@ -64,12 +64,12 @@ const packages = [
     name: 'Premium',
     price: 79.90,
     originalPrice: 149.90,
-    desc: 'Full access to the Standard invitation editor plus 5 AI image credits, 5 AI music credits, express support, design review, and custom sections.',
+    desc: 'A self-service invitation dashboard with 5 AI image credits, 5 AI music credits, priority support, and custom sections.',
     features: [
       'Everything in Standard included',
       '5 AI image credits + 5 AI music credits',
       'Express 24h Dedicated Support',
-      'Review by our Design Team',
+      'Self-service dashboard + priority support',
       'Custom sections (boarding pass, RSVP options)',
       'Unlimited revisions'
     ]
@@ -85,6 +85,7 @@ const packages = [
       'Hand-crafted art direction',
       'Custom Envelope, Hero video, Menu & Photos',
       'Direct review & validation by our team',
+      'Studio crafts and publishes your invitation after approval',
       'Concierge priority support',
       '5 AI image credits + 5 AI music credits',
       'Everything in Premium'
@@ -1395,7 +1396,10 @@ export default function CheckoutClient() {
                   {(p.id === 'premium' || p.id === 'Custom') && selectedPackage.id === p.id && (
                     <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#faf5f0', borderRadius: '10px', border: '1px solid #e8ddd4', fontSize: '0.8rem', color: '#8b6e5a', display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b6e5a" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
-                      <span>We handle everything for you! After payment, you'll fill in your wedding details and our design team will craft your invitation.</span>
+                      <span>{p.id === 'Custom'
+                        ? 'We handle everything for you. After payment, share your wedding details and our design studio will craft, review, and publish your bespoke invitation.'
+                        : 'After payment, complete your wedding details and personalize your invitation yourself in your private dashboard.'}
+                      </span>
                     </div>
                   )}
                 </div>

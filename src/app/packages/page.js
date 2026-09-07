@@ -77,7 +77,7 @@ export default function Offers() {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  Everything in Standard plus 5 AI image credits, 5 AI music credits, express 24h support, design review, and custom sections.
+                  A self-service dashboard with everything in Standard, 5 AI image credits, 5 AI music credits, priority support, and custom sections.
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>149.90€</span>
@@ -88,7 +88,7 @@ export default function Offers() {
                 <li><span className="check">✓</span> Everything in Standard included</li>
                 <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                 <li><span className="check">✓</span> Express 24h Dedicated Support</li>
-                <li><span className="check">✓</span> Review by our Design Team</li>
+                <li><span className="check">✓</span> Self-service dashboard + priority support</li>
                 <li><span className="check">✓</span> Custom sections (boarding pass, RSVP)</li>
                 <li><span className="check">✓</span> Unlimited revisions</li>
                 <li><span className="check">✓</span> <strong>All languages supported</strong></li>
@@ -116,6 +116,7 @@ export default function Offers() {
                 <li><span className="check">✓</span> Hand-crafted art direction</li>
                 <li><span className="check">✓</span> Custom Envelope, Hero video, Menu & Photos</li>
                 <li><span className="check">✓</span> Direct review & validation by our team</li>
+                <li><span className="check">✓</span> Studio crafts and publishes your invitation after approval</li>
                 <li><span className="check">✓</span> Personal concierge & priority support</li>
                 <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                 <li><span className="check">✓</span> <strong>All languages supported</strong></li>
