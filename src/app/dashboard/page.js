@@ -84,7 +84,7 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard() {
-  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
+  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
@@ -134,6 +134,15 @@ export default function Dashboard() {
       fetchGuests(userOrder.slug);
     }
   }, [userOrder?.slug]);
+
+  // Expert clients may keep their studio open while the Folde team publishes
+  // the final site. Refresh the order status so their completion screen
+  // changes automatically without asking them to sign out and back in.
+  useEffect(() => {
+    if (!currentUser?.email || typeof fetchOrders !== 'function') return;
+    const refreshId = setInterval(() => { fetchOrders(); }, 30000);
+    return () => clearInterval(refreshId);
+  }, [currentUser?.email, fetchOrders]);
 
   const handleRevisionSubmit = async (e) => {
     e.preventDefault();
