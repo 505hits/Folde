@@ -107,10 +107,9 @@
 }
 
 .mockupContent {
-  width: 450px;
+  width: 100%;
   min-height: 970px;
-  zoom: 0.658;
-  margin: 0 auto;
+  margin: 0;
 }
 
 @media (max-width: 900px) {
@@ -147,9 +146,6 @@
     height: 590px;
   }
 
-  .mockupContent {
-    zoom: 0.604;
-  }
 }
 
 @media (max-width: 480px) {
@@ -160,9 +156,6 @@
     padding: 4px;
   }
 
-  .mockupContent {
-    zoom: 0.529;
-  }
 
   .phoneScreen {
     border-radius: 32px;
