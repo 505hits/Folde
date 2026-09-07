@@ -1,4 +1,5 @@
 import { Inter, Zen_Old_Mincho } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import SiteLayout from "@/components/SiteLayout";
 import { DatabaseProvider } from "@/context/DatabaseContext";
@@ -79,6 +80,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-G5CB9NQHZL" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-G5CB9NQHZL');`}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
