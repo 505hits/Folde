@@ -668,10 +668,15 @@ export default function CheckoutClient() {
           images: {},
           colorPreferences: premiumForm.colorPreferences || '',
           languages: premiumForm.languages || '',
+          phone: premiumForm.phone || '',
+          guestCount: premiumForm.guestCount || '',
+          envelopeChoice: envName,
+          heroVideoChoice: heroName,
           specialRequests: premiumForm.specialRequests || '',
           inspirationLinks: premiumForm.inspirationLinks || '',
           designStory: premiumForm.designStory || '',
           creativeDirection: premiumForm.creativeDirection || '',
+          submittedAssets: attachments.map(({ filename }) => filename),
         };
 
         const wasSaved = await saveOrderDetails(slug, siteDetails);

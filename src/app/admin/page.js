@@ -1,141 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useDatabase } from "@/context/DatabaseContext";
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+
+const isExpert = (order) => ['custom', 'expert'].includes(String(order?.plan || '').toLowerCase());
+const label = (value) => value || 'Not provided';
 
 export default function AdminDashboard() {
-  const { orders, updateOrderStatus } = useDatabase();
-  const [activeTab, setActiveTab] = useState('orders');
+  const [orders, setOrders] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filter, setFilter] = useState('expert');
+  const [saving, setSaving] = useState(false);
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f4f4f5', fontFamily: 'var(--font-body)', color: '#18181b' }}>
+  const request = async (method = 'GET', body) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch('/api/admin/orders', { method, headers: { 'Content-Type': 'application/json', ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+    return data;
+  };
+  const loadOrders = async () => {
+    setLoading(true); setError('');
+    try { setOrders((await request()).orders || []); } catch (err) { setError(err.message); } finally { setLoading(false); }
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => { loadOrders(); }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+  const visibleOrders = useMemo(() => filter === 'expert' ? orders.filter(isExpert) : orders, [orders, filter]);
+  const updateOrder = async (action, status) => {
+    if (!selected) return;
+    setSaving(true); setError('');
+    try {
+      const { order } = await request('PATCH', { orderId: selected.id, action, status });
+      const next = { ...selected, ...order, details: order.details || selected.details };
+      setSelected(next); setOrders(current => current.map(item => item.id === next.id ? next : item));
+    } catch (err) { setError(err.message); } finally { setSaving(false); }
+  };
+  const details = selected?.details || {};
 
-      {/* Admin Sidebar */}
-      <aside style={{ width: '250px', backgroundColor: '#18181b', color: '#fff', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ marginBottom: '3rem', paddingLeft: '1rem' }}>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700 }}>Admin Portal</h1>
-          <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.2rem' }}>FOLDÈ Design</p>
-        </div>
-
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <button
-            onClick={() => setActiveTab('orders')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem',
-              borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 500,
-              backgroundColor: activeTab === 'orders' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: '#fff', textAlign: 'left', transition: 'all 0.2s'
-            }}
-          >
-            <span>📦</span> Orders
-          </button>
-          <button
-            onClick={() => setActiveTab('sites')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem',
-              borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 500,
-              backgroundColor: activeTab === 'sites' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: '#fff', textAlign: 'left', transition: 'all 0.2s'
-            }}
-          >
-            <span>🌐</span> Client Sites
-          </button>
-        </nav>
-
-        <div style={{ marginTop: 'auto', paddingLeft: '1rem' }}>
-          <Link href="/" style={{ fontSize: '0.9rem', color: '#a1a1aa', textDecoration: 'none', fontWeight: 500 }}>
-            ← Back to Main Site
-          </Link>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-
-          <h2 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '2rem' }}>
-            {activeTab === 'orders' ? 'Orders Management' : 'Active Client Sites'}
-          </h2>
-
-          {activeTab === 'orders' && (
-            <div style={{ backgroundColor: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                    <th style={{ padding: '1rem 1.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#64748b' }}>Order ID</th>
-                    <th style={{ padding: '1rem 1.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#64748b' }}>Client / Couple</th>
-                    <th style={{ padding: '1rem 1.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#64748b' }}>Package</th>
-                    <th style={{ padding: '1rem 1.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#64748b' }}>Price</th>
-                    <th style={{ padding: '1rem 1.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#64748b' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map(order => (
-                    <tr key={order.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '1rem 1.5rem', fontWeight: 500, fontSize: '0.9rem' }}>{order.id}</td>
-                      <td style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>{order.couple}</td>
-                      <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', color: '#475569' }}>{order.plan}</td>
-                      <td style={{ padding: '1rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{order.price}$</td>
-                      <td style={{ padding: '1rem 1.5rem' }}>
-                        <span style={{
-                          padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, display: 'inline-block', marginBottom: '0.5rem',
-                          backgroundColor: order.status === 'Live' ? '#dcfce7' : order.status === 'Awaiting Validation' ? '#ffedd5' : '#fef9c3',
-                          color: order.status === 'Live' ? '#166534' : order.status === 'Awaiting Validation' ? '#c2410c' : '#854d0e'
-                        }}>
-                          {order.status || 'Awaiting Details'}
-                        </span>
-                        {order.status !== 'Live' && (
-                          <button
-                            onClick={() => updateOrderStatus(order.id, 'Live')}
-                            style={{ display: 'block', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
-                          >
-                            ✓ Validate Site (Mark Live)
-                          </button>
-                        )}
-                        {order.status === 'Live' && (
-                          <button
-                            onClick={() => updateOrderStatus(order.id, 'Awaiting Validation')}
-                            style={{ display: 'block', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
-                          >
-                            Revert Status
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {activeTab === 'sites' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-              {orders.map(order => (
-                <div key={order.id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{order.couple}</h3>
-                    <span style={{ fontSize: '0.75rem', backgroundColor: '#f1f5f9', color: '#475569', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>{order.theme}</span>
-                  </div>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.25rem' }}>Dynamic URL (SEO)</p>
-                    <Link href={`/${order.slug}`} target="_blank" style={{ fontSize: '0.95rem', color: '#2563eb', textDecoration: 'none', fontWeight: 500, wordBreak: 'break-all' }}>
-                      foldedesign.com/{order.slug}
-                    </Link>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <Link href={`/${order.slug}`} target="_blank" style={{ flex: 1, textAlign: 'center', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', color: '#0f172a', padding: '0.5rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 500, textDecoration: 'none' }}>
-                      Visit Site
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-        </div>
-      </main>
-
+  return <main style={{ minHeight: '100vh', background: '#f7f4ef', color: '#2d211b', fontFamily: 'var(--font-body)', padding: '2rem clamp(1rem, 4vw, 4rem)' }}>
+    <header style={{ maxWidth: '1400px', margin: '0 auto 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}><div><div style={{ letterSpacing: '.16em', color: '#9a765e', fontWeight: 800, fontSize: '.7rem' }}>FOLDÈ STUDIO</div><h1 style={{ fontFamily: 'var(--font-heading)', margin: '.35rem 0 0', fontSize: '2rem' }}>Expert orders</h1></div><div style={{ display: 'flex', gap: '.7rem' }}><button onClick={loadOrders} style={buttonSecondary}>Refresh</button><Link href="/" style={{ ...buttonSecondary, textDecoration: 'none' }}>View website</Link></div></header>
+    {error && <div style={{ maxWidth: '1400px', margin: '0 auto 1rem', padding: '1rem', borderRadius: '12px', background: '#fff2f2', color: '#b42318' }}>{error}{error.includes('not configured') && ' Add ADMIN_EMAILS to Vercel, with your administrator email address.'}</div>}
+    <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(320px, .85fr) minmax(0, 1.5fr)', gap: '1.5rem', alignItems: 'start' }}>
+      <section style={panelStyle}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}><h2 style={headingStyle}>Orders</h2><select value={filter} onChange={e => setFilter(e.target.value)} style={selectStyle}><option value="expert">Expert only</option><option value="all">All orders</option></select></div>{loading ? <p style={{ color: '#766b62' }}>Loading studio orders…</p> : visibleOrders.length === 0 ? <p style={{ color: '#766b62' }}>No orders found.</p> : visibleOrders.map(order => <button key={order.id} onClick={() => setSelected(order)} style={{ ...orderRowStyle, borderColor: selected?.id === order.id ? '#8a5b38' : '#eadfd5' }}><div><strong>{order.couple}</strong><div style={{ color: '#766b62', fontSize: '.8rem', marginTop: '.25rem' }}>{order.user_email || order.email} · {order.plan}</div></div><span style={statusStyle(order.status)}>{order.status || 'In Creation'}</span></button>)}</section>
+      <section style={panelStyle}>{!selected ? <div style={{ minHeight: '440px', display: 'grid', placeItems: 'center', textAlign: 'center', color: '#766b62' }}>Select an order to see its complete client brief.</div> : <>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', borderBottom: '1px solid #eadfd5', paddingBottom: '1.25rem', marginBottom: '1.4rem' }}><div><div style={{ color: '#9a765e', letterSpacing: '.12em', fontSize: '.7rem', fontWeight: 800 }}>{selected.id} · {selected.plan}</div><h2 style={{ ...headingStyle, marginTop: '.4rem' }}>{selected.couple}</h2><p style={{ margin: '.35rem 0 0', color: '#766b62' }}>{selected.user_email || selected.email} · Ordered {selected.created_at ? new Date(selected.created_at).toLocaleDateString() : selected.date}</p></div><span style={statusStyle(selected.status)}>{selected.status || 'In Creation'}</span></div>
+        <div style={{ display: 'flex', gap: '.65rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}><a href={`/invite/${selected.slug}?preview=true`} target="_blank" rel="noreferrer" style={{ ...buttonSecondary, textDecoration: 'none' }}>Preview draft</a>{selected.status === 'Live' && <a href={`/invite/${selected.slug}`} target="_blank" rel="noreferrer" style={{ ...buttonSecondary, textDecoration: 'none' }}>Open live site</a>}<button disabled={saving} onClick={() => updateOrder('status', 'In Creation')} style={buttonSecondary}>In creation</button><button disabled={saving} onClick={() => updateOrder('status', 'Changes Requested')} style={buttonSecondary}>Request changes</button><button disabled={saving} onClick={() => updateOrder('publish')} style={buttonPrimary}>{saving ? 'Saving…' : 'Validate & publish'}</button></div>
+        <div style={gridStyle}><Info title="Client contact" rows={[["Email", selected.user_email || selected.email], ["Phone", details.phone], ["Guest count", details.guestCount], ["Languages", details.languages]]}/><Info title="Wedding" rows={[["Date", details.date], ["Venue", details.ceremonyVenue], ["City / country", details.receptionVenue], ["Theme", selected.theme]]}/><Info title="Design selections" rows={[["Envelope", details.envelopeChoice], ["Hero video", details.heroVideoChoice], ["Colors", details.colorPreferences], ["Sections", Object.entries(details.sections || {}).filter(([, enabled]) => enabled).map(([key]) => key.replace(/^show/, '')).join(', ')]]}/></div>
+        <TextBlock title="Celebration story" value={details.designStory}/><TextBlock title="Creative direction" value={details.creativeDirection}/><TextBlock title="Inspiration links" value={details.inspirationLinks}/><TextBlock title="Additional requests" value={details.specialRequests}/><TextBlock title="Menu and reception notes" value={details.menu?.map(item => `${item.course}: ${item.dish}`).join('\n')}/>
+        <div style={{ marginTop: '1rem', padding: '1rem 1.15rem', border: '1px solid #eadfd5', borderRadius: '14px', background: '#fffcf8' }}><strong style={{ fontSize: '.9rem' }}>Submitted files</strong><p style={{ color: '#766b62', fontSize: '.85rem', margin: '.5rem 0 0' }}>{details.submittedAssets?.length ? details.submittedAssets.join(', ') : 'No files submitted with this order.'}</p></div>
+      </>}</section>
     </div>
-  );
+  </main>;
 }
+function Info({ title, rows }) { return <div style={{ border: '1px solid #eadfd5', borderRadius: '14px', padding: '1rem', background: '#fffcf8' }}><strong style={{ fontSize: '.9rem' }}>{title}</strong>{rows.map(([name, value]) => <div key={name} style={{ marginTop: '.65rem', fontSize: '.85rem' }}><span style={{ color: '#8a7b70' }}>{name}</span><div style={{ marginTop: '.12rem', wordBreak: 'break-word' }}>{label(value)}</div></div>)}</div>; }
+function TextBlock({ title, value }) { if (!value) return null; return <section style={{ marginTop: '1rem', padding: '1rem 1.15rem', border: '1px solid #eadfd5', borderRadius: '14px', background: '#fffcf8' }}><strong style={{ fontSize: '.9rem' }}>{title}</strong><p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.55, color: '#5f554e', margin: '.55rem 0 0' }}>{value}</p></section>; }
+const panelStyle = { background: '#fff', border: '1px solid #eadfd5', borderRadius: '22px', padding: '1.3rem', boxShadow: '0 10px 30px rgba(81, 54, 36, .05)' };
+const headingStyle = { fontFamily: 'var(--font-heading)', fontSize: '1.35rem', margin: 0 };
+const buttonSecondary = { border: '1px solid #dacabb', background: '#fff', color: '#5c3a1e', borderRadius: '9px', padding: '.6rem .85rem', fontFamily: 'inherit', fontWeight: 700, fontSize: '.8rem', cursor: 'pointer' };
+const buttonPrimary = { ...buttonSecondary, background: '#5c3a1e', color: '#fff', borderColor: '#5c3a1e' };
+const selectStyle = { border: '1px solid #dacabb', borderRadius: '8px', padding: '.45rem', color: '#5c3a1e', background: '#fff' };
+const orderRowStyle = { width: '100%', display: 'flex', justifyContent: 'space-between', gap: '.75rem', textAlign: 'left', alignItems: 'center', padding: '1rem .2rem', background: 'transparent', border: '1px solid', borderLeft: '0', borderRight: '0', cursor: 'pointer', fontFamily: 'inherit' };
+const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1rem' };
+const statusStyle = (status) => ({ padding: '.3rem .55rem', borderRadius: '999px', fontSize: '.7rem', fontWeight: 800, whiteSpace: 'nowrap', background: status === 'Live' ? '#e8f7ec' : status === 'Changes Requested' ? '#fff1e9' : '#fff7d9', color: status === 'Live' ? '#24713a' : status === 'Changes Requested' ? '#b54613' : '#8a6710' });
