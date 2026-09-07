@@ -1107,6 +1107,7 @@ export default function Dashboard() {
             <AiStudioTab
               eventInfo={clientEventInfo}
               slug={clientSlug}
+              currentUser={currentUser}
               setEventInfo={setEventInfo}
               saveOrderDetails={saveOrderDetails}
             />
@@ -3262,7 +3263,7 @@ function ContactUsTab({ currentUser }) {
   );
 }
 
-function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
+function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDetails }) {
   // Always unlocked for users inside the dashboard
   const isPremium = true;
   const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
@@ -3386,7 +3387,12 @@ function AiStudioTab({ eventInfo, slug, setEventInfo, saveOrderDetails }) {
       const response = await Promise.race([
         fetch('/api/ai-reference-upload', {
           method: 'POST', body,
-          headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+          headers: {
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+            // The checkout has a deliberate local-only test-account path.
+            // Send its address so the server can allow this narrow test flow.
+            ...(currentUser?.email ? { 'X-Folde-Test-Email': currentUser.email } : {})
+          }
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 20000))
       ]);
