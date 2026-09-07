@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import styles from "./page.module.css";
-import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 
 const carouselItems = [
@@ -65,17 +64,9 @@ const faqs = [
 
 export default function Home() {
   const carouselRef = useRef(null);
-  const heroMockupRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
-
-  const handleSimulationScroll = () => {
-    if (heroMockupRef.current) {
-      setTimeout(() => {
-        heroMockupRef.current.scrollTo({ top: 600, behavior: 'smooth' });
-      }, 1500);
-    }
-  };
+  const [heroPreviewActive, setHeroPreviewActive] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -177,29 +168,24 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className={`${styles.heroPhone} animate-fade-in-up delay-2`}>
+          <div
+            className={`${styles.heroPhone} animate-fade-in-up delay-2`}
+            onMouseEnter={() => setHeroPreviewActive(true)}
+            onMouseLeave={() => setHeroPreviewActive(false)}
+          >
             <div className={styles.phoneFrame}>
               <div className={styles.phoneNotch}></div>
               <div className={styles.phoneScreen}>
-                <div ref={heroMockupRef} className="hide-scrollbar" style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
-                  <div className={styles.mockupContent}>
-                    <BordeauxTemplate
-                      autoPlaySimulation={false}
-                      onEnvelopeDismissed={handleSimulationScroll}
-                      editMode={false}
-                      heroHeight="970px"
-                      data={{
-                        partner1: "Anna",
-                        partner2: "Tom",
-                        videos: {
-                          envelope: "https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4",
-                          hero: "https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
-                        },
-                        sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true }
-                      }}
-                    />
-                  </div>
-                </div>
+                <TemplateHeroPreview
+                  partner1="Anna"
+                  partner2="Tom"
+                  date="SEP 05, 2026"
+                  videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
+                  envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
+                  showEnvelope
+                  active={heroPreviewActive}
+                  preloadEnvelopeFrame
+                />
               </div>
             </div>
           </div>
