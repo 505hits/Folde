@@ -54,6 +54,7 @@ const packages = [
       'Your colors and info applied',
       'RSVP + private dashboard',
       'Guest directory & table planner',
+      'No AI credits included',
       'All languages supported',
       'Unlimited guests included'
     ]
@@ -63,10 +64,10 @@ const packages = [
     name: 'Premium',
     price: 79.90,
     originalPrice: 149.90,
-    desc: 'Full access to standard invitation editor + AI background images, 24h express support, design review, and custom sections.',
+    desc: 'Full access to the Standard invitation editor plus 5 AI image credits, 5 AI music credits, express support, design review, and custom sections.',
     features: [
       'Everything in Standard included',
-      'AI Generated Backgrounds & Images',
+      '5 AI image credits + 5 AI music credits',
       'Express 24h Dedicated Support',
       'Review by our Design Team',
       'Custom sections (boarding pass, RSVP options)',
@@ -85,6 +86,7 @@ const packages = [
       'Custom Envelope, Hero video, Menu & Photos',
       'Direct review & validation by our team',
       'Concierge priority support',
+      '5 AI image credits + 5 AI music credits',
       'Everything in Premium'
     ]
   }

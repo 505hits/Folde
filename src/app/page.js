@@ -309,6 +309,7 @@ export default function Home() {
                   <li><span className={styles.checkIcon}>✓</span> Real-time guest dashboard</li>
                   <li><span className={styles.checkIcon}>✓</span> Unlimited guests included</li>
                   <li><span className={styles.checkIcon}>✓</span> Guest directory & table planner</li>
+                  <li><span className={styles.checkIcon}>✓</span> No AI credits included</li>
                 </ul>
               </div>
               <Link href="/collections" className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>Select Standard</Link>
@@ -321,7 +322,7 @@ export default function Home() {
                 <div className={styles.pricingPrice}>79.90 €</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> Everything in Standard included</li>
-                  <li><span className={styles.checkIcon}>✓</span> AI Generated Backgrounds & Images</li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> Express 24h Dedicated Support</li>
                   <li><span className={styles.checkIcon}>✓</span> Review by our Design Team</li>
                   <li><span className={styles.checkIcon}>✓</span> Custom sections (boarding pass, RSVP)</li>
@@ -341,6 +342,7 @@ export default function Home() {
                   <li><span className={styles.checkIcon}>✓</span> Custom Envelope, Hero video, Menu & Photos</li>
                   <li><span className={styles.checkIcon}>✓</span> Direct review & validation by our team</li>
                   <li><span className={styles.checkIcon}>✓</span> Personal concierge & priority support</li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> Everything included in Premium</li>
                 </ul>
               </div>

@@ -7,6 +7,17 @@ const escapeHtml = (value = '') => String(value)
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#039;');
 
+// Resend only accepts a raw email address or `Display name <email@example.com>`.
+// Normalize the value defensively so a pasted variable assignment, quotation marks,
+// or an accented display name cannot prevent a paid Expert brief from reaching us.
+const getResendFrom = () => {
+  const configured = String(process.env.RESEND_FROM_EMAIL || '').trim();
+  const address = configured.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
+  return address
+    ? `Folde Wedding <${address}>`
+    : 'Folde Wedding <onboarding@resend.dev>';
+};
+
 export async function GET() {
   return NextResponse.json({ configured: Boolean(process.env.RESEND_API_KEY) });
 }
@@ -161,7 +172,7 @@ export async function POST(request) {
     }
 
     const emailPayload = {
-        from: process.env.RESEND_FROM_EMAIL || 'FOLDÈ Design <onboarding@resend.dev>',
+        from: getResendFrom(),
         to: ['folde.wedding@gmail.com'],
         subject: `[CUSTOM ORDER] - ${packageName} — ${name} & ${partnerName}`,
         html: emailBody,

@@ -487,7 +487,11 @@ export default function Dashboard() {
   // ========== CUSTOM / SUR MESURE STUDIO DASHBOARD ==========
   const isCustomOnly = ['Custom', 'custom', 'Expert', 'expert'].includes(userOrder.plan);
   const clientSlug = userOrder.slug;
-  const clientGuests = guests[clientSlug] || [];
+  const expertEventInfo = {
+    ...(eventInfo[clientSlug] || {}),
+    partner1: orderPartner1,
+    partner2: orderPartner2,
+  };
 
   if (isCustomOnly) {
     return (
@@ -649,59 +653,27 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* RSVPs List */}
-          <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-              <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.25rem' }}>Guest List (RSVP)</h2>
-                <p style={{ color: '#888', fontSize: '0.9rem' }}>Track your guests' responses in real-time.</p>
-              </div>
-              <div style={{ backgroundColor: '#eefcf1', color: '#2e7d32', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
-                {clientGuests.filter(g => g.status === 'Attending').length} Attending
-              </div>
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)', marginBottom: '2.5rem' }}>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.75rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>EXPERT BENEFIT</div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 600, fontFamily: 'var(--font-heading)', color: '#1a1a1a', margin: 0 }}>AI Personalization Studio</h2>
             </div>
+            <AiStudioTab
+              eventInfo={expertEventInfo}
+              slug={clientSlug}
+              currentUser={currentUser}
+              setEventInfo={setEventInfo}
+              saveOrderDetails={saveOrderDetails}
+              plan={userOrder.plan}
+            />
+          </div>
 
-            {clientGuests.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#888', backgroundColor: '#faf8f5', borderRadius: '12px' }}>
-                No responses yet.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {clientGuests.map((guest, idx) => (
-                  <div key={idx} style={{ padding: '1.25rem', border: '1px solid #e0dcd7', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.75rem', backgroundColor: guest.status === 'Attending' ? '#fdfdfd' : '#faf8f5' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          {guest.name}
-                          {guest.status === 'Attending' ? (
-                            <span style={{ fontSize: '0.7rem', backgroundColor: '#eefcf1', color: '#2e7d32', padding: '0.15rem 0.4rem', borderRadius: '8px', fontWeight: 700 }}>Attending</span>
-                          ) : (
-                            <span style={{ fontSize: '0.7rem', backgroundColor: '#f3f4f6', color: '#6b7280', padding: '0.15rem 0.4rem', borderRadius: '8px', fontWeight: 700 }}>Pending</span>
-                          )}
-                        </div>
-                        {guest.status === 'Attending' && guest.hasPlusOne && (
-                          <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                            <span style={{ color: '#b08968' }}>+1</span> {guest.plusOneName}
-                          </div>
-                        )}
-                      </div>
-
-                      {guest.status === 'Attending' && guest.meal && guest.meal !== '-' && (
-                        <div style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f9f5f0', padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid #e8ddd4' }}>
-                          🍽 {guest.meal}
-                        </div>
-                      )}
-                    </div>
-
-                    {guest.message && (
-                      <div style={{ marginTop: '0.5rem', padding: '0.8rem', backgroundColor: '#fdfbf9', borderRadius: '8px', borderLeft: '3px solid #d4c5b9', fontSize: '0.9rem', color: '#555', fontStyle: 'italic' }}>
-                        "{guest.message}"
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+          {/* Full RSVP and seating tools are available in the Expert Studio too. */}
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)', marginBottom: '2.5rem' }}>
+            <RsvpsTab slug={clientSlug} />
+          </div>
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)' }}>
+            <TablesTab slug={clientSlug} />
           </div>
         </div>
       </div>
@@ -1110,6 +1082,7 @@ export default function Dashboard() {
               currentUser={currentUser}
               setEventInfo={setEventInfo}
               saveOrderDetails={saveOrderDetails}
+              plan={userOrder?.plan || 'Standard'}
             />
           )}
           {activeTab === 'guests' && (
@@ -3263,9 +3236,10 @@ function ContactUsTab({ currentUser }) {
   );
 }
 
-function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDetails }) {
-  // Always unlocked for users inside the dashboard
-  const isPremium = true;
+function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDetails, plan = 'Standard' }) {
+  const normalizedPlan = String(plan || '').toLowerCase();
+  const hasAiCredits = ['premium', 'expert', 'custom'].includes(normalizedPlan);
+  const aiCreditLimit = hasAiCredits ? 5 : 0;
   const [activeSubTab, setActiveSubTab] = useState('photo'); // 'photo' | 'music'
 
   // Photo state
@@ -3683,8 +3657,12 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
   }, [musicTaskId, musicGenerating, slug]);
 
   const handleGeneratePhoto = async () => {
-    if (photoCreditsUsed >= 5) {
-      setPhotoError('You have reached the maximum of 5 AI illustrations (5/5).');
+    if (!hasAiCredits) {
+      setPhotoError('AI credits are included with Premium and Expert plans.');
+      return;
+    }
+    if (photoCreditsUsed >= aiCreditLimit) {
+      setPhotoError(`You have reached the maximum of ${aiCreditLimit} AI illustrations (${aiCreditLimit}/${aiCreditLimit}).`);
       return;
     }
     if (!photoPrompt.trim()) {
@@ -3719,8 +3697,12 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
   };
 
   const handleGenerateMusic = async () => {
-    if (musicCreditsUsed >= 5) {
-      setMusicError('You have reached the maximum of 5 AI soundtracks (5/5).');
+    if (!hasAiCredits) {
+      setMusicError('AI credits are included with Premium and Expert plans.');
+      return;
+    }
+    if (musicCreditsUsed >= aiCreditLimit) {
+      setMusicError(`You have reached the maximum of ${aiCreditLimit} AI soundtracks (${aiCreditLimit}/${aiCreditLimit}).`);
       return;
     }
     if (!musicPrompt.trim()) {
@@ -3811,7 +3793,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
         >
           <span>🎨 AI Image Generator</span>
           <span style={{ backgroundColor: activeSubTab === 'photo' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
-            {Math.max(0, 5 - photoCreditsUsed)} / 5 creations
+            {Math.max(0, aiCreditLimit - photoCreditsUsed)} / {aiCreditLimit} creations
           </span>
         </button>
         <button
@@ -3832,7 +3814,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
         >
           <span>🎵 AI Sound Generator</span>
           <span style={{ backgroundColor: activeSubTab === 'music' ? 'rgba(255,255,255,0.2)' : '#e2ddd5', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>
-            {Math.max(0, 5 - musicCreditsUsed)} / 5 creations
+            {Math.max(0, aiCreditLimit - musicCreditsUsed)} / {aiCreditLimit} creations
           </span>
         </button>
       </div>
@@ -3951,19 +3933,19 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
 
               <button
                 onClick={handleGeneratePhoto}
-                disabled={photoGenerating || photoCreditsUsed >= 5}
+                disabled={!hasAiCredits || photoGenerating || photoCreditsUsed >= aiCreditLimit}
                 style={{
                   padding: '0.75rem 1.8rem',
-                  backgroundColor: photoCreditsUsed >= 5 ? '#a3a3a3' : '#5C3A1E',
+                  backgroundColor: !hasAiCredits || photoCreditsUsed >= aiCreditLimit ? '#a3a3a3' : '#5C3A1E',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '30px',
                   fontWeight: 600,
                   fontSize: '0.9rem',
-                  cursor: photoCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
+                  cursor: !hasAiCredits || photoCreditsUsed >= aiCreditLimit ? 'not-allowed' : 'pointer'
                 }}
               >
-                {photoGenerating ? '🎨 Generating...' : photoCreditsUsed >= 5 ? '🚫 Limit reached (5/5)' : 'Generate Illustration'}
+                {photoGenerating ? '🎨 Generating...' : !hasAiCredits ? 'Premium or Expert required' : photoCreditsUsed >= aiCreditLimit ? `🚫 Limit reached (${aiCreditLimit}/${aiCreditLimit})` : 'Generate Illustration'}
               </button>
             </div>
 
@@ -4084,19 +4066,19 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
 
               <button
                 onClick={handleGenerateMusic}
-                disabled={musicGenerating || musicCreditsUsed >= 5}
+                disabled={!hasAiCredits || musicGenerating || musicCreditsUsed >= aiCreditLimit}
                 style={{
                   padding: '0.75rem 1.8rem',
-                  backgroundColor: musicCreditsUsed >= 5 ? '#a3a3a3' : '#5C3A1E',
+                  backgroundColor: !hasAiCredits || musicCreditsUsed >= aiCreditLimit ? '#a3a3a3' : '#5C3A1E',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '30px',
                   fontWeight: 600,
                   fontSize: '0.9rem',
-                  cursor: musicCreditsUsed >= 5 ? 'not-allowed' : 'pointer'
+                  cursor: !hasAiCredits || musicCreditsUsed >= aiCreditLimit ? 'not-allowed' : 'pointer'
                 }}
               >
-                {musicGenerating ? '🎵 Composing music...' : musicCreditsUsed >= 5 ? '🚫 Limit reached (5/5)' : 'Compose Music'}
+                {musicGenerating ? '🎵 Composing music...' : !hasAiCredits ? 'Premium or Expert required' : musicCreditsUsed >= aiCreditLimit ? `🚫 Limit reached (${aiCreditLimit}/${aiCreditLimit})` : 'Compose Music'}
               </button>
             </div>
 
