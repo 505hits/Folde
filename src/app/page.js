@@ -66,8 +66,6 @@ export default function Home() {
   const carouselRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
-  const [heroPreviewActive, setHeroPreviewActive] = useState(false);
-  const [heroPreviewOpened, setHeroPreviewOpened] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -169,39 +167,19 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div
-            className={`${styles.heroPhone} animate-fade-in-up delay-2`}
-            onMouseEnter={() => setHeroPreviewActive(true)}
-            onMouseLeave={() => setHeroPreviewActive(false)}
-          >
+          <div className={`${styles.heroPhone} animate-fade-in-up delay-2`}>
             <div className={styles.phoneFrame}>
               <div className={styles.phoneNotch}></div>
               <div className={styles.phoneScreen}>
-                <div className={styles.heroPreviewScroll}>
-                  <div className={styles.heroPreviewTop}>
-                    <TemplateHeroPreview
-                      partner1="Anna"
-                      partner2="Tom"
-                      date="SEP 05, 2026"
-                      videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
-                      envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
-                      showEnvelope
-                      active={heroPreviewActive}
-                      preloadEnvelopeFrame
-                      onEnvelopeDismissed={() => setHeroPreviewOpened(true)}
-                    />
-                    {heroPreviewOpened && <span className={styles.heroScrollHint}>Swipe up to explore</span>}
-                  </div>
-                  <section className={styles.heroPreviewDetails} aria-label="Invitation preview details">
-                    <span className="label">Our celebration</span>
-                    <h3>Anna &amp; Tom</h3>
-                    <p>We cannot wait to celebrate this beautiful day with you.</p>
-                    <div>
-                      <strong>September 5, 2026</strong>
-                      <span>Paris, France</span>
-                    </div>
-                  </section>
-                </div>
+                <TemplateHeroPreview
+                  partner1="Anna"
+                  partner2="Tom"
+                  date="SEP 05, 2026"
+                  videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
+                  envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
+                  showEnvelope
+                  preloadEnvelopeFrame
+                />
               </div>
             </div>
           </div>
