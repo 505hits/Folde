@@ -27,7 +27,7 @@ const carouselItems = [
   { name: 'Cisnes', desc: 'Elegant swans romance.', video: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', isImage: false, envelope: 'https://savethedate-cisnes.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Clara', partner2: 'Hugo', date: 'OCT 18, 2026' },
   { name: 'Bloom', desc: 'Blossoming love.', video: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', isImage: false, envelope: 'https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Lily', partner2: 'James', date: 'JUN 21, 2026' },
   { name: 'Floral', desc: 'A bed of flowers.', video: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', isImage: false, envelope: 'https://savethedate-floral.thedigitalyes.com/video/envelope-open.mp4', partner1: 'Rose', partner2: 'Jack', date: 'MAY 15, 2026' },
-  { name: 'Romantic Garden', desc: 'Enchanted floral garden romance.', video: 'https://eftesa.com/assets/themes/romantic-garden/cover-video.mp4', isImage: false, envelope: 'https://eftesa.com/assets/themes/romantic-garden/Floral-garden-intro-video.mp4', partner1: 'Julien', partner2: 'Camille', date: 'JUN 18, 2026' },
+  { name: 'Romantic Garden', desc: 'Enchanted floral garden romance.', video: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', isImage: false, envelope: 'https://eftesa.com/assets/themes/romantic-garden/Floral-garden-intro-video.mp4', partner1: 'Julien', partner2: 'Camille', date: 'JUN 18, 2026' },
   { name: 'Blossom Oud', desc: 'Sublime floral and oud aesthetic.', video: 'https://static.tildacdn.net/tild3332-3762-4233-a636-636233333133/Vector.png', isImage: true, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Youssef', partner2: 'Salma', date: 'JUL 12, 2026' },
   { name: 'Dolce Vita', desc: 'Italian coast & sun-drenched romance.', video: 'https://static.tildacdn.net/tild3733-3133-4232-b033-623736623262/romantic-moments-bea.png', isImage: true, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777312876430.mp4', partner1: 'Matteo', partner2: 'Chiara', date: 'AUG 20, 2026' },
   { name: 'Velvet Garden', desc: 'Sleek modern luxury with botanical details.', video: 'https://static.tildacdn.net/tild3338-6332-4463-b639-623665353237/300592484d1f31590325.png', isImage: true, envelope: 'https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4', partner1: 'Enzo', partner2: 'Manon', date: 'SEP 14, 2026' },
@@ -67,6 +67,7 @@ export default function Home() {
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
   const [heroPreviewActive, setHeroPreviewActive] = useState(false);
+  const [heroPreviewOpened, setHeroPreviewOpened] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -176,16 +177,31 @@ export default function Home() {
             <div className={styles.phoneFrame}>
               <div className={styles.phoneNotch}></div>
               <div className={styles.phoneScreen}>
-                <TemplateHeroPreview
-                  partner1="Anna"
-                  partner2="Tom"
-                  date="SEP 05, 2026"
-                  videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
-                  envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
-                  showEnvelope
-                  active={heroPreviewActive}
-                  preloadEnvelopeFrame
-                />
+                <div className={styles.heroPreviewScroll}>
+                  <div className={styles.heroPreviewTop}>
+                    <TemplateHeroPreview
+                      partner1="Anna"
+                      partner2="Tom"
+                      date="SEP 05, 2026"
+                      videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
+                      envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
+                      showEnvelope
+                      active={heroPreviewActive}
+                      preloadEnvelopeFrame
+                      onEnvelopeDismissed={() => setHeroPreviewOpened(true)}
+                    />
+                    {heroPreviewOpened && <span className={styles.heroScrollHint}>Swipe up to explore</span>}
+                  </div>
+                  <section className={styles.heroPreviewDetails} aria-label="Invitation preview details">
+                    <span className="label">Our celebration</span>
+                    <h3>Anna &amp; Tom</h3>
+                    <p>We cannot wait to celebrate this beautiful day with you.</p>
+                    <div>
+                      <strong>September 5, 2026</strong>
+                      <span>Paris, France</span>
+                    </div>
+                  </section>
+                </div>
               </div>
             </div>
           </div>

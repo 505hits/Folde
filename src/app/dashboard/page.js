@@ -1673,7 +1673,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'hero_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/__l5e/assets-v1/775de535-0300-4a62-ae3b-dceee4b22ab7/hero-video-compressed.mp4', color: '#f3e5d8', desc: 'Oasis Royale hero' },
     { id: 'hero_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/4689b4cd-298d-4b59-b560-7d443345b459/hero-bg.mp4', color: '#f3e5d8', desc: 'Tropical hero' },
     { id: 'hero_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', color: '#f3e5d8', desc: 'Bloom hero' },
-    { id: 'hero_romanticgarden', name: 'Romantic Garden', url: 'https://eftesa.com/assets/themes/romantic-garden/cover-video.mp4', color: '#3d4d3d', desc: 'Enchanted floral garden hero' },
+    { id: 'hero_romanticgarden', name: 'Romantic Garden', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4', color: '#3d4d3d', desc: 'Enchanted floral garden hero' },
     { id: 'hero_blossomoud', name: 'Blossom Oud', url: 'https://static.tildacdn.net/tild3332-3762-4233-a636-636233333133/Vector.png', color: '#4a3b32', desc: 'Blossom oud floral hero' },
     { id: 'hero_dolcevita', name: 'Dolce Vita', url: 'https://static.tildacdn.net/tild3733-3133-4232-b033-623736623262/romantic-moments-bea.png', color: '#d4af37', desc: 'Dolce Vita coastal hero' },
     { id: 'hero_webgencytemplate5', name: 'Velvet Garden', url: 'https://static.tildacdn.net/tild3338-6332-4463-b639-623665353237/300592484d1f31590325.png', color: '#2a3a2a', desc: 'Velvet botanical hero' },

@@ -49,7 +49,8 @@ export default function TemplateHeroPreview({
   isImage = false,
   previewImage,
   active = false,
-  preloadEnvelopeFrame = false
+  preloadEnvelopeFrame = false,
+  onEnvelopeDismissed
 }) {
   const [envelopeDismissed, setEnvelopeDismissed] = useState(!showEnvelope);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
@@ -82,6 +83,10 @@ export default function TemplateHeroPreview({
       }
     }
   }, [active, showEnvelope]);
+
+  useEffect(() => {
+    if (envelopeDismissed) onEnvelopeDismissed?.();
+  }, [envelopeDismissed, onEnvelopeDismissed]);
 
   useEffect(() => {
     const video = envelopeVideoRef.current;
