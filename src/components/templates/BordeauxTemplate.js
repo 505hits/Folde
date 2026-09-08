@@ -554,7 +554,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   };
 
   return (
-    <div className={styles.main} style={{ ...styleVariables, height: heroHeight || '100%', minHeight: heroHeight || '100%' }}>
+    <div className={styles.main} style={{ ...styleVariables, height: envelopeDismissed ? 'auto' : (heroHeight || '100%'), minHeight: heroHeight || '100%' }}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
       <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (heroHeight || '100%') : undefined, minHeight: !envelopeDismissed ? (heroHeight || '100%') : undefined }}>

@@ -12,15 +12,15 @@ const zenOldMincho = Zen_Old_Mincho({
 });
 
 export const metadata = {
-  title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
-  description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide. Book your consultation.",
-  keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant invitations Paris", "destination wedding websites", "FOLDÈ Design"],
+  title: "FOLDÈ Design | Premium Digital Wedding Invitations",
+  description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management. Designed for celebrations worldwide.",
+  keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant wedding invitations", "destination wedding websites", "FOLDÈ Design"],
   icons: {
     icon: '/icon.png',
   },
   openGraph: {
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
-    description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
+    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
+    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
     url: "https://www.folde-wedding.com",
     siteName: "FOLDÈ Design",
     images: [
@@ -36,8 +36,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations Paris & Worldwide",
-    description: "Specialist in immersive digital wedding invitations. Elegant, bespoke designs with integrated RSVPs and interactive maps, designed in Paris for celebrations in Provence, the French Riviera, and worldwide.",
+    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
+    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
     images: ["https://www.folde-wedding.com/images/logo.png"],
   }
 };
@@ -49,22 +49,8 @@ const jsonLd = {
   "image": "https://www.folde-wedding.com/images/logo.png",
   "@id": "https://www.folde-wedding.com/#website",
   "url": "https://www.folde-wedding.com",
-  "telephone": "+33100000000",
   "priceRange": "$$",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Rue de la Paix",
-    "addressLocality": "Paris",
-    "postalCode": "75002",
-    "addressCountry": "FR"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 48.8690,
-    "longitude": 2.3308
-  },
   "areaServed": [
-    { "@type": "AdministrativeArea", "name": "Paris" },
     { "@type": "AdministrativeArea", "name": "France" },
     { "@type": "AdministrativeArea", "name": "Provence" },
     { "@type": "AdministrativeArea", "name": "French Riviera" },

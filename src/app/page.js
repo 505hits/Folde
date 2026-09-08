@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import styles from "./page.module.css";
+import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 
 const carouselItems = [
@@ -66,6 +67,7 @@ export default function Home() {
   const carouselRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
+  const [heroEnvelopeDismissed, setHeroEnvelopeDismissed] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,63 +91,20 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroText}>
-            <span className="label animate-fade-in-up">Bespoke Digital Wedding Invitations</span>
+            <div className={`${styles.heroRating} animate-fade-in-up`} aria-label="Rated 4.9 out of 5 by more than 500 happy couples">
+              <span>★★★★★</span>
+              <strong>4.9/5</strong>
+              <small>Chosen by 500+ happy couples</small>
+            </div>
             <h1 className="heading-xl animate-fade-in-up delay-1">
-              Immersive Digital Wedding Invitations & Live Guest Tracking
+              Premium Digital Wedding Invitations & Live Guest Tracking
             </h1>
             <p className="text-lg animate-fade-in-up delay-2">
-              Designed in Paris, FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.
+              FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
               <Link href="/checkout" className="btn-primary">Design Your Invitation</Link>
               <Link href="/collections" className="btn-secondary">Explore Collections</Link>
-            </div>
-
-            {/* Social Proof Pill Badge */}
-            <div className="animate-fade-in-up delay-3" style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              backgroundColor: '#ffffff',
-              padding: '0.45rem 1.1rem 0.45rem 0.6rem',
-              borderRadius: '30px',
-              border: '1px solid rgba(176, 137, 104, 0.25)',
-              boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
-              marginTop: '1.25rem',
-              marginBottom: '0.5rem'
-            }}>
-              {/* Overlapping Avatars */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img
-                  src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100"
-                  alt="Couple 1"
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }}
-                />
-                <img
-                  src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100"
-                  alt="Couple 2"
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                />
-                <img
-                  src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100"
-                  alt="Couple 3"
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                />
-                <img
-                  src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100"
-                  alt="Couple 4"
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                />
-              </div>
-
-              {/* Social Proof Text */}
-              <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <span style={{ color: '#b08968', fontSize: '0.75rem', letterSpacing: '1px' }}>★★★★★</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#333' }}>4.9/5</span>
-                </div>
-                <span style={{ fontSize: '0.72rem', color: '#666', fontWeight: 500 }}>Chosen by 500+ happy couples</span>
-              </div>
             </div>
 
             <div className={`${styles.heroFeatures} animate-fade-in-up delay-4`}>
@@ -171,15 +130,29 @@ export default function Home() {
             <div className={styles.phoneFrame}>
               <div className={styles.phoneNotch}></div>
               <div className={styles.phoneScreen}>
-                <TemplateHeroPreview
-                  partner1="Anna"
-                  partner2="Tom"
-                  date="SEP 05, 2026"
-                  videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
-                  envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
-                  showEnvelope
-                  preloadEnvelopeFrame
-                />
+                <div className={`${styles.heroTemplateViewport} ${heroEnvelopeDismissed ? styles.heroTemplateReady : ''}`}>
+                  <div className={styles.heroTemplateScale}>
+                    <BordeauxTemplate
+                      editMode={false}
+                      autoPlaySimulation={false}
+                      heroHeight="1000px"
+                      onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
+                      data={{
+                        themeId: "ivory",
+                        partner1: "Anna",
+                        partner2: "Tom",
+                        date: "SEP 05, 2026",
+                        ceremonyVenue: "Your Dream Venue",
+                        receptionVenue: "",
+                        videos: {
+                          envelope: "https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4",
+                          hero: "https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
+                        },
+                        sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true }
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
