@@ -404,11 +404,11 @@ export default function CheckoutClient() {
   const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === selectedHeroVideo);
 
   const previewData = useMemo(() => ({
-    partner1: debouncedAccount.name || 'Tu nombre',
-    partner2: debouncedAccount.partnerName || 'Nombre de tu pareja',
+    partner1: debouncedAccount.name || 'Your Name',
+    partner2: debouncedAccount.partnerName || "Partner's Name",
     date: formatPreviewDate(debouncedPreviewDate),
     time: '16:00',
-    ceremonyVenue: debouncedPreviewVenue || 'El lugar de tus sueños',
+    ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
     receptionVenue: debouncedPreviewVenue || '',
     themeId: selectedTheme,
     videos: {
@@ -416,16 +416,16 @@ export default function CheckoutClient() {
       hero: heroObj?.url || '',
     },
     timeline: [
-      { time: "15:00", title: "Ceremonia" },
-      { time: "16:30", title: "Cóctel" },
-      { time: "19:00", title: "Cena" },
-      { time: "22:00", title: "Fiesta" },
+      { time: "15:00", title: "Ceremony" },
+      { time: "16:30", title: "Cocktail" },
+      { time: "19:00", title: "Dinner" },
+      { time: "22:00", title: "Party" },
     ],
     accommodations: [],
     menu: [
-      { course: "Entrante", dish: "..." },
-      { course: "Plato principal", dish: "..." },
-      { course: "Postre", dish: "..." },
+      { course: "Starter", dish: "..." },
+      { course: "Main", dish: "..." },
+      { course: "Dessert", dish: "..." },
     ],
     sections: {
       showIntro: true,
@@ -443,15 +443,15 @@ export default function CheckoutClient() {
     setAuthError('');
     if (step === 1) {
       if (!selectedEnvelope) {
-        setAuthError('Selecciona una animación de sobre para continuar.');
+        setAuthError('Please select an envelope animation to continue.');
         return;
       }
       if (!selectedHeroVideo) {
-        setAuthError('Selecciona un vídeo de portada para continuar.');
+        setAuthError('Please select a hero theme video to continue.');
         return;
       }
       if (!account.name || !account.partnerName) {
-        setAuthError('Introduce ambos nombres para continuar.');
+        setAuthError('Please enter both names to continue.');
         return;
       }
       setStep(2);
@@ -465,7 +465,7 @@ export default function CheckoutClient() {
     }
     if (step === 3) {
       if (!account.email) {
-        setAuthError('Introduce tu dirección de correo electrónico.');
+        setAuthError('Please enter your email address.');
         return;
       }
       if (!currentUser) {
@@ -1071,12 +1071,12 @@ export default function CheckoutClient() {
       {step <= 4 && !sent && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid rgba(0,0,0,0.06)', position: 'sticky', top: 0, backgroundColor: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
           <button onClick={handleBack} style={{ background: '#fff', border: '1px solid #e0dcd7', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#555', fontSize: '0.85rem', fontFamily: 'inherit' }}>
-            ← {step === 1 ? 'Plantillas' : 'Volver'}
+            ← {step === 1 ? 'Templates' : 'Back'}
           </button>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#2c2c2c' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b08968' }}></span>
-              Plan {selectedPackage.name}
+              {selectedPackage.name} Package
             </div>
             {step > 1 && step <= 3 && (
               <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
@@ -1146,12 +1146,12 @@ export default function CheckoutClient() {
                         <span style={{ color: '#b08968', fontSize: '0.75rem', letterSpacing: '1px' }}>★★★★★</span>
                         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#333' }}>4.9/5</span>
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#666', fontWeight: 500 }}>Elegido por más de 500 parejas felices</span>
+                      <span style={{ fontSize: '0.72rem', color: '#666', fontWeight: 500 }}>Chosen by 500+ happy couples</span>
                     </div>
                   </div>
 
-                  <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.4rem' }}>Vista previa de personalización en directo</h1>
-                  <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '0.75rem' }}>Elige la animación de sobre, el vídeo de fondo y los detalles para ver tu invitación en directo.</p>
+                  <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.4rem' }}>Live Personalization Preview</h1>
+                  <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '0.75rem' }}>Select your preferred envelope animation, background video, and details to preview your invitation live.</p>
 
                   {/* Customer Review Quote Pill */}
                   <div style={{
@@ -1165,7 +1165,7 @@ export default function CheckoutClient() {
                   }}>
                     <span style={{ fontSize: '0.8rem' }}>💬</span>
                     <p style={{ fontSize: '0.78rem', color: '#5C3A1E', fontStyle: 'italic', margin: 0, fontWeight: 500 }}>
-                      &ldquo;¡Nuestros invitados quedaron fascinados desde el momento de abrirla!&rdquo; <span style={{ fontStyle: 'normal', opacity: 0.75, fontWeight: 600 }}>&mdash; Camille y Antoine</span>
+                      &ldquo;Our guests were captivated from the moment they opened it!&rdquo; <span style={{ fontStyle: 'normal', opacity: 0.75, fontWeight: 600 }}>&mdash; Camille &amp; Antoine</span>
                     </p>
                   </div>
                 </div>
@@ -1175,9 +1175,9 @@ export default function CheckoutClient() {
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
-                      Animación del sobre
+                      Envelope Animation
                     </div>
-                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Desliza horizontalmente →</span>
+                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
                   </div>
                   <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
                     {ORDERED_ENVELOPE_OPTIONS.map(env => {
@@ -1214,9 +1214,9 @@ export default function CheckoutClient() {
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" /><line x1="7" y1="2" x2="7" y2="22" /><line x1="17" y1="2" x2="17" y2="22" /><line x1="2" y1="12" x2="22" y2="12" /><line x1="2" y1="7" x2="7" y2="7" /><line x1="2" y1="17" x2="7" y2="17" /><line x1="17" y1="17" x2="22" y2="17" /><line x1="17" y1="7" x2="22" y2="7" /></svg>
-                      Vídeo de portada
+                      Hero Theme Video
                     </div>
-                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Desliza horizontalmente →</span>
+                    <span style={{ fontSize: '0.65rem', color: '#aaa', textTransform: 'none', letterSpacing: 0 }}>Scroll horizontally →</span>
                   </div>
                   <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
                     {HERO_VIDEO_OPTIONS.map(hero => {
@@ -1249,11 +1249,11 @@ export default function CheckoutClient() {
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                    La pareja
+                    The Couple
                   </div>
                   <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
                     <div>
-                      <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Nombre</label>
+                      <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>First name</label>
                       <input
                         type="text"
                         placeholder="e.g. Sophie"
@@ -1265,7 +1265,7 @@ export default function CheckoutClient() {
                       />
                     </div>
                     <div>
-                      <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Nombre de tu pareja</label>
+                      <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Partner's name</label>
                       <input
                         type="text"
                         placeholder="e.g. Lucas"
@@ -1281,7 +1281,7 @@ export default function CheckoutClient() {
                   {(account.name || account.partnerName) && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.85rem', fontSize: '0.75rem', color: '#b08968' }}>
                       <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b08968', animation: 'pulse 2s infinite' }}></span>
-                      Actualizando la vista previa…
+                      Updating preview…
                     </div>
                   )}
                 </div>
@@ -1290,10 +1290,10 @@ export default function CheckoutClient() {
                 <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                    Datos de la boda
+                    Wedding Details
                   </div>
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Fecha de la boda <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(opcional)</span></label>
+                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Wedding date <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
                     <input
                       type="date"
                       value={previewDate}
@@ -1304,7 +1304,7 @@ export default function CheckoutClient() {
                     />
                   </div>
                   <div>
-                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Lugar <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(opcional)</span></label>
+                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Venue <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
                     <input
                       type="text"
                       placeholder="e.g. Château de Versailles"
@@ -1323,16 +1323,16 @@ export default function CheckoutClient() {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#5C3A1E', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.25rem' }}>Vista previa de la invitación</div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#5C3A1E', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.25rem' }}>Live Invitation Preview</div>
                     <div style={{ fontSize: '0.85rem', color: '#6A5647', lineHeight: 1.5 }}>
-                      Esta vista previa interactiva te permite ver cómo quedan los nombres y la fecha en tu diseño. <strong>Tras completar el pago, desbloquearás el acceso completo a tu panel privado</strong> para personalizar fotos, vídeos, música, animaciones de sobre, RSVP y todos los detalles del evento.
+                      This interactive preview lets you see how your names and date look on your design. <strong>After completing payment, you will unlock full access to your private dashboard</strong> to customize photos, videos, music, envelope animations, RSVPs, and all event details.
                     </div>
                   </div>
                 </div>
 
                 {/* Trust indicators */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
-                  {['Invitados ilimitados', 'RSVP incluido', 'Disponible en 24 h'].map(t => (
+                  {['Unlimited guests', 'RSVP included', 'Live in 24h'].map(t => (
                     <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#888', padding: '0.35rem 0.75rem', backgroundColor: '#fff', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.06)' }}>
                       <span style={{ color: '#b08968', fontSize: '0.7rem' }}>✓</span> {t}
                     </div>
@@ -1344,7 +1344,7 @@ export default function CheckoutClient() {
             {/* ── Phone Preview Panel ── */}
             <div className="preview-phone-side">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ fontSize: '0.68rem', letterSpacing: '2.5px', textTransform: 'uppercase', color: '#999', fontWeight: 600 }}>Vista previa en directo</div>
+                <div style={{ fontSize: '0.68rem', letterSpacing: '2.5px', textTransform: 'uppercase', color: '#999', fontWeight: 600 }}>Live Preview</div>
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen">
                     <div className="preview-phone-template-inner">
@@ -1352,7 +1352,7 @@ export default function CheckoutClient() {
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#aaa', textAlign: 'center', maxWidth: '220px', lineHeight: 1.4 }}>Desliza dentro del teléfono para explorar tu invitación ↕</div>
+                <div style={{ fontSize: '0.72rem', color: '#aaa', textAlign: 'center', maxWidth: '220px', lineHeight: 1.4 }}>Scroll inside the phone to explore your invitation ↕</div>
               </div>
             </div>
           </div>
@@ -1362,7 +1362,7 @@ export default function CheckoutClient() {
         {step === 2 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>Elige tu plan</h1>
+              <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>Choose your package</h1>
               <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Select the level of service you need.</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

@@ -2,53 +2,53 @@ import Link from "next/link";
 import styles from "./method.module.css";
 
 export const metadata = {
-  title: "Nuestro proceso | FOLDÈ Design — Cómo creamos tu invitación digital de boda",
-  description: "Descubre nuestro proceso de 4 pasos para diseñar tu invitación digital de boda premium.",
+  title: "Our Method | FOLDÈ Design — How We Create Your Digital Wedding Invitation",
+  description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
 };
 
 const steps = [
   {
     num: '01',
-    title: 'Reserva tu llamada inicial',
-    desc: 'Todo comienza con una conversación. Nos tomamos el tiempo para comprender vuestro evento, vuestras preferencias estéticas y todo lo que hace única vuestra celebración. Esta primera llamada es gratuita y sin compromiso.',
+    title: 'Book Your Discovery Call',
+    desc: 'It all begins with a conversation. We take the time to understand your event, your aesthetic preferences, and everything that makes your celebration unique. This initial call is free, relaxed, and comes with zero commitment.',
     details: [
-      'Entender el tema y la visión de vuestra boda',
-      'Hablar de calendario, invitados y fechas clave',
-      'Resolver vuestras preguntas sobre invitaciones digitales',
-      'Recomendar el plan ideal para vuestras necesidades',
+      'Understand your wedding theme and vision',
+      'Discuss timeline, guest count, and key dates',
+      'Answer all your questions about digital invitations',
+      'Recommend the ideal package for your needs',
     ],
   },
   {
     num: '02',
-    title: 'Comparte los detalles del evento',
-    desc: 'Una vez definida la dirección, nos compartís la información esencial. Os guiamos para que no se pase nada por alto, desde el horario de ceremonia hasta las opciones de alojamiento.',
+    title: 'Provide Your Event Details',
+    desc: 'Once we align on the direction, you share the essential information for your invitation. We provide a guided framework so nothing gets overlooked — from your ceremony schedule to accommodation options for out-of-town guests.',
     details: [
-      'Fecha, lugar y horario de la ceremonia',
-      'Fotos de la pareja para la portada',
-      'Alojamiento y detalles de viaje de los invitados',
-      'Preferencias RSVP y opciones alimentarias',
+      'Wedding date, venue, and ceremony schedule',
+      'Photos of the couple for the cover design',
+      'Guest accommodation and travel details',
+      'RSVP preferences and dietary options',
     ],
   },
   {
     num: '03',
-    title: 'Diseñamos vuestra invitación',
-    desc: 'Nuestro equipo da vida a vuestra visión. Creamos una invitación digital a medida con el universo de diseño elegido, integrando contenido, fotos y detalles personales. Refinamos cada elemento con vuestro feedback.',
+    title: 'We Design Your Invitation',
+    desc: 'Our team brings your vision to life. We craft a bespoke digital invitation using the design universe you selected, integrating your content, photos, and personal touches. Every element is refined based on your feedback until it feels perfectly yours.',
     details: [
-      'Diseño a medida basado en vuestro universo elegido',
-      'Integración de foto o vídeo de portada',
-      'Selección musical y apertura inmersiva',
-      'Revisiones ilimitadas hasta que os encante',
+      'Custom design based on your chosen universe',
+      'Cover photo or video integration',
+      'Music selection and immersive opening',
+      'Unlimited revisions until you are delighted',
     ],
   },
   {
     num: '04',
-    title: 'Compártela con tus invitados',
-    desc: 'Recibiréis vuestra invitación final en un enlace elegante. Compartidla por WhatsApp, email o cualquier plataforma de mensajería. Los invitados solo tienen que tocar para abrirla y responder al RSVP desde su móvil.',
+    title: 'Share With Your Guests',
+    desc: 'Your finalized invitation is delivered as a single, elegant link. Share it via WhatsApp, email, or any messaging platform. Your guests simply tap to open an immersive, interactive experience — and RSVP directly from their phone.',
     details: [
-      'Un enlace para todos los invitados, sin aplicación',
-      'Comparte por WhatsApp, iMessage, email o redes sociales',
-      'Seguimiento RSVP en tiempo real desde tu panel',
-      'Actualiza detalles en cualquier momento sin reenviar',
+      'One link for all your guests — no app required',
+      'Share via WhatsApp, iMessage, email, or social media',
+      'Real-time RSVP tracking on your personal dashboard',
+      'Update details anytime without resending',
     ],
   },
 ];
@@ -60,12 +60,12 @@ export default function Method() {
 
         {/* Hero */}
         <section className={styles.hero}>
-          <span className="label animate-fade-in-up">Nuestro método</span>
+          <span className="label animate-fade-in-up">Our Method</span>
           <h1 className="heading-xl animate-fade-in-up delay-1">
-            Una experiencia guiada, diseñada a vuestro alrededor
+            A Guided Experience, Designed Around You
           </h1>
           <p className="text-lg animate-fade-in-up delay-2">
-            Crear vuestra invitación digital de boda debe sentirse sencillo. Nuestro proceso cuida cada detalle para que podáis centraros en lo que realmente importa.
+            Creating your digital wedding invitation should feel effortless. Our streamlined process ensures every detail is handled with care — so you can focus on what truly matters.
           </p>
         </section>
 
@@ -97,27 +97,27 @@ export default function Method() {
           <div className={styles.promiseGrid}>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>⏱</div>
-              <h3 className="heading-sm">Lista en 5–7 días</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>De la primera llamada al enlace final, vuestra invitación se entrega en una semana con todas las revisiones incluidas.</p>
+              <h3 className="heading-sm">Ready in 5–7 Days</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>From first call to final link, your invitation is delivered within one week, including all revisions.</p>
             </div>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>♾️</div>
-              <h3 className="heading-sm">Revisiones ilimitadas</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>Perfeccionamos cada detalle hasta que estéis totalmente satisfechos. Sin costes ocultos ni límite de revisiones.</p>
+              <h3 className="heading-sm">Unlimited Revisions</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>We refine every detail until you are completely satisfied. No hidden fees, no revision caps.</p>
             </div>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>🤝</div>
-              <h3 className="heading-sm">Soporte dedicado</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>Un único contacto durante todo el proceso. Tus preguntas siempre reciben una respuesta rápida.</p>
+              <h3 className="heading-sm">Dedicated Support</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>A single point of contact throughout the entire process. Your questions are always answered promptly.</p>
             </div>
           </div>
         </section>
 
         {/* CTA */}
         <section className={styles.ctaSection}>
-          <h2 className="heading-lg">¿Listos para empezar?</h2>
-          <p className="text-lg" style={{ marginTop: '0.75rem' }}>Elige tu universo y completa el pedido.</p>
-          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>Crear ahora</Link>
+          <h2 className="heading-lg">Ready to Begin?</h2>
+          <p className="text-lg" style={{ marginTop: '0.75rem' }}>Select your universe and complete your order.</p>
+          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>Order Now</Link>
         </section>
 
       </div>

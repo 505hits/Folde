@@ -25,12 +25,12 @@ export default function Header() {
           </Link>
         </div>
         <nav className="header-nav">
-          <Link href="/">Inicio</Link>
-          <Link href="/collections">Colecciones</Link>
-          <Link href="/approach">Nuestro proceso</Link>
-          <Link href="/packages">Planes</Link>
+          <Link href="/">Home</Link>
+          <Link href="/collections">Collections</Link>
+          <Link href="/approach">Our Process</Link>
+          <Link href="/packages">Packages</Link>
           <Link href="/blog">Journal</Link>
-          <Link href="/story">Nosotros</Link>
+          <Link href="/story">About</Link>
         </nav>
         <div className="header-cta-desktop">
           {currentUser ? (
@@ -42,7 +42,7 @@ export default function Header() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              Mi panel
+              My Dashboard
             </Link>
           ) : (
             <Link href="/dashboard" style={{
@@ -54,17 +54,17 @@ export default function Header() {
                 <polyline points="10 17 15 12 10 7"/>
                 <line x1="15" y1="12" x2="3" y2="12"/>
               </svg>
-              Iniciar sesión / Registrarse
+              Sign In / Register
             </Link>
           )}
           <Link href="/checkout" className="btn-primary header-cta">
-            Crear invitación
+            Order Now
           </Link>
         </div>
         <button
           className={`burger ${menuOpen ? "active" : ""}`}
           onClick={toggleMenu}
-          aria-label="Abrir o cerrar el menú"
+          aria-label="Toggle menu"
         >
           <span></span>
           <span></span>
@@ -76,12 +76,12 @@ export default function Header() {
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
         <div className="mobile-nav-content">
           <nav className="mobile-nav-links">
-            <Link href="/" onClick={closeMenu}>Inicio</Link>
-            <Link href="/collections" onClick={closeMenu}>Colecciones</Link>
-            <Link href="/approach" onClick={closeMenu}>Nuestro proceso</Link>
-            <Link href="/packages" onClick={closeMenu}>Planes</Link>
+            <Link href="/" onClick={closeMenu}>Home</Link>
+            <Link href="/collections" onClick={closeMenu}>Collections</Link>
+            <Link href="/approach" onClick={closeMenu}>Our Process</Link>
+            <Link href="/packages" onClick={closeMenu}>Packages</Link>
             <Link href="/blog" onClick={closeMenu}>Journal</Link>
-            <Link href="/story" onClick={closeMenu}>Nosotros</Link>
+            <Link href="/story" onClick={closeMenu}>About</Link>
           </nav>
 
           <div className="mobile-nav-divider"></div>
@@ -94,10 +94,10 @@ export default function Header() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
-                  Mi panel
+                  My Dashboard
                 </Link>
                 <button onClick={handleLogout} className="mobile-logout-btn">
-                  Cerrar sesión
+                  Log Out
                 </button>
               </div>
             ) : (
@@ -107,12 +107,12 @@ export default function Header() {
                   <polyline points="10 17 15 12 10 7"/>
                   <line x1="15" y1="12" x2="3" y2="12"/>
                 </svg>
-                Iniciar sesión / Registrarse
+                Sign In / Register
               </Link>
             )}
 
             <Link href="/checkout" className="btn-primary mobile-cta-btn" onClick={closeMenu}>
-              Crear invitación
+              Order Now
             </Link>
           </div>
         </div>
