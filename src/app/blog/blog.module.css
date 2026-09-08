@@ -9,5 +9,8 @@
 .articleAside{padding:1.25rem}
 .asidePhone{width:220px;height:auto;min-height:0;aspect-ratio:296 / 640;margin:0 auto 1.15rem;border:4px solid #121212;border-radius:42px;background:#121212;box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.1) inset}
 .asideNotch{width:84px;height:20px;background:#121212;border-radius:0 0 14px 14px}
-@media(min-width:901px){.articleAside{top:126px;width:300px}.asidePhone{height:auto;min-height:0}}
+@media(min-width:901px){
+  .articleAside{position:sticky;top:126px;right:auto;width:auto;align-self:start}
+  .asidePhone{height:auto;min-height:0}
+}
 @media(max-width:900px){.asidePhone{width:220px;height:auto;min-height:0}}
