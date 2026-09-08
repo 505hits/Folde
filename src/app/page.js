@@ -139,7 +139,7 @@ export default function Home() {
                     <BordeauxTemplate
                       editMode={false}
                       autoPlaySimulation={false}
-                      heroHeight="632px"
+                      heroHeight="988px"
                       onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
                       data={{
                         themeId: "ivory",

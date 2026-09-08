@@ -121,8 +121,10 @@
 }
 
 .heroTemplateScale {
-  width: 100%;
-  min-height: 100%;
+  width: 156.25%;
+  min-height: 156.25%;
+  transform: scale(0.64);
+  transform-origin: top left;
 }
 
 .mockupContent {
