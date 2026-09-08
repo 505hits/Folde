@@ -27,7 +27,7 @@ export default async function BlogArticle({ params }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return null;
-  const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 3);
+  const related = blogPosts.filter((item) => item.slug !== post.slug);
   const hasLongGuide = Boolean(post.deepDive);
   const articleSchema = {
     "@context": "https://schema.org", "@type": "Article", headline: post.title,
