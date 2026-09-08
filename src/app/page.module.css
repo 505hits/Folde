@@ -41,17 +41,18 @@
 }
 
 .heroCtas :global(.btn-primary) {
-  background: linear-gradient(135deg, #4a2c19 0%, #815225 58%, #bd8338 100%);
-  border-color: #b9843f;
-  box-shadow: 0 10px 24px rgba(93, 53, 20, 0.23), inset 0 1px 0 rgba(255, 244, 219, 0.24);
+  background: linear-gradient(135deg, #382319 0%, #4a2f20 68%, #5a3a25 100%);
+  border-color: #a7835b;
+  color: #fffaf2;
+  box-shadow: 0 10px 24px rgba(61, 37, 20, 0.2), inset 0 1px 0 rgba(255, 244, 219, 0.17);
   font-weight: 700;
 }
 
 .heroCtas :global(.btn-primary):hover {
-  color: #fff7e9;
-  background: linear-gradient(135deg, #5b351c 0%, #95622d 58%, #d69d4d 100%);
-  border-color: #d7a456;
-  box-shadow: 0 14px 30px rgba(93, 53, 20, 0.3);
+  color: #fffaf2;
+  background: linear-gradient(135deg, #4a2f20 0%, #5c3d29 70%, #705038 100%);
+  border-color: #c3a17a;
+  box-shadow: 0 14px 30px rgba(61, 37, 20, 0.28), inset 0 1px 0 rgba(255, 244, 219, 0.2);
 }
 
 .heroFeatures {
