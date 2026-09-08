@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { blogPosts, currentSources, getPost } from "@/lib/blog";
 import ArticlePreviewAside from "@/components/ArticlePreviewAside";
+import ArticleTemplateCatalog from "@/components/ArticleTemplateCatalog";
 import MobileArticleCta from "@/components/MobileArticleCta";
 import styles from "../blog.module.css";
 
@@ -48,6 +49,7 @@ export default async function BlogArticle({ params }) {
         <div><p className={styles.eyebrow}>WEDDING INVITATION TUTORIAL · UPDATED SEPTEMBER 8, 2026</p><h1>{post.title}</h1><p className={styles.lede}>{post.description}</p><p className={styles.byline}>By FOLDÈ Wedding · 7 minute read</p></div>
         <div className={styles.heroImage}><Image src={post.heroImage} alt={post.imageAlt} fill priority sizes="(max-width: 900px) 100vw, 50vw" /></div>
       </header>
+      <ArticleTemplateCatalog />
 
       <div className={styles.articleLayout}>
         <article className={styles.articleContent}>
