@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { blogPosts } from "@/lib/blog";
+import MobileArticleCta from "@/components/MobileArticleCta";
 import styles from "./blog.module.css";
 
 export const metadata = {
@@ -36,6 +37,7 @@ export default function BlogIndex() {
           </article>
         ))}
       </section>
+      <MobileArticleCta />
     </main>
   );
 }
