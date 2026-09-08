@@ -13,6 +13,10 @@
   .articleAside{position:static;top:auto;right:auto;width:auto;align-self:start}
   .asidePhone{height:auto;min-height:0}
   .articleAsideSlot{align-self:start;min-height:610px}
-  .articleAsidePinned{position:fixed;top:126px;right:max(1.5rem,calc((100vw - 1180px)/2));width:300px;z-index:40}
+  .articleAsidePinned{position:fixed;top:126px;right:max(1.5rem,calc((100vw - 1180px)/2));width:280px;z-index:40}
+  .articleAsidePinned .asidePhone{width:164px;height:auto;min-height:0;margin-bottom:.85rem}
+  .articleAsidePinned h2{font-size:1.25rem;line-height:1.2;margin:.45rem 0 .8rem}
+  .articleAsidePinned .primaryButton{min-height:48px;padding:.62rem .45rem;font-size:.78rem}
+  .articleAsidePinned .asideLink{margin-top:.7rem;font-size:.78rem}
 }
 @media(max-width:900px){.asidePhone{width:220px;height:auto;min-height:0}}
