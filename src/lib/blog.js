@@ -1,4 +1,4 @@
-export const blogPosts = [
+const rawBlogPosts = [
   {
     slug: "wedding-invitations-with-floral-design",
     keyword: "wedding invitations with floral design",
@@ -143,6 +143,73 @@ export const blogPosts = [
     ]
   }
 ];
+
+const editorialImages = [
+  ["/images/blog/all-in-one-wedding-invitations.webp", "Digital wedding invitation, envelope and wax seal"],
+  ["/images/blog/photo-wedding-invitations.webp", "Couple reviewing a digital invitation together"],
+  ["/images/blog/digital-invitation-tutorial.webp", "Planning a wedding invitation on laptop and phone"],
+  ["/images/blog/digital-rsvp.webp", "Mobile RSVP experience for wedding guests"],
+  ["/images/blog/wedding-invitation-suite.webp", "Elegant wedding invitation suite"],
+  ["/images/blog/floral-wedding-invitations.webp", "Floral wedding stationery inspiration"],
+  ["/images/blog/destination-wedding.webp", "Destination wedding invitation details"],
+  ["/images/blog/vintage-wedding-invitations.webp", "Vintage wedding invitation styling"],
+  ["/images/blog/winter-wedding-invitations.webp", "Winter wedding invitation styling"],
+  ["/images/blog/floral-invitation-suite.webp", "Floral invitation suite on handmade paper"]
+];
+
+function longGuide(post) {
+  const phrase = post.keyword;
+  return [
+    { heading: `Set a clear purpose for ${phrase}`, body: `The strongest ${phrase} begins with a practical question: what should a guest understand or do first? Decide whether the first priority is confirming attendance, finding the event date, or planning travel. Build the opening around that answer before choosing decoration or animation. This approach makes the experience feel considered rather than overloaded. A guest should sense the atmosphere immediately, but should also know where the essential information lives. Keep one primary action visible and give the rest of the page a calm rhythm. This is a useful discipline for every wedding size, because clarity is what allows the visual direction to feel premium on a phone as well as on a large screen.` },
+    { heading: "Build an information order guests can trust", body: `Start with the couple and the celebration, then move naturally into date, place, schedule, practical notes and RSVP. Guests should not need to search through a long welcome message for an arrival time or dress code. A single invitation link works best when it behaves as the current source of truth: hosts can refine an address, add a timing note, or clarify a question in one place. Short headings and generous whitespace do more for usability than a dense block of copy. The goal is not to reduce personality; it is to make personality easy to experience without putting a task in front of the guest.` },
+    { heading: "Make the visual direction support the event", body: `Choose one dominant mood and repeat it lightly. For ${phrase}, that could mean a restrained palette, a specific paper texture, a botanical detail, or a photograph treatment that returns at key moments. Avoid introducing a new aesthetic at every section. The best digital invitations use small repetitions to create memory: a seal tone, a line motif, a single floral element, or a recurring type contrast. This gives the guest a complete visual world while allowing the schedule, map and RSVP to remain highly readable. Preview every choice at phone width, where tiny text and overly busy backgrounds become immediately obvious.` },
+    { heading: "Write details for guests who need reassurance", body: `Couples already know the venue and the family plan; their guests may not. Write the practical section as if the reader has never visited the location. Name the venue, show the arrival time, provide a map link, and make special access, dress code or transport information explicit. If there is travel, explain which date matters most and where guests should look for accommodation. Keep recommendations brief and link to live official information rather than duplicating details that can change. This approach makes ${phrase} feel hospitable. It replaces a stream of individual questions with one reliable, well-designed answer.` },
+    { heading: "Keep the RSVP focused and easy to complete", body: `A polished invitation still needs a response flow that works in a few taps. Ask for attendance first, then reveal meal or party questions only when they are relevant. State the deadline plainly and let the guest know whom to contact if plans change. Test the invitation as a guest before sharing it: open the link on a small phone, submit a response, and confirm the host dashboard receives the right information. FOLDÈ keeps responses close to the invitation experience so couples do not have to gather answers from messages, screenshots and separate spreadsheets. Read our <a href=\"/blog/wedding-invitations-with-rsvp\">wedding invitations with RSVP guide</a> for a dedicated planning checklist.` },
+    { heading: "Plan sharing as part of the design", body: `A beautiful page only helps when guests can reach it easily. Decide in advance whether you will share the same link by text, email, QR code or printed card. Use one stable destination instead of sending revised files as plans evolve. The invitation should be quick to load, easy to scan and comfortable to return to on a phone. Test the map, RSVP and any external links before publication. A short, warm reminder near the deadline can point everyone back to the same page. This creates a more consistent experience for close friends, family abroad and guests who are less comfortable with digital planning.` },
+    { heading: "Match the level of detail to the celebration", body: `Not every celebration needs the same information. An intimate local dinner may only need the date, venue, dress code and RSVP. A multi-day or destination event may need travel notes, several schedule blocks and a more visible contact point. Editing is part of luxury: leave out sections that do not serve the guest journey. A focused digital invitation can feel more generous than a crowded one because it respects attention. Use the live preview to move through your invitation from the guest’s perspective and keep the most important decision within two taps of the opening.` },
+    { heading: "Use thoughtful updates instead of extra messages", body: `One advantage of a digital invitation is that it can remain useful after it is sent. If a schedule changes or a transport detail needs clarification, update the central page and message guests only when the change affects their plans. After the wedding, a gallery or thank-you note can turn the invitation into a small keepsake. Ask before sharing identifiable guest photos and keep privacy settings in mind. This long-term usefulness is why a cohesive invitation system can feel more personal than a generic event page: it changes with the celebration while retaining its original design language.` },
+    { heading: "Choose a build process that feels manageable", body: `Some couples want to direct every creative decision; others prefer a team to take the details from questionnaire to finished invitation. Both approaches work when the fundamentals are settled first: guest list, schedule, visual references, RSVP needs and desired tone. Start by browsing <a href=\"/collections\">FOLDÈ collections</a>, then compare the support included in <a href=\"/packages\">our packages</a>. The right ${phrase} is not the one with the most effects. It is the one that makes the event feel unmistakably yours and makes the guest experience simple from the first click.` },
+    { heading: "Do one final guest-level review", body: `Before publishing, read the invitation as a guest with no inside information. Can they understand the event in seconds? Can they RSVP without guessing what to do? Can they find the map and the deadline without scrolling through visual content? Review it on a small screen, try every link, and check the language for warmth and precision. This final pass is where a good invitation becomes a dependable one. When the information is calm and current, the design has room to create anticipation—and your guests can focus on the celebration itself.` }
+  ].map((section, index) => ({
+    ...section,
+    body: `${section.body} ${index % 2 === 0
+      ? "A considered invitation earns trust through small, consistent decisions: concise labels, accessible contrast, useful links and an action that is never hidden behind decoration. These details make the experience feel effortless without making it anonymous."
+      : "Give each part of the page a reason to exist. When a guest can understand why a detail is present and what they should do next, the invitation feels more welcoming, more polished and easier to revisit."}`
+  }));
+}
+
+function extraFaqs(keyword) {
+  return [
+    ["What should guests see first?", "Show the couple, event date and a clear path to the essential details or RSVP."],
+    ["Can I update details after sharing the link?", "A digital invitation can centralize updates. Tell guests directly when a change materially affects their plans."],
+    ["Should I include a QR code?", "A QR code is useful on printed materials when it leads to the same stable invitation link."],
+    ["How do I make it easy for older guests?", "Use clear labels, legible text and a direct contact option for anyone who needs help."],
+    ["Can I include a map and dress code?", "Yes. Keep both concise and place them near the venue and schedule information."],
+    ["How many questions should the RSVP contain?", "Ask only for information you will use: attendance, names, meal choice when needed, and an optional note."],
+    ["Can the invitation include photos later?", "Yes. A gallery or thank-you update can turn the experience into a keepsake, with guest privacy respected."],
+    ["Does this work for a destination celebration?", `Yes. ${keyword} can hold travel, accommodation, schedule and RSVP information in one guest destination.`],
+    ["How do I choose the right FOLDÈ package?", "Choose according to the level of creative support and tools you need; the packages page lists the current inclusions."],
+    ["How should I test before sending?", "Open it on a phone, test the RSVP and every external link, then ask one trusted person to check the guest journey."]
+  ];
+}
+
+function planningNote(keyword) {
+  return `A useful way to review ${keyword} is to separate the emotional layer from the operational layer. The emotional layer is the welcome: the visual opening, the tone of the wording, the story or image that makes a guest feel included. The operational layer is what lets that guest act: an accurate date, a venue they can find, a simple RSVP and a practical route to support. Neither should be treated as an afterthought. When the emotional layer is beautiful but the operational layer is unclear, guests enjoy the page yet still send questions. When the operational layer is complete but the experience has no warmth, it feels like a logistics portal rather than an invitation. A premium digital invitation holds both ideas at once. It makes the host’s decisions feel calm, and it makes each guest feel anticipated. During your final review, ask a trusted person who is not involved in the planning to open the invitation without explanation. Notice where they pause or ask a question. Those moments are not failures; they are valuable signals about the next refinement. This small test is often more useful than adding another visual effect. It ensures the final link is as dependable as it is memorable. Finally, check the invitation at the exact moment a guest is most likely to use it: while travelling, during a busy week, or from an unfamiliar phone. A page that stays easy in that context will be easy everywhere. Keep the next action visible, use descriptive link labels, and avoid asking people to remember information that the page can show them directly. This final layer of care protects the guest experience while preserving the quiet, editorial quality that makes a wedding invitation feel special.`;
+}
+
+export const blogPosts = rawBlogPosts.map((post, index) => {
+  const rotatedImages = [...editorialImages.slice(index), ...editorialImages.slice(0, index)];
+  const faqs = post.faqs.length >= 10 ? post.faqs : [...post.faqs, ...extraFaqs(post.keyword)].slice(0, 12);
+  return {
+    ...post,
+    articleImages: post.articleImages || rotatedImages,
+    extendedIntro: post.extendedIntro || `This guide explains how to approach ${post.keyword} with a guest-first structure: a clear opening, practical details, a simple RSVP and a visual direction that remains refined on every device.`,
+    planningNote: post.planningNote || planningNote(post.keyword),
+    deepDive: post.deepDive || longGuide(post),
+    closingGuide: post.closingGuide || `Before you publish, test every part of ${post.keyword} as a guest would. Check the date, venue, map, schedule, RSVP and any links on a phone. Keep one stable URL for every reminder, and make the important actions easy to find. The result should feel personal, current and effortless for the people you are inviting.` ,
+    faqs
+  };
+});
 
 export const currentSources = [
   { label: "The Knot Worldwide — 2025 Global Wedding Report", href: "https://www.theknotww.com/news/2025-global-wedding-report", note: "Published in 2025; reports on 33,000 couples across eight countries and highlights personalization and guest experience." },
