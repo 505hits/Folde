@@ -29,6 +29,7 @@ export default function Header() {
           <Link href="/collections">Collections</Link>
           <Link href="/approach">Our Process</Link>
           <Link href="/packages">Packages</Link>
+          <Link href="/blog">Journal</Link>
           <Link href="/story">About</Link>
         </nav>
         <div className="header-cta-desktop">
@@ -79,6 +80,7 @@ export default function Header() {
             <Link href="/collections" onClick={closeMenu}>Collections</Link>
             <Link href="/approach" onClick={closeMenu}>Our Process</Link>
             <Link href="/packages" onClick={closeMenu}>Packages</Link>
+            <Link href="/blog" onClick={closeMenu}>Journal</Link>
             <Link href="/story" onClick={closeMenu}>About</Link>
           </nav>
 
