@@ -19,7 +19,10 @@ export async function generateMetadata({ params }) {
   return {
     title: `${post.title} | FOLDÈ Wedding`,
     description: post.description,
-    alternates: { canonical: `${SITE_URL}/blog/${post.slug}`, languages: { en: `${SITE_URL}/blog/${post.slug}`, es: `${SITE_URL}/es/blog/${post.slug}`, "x-default": `${SITE_URL}/blog/${post.slug}` } },
+    // Spanish article URLs are added here only once a complete, editorially
+    // reviewed Spanish equivalent exists. hreflang must never point to a thin
+    // or generic translation.
+    alternates: { canonical: `${SITE_URL}/blog/${post.slug}` },
     openGraph: { title: post.title, description: post.description, type: "article", url: `${SITE_URL}/blog/${post.slug}`, images: [post.heroImage] }
   };
 }

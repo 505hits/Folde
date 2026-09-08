@@ -61,18 +61,9 @@ const pages = {
 };
 
 function getPage(segments = []) {
-  if (segments[0] === "blog" && segments.length === 2) {
-    const topic = segments[1].replace(/-/g, " ");
-    return {
-      title: `Guía de ${topic} | FOLDÈ Wedding`,
-      description: `Guía en español de FOLDÈ Wedding sobre ${topic}, con consejos para diseño, RSVP e información para invitados.`,
-      eyebrow: "GUÍA FOLDÈ WEDDING",
-      heading: `Cómo planificar ${topic} con claridad y estilo`,
-      body: "Una invitación digital bien construida equilibra una primera impresión emocional con información que los invitados puedan usar sin esfuerzo. Prioriza la fecha, el lugar, el programa y el RSVP; después, aplica una dirección visual coherente. Revisa el recorrido en móvil antes de compartir el enlace y mantén una única versión actualizada para todos los recordatorios.",
-      cta: "Ver las colecciones",
-      ctaHref: "/es/collections",
-    };
-  }
+  // A hreflang pair must lead to a complete, equivalent human translation.
+  // Do not manufacture Spanish article pages from their slugs: thin template
+  // pages would be poor UX and would weaken the site's international SEO.
   if (segments.length > 1 || (segments.length === 1 && !pages[segments[0]])) return null;
   return pages[segments[0] || ""];
 }
