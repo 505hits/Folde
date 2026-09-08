@@ -40,6 +40,20 @@
   flex-wrap: wrap;
 }
 
+.heroCtas :global(.btn-primary) {
+  background: linear-gradient(135deg, #4a2c19 0%, #815225 58%, #bd8338 100%);
+  border-color: #b9843f;
+  box-shadow: 0 10px 24px rgba(93, 53, 20, 0.23), inset 0 1px 0 rgba(255, 244, 219, 0.24);
+  font-weight: 700;
+}
+
+.heroCtas :global(.btn-primary):hover {
+  color: #fff7e9;
+  background: linear-gradient(135deg, #5b351c 0%, #95622d 58%, #d69d4d 100%);
+  border-color: #d7a456;
+  box-shadow: 0 14px 30px rgba(93, 53, 20, 0.3);
+}
+
 .heroFeatures {
   display: flex;
   flex-wrap: wrap;
