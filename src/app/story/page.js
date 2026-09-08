@@ -5,6 +5,7 @@ import styles from "./vision.module.css";
 export const metadata = {
   title: "Our Vision | FOLDÈ Design — Redefining the Digital Wedding Invitation",
   description: "Discover the philosophy behind FOLDÈ Design. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
+  alternates: { canonical: "https://www.folde-wedding.com/story", languages: { en: "https://www.folde-wedding.com/story", es: "https://www.folde-wedding.com/es/story", "x-default": "https://www.folde-wedding.com/story" } },
 };
 
 export default function Vision() {

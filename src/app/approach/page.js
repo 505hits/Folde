@@ -4,6 +4,7 @@ import styles from "./method.module.css";
 export const metadata = {
   title: "Our Method | FOLDÈ Design — How We Create Your Digital Wedding Invitation",
   description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
+  alternates: { canonical: "https://www.folde-wedding.com/approach", languages: { en: "https://www.folde-wedding.com/approach", es: "https://www.folde-wedding.com/es/approach", "x-default": "https://www.folde-wedding.com/approach" } },
 };
 
 const steps = [

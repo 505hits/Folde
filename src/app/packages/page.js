@@ -4,6 +4,7 @@ import styles from "./offers.module.css";
 export const metadata = {
   title: "Our Formulas | FOLDÈ Design — Premium Digital Wedding Invitation Formulas",
   description: "Choose from our curated digital wedding invitation formulas. Standard — includes unlimited guests, integrated RSVP, and personalized guidance.",
+  alternates: { canonical: "https://www.folde-wedding.com/packages", languages: { en: "https://www.folde-wedding.com/packages", es: "https://www.folde-wedding.com/es/packages", "x-default": "https://www.folde-wedding.com/packages" } },
 };
 
 export default function Offers() {

@@ -1,5 +1,6 @@
 import { Inter, Zen_Old_Mincho } from "next/font/google";
 import Script from "next/script";
+import { headers } from "next/headers";
 import "./globals.css";
 import SiteLayout from "@/components/SiteLayout";
 import { DatabaseProvider } from "@/context/DatabaseContext";
@@ -12,6 +13,7 @@ const zenOldMincho = Zen_Old_Mincho({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.folde-wedding.com"),
   title: "FOLDÈ Design | Premium Digital Wedding Invitations",
   description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management. Designed for celebrations worldwide.",
   keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant wedding invitations", "destination wedding websites", "FOLDÈ Design"],
@@ -33,6 +35,10 @@ export const metadata = {
     ],
     locale: "en_US",
     type: "website",
+  },
+  alternates: {
+    canonical: "/",
+    languages: { en: "/", es: "/es", "x-default": "/" },
   },
   twitter: {
     card: "summary_large_image",
@@ -62,9 +68,11 @@ const jsonLd = {
   ]
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const requestHeaders = await headers();
+  const locale = requestHeaders.get("x-folde-locale") === "es" ? "es" : "en";
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-G5CB9NQHZL" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">

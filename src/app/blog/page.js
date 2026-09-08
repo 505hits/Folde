@@ -7,7 +7,7 @@ import styles from "./blog.module.css";
 export const metadata = {
   title: "Wedding Invitation Ideas & Tutorials | FOLDÈ Wedding",
   description: "Wedding invitation tutorials, planning ideas, RSVP guidance, and premium digital invitation inspiration from FOLDÈ Wedding.",
-  alternates: { canonical: "https://www.folde-wedding.com/blog" }
+  alternates: { canonical: "https://www.folde-wedding.com/blog", languages: { en: "https://www.folde-wedding.com/blog", es: "https://www.folde-wedding.com/es/blog", "x-default": "https://www.folde-wedding.com/blog" } }
 };
 
 export default function BlogIndex() {

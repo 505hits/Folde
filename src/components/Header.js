@@ -2,11 +2,24 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentUser, logout } = useDatabase();
+  const pathname = usePathname();
+  const isSpanish = pathname?.startsWith('/es');
+  const localizedPath = isSpanish ? pathname.replace(/^\/es(?=\/|$)/, '') || '/' : pathname || '/';
+  const spanishPath = localizedPath === '/' ? '/es' : `/es${localizedPath}`;
+  const t = isSpanish ? {
+    home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
+    dashboard: 'Mi panel', signIn: 'Iniciar sesión / Registrarse', order: 'Crear invitación', logout: 'Cerrar sesión', menu: 'Abrir menú'
+  } : {
+    home: 'Home', collections: 'Collections', process: 'Our Process', packages: 'Packages', journal: 'Journal', about: 'About',
+    dashboard: 'My Dashboard', signIn: 'Sign In / Register', order: 'Order Now', logout: 'Log Out', menu: 'Toggle menu'
+  };
+  const link = (path) => isSpanish ? (path === '/' ? '/es' : `/es${path}`) : path;
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
@@ -20,17 +33,17 @@ export default function Header() {
     <>
       <header className="header">
         <div className="header-logo">
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+          <Link href={link('/')} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <img src="/images/logo.png" alt="FOLDÈ Design Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
           </Link>
         </div>
         <nav className="header-nav">
-          <Link href="/">Home</Link>
-          <Link href="/collections">Collections</Link>
-          <Link href="/approach">Our Process</Link>
-          <Link href="/packages">Packages</Link>
-          <Link href="/blog">Journal</Link>
-          <Link href="/story">About</Link>
+          <Link href={link('/')}>{t.home}</Link>
+          <Link href={link('/collections')}>{t.collections}</Link>
+          <Link href={link('/approach')}>{t.process}</Link>
+          <Link href={link('/packages')}>{t.packages}</Link>
+          <Link href={link('/blog')}>{t.journal}</Link>
+          <Link href={link('/story')}>{t.about}</Link>
         </nav>
         <div className="header-cta-desktop">
           {currentUser ? (
@@ -42,7 +55,7 @@ export default function Header() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              My Dashboard
+              {t.dashboard}
             </Link>
           ) : (
             <Link href="/dashboard" style={{
@@ -54,17 +67,18 @@ export default function Header() {
                 <polyline points="10 17 15 12 10 7"/>
                 <line x1="15" y1="12" x2="3" y2="12"/>
               </svg>
-              Sign In / Register
+              {t.signIn}
             </Link>
           )}
           <Link href="/checkout" className="btn-primary header-cta">
-            Order Now
+            {t.order}
           </Link>
+          <Link href={isSpanish ? localizedPath : spanishPath} hrefLang={isSpanish ? 'en' : 'es'} lang={isSpanish ? 'en' : 'es'} style={{ fontSize: '.75rem', fontWeight: 700, color: '#5C3A1E', textDecoration: 'none', letterSpacing: '.05em' }}>{isSpanish ? 'EN' : 'ES'}</Link>
         </div>
         <button
           className={`burger ${menuOpen ? "active" : ""}`}
           onClick={toggleMenu}
-          aria-label="Toggle menu"
+          aria-label={t.menu}
         >
           <span></span>
           <span></span>
@@ -76,12 +90,12 @@ export default function Header() {
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
         <div className="mobile-nav-content">
           <nav className="mobile-nav-links">
-            <Link href="/" onClick={closeMenu}>Home</Link>
-            <Link href="/collections" onClick={closeMenu}>Collections</Link>
-            <Link href="/approach" onClick={closeMenu}>Our Process</Link>
-            <Link href="/packages" onClick={closeMenu}>Packages</Link>
-            <Link href="/blog" onClick={closeMenu}>Journal</Link>
-            <Link href="/story" onClick={closeMenu}>About</Link>
+            <Link href={link('/')} onClick={closeMenu}>{t.home}</Link>
+            <Link href={link('/collections')} onClick={closeMenu}>{t.collections}</Link>
+            <Link href={link('/approach')} onClick={closeMenu}>{t.process}</Link>
+            <Link href={link('/packages')} onClick={closeMenu}>{t.packages}</Link>
+            <Link href={link('/blog')} onClick={closeMenu}>{t.journal}</Link>
+            <Link href={link('/story')} onClick={closeMenu}>{t.about}</Link>
           </nav>
 
           <div className="mobile-nav-divider"></div>
@@ -94,10 +108,10 @@ export default function Header() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
-                  My Dashboard
+                  {t.dashboard}
                 </Link>
                 <button onClick={handleLogout} className="mobile-logout-btn">
-                  Log Out
+                  {t.logout}
                 </button>
               </div>
             ) : (
@@ -107,13 +121,14 @@ export default function Header() {
                   <polyline points="10 17 15 12 10 7"/>
                   <line x1="15" y1="12" x2="3" y2="12"/>
                 </svg>
-                Sign In / Register
+                {t.signIn}
               </Link>
             )}
 
             <Link href="/checkout" className="btn-primary mobile-cta-btn" onClick={closeMenu}>
-              Order Now
+              {t.order}
             </Link>
+            <Link href={isSpanish ? localizedPath : spanishPath} hrefLang={isSpanish ? 'en' : 'es'} lang={isSpanish ? 'en' : 'es'} onClick={closeMenu} className="mobile-auth-btn">{isSpanish ? 'English' : 'Español'}</Link>
           </div>
         </div>
       </div>
