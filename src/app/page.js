@@ -92,9 +92,13 @@ export default function Home() {
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroText}>
             <div className={`${styles.heroRating} animate-fade-in-up`} aria-label="Rated 4.9 out of 5 by more than 500 happy couples">
-              <span>★★★★★</span>
-              <strong>4.9/5</strong>
-              <small>Chosen by 500+ happy couples</small>
+              <div className={styles.ratingAvatars} aria-hidden="true">
+                <img src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
+                <img src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
+                <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
+                <img src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
+              </div>
+              <div className={styles.ratingCopy}><div><span>★★★★★</span><strong>4.9/5</strong></div><small>Chosen by 500+ happy couples</small></div>
             </div>
             <h1 className="heading-xl animate-fade-in-up delay-1">
               Premium Digital Wedding Invitations & Live Guest Tracking
@@ -135,7 +139,7 @@ export default function Home() {
                     <BordeauxTemplate
                       editMode={false}
                       autoPlaySimulation={false}
-                      heroHeight="1000px"
+                      heroHeight="632px"
                       onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
                       data={{
                         themeId: "ivory",

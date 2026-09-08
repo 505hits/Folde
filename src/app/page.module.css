@@ -21,29 +21,7 @@
   max-width: 580px;
 }
 
-.heroRating {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 1.5rem;
-  color: #a97934;
-  font-size: 0.9rem;
-  letter-spacing: 0.06em;
-}
-
-.heroRating strong {
-  color: var(--color-text);
-  letter-spacing: 0;
-}
-
-.heroRating small {
-  width: 100%;
-  color: var(--color-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0;
-}
+.heroRating{display:inline-flex;align-items:center;gap:.7rem;margin-bottom:1.5rem;padding:.45rem 1.05rem .45rem .6rem;background:#fff;border:1px solid rgba(176,137,104,.25);border-radius:999px;box-shadow:0 4px 18px rgba(0,0,0,.04)}.ratingAvatars{display:flex;align-items:center}.ratingAvatars img{width:28px;height:28px;border-radius:50%;border:2px solid #fff;object-fit:cover}.ratingAvatars img+img{margin-left:-10px}.ratingCopy{display:flex;flex-direction:column;text-align:left}.ratingCopy>div{display:flex;align-items:center;gap:.3rem}.ratingCopy span{color:#b08968;font-size:.75rem;letter-spacing:1px}.ratingCopy strong{color:#333;font-size:.75rem}.ratingCopy small{color:#666;font-size:.72rem;font-weight:500;line-height:1.2}
 
 .heroText h1 {
   margin-bottom: 1.5rem;
@@ -143,8 +121,8 @@
 }
 
 .heroTemplateScale {
-  width: 156.25%;
-  zoom: 0.64;
+  width: 100%;
+  min-height: 100%;
 }
 
 .mockupContent {
