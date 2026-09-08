@@ -58,6 +58,11 @@ main {
   width: 100%;
 }
 
+/* Sticky article tools need their direct layout ancestor to remain unclipped. */
+main.blog-shell {
+  overflow: visible;
+}
+
 a {
   color: inherit;
   text-decoration: none;

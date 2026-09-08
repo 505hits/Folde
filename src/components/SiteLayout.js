@@ -14,11 +14,12 @@ export default function SiteLayout({ children }) {
                            pathname?.startsWith("/collections") ||
                            pathname?.startsWith("/[couple]") ||
                            pathname?.startsWith("/invite");
+  const isBlog = pathname?.startsWith("/blog");
 
   return (
     <>
       {!hideHeaderFooter && <Header />}
-      <main>{children}</main>
+      <main className={isBlog ? "blog-shell" : undefined}>{children}</main>
       {!hideHeaderFooter && <Footer />}
     </>
   );
