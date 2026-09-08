@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { blogPosts, currentSources, getPost } from "@/lib/blog";
-import TemplateHeroPreview from "@/components/TemplateHeroPreview";
+import ArticlePreviewAside from "@/components/ArticlePreviewAside";
 import MobileArticleCta from "@/components/MobileArticleCta";
 import styles from "../blog.module.css";
 
@@ -60,7 +60,7 @@ export default async function BlogArticle({ params }) {
           <section className={styles.faq}><p className={styles.label}>FAQ</p><h2>{post.keyword}: common questions</h2>{post.faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
           <section className={styles.sources}><p className={styles.label}>CURRENT WEDDING CONTEXT</p><h2>Further reading</h2><p>Guest experience and personalization remain central wedding-planning themes in recent industry research. These independent sources are included for context; they are not endorsements of FOLDÈ.</p><ul>{currentSources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>
         </article>
-        <aside className={styles.articleAside}><div className={styles.asidePhone}><div className={styles.asideNotch} /><TemplateHeroPreview partner1="Anna" partner2="Tom" date="SEP 05, 2026" videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4" envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4" showEnvelope preloadEnvelopeFrame /></div><p>PLAN YOUR INVITATION</p><h2>One elegant link for every guest detail.</h2><Link className={styles.primaryButton} href="/">Create your invitation card now <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link><Link className={styles.asideLink} href="/collections">Explore the templates →</Link></aside>
+        <ArticlePreviewAside />
       </div>
       <section className={styles.related}><p className={styles.eyebrow}>CONTINUE READING</p><h2>More wedding invitation guides</h2><div className={styles.relatedGrid}>{related.map((item) => <Link href={`/blog/${item.slug}`} key={item.slug}><Image src={item.heroImage} alt="" width={400} height={250} /><span>{item.keyword}</span><strong>{item.title}</strong></Link>)}</div></section>
       <MobileArticleCta />
