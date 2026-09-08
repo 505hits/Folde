@@ -732,16 +732,16 @@ export default function Dashboard() {
   };
 
   const tabs = [
-    { id: 'invitation', label: 'My Invitation', icon: '✎' },
+    { id: 'invitation', label: 'Mi invitación', icon: '✎' },
     { id: 'aistudio', label: 'AI Studio', icon: '🎨' },
-    { id: 'guests', label: 'Guest List', icon: '👥' },
-    { id: 'rsvps', label: 'RSVP Responses', icon: '☑' },
-    { id: 'tables', label: 'Table Management', icon: '🪑' },
-    { id: 'share', label: 'Share My Site', icon: '↗' },
+    { id: 'guests', label: 'Lista de invitados', icon: '👥' },
+    { id: 'rsvps', label: 'Respuestas RSVP', icon: '☑' },
+    { id: 'tables', label: 'Gestión de mesas', icon: '🪑' },
+    { id: 'share', label: 'Compartir mi sitio', icon: '↗' },
   ];
 
   const bottomTabs = [
-    { id: 'contact', label: '24/7 Customer Support', icon: '✉️' },
+    { id: 'contact', label: 'Atención al cliente 24/7', icon: '✉️' },
   ];
 
   return (
@@ -938,7 +938,7 @@ export default function Dashboard() {
         </div>
 
         <div style={{ padding: '1rem 0', flex: 1, overflowY: 'auto' }}>
-          <div className="dashboard-nav-caption">Workspace</div>
+          <div className="dashboard-nav-caption">Espacio de trabajo</div>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {tabs.map(tab => (
               <button
@@ -955,7 +955,7 @@ export default function Dashboard() {
 
           <div style={{ margin: '1.25rem 1.5rem', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
 
-          <div className="dashboard-nav-caption">Support</div>
+          <div className="dashboard-nav-caption">Soporte</div>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {bottomTabs.map(tab => (
               <button
@@ -973,18 +973,18 @@ export default function Dashboard() {
 
         {/* Floating Wedding Profile Card */}
         <div className="sidebar-card-bottom">
-          <div style={{ fontSize: '0.68rem', color: '#d9b693', fontWeight: 700, marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Wedding Space</div>
+          <div style={{ fontSize: '0.68rem', color: '#d9b693', fontWeight: 700, marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Tu espacio de boda</div>
           <div style={{ fontSize: '1rem', fontWeight: 600, color: '#fffaf5', marginBottom: '0.25rem', fontFamily: 'var(--font-heading)' }}>
-            {clientEventInfo.partner1 || 'Partner #1'} & {clientEventInfo.partner2 || 'Partner #2'}
+            {clientEventInfo.partner1 || 'Pareja 1'} & {clientEventInfo.partner2 || 'Pareja 2'}
           </div>
-          <div style={{ fontSize: '0.8rem', color: 'rgba(255,248,240,0.6)', marginBottom: '0.85rem' }}>{clientEventInfo.date || 'Upcoming Date'}</div>
+          <div style={{ fontSize: '0.8rem', color: 'rgba(255,248,240,0.6)', marginBottom: '0.85rem' }}>{clientEventInfo.date || 'Próxima fecha'}</div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#2e7d32', backgroundColor: '#eefcf1', padding: '0.35rem 0.65rem', borderRadius: '20px', width: 'fit-content', fontWeight: 600, border: '1px solid #d1fae5', marginBottom: '0.65rem' }}>
             <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', animation: 'pulse 2s infinite' }}></span>
-            Live Invite Link
+            Enlace de invitación activo
           </div>
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f4d6b7', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            👔 {userOrder?.plan ? `${userOrder.plan} Plan` : 'Standard Plan'}
+            👔 {userOrder?.plan ? `Plan ${userOrder.plan}` : 'Plan Estándar'}
           </div>
           <button
             onClick={logout}
@@ -1014,7 +1014,7 @@ export default function Dashboard() {
               e.currentTarget.style.borderColor = 'rgba(220, 38, 38, 0.15)';
             }}
           >
-            <span>🚪</span> Log Out
+            <span>🚪</span> Cerrar sesión
           </button>
         </div>
       </aside>
@@ -1025,18 +1025,18 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
             <h1 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', fontFamily: 'var(--font-heading)', letterSpacing: '0.5px' }}>
-              {activeTab === 'invitation' && 'Wedding Details'}
-              {activeTab === 'aistudio' && 'AI Personalization Studio'}
-              {activeTab === 'guests' && 'Guest List Organizer'}
-              {activeTab === 'rsvps' && 'Real-Time RSVP Responses'}
-              {activeTab === 'tables' && 'Table & Seating Plan'}
-              {activeTab === 'share' && 'Share Digital Invitation'}
-              {activeTab === 'contact' && 'Concierge Support'}
+              {activeTab === 'invitation' && 'Datos de la boda'}
+              {activeTab === 'aistudio' && 'Estudio de personalización con IA'}
+              {activeTab === 'guests' && 'Gestor de invitados'}
+              {activeTab === 'rsvps' && 'Respuestas RSVP en tiempo real'}
+              {activeTab === 'tables' && 'Mesas y distribución'}
+              {activeTab === 'share' && 'Compartir invitación digital'}
+              {activeTab === 'contact' && 'Soporte personal'}
             </h1>
           </div>
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <a href={`/invite/${clientSlug}?preview=true`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.35rem', borderRadius: '30px', border: '1px solid rgba(176,137,104,0.25)', backgroundColor: '#fffdfb', color: '#5C4A3C', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 7px 18px rgba(92,58,30,0.06)' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5eadc'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fffdfb'}>
-              <span>📱</span> Live Preview Website
+              <span>📱</span> Vista previa del sitio
             </a>
             <button
               onClick={async () => {
@@ -1053,9 +1053,9 @@ export default function Dashboard() {
               style={{ padding: '0.7rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               {isPublishing ? (
-                <>⏳ Publishing...</>
+                <>⏳ Publicando...</>
               ) : (
-                <>🔒 Publish Invite Site</>
+                <>🔒 Publicar sitio de invitación</>
               )}
             </button>
           </div>
@@ -1066,8 +1066,8 @@ export default function Dashboard() {
           <div className="dashboard-tip" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Pro Tip for Your Guests</div>
-              <div style={{ fontSize: '0.82rem', color: '#666' }}>Couples who customize their background music and photos several months in advance see the highest guest engagement and RSVP response rates.</div>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Consejo para tus invitados</div>
+              <div style={{ fontSize: '0.82rem', color: '#666' }}>Las parejas que personalizan música de fondo y fotos con varios meses de antelación suelen obtener una mayor interacción y más respuestas RSVP.</div>
             </div>
           </div>
 

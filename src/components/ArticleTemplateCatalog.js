@@ -31,20 +31,20 @@ export default function ArticleTemplateCatalog() {
     <section className={styles.templateCatalog} aria-labelledby="article-template-catalog-title">
       <div className={styles.catalogHeading}>
         <div>
-          <p className={styles.label}>START WITH A DESIGN</p>
-          <h2 id="article-template-catalog-title">Choose an invitation template</h2>
-          <p>Browse the collection, open a preview, then personalise the design that feels most like your celebration.</p>
+          <p className={styles.label}>EMPIEZA CON UN DISEÑO</p>
+          <h2 id="article-template-catalog-title">Elige una plantilla de invitación</h2>
+          <p>Explora la colección, abre una vista previa y personaliza el diseño que mejor encaje con vuestra celebración.</p>
         </div>
         <div className={styles.catalogActions}>
-          <button type="button" onClick={() => scrollCatalog(-1)} aria-label="Show previous templates">←</button>
-          <button type="button" onClick={() => scrollCatalog(1)} aria-label="Show more templates">→</button>
-          <Link href="/collections">View all</Link>
+          <button type="button" onClick={() => scrollCatalog(-1)} aria-label="Ver plantillas anteriores">←</button>
+          <button type="button" onClick={() => scrollCatalog(1)} aria-label="Ver más plantillas">→</button>
+          <Link href="/collections">Ver todas</Link>
         </div>
       </div>
       <div className={styles.catalogTrack} ref={trackRef}>
         {featuredTemplates.map((template) => (
           <article className={styles.catalogCard} key={template.id} onMouseEnter={() => setActiveTemplate(template.id)} onMouseLeave={() => setActiveTemplate(null)}>
-            <Link className={styles.catalogPreview} href={`/collections/${template.id}`} aria-label={`Open ${template.name} template preview`}>
+            <Link className={styles.catalogPreview} href={`/collections/${template.id}`} aria-label={`Abrir vista previa de ${template.name}`}>
               <div className={styles.catalogPhone}>
                 <div className={styles.catalogNotch} />
                 <TemplateHeroPreview
@@ -62,12 +62,12 @@ export default function ArticleTemplateCatalog() {
             <div className={styles.catalogCardCopy}>
               <div><h3>{template.name}</h3><span>{template.tag}</span></div>
               <p>{template.description}</p>
-              <button type="button" onClick={() => chooseTemplate(template.id)}>Choose this design <span aria-hidden="true">→</span></button>
+              <button type="button" onClick={() => chooseTemplate(template.id)}>Elegir este diseño <span aria-hidden="true">→</span></button>
             </div>
           </article>
         ))}
       </div>
-      <p className={styles.catalogHint}>Swipe or use the arrows to discover more designs. You can refine the content after choosing a template.</p>
+      <p className={styles.catalogHint}>Desliza o usa las flechas para descubrir más diseños. Podrás perfeccionar el contenido después de elegir una plantilla.</p>
     </section>
   );
 }

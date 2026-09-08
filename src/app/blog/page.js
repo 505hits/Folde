@@ -14,12 +14,12 @@ export default function BlogIndex() {
   return (
     <main className={styles.blogPage}>
       <section className={styles.intro}>
-        <p className={styles.eyebrow}>FOLDÈ JOURNAL · SEPTEMBER 2026</p>
-        <h1>Wedding Invitation Ideas, Tutorials &amp; Guest Planning Guides</h1>
-        <p>Practical, design-led guidance for couples planning a premium invitation experience. Start with a topic below, then build your own invitation in the FOLDÈ studio.</p>
+        <p className={styles.eyebrow}>FOLDÈ JOURNAL · SEPTIEMBRE DE 2026</p>
+        <h1>Ideas, tutoriales y guías para planificar invitaciones de boda</h1>
+        <p>Guías prácticas y orientadas al diseño para parejas que planean una experiencia de invitación premium. Elige un tema y crea tu invitación en el estudio FOLDÈ.</p>
         <div className={styles.introActions}>
-          <Link className={styles.primaryButton} href="/">Discover FOLDÈ Wedding</Link>
-          <Link className={styles.secondaryButton} href="/collections">Explore collections</Link>
+          <Link className={styles.primaryButton} href="/">Descubre FOLDÈ Wedding</Link>
+          <Link className={styles.secondaryButton} href="/collections">Explora las colecciones</Link>
         </div>
       </section>
       <section className={styles.cardGrid} aria-label="Wedding invitation articles">
@@ -32,7 +32,7 @@ export default function BlogIndex() {
               <p className={styles.keyword}>{post.keyword}</p>
               <h2><Link href={`/blog/${post.slug}`}>{post.title}</Link></h2>
               <p>{post.excerpt}</p>
-              <Link className={styles.textLink} href={`/blog/${post.slug}`}>Read the guide <span aria-hidden="true">→</span></Link>
+              <Link className={styles.textLink} href={`/blog/${post.slug}`}>Leer la guía <span aria-hidden="true">→</span></Link>
             </div>
           </article>
         ))}

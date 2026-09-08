@@ -47,10 +47,10 @@ export default function ArticlePreviewAside() {
             preloadEnvelopeFrame
           />
         </div>
-        <p>PLAN YOUR INVITATION</p>
-        <h2>One elegant link for every guest detail.</h2>
-        <Link className={styles.primaryButton} href="/">Create your invitation card now <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
-        <Link className={styles.asideLink} href="/collections">Explore the templates →</Link>
+        <p>PLANIFICA TU INVITACIÓN</p>
+        <h2>Un enlace elegante para cada detalle de tus invitados.</h2>
+        <Link className={styles.primaryButton} href="/">Crea tu invitación ahora <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
+        <Link className={styles.asideLink} href="/collections">Explorar plantillas →</Link>
       </aside>
     </div>
   );

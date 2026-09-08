@@ -49,7 +49,7 @@ const orderedTemplates = [...templates].sort((a, b) => {
 
 export default function Templates() {
   const router = useRouter();
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('Todas');
   const [selectedId, setSelectedId] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [playingTemplate, setPlayingTemplate] = useState(null);
@@ -58,11 +58,12 @@ export default function Templates() {
   const SelectIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>;
   const CloseIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
-  const tags = ['All', 'Popular', 'Elegant', 'Romantic', 'Warm', 'New'];
+  const tags = ['Todas', 'Populares', 'Elegante', 'Romántica', 'Cálida', 'Nueva'];
 
-  const filtered = filter === 'All' ? orderedTemplates
-    : filter === 'Popular' ? orderedTemplates.filter(t => t.popular)
-      : orderedTemplates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
+  const tagLookup = { Elegante: 'ELEGANT', Romántica: 'ROMANTIC', Cálida: 'WARM', Nueva: 'NEW' };
+  const filtered = filter === 'Todas' ? orderedTemplates
+    : filter === 'Populares' ? orderedTemplates.filter(t => t.popular)
+      : orderedTemplates.filter(t => t.tag === tagLookup[filter]);
 
   const handleSelectAndContinue = (id) => {
     localStorage.setItem('selectedTemplate', id);
@@ -102,16 +103,16 @@ export default function Templates() {
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        Back
+        Volver
       </Link>
 
       {/* Header */}
       <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
         <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 400, marginBottom: '0.75rem' }}>
-          Explore Our Design Collections
+          Explora nuestras colecciones de diseño
         </h1>
         <p style={{ color: '#888', fontSize: '1rem', maxWidth: '500px', margin: '0 auto' }}>
-          Find the universe that matches your story. Every collection can be fully personalized.
+          Encuentra el universo que encaja con vuestra historia. Cada colección se puede personalizar por completo.
         </p>
       </div>
 
@@ -173,10 +174,10 @@ export default function Templates() {
               </div>
               <div className="tpl-actions">
                 <button onClick={(e) => { e.stopPropagation(); openPreview(e, t); }}>
-                  <PreviewIcon /> Preview
+                  <PreviewIcon /> Vista previa
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); handleSelectAndContinue(t.id); }} style={{ color: '#555', fontWeight: 500 }}>
-                  <SelectIcon /> Select
+                  <SelectIcon /> Elegir
                 </button>
               </div>
             </div>

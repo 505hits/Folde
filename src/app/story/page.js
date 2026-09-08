@@ -3,8 +3,8 @@ import Image from "next/image";
 import styles from "./vision.module.css";
 
 export const metadata = {
-  title: "Our Vision | FOLDÈ Design — Redefining the Digital Wedding Invitation",
-  description: "Discover the philosophy behind FOLDÈ Design. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
+  title: "Nuestra visión | FOLDÈ Design — Redefinimos la invitación de boda digital",
+  description: "Descubre la filosofía de FOLDÈ Design. Creemos que vuestra invitación de boda debe ser tan significativa y memorable como el día de la celebración.",
 };
 
 export default function Vision() {
@@ -14,12 +14,12 @@ export default function Vision() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className="container">
-          <span className="label animate-fade-in-up">Our Vision</span>
+          <span className="label animate-fade-in-up">Nuestra visión</span>
           <h1 className="heading-xl animate-fade-in-up delay-1">
-            Your Invitation Should Be as Memorable as Your Day
+            Vuestra invitación debe ser tan memorable como vuestro día
           </h1>
           <p className="text-lg animate-fade-in-up delay-2" style={{ maxWidth: '650px' }}>
-            We founded FOLDÈ Design with a simple conviction: a wedding invitation is more than logistics — it&apos;s the very first chapter of your celebration. It deserves beauty, intention, and soul.
+            Fundamos FOLDÈ Design con una convicción sencilla: una invitación de boda es más que logística; es el primer capítulo de vuestra celebración. Merece belleza, intención y alma.
           </p>
         </div>
       </section>
@@ -31,20 +31,20 @@ export default function Vision() {
             <div className={styles.storyImageWrapper}>
               <Image
                 src="/images/champagne.png"
-                alt="Elegant champagne wedding invitation"
+                alt="Invitación de boda elegante en tonos champagne"
                 width={500}
                 height={600}
                 className={styles.storyImage}
               />
             </div>
             <div className={styles.storyText}>
-              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>Why We Exist</span>
-              <h2 className="heading-lg">Born from a Desire to Elevate</h2>
+              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>Por qué existimos</span>
+              <h2 className="heading-lg">Nacimos del deseo de elevar cada detalle</h2>
               <p className="text-lg" style={{ marginTop: '1.5rem' }}>
-                Traditional paper invitations are beautiful — but they often get lost, arrive late, or lack the interactive depth that modern celebrations demand. Mass-produced digital alternatives, meanwhile, feel impersonal and disposable.
+                Las invitaciones de papel tradicionales son bonitas, pero a menudo se pierden, llegan tarde o no tienen la profundidad interactiva que necesitan las celebraciones actuales. Las alternativas digitales masivas, en cambio, suelen sentirse impersonales y efímeras.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                FOLDÈ was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology — creating immersive, interactive experiences that your guests will remember long after the last dance.
+                FOLDÈ nació entre esos dos mundos. Combinamos la elegancia atemporal de la papelería clásica con la potencia y comodidad de la tecnología digital para crear experiencias inmersivas e interactivas que vuestros invitados recordarán mucho después del último baile.
               </p>
             </div>
           </div>
@@ -55,36 +55,36 @@ export default function Vision() {
       <section className={styles.valuesSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">Our Values</span>
-            <h2 className="heading-lg">The Principles That Guide Every Creation</h2>
+            <span className="label">Nuestros valores</span>
+            <h2 className="heading-lg">Los principios que guían cada creación</h2>
           </div>
           <div className={styles.valuesGrid}>
             <div className={styles.valueCard}>
               <div className={styles.valueIcon}>✦</div>
-              <h3 className="heading-sm">Elegance Above All</h3>
+              <h3 className="heading-sm">La elegancia ante todo</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                Every visual element, every animation, every typographic choice is deliberate. We believe that true luxury lies in the details — and we obsess over each one.
+                Cada elemento visual, animación y elección tipográfica tiene una intención. Creemos que el verdadero lujo está en los detalles y cuidamos cada uno de ellos.
               </p>
             </div>
             <div className={styles.valueCard}>
               <div className={styles.valueIcon}>🤲</div>
-              <h3 className="heading-sm">Personal, Not Automated</h3>
+              <h3 className="heading-sm">Personal, no automático</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                Your invitation is not generated by a template engine. It is crafted by our team, in dialogue with you. Every project is unique because every couple is unique.
+                Tu invitación no nace de un generador de plantillas. Nuestro equipo la crea en diálogo con vosotros. Cada proyecto es único porque cada pareja lo es.
               </p>
             </div>
             <div className={styles.valueCard}>
               <div className={styles.valueIcon}>🌿</div>
-              <h3 className="heading-sm">Sustainable by Nature</h3>
+              <h3 className="heading-sm">Sostenible por naturaleza</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                A fully digital invitation means zero paper waste, no printing, and no shipping emissions. Elegance and responsibility are not mutually exclusive — they enhance each other.
+                Una invitación totalmente digital evita residuos de papel, impresión y emisiones de envío. La elegancia y la responsabilidad no se excluyen: se refuerzan.
               </p>
             </div>
             <div className={styles.valueCard}>
               <div className={styles.valueIcon}>💡</div>
-              <h3 className="heading-sm">Innovation with Soul</h3>
+              <h3 className="heading-sm">Innovación con alma</h3>
               <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                We harness cutting-edge web technologies — immersive animations, interactive RSVP, real-time dashboards — but always in service of emotion, never for spectacle alone.
+                Usamos tecnologías web de vanguardia —animaciones inmersivas, RSVP interactivos y paneles en tiempo real— siempre al servicio de la emoción, nunca solo del espectáculo.
               </p>
             </div>
           </div>
@@ -96,27 +96,27 @@ export default function Vision() {
         <div className="container">
           <div className={styles.differenceInner}>
             <div className={styles.differenceText}>
-              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>What Sets Us Apart</span>
-              <h2 className="heading-lg">More Than a Link — An Experience</h2>
+              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>Lo que nos diferencia</span>
+              <h2 className="heading-lg">Más que un enlace: una experiencia</h2>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                When your guests tap that link, they don&apos;t just see information. They experience an immersive unveiling — an elegant opening animation, curated music, and a journey through every detail of your celebration. From the ceremony schedule to accommodation suggestions, from the photo gallery to the RSVP — everything unfolds with intention.
+                Cuando tus invitados tocan ese enlace, no ven solo información. Viven una revelación inmersiva: una elegante animación de apertura, música seleccionada y un recorrido por cada detalle de la celebración. Desde el programa de la ceremonia hasta las sugerencias de alojamiento, la galería de fotos y el RSVP, todo se presenta con intención.
               </p>
               <p className="text-lg" style={{ marginTop: '1rem' }}>
-                This is what makes a FOLDÈ invitation different. It&apos;s not a webpage. It&apos;s a moment.
+                Eso es lo que hace diferente a una invitación FOLDÈ. No es una página web. Es un momento.
               </p>
             </div>
             <div className={styles.differenceStats}>
               <div className={styles.stat}>
                 <span className={styles.statNum}>500+</span>
-                <span className={styles.statLabel}>Couples Served</span>
+                <span className={styles.statLabel}>Parejas atendidas</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNum}>12,000+</span>
-                <span className={styles.statLabel}>Guests Invited</span>
+                <span className={styles.statLabel}>Invitados invitados</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNum}>98%</span>
-                <span className={styles.statLabel}>Satisfaction Rate</span>
+                <span className={styles.statLabel}>Índice de satisfacción</span>
               </div>
             </div>
           </div>
@@ -127,14 +127,14 @@ export default function Vision() {
       <section className={styles.commitmentSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">Our Commitment</span>
-            <h2 className="heading-lg">The FOLDÈ Promise</h2>
+            <span className="label">Nuestro compromiso</span>
+            <h2 className="heading-lg">La promesa FOLDÈ</h2>
           </div>
           <div className={styles.commitGrid}>
             {[
-              { title: 'Transparent Pricing', desc: 'No hidden fees, no surprises. You know exactly what you pay for and what you receive — from the very first call.' },
-              { title: 'Unlimited Revisions', desc: 'We refine and adjust until you are truly delighted. There is no cap on iterations and no extra charge for changes.' },
-              { title: 'Lasting Access', desc: 'Your invitation link remains active as long as you need it. Even after the wedding, it becomes a beautiful digital keepsake.' },
+              { title: 'Precios transparentes', desc: 'Sin costes ocultos ni sorpresas. Sabes exactamente qué pagas y qué recibes desde la primera conversación.' },
+              { title: 'Revisiones ilimitadas', desc: 'Afinamos y ajustamos hasta que quedéis realmente encantados. No hay límite de iteraciones ni cargos extra por cambios.' },
+              { title: 'Acceso duradero', desc: 'El enlace de vuestra invitación permanece activo el tiempo que necesitéis. Incluso después de la boda, se convierte en un precioso recuerdo digital.' },
             ].map((item, i) => (
               <div key={i} className={styles.commitCard}>
                 <h4 className="heading-sm">{item.title}</h4>
@@ -148,14 +148,14 @@ export default function Vision() {
       {/* CTA */}
       <section className={styles.ctaSection}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 className="heading-lg">Let&apos;s Create Something Beautiful Together</h2>
-          <p className="text-lg" style={{ marginTop: '0.75rem' }}>Your story deserves an invitation worthy of it.</p>
+          <h2 className="heading-lg">Creemos algo bonito juntos</h2>
+          <p className="text-lg" style={{ marginTop: '0.75rem' }}>Vuestra historia merece una invitación a su altura.</p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/checkout" className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
-              Order Now
+              Crear invitación
             </Link>
             <Link href="/collections" className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
-              Explore Gallery
+              Explorar colecciones
             </Link>
           </div>
         </div>

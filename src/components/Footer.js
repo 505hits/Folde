@@ -8,23 +8,23 @@ export default function Footer() {
           <img src="/images/logo.png" alt="FOLDÈ Design" style={{ height: '62px', margin: '0 auto 1.5rem', display: 'block', objectFit: 'contain' }} />
         </div>
         <div className="footer-links">
-          <Link href="/">Home</Link>
-          <Link href="/collections">Collections</Link>
-          <Link href="/approach">Our Process</Link>
-          <Link href="/packages">Packages</Link>
-          <Link href="/story">About</Link>
-          <Link href="/dashboard">Wedding Dashboard</Link>
+          <Link href="/">Inicio</Link>
+          <Link href="/collections">Colecciones</Link>
+          <Link href="/approach">Nuestro proceso</Link>
+          <Link href="/packages">Planes</Link>
+          <Link href="/story">Nosotros</Link>
+          <Link href="/dashboard">Panel de boda</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
           <Link href="mailto:folde.wedding@gmail.com">folde.wedding@gmail.com</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '0.5rem' }}>
-          <Link href="/legal">Legal Notice</Link>
-          <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms & Conditions</Link>
+          <Link href="/legal">Aviso legal</Link>
+          <Link href="/privacy">Política de privacidad</Link>
+          <Link href="/terms">Términos y condiciones</Link>
         </div>
         <p className="footer-copy">
-          © {new Date().getFullYear()} FOLDÈ Design. All rights reserved.
+          © {new Date().getFullYear()} FOLDÈ Design. Todos los derechos reservados.
         </p>
       </div>
     </footer>

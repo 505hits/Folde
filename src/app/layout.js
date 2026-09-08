@@ -12,15 +12,15 @@ const zenOldMincho = Zen_Old_Mincho({
 });
 
 export const metadata = {
-  title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-  description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management. Designed for celebrations worldwide.",
-  keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant wedding invitations", "destination wedding websites", "FOLDÈ Design"],
+  title: "FOLDÈ Design | Invitaciones digitales de boda premium",
+  description: "Invitaciones digitales de boda premium y personalizadas, con RSVP integrado, galerías de fotos, mapas interactivos y gestión de invitados en tiempo real.",
+  keywords: ["invitaciones digitales de boda", "sitios web de boda premium", "RSVP de boda personalizado", "invitaciones de boda elegantes", "bodas de destino", "FOLDÈ Design"],
   icons: {
     icon: '/icon.png',
   },
   openGraph: {
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
+    title: "FOLDÈ Design | Invitaciones digitales de boda premium",
+    description: "Invitaciones digitales de boda premium con RSVP integrado, galerías de fotos, mapas interactivos y gestión de invitados.",
     url: "https://www.folde-wedding.com",
     siteName: "FOLDÈ Design",
     images: [
@@ -31,13 +31,13 @@ export const metadata = {
         alt: "FOLDÈ Design Logo"
       }
     ],
-    locale: "en_US",
+    locale: "es_ES",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
+    title: "FOLDÈ Design | Invitaciones digitales de boda premium",
+    description: "Invitaciones digitales de boda premium con RSVP integrado, galerías de fotos, mapas interactivos y gestión de invitados.",
     images: ["https://www.folde-wedding.com/images/logo.png"],
   }
 };
@@ -64,7 +64,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-G5CB9NQHZL" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">

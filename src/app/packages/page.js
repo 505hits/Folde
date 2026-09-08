@@ -2,8 +2,8 @@ import Link from "next/link";
 import styles from "./offers.module.css";
 
 export const metadata = {
-  title: "Our Formulas | FOLDÈ Design — Premium Digital Wedding Invitation Formulas",
-  description: "Choose from our curated digital wedding invitation formulas. Standard — includes unlimited guests, integrated RSVP, and personalized guidance.",
+  title: "Planes | FOLDÈ Design — Invitaciones digitales de boda premium",
+  description: "Elige un plan de invitación digital de boda. Estándar incluye invitados ilimitados, RSVP integrado y una guía personalizada.",
 };
 
 export default function Offers() {
@@ -13,12 +13,12 @@ export default function Offers() {
 
         {/* Hero */}
         <section className={styles.hero} style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 4rem' }}>
-          <span className="label animate-fade-in-up">Choose Your Formula</span>
+          <span className="label animate-fade-in-up">Elige tu plan</span>
           <h1 className="heading-xl animate-fade-in-up delay-1" style={{ marginBottom: '1rem' }}>
-            Everything you need for a perfect digital invitation
+            Todo lo que necesitáis para una invitación digital perfecta
           </h1>
           <p className="text-lg animate-fade-in-up delay-2">
-            No hidden fees, no subscriptions. A single payment for an elegant, interactive digital wedding invitation with dedicated guidance.
+            Sin costes ocultos ni suscripciones. Un único pago por una invitación digital de boda elegante, interactiva y con acompañamiento.
           </p>
         </section>
 
@@ -50,7 +50,7 @@ export default function Offers() {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Standard</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  Choose from our +15 exclusive templates and receive a personalized digital wedding invitation.
+                  Elige entre más de 15 plantillas exclusivas y recibe una invitación digital de boda personalizada.
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>99.90€</span>
@@ -58,26 +58,26 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> Choose 1 template from over 15 options</li>
-                <li><span className="check">✓</span> Your colors and info applied</li>
-                <li><span className="check">✓</span> RSVP + private dashboard</li>
-                <li><span className="check">✓</span> Guest directory & table planner</li>
-                <li><span className="check">✓</span> No AI credits included</li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+                <li><span className="check">✓</span> Elige 1 plantilla entre más de 15 opciones</li>
+                <li><span className="check">✓</span> Aplicamos vuestros colores e información</li>
+                <li><span className="check">✓</span> RSVP y panel privado</li>
+                <li><span className="check">✓</span> Directorio de invitados y plano de mesas</li>
+                <li><span className="check">✓</span> No incluye créditos de IA</li>
+                <li><span className="check">✓</span> <strong>Todos los idiomas disponibles</strong></li>
+                <li><span className="check">✓</span> <strong>Invitados ilimitados incluidos</strong></li>
               </ul>
               <Link href="/checkout?plan=essential" className="price-btn btn-secondary-plan">
-                Start with Standard
+                Empezar con Estándar
               </Link>
             </div>
 
             {/* Premium */}
             <div className="price-card popular">
-              <div className="price-badge">Most Popular</div>
+              <div className="price-badge">El más elegido</div>
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  A self-service dashboard with everything in Standard, 5 AI image credits, 5 AI music credits, priority support, and custom sections.
+                  Un panel de autoservicio con todo lo incluido en Estándar, 5 créditos de imágenes con IA, 5 de música con IA, soporte prioritario y secciones personalizadas.
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>149.90€</span>
@@ -85,17 +85,17 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> Everything in Standard included</li>
-                <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
-                <li><span className="check">✓</span> Express 24h Dedicated Support</li>
-                <li><span className="check">✓</span> Self-service dashboard + priority support</li>
-                <li><span className="check">✓</span> Custom sections (boarding pass, RSVP)</li>
-                <li><span className="check">✓</span> Unlimited revisions</li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+                <li><span className="check">✓</span> Todo lo incluido en Estándar</li>
+                <li><span className="check">✓</span> <strong>5 créditos de imágenes con IA + 5 créditos de música con IA</strong></li>
+                <li><span className="check">✓</span> Soporte dedicado exprés en 24 h</li>
+                <li><span className="check">✓</span> Panel de autoservicio y soporte prioritario</li>
+                <li><span className="check">✓</span> Secciones personalizadas (tarjeta de embarque, RSVP)</li>
+                <li><span className="check">✓</span> Revisiones ilimitadas</li>
+                <li><span className="check">✓</span> <strong>Todos los idiomas disponibles</strong></li>
+                <li><span className="check">✓</span> <strong>Invitados ilimitados incluidos</strong></li>
               </ul>
               <Link href="/checkout?plan=premium" className="price-btn btn-primary-plan">
-                Start with Premium
+                Empezar con Premium
               </Link>
             </div>
 
@@ -104,7 +104,7 @@ export default function Offers() {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Expert</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  A hand-crafted bespoke experience with a dedicated creative brief, team review, and studio validation.
+                  Una experiencia artesanal a medida con un briefing creativo, revisión del equipo y validación del estudio.
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>290.00€</span>
@@ -112,18 +112,18 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> 100% bespoke questionnaire onboarding</li>
-                <li><span className="check">✓</span> Hand-crafted art direction</li>
-                <li><span className="check">✓</span> Custom Envelope, Hero video, Menu & Photos</li>
-                <li><span className="check">✓</span> Direct review & validation by our team</li>
-                <li><span className="check">✓</span> Studio crafts and publishes your invitation after approval</li>
-                <li><span className="check">✓</span> Personal concierge & priority support</li>
-                <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Everything in Premium</strong></li>
+                <li><span className="check">✓</span> Cuestionario de inicio 100 % personalizado</li>
+                <li><span className="check">✓</span> Dirección artística artesanal</li>
+                <li><span className="check">✓</span> Sobre, vídeo de portada, menú y fotos personalizados</li>
+                <li><span className="check">✓</span> Revisión y validación directa por nuestro equipo</li>
+                <li><span className="check">✓</span> El estudio crea y publica tu invitación tras la aprobación</li>
+                <li><span className="check">✓</span> Asistencia personal y soporte prioritario</li>
+                <li><span className="check">✓</span> <strong>5 créditos de imágenes con IA + 5 créditos de música con IA</strong></li>
+                <li><span className="check">✓</span> <strong>Todos los idiomas disponibles</strong></li>
+                <li><span className="check">✓</span> <strong>Todo lo incluido en Premium</strong></li>
               </ul>
               <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
-                Start with Expert
+                Empezar con Expert
               </Link>
             </div>
 
@@ -133,8 +133,8 @@ export default function Offers() {
         {/* What's included breakdown */}
         <section className={styles.includesSection}>
           <div className="section-header" style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <span className="label">What&apos;s Included</span>
-            <h2 className="heading-lg">Every Detail, Covered</h2>
+            <span className="label">Qué incluye</span>
+            <h2 className="heading-lg">Cada detalle, cubierto</h2>
           </div>
           <div className={styles.includesGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '3rem' }}>
             {[
@@ -145,8 +145,8 @@ export default function Offers() {
                     <line x1="12" y1="18" x2="12.01" y2="18" strokeWidth="2" />
                   </svg>
                 ),
-                title: 'Mobile-First Design',
-                desc: 'Your invitation is optimized for every device — smartphones, tablets, and desktops — ensuring a flawless experience for every guest.'
+                title: 'Diseño pensado para móvil',
+                desc: 'Tu invitación está optimizada para móvil, tableta y ordenador, para que todos los invitados disfruten de una experiencia impecable.'
               },
               {
                 icon: (
@@ -156,8 +156,8 @@ export default function Offers() {
                     <path d="M12 13a2.5 2.5 0 0 1 4.5 1.5c0 2-3.5 4.5-4.5 5.5-1-1-4.5-3.5-4.5-5.5a2.5 2.5 0 0 1 4.5-1.5z" fill="rgba(184, 134, 11, 0.12)" />
                   </svg>
                 ),
-                title: 'Integrated RSVP',
-                desc: 'Guests confirm, decline, or provide details directly from the invitation. No external tools, no friction.'
+                title: 'RSVP integrado',
+                desc: 'Los invitados confirman, rechazan o facilitan sus datos directamente desde la invitación. Sin herramientas externas ni fricción.'
               },
               {
                 icon: (
@@ -168,8 +168,8 @@ export default function Offers() {
                     <path d="M9 11l6-2" />
                   </svg>
                 ),
-                title: 'Real-Time Dashboard',
-                desc: 'Track confirmations, pending responses, and declines from a clean, intuitive interface. Export your guest list to Excel anytime.'
+                title: 'Panel en tiempo real',
+                desc: 'Sigue confirmaciones, respuestas pendientes y rechazos desde una interfaz clara e intuitiva. Exporta tu lista a Excel cuando quieras.'
               },
               {
                 icon: (
@@ -178,8 +178,8 @@ export default function Offers() {
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                   </svg>
                 ),
-                title: 'One Link, Unlimited Guests',
-                desc: 'Share a single elegant link via WhatsApp, email, or social media. Every guest receives the same premium experience.'
+                title: 'Un enlace, invitados ilimitados',
+                desc: 'Comparte un único enlace elegante por WhatsApp, email o redes sociales. Todos reciben la misma experiencia premium.'
               },
             ].map((item, i) => (
               <div key={i} className={styles.includeCard} style={{ textAlign: 'center' }}>
