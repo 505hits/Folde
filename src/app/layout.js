@@ -38,7 +38,7 @@ export const metadata = {
   },
   alternates: {
     canonical: "/",
-    languages: { en: "/", es: "/es", "x-default": "/" },
+    languages: { en: "/", es: "/es", fr: "/fr", "x-default": "/" },
   },
   twitter: {
     card: "summary_large_image",
@@ -70,7 +70,8 @@ const jsonLd = {
 
 export default async function RootLayout({ children }) {
   const requestHeaders = await headers();
-  const locale = requestHeaders.get("x-folde-locale") === "es" ? "es" : "en";
+  const requestedLocale = requestHeaders.get("x-folde-locale");
+  const locale = requestedLocale === "es" || requestedLocale === "fr" ? requestedLocale : "en";
   return (
     <html lang={locale}>
       <head>

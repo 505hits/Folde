@@ -1,14 +1,15 @@
 import Link from "next/link";
 import styles from "./offers.module.css";
+import { translateFr } from "@/lib/fr-ui";
 
 export const metadata = {
   title: "Our Formulas | FOLDÈ Design — Premium Digital Wedding Invitation Formulas",
   description: "Choose from our curated digital wedding invitation formulas. Standard — includes unlimited guests, integrated RSVP, and personalized guidance.",
-  alternates: { canonical: "https://www.folde-wedding.com/packages", languages: { en: "https://www.folde-wedding.com/packages", es: "https://www.folde-wedding.com/es/packages", "x-default": "https://www.folde-wedding.com/packages" } },
+  alternates: { canonical: "https://www.folde-wedding.com/packages", languages: { en: "https://www.folde-wedding.com/packages", es: "https://www.folde-wedding.com/es/packages", fr: "https://www.folde-wedding.com/fr/packages", "x-default": "https://www.folde-wedding.com/packages" } },
 };
 
 export default function Offers({ locale = 'en' }) {
-  const t = (english, spanish) => locale === 'es' ? spanish : english;
+  const t = (english, spanish) => locale === 'fr' ? translateFr(english) : locale === 'es' ? spanish : english;
   return (
     <div className={styles.page}>
       <div className="container">
@@ -144,6 +145,11 @@ export default function Offers({ locale = 'en' }) {
               { icon: null, title: 'Confirmación integrada', desc: 'Los invitados confirman, rechazan o añaden sus datos directamente desde la invitación, sin herramientas externas ni pasos innecesarios.' },
               { icon: null, title: 'Panel en tiempo real', desc: 'Consulta confirmaciones, respuestas pendientes y rechazos en una interfaz clara e intuitiva. Exporta la lista de invitados a Excel cuando quieras.' },
               { icon: null, title: 'Un enlace, invitados ilimitados', desc: 'Comparte un único enlace elegante por WhatsApp, correo electrónico o redes sociales. Todos los invitados disfrutan de la misma experiencia premium.' },
+            ] : locale === 'fr' ? [
+              { icon: null, title: 'Conception mobile avant tout', desc: 'Votre invitation s’adapte aux smartphones, tablettes et ordinateurs pour offrir une expérience impeccable à chaque invité.' },
+              { icon: null, title: 'RSVP intégré', desc: 'Les invités confirment leur présence et transmettent leurs informations directement dans l’invitation, sans outil externe ni étape superflue.' },
+              { icon: null, title: 'Tableau de bord en temps réel', desc: 'Consultez les présences, réponses en attente et absences dans une interface claire. Exportez votre liste vers Excel à tout moment.' },
+              { icon: null, title: 'Un lien, des invités illimités', desc: 'Partagez un lien unique par WhatsApp, courriel ou réseaux sociaux. Tous vos invités profitent de la même expérience haut de gamme.' },
             ] : [
               {
                 icon: (

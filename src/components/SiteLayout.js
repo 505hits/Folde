@@ -13,9 +13,10 @@ export default function SiteLayout({ children }) {
                            pathname?.startsWith("/kissing-couple-wedding-invitation") ||
                            pathname?.startsWith("/collections") ||
                            pathname?.startsWith("/es/collections") ||
+                           pathname?.startsWith("/fr/collections") ||
                            pathname?.startsWith("/[couple]") ||
                            pathname?.startsWith("/invite");
-  const isBlog = pathname?.startsWith("/blog") || pathname?.startsWith("/es/blog");
+  const isBlog = pathname?.startsWith("/blog") || pathname?.startsWith("/es/blog") || pathname?.startsWith("/fr/blog");
 
   return (
     <>

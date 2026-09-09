@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 
 export function proxy(request) {
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-folde-locale", request.nextUrl.pathname.startsWith("/es") ? "es" : "en");
+  const locale = request.nextUrl.pathname.startsWith("/es")
+    ? "es"
+    : request.nextUrl.pathname.startsWith("/fr") ? "fr" : "en";
+  requestHeaders.set("x-folde-locale", locale);
   return NextResponse.next({ request: { headers: requestHeaders } });
 }
 

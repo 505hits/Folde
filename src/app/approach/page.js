@@ -4,7 +4,7 @@ import styles from "./method.module.css";
 export const metadata = {
   title: "Our Method | FOLDÈ Design — How We Create Your Digital Wedding Invitation",
   description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
-  alternates: { canonical: "https://www.folde-wedding.com/approach", languages: { en: "https://www.folde-wedding.com/approach", es: "https://www.folde-wedding.com/es/approach", "x-default": "https://www.folde-wedding.com/approach" } },
+  alternates: { canonical: "https://www.folde-wedding.com/approach", languages: { en: "https://www.folde-wedding.com/approach", es: "https://www.folde-wedding.com/es/approach", fr: "https://www.folde-wedding.com/fr/approach", "x-default": "https://www.folde-wedding.com/approach" } },
 };
 
 const steps = [
@@ -101,6 +101,13 @@ const spanishSteps = [
   },
 ];
 
+const frenchSteps = [
+  { num: '01', title: 'Réservez votre appel découverte', desc: 'Tout commence par un échange. Nous prenons le temps de comprendre votre célébration, vos préférences esthétiques et ce qui rend votre mariage unique. Ce premier appel est gratuit, détendu et sans engagement.', details: ['Comprendre le thème et la vision de votre mariage', 'Échanger sur le calendrier, le nombre d’invités et les dates clés', 'Répondre à vos questions sur les invitations numériques', 'Vous conseiller la formule la plus adaptée'] },
+  { num: '02', title: 'Partagez les détails de votre événement', desc: 'Une fois la direction définie, vous nous transmettez les informations essentielles. Notre questionnaire guidé permet de ne rien oublier, du programme de la cérémonie aux hébergements proposés aux invités venant de loin.', details: ['Date, lieu et programme de la cérémonie', 'Photos du couple pour la couverture', 'Informations de voyage et d’hébergement', 'Préférences RSVP et choix de repas'] },
+  { num: '03', title: 'Nous créons votre invitation', desc: 'Notre équipe donne vie à votre vision. Nous réalisons une invitation numérique sur mesure à partir de l’univers choisi et intégrons vos textes, vos photos et vos détails personnels. Chaque élément est affiné avec vous jusqu’au résultat idéal.', details: ['Création personnalisée à partir de l’univers choisi', 'Intégration d’une photo ou vidéo de couverture', 'Sélection musicale et ouverture immersive', 'Révisions illimitées jusqu’à votre validation'] },
+  { num: '04', title: 'Partagez-la avec vos invités', desc: 'Votre invitation finalisée vous est remise sous la forme d’un lien unique et élégant. Partagez-le par WhatsApp, courriel ou messagerie : vos invités ouvrent l’expérience sur leur téléphone et répondent directement.', details: ['Un lien pour tous vos invités, sans application', 'Partage par WhatsApp, iMessage, courriel ou réseaux sociaux', 'Suivi des RSVP en temps réel dans votre tableau de bord', 'Mise à jour possible sans renvoyer le lien'] }
+];
+
 const approachCopy = {
   en: {
     label: 'Our Method',
@@ -124,12 +131,16 @@ const approachCopy = {
     ],
     ctaTitle: '¿Listos para empezar?', ctaText: 'Elegid vuestro universo y completad el pedido.', cta: 'Crear invitación',
   },
+  fr: {
+    label: 'Notre méthode', title: 'Une expérience guidée, pensée autour de vous', intro: 'Créer votre faire-part de mariage numérique doit rester simple et agréable. Notre méthode prend soin de chaque détail pour que vous puissiez vous concentrer sur l’essentiel.',
+    promises: [['Prête en 5 à 7 jours', 'Du premier échange au lien final, votre invitation est livrée sous une semaine, révisions comprises.'], ['Révisions illimitées', 'Nous affinons chaque détail jusqu’à votre entière satisfaction, sans frais cachés ni limite de modifications.'], ['Accompagnement dédié', 'Un interlocuteur unique vous accompagne pendant tout le projet et répond rapidement à vos questions.']],
+    ctaTitle: 'Prêts à commencer ?', ctaText: 'Choisissez votre univers et finalisez votre commande.', cta: 'Créer mon invitation'
+  },
 };
 
 export default function Method({ locale = 'en' }) {
-  const isSpanish = locale === 'es';
-  const copy = approachCopy[isSpanish ? 'es' : 'en'];
-  const localizedSteps = isSpanish ? spanishSteps : steps;
+  const copy = approachCopy[locale] || approachCopy.en;
+  const localizedSteps = locale === 'es' ? spanishSteps : locale === 'fr' ? frenchSteps : steps;
   return (
     <div className={styles.page}>
       <div className="container">

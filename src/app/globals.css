@@ -236,7 +236,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 2rem;
+  padding: 1.1rem 1.25rem;
   position: sticky;
   top: 0;
   background-color: rgba(245, 240, 232, 0.85);
@@ -255,7 +255,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .header-nav {
   display: flex;
-  gap: 2.5rem;
+  gap: clamp(0.8rem, 1.6vw, 1.5rem);
   align-items: center;
 }
 

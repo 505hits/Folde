@@ -62,10 +62,15 @@ const spanishDescriptions = {
 };
 
 const spanishTagLabels = { All: 'Todas', Popular: 'Populares', Elegant: 'Elegantes', Romantic: 'Románticas', Warm: 'Cálidas', New: 'Nuevas' };
+const frenchTagLabels = { All: 'Toutes', Popular: 'Populaires', Elegant: 'Élégantes', Romantic: 'Romantiques', Warm: 'Chaleureuses', New: 'Nouveautés' };
+const frenchDescriptions = {
+  cisnes: 'Une romance élégante entre cygnes.', bloom: 'L’amour en pleine floraison.', romanticgarden: 'Un jardin floral enchanté.', pressedlovecomo: 'L’élégance du lac de Côme.', tropical: 'Un paradis tropical vibrant.', softscratch: 'Une révélation tout en douceur.', floral: 'Un écrin de fleurs délicates.', dolcevita: 'La côte italienne baignée de soleil.', webgencytemplate5: 'Un luxe contemporain aux détails botaniques.', tildatemplate2: 'Un minimalisme sombre aux accents dorés.', pressedloveteatro: 'Un lever de rideau théâtral et opulent.', pressedlovethevenue: 'Une célébration dans une villa de destination.', pressedlovesweetlove: 'Pêche, crème et tendresse romantique.', pressedlovefloral: 'Des pétales délicats et un jardin en fleurs.', pressedlovebigentrance: 'Une entrée cinématographique au sceau doré.'
+};
 
 export default function Templates({ locale = 'en' }) {
   const isSpanish = locale === 'es';
-  const t = (english, spanish) => isSpanish ? spanish : english;
+  const isFrench = locale === 'fr';
+  const t = (english, spanish, french) => isFrench ? french : isSpanish ? spanish : english;
   const router = useRouter();
   const [filter, setFilter] = useState('All');
   const [selectedId, setSelectedId] = useState(null);
@@ -115,21 +120,21 @@ export default function Templates({ locale = 'en' }) {
       `}</style>
 
       {/* Navigation / Back Button */}
-      <Link href={isSpanish ? "/es" : "/"} className="back-btn">
+      <Link href={locale === 'en' ? "/" : `/${locale}`} className="back-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        {t('Back', 'Volver')}
+        {t('Back', 'Volver', 'Retour')}
       </Link>
 
       {/* Header */}
       <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
         <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 400, marginBottom: '0.75rem' }}>
-          {t('Explore Our Design Collections', 'Explora nuestras colecciones de diseño')}
+          {t('Explore Our Design Collections', 'Explora nuestras colecciones de diseño', 'Explorez nos collections')}
         </h1>
         <p style={{ color: '#888', fontSize: '1rem', maxWidth: '500px', margin: '0 auto' }}>
-          {t('Find the universe that matches your story. Every collection can be fully personalized.', 'Encontrad el universo que mejor encaje con vuestra historia. Todas las colecciones se pueden personalizar por completo.')}
+          {t('Find the universe that matches your story. Every collection can be fully personalized.', 'Encontrad el universo que mejor encaje con vuestra historia. Todas las colecciones se pueden personalizar por completo.', 'Trouvez l’univers qui correspond à votre histoire. Chaque collection est entièrement personnalisable.')}
         </p>
       </div>
 
@@ -144,7 +149,7 @@ export default function Templates({ locale = 'en' }) {
               cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, fontFamily: 'inherit',
               transition: 'all 0.15s'
             }}>
-            {isSpanish ? spanishTagLabels[tag] : tag}
+            {isSpanish ? spanishTagLabels[tag] : isFrench ? frenchTagLabels[tag] : tag}
           </button>
         ))}
       </div>
@@ -158,8 +163,8 @@ export default function Templates({ locale = 'en' }) {
               borderWidth: '1px'
             }}>
               <div className="tpl-img-wrap">
-                {t.popular && <div className="tpl-popular">⭐ {isSpanish ? 'DESTACADA' : 'POPULAR'}</div>}
-                <button aria-label={isSpanish ? `Ver una vista previa de ${t.name}` : `Preview ${t.name}`} className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
+                {t.popular && <div className="tpl-popular">⭐ {isSpanish ? 'DESTACADA' : isFrench ? 'POPULAIRE' : 'POPULAR'}</div>}
+                <button aria-label={isSpanish ? `Ver una vista previa de ${t.name}` : isFrench ? `Voir un aperçu de ${t.name}` : `Preview ${t.name}`} className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
                 <div
                   className="tpl-phone"
                   onMouseEnter={() => setPlayingTemplate(t.id)}
@@ -178,7 +183,7 @@ export default function Templates({ locale = 'en' }) {
                       previewImage={t.image}
                        active={playingTemplate === t.id}
                        preloadEnvelopeFrame
-                       language={isSpanish ? 'es' : 'en'}
+                       language={locale}
                     />
                   </div>
                 </div>
@@ -186,16 +191,16 @@ export default function Templates({ locale = 'en' }) {
               <div className="tpl-info">
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>{t.name}</span>
-                  <span className="tpl-badge">{isSpanish ? ({ ELEGANT: 'ELEGANTE', ROMANTIC: 'ROMÁNTICA', WARM: 'CÁLIDA', NATURAL: 'NATURAL', MINIMAL: 'MINIMALISTA', DRAMATIC: 'DRAMÁTICA', NEW: 'NUEVA' }[t.tag] || t.tag) : t.tag}</span>
+                  <span className="tpl-badge">{isSpanish ? ({ ELEGANT: 'ELEGANTE', ROMANTIC: 'ROMÁNTICA', WARM: 'CÁLIDA', NATURAL: 'NATURAL', MINIMAL: 'MINIMALISTA', DRAMATIC: 'DRAMÁTICA', NEW: 'NUEVA' }[t.tag] || t.tag) : isFrench ? ({ ELEGANT: 'ÉLÉGANTE', ROMANTIC: 'ROMANTIQUE', WARM: 'CHALEUREUSE', NATURAL: 'NATURELLE', MINIMAL: 'MINIMALISTE', DRAMATIC: 'SPECTACULAIRE', NEW: 'NOUVEAUTÉ' }[t.tag] || t.tag) : t.tag}</span>
                 </div>
-                <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.5 }}>{isSpanish ? spanishDescriptions[t.id] : t.desc}</p>
+                <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.5 }}>{isSpanish ? spanishDescriptions[t.id] : isFrench ? (frenchDescriptions[t.id] || t.desc) : t.desc}</p>
               </div>
               <div className="tpl-actions">
                 <button onClick={(e) => { e.stopPropagation(); openPreview(e, t); }}>
-                  <PreviewIcon /> {isSpanish ? 'Vista previa' : 'Preview'}
+                  <PreviewIcon /> {isSpanish ? 'Vista previa' : isFrench ? 'Aperçu' : 'Preview'}
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); handleSelectAndContinue(t.id); }} style={{ color: '#555', fontWeight: 500 }}>
-                  <SelectIcon /> {isSpanish ? 'Elegir' : 'Select'}
+                  <SelectIcon /> {isSpanish ? 'Elegir' : isFrench ? 'Choisir' : 'Select'}
                 </button>
               </div>
             </div>

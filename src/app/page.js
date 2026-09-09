@@ -6,6 +6,7 @@ import { useRef, useState, useEffect } from "react";
 import styles from "./page.module.css";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
+import { translateFr } from "@/lib/fr-ui";
 
 const carouselItems = [
   { name: 'Luxe Gold', desc: 'Opulent and golden.', video: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026' },
@@ -91,6 +92,25 @@ const spanishFaqs = [
   { q: '¿Cómo funciona la confirmación de asistencia?', a: 'Cada invitación incluye un formulario interactivo. Los invitados confirman su asistencia y sus preferencias de menú en unos segundos, y las respuestas aparecen directamente en vuestro panel privado.' },
 ];
 
+const frenchCarouselDescriptions = {
+  'Luxe Gold': 'Opulente et dorée.', Pearl: 'Lumineuse et sereine.', 'Velvet Noir': 'Audacieuse et intemporelle.', 'Olive Grove': 'Botanique et fraîche.', Amber: 'Chaleureuse et rayonnante.', Mocha: 'Riche et profonde.', 'Crimson Royal': 'Royale et distinguée.', Sapphire: 'Océanique et raffinée.', 'Blush Ribbon': 'Une ouverture romantique ornée d’un ruban.', 'Grand Heritage': 'Une entrée cérémonielle majestueuse.', 'The Lace Edit': 'Dentelle délicate et romantisme intemporel.', 'Le Jardin': 'Un jardin luxuriant et romantique.', 'Lace Photo Scratch': 'Une révélation interactive tout en élégance.', 'Oasis Royale': 'Une célébration grandiose dans une oasis.', Tropical: 'Un paradis tropical vibrant.', 'Photo Scratch': 'Révélez votre plus beau souvenir.', 'Soft Scratch': 'Une révélation tout en douceur.', Cisnes: 'Une romance élégante entre cygnes.', Bloom: 'L’amour en pleine floraison.', Floral: 'Un écrin de fleurs.', 'Romantic Garden': 'Un jardin floral enchanté.', 'Blossom Oud': 'Une esthétique florale sublimée par le bois de oud.', 'Dolce Vita': 'La côte italienne baignée de soleil.', 'Velvet Garden': 'Un luxe contemporain aux détails botaniques.', 'Noir Gold': 'Un minimalisme sombre aux accents dorés.', Como: 'L’élégance d’une villa sur le lac de Côme.', Teatro: 'Un lever de rideau théâtral aux reflets dorés.', 'The Venue': 'Une célébration dans une villa de destination.', 'Sweet Love': 'Pêche, crème et tendresse romantique.', 'Botanical Floral': 'Des pétales délicats et un jardin en fleurs.', 'Big Entrance': 'Une entrée cinématographique au sceau doré.'
+};
+
+const frenchTestimonials = [
+  { name: 'Isabelle & Hugo', text: 'FOLDÈ a transformé notre vision en une expérience numérique saisissante. Tous nos invités ont été captivés dès l’ouverture.', rating: 5 },
+  { name: 'Priya & Daniel', text: 'Le niveau d’élégance et de savoir-faire est exceptionnel. Notre invitation ressemblait à une œuvre d’art et le RSVP a simplifié toutes les réponses.', rating: 5 },
+  { name: 'Camille & Antoine', text: 'Collaborer avec FOLDÈ a été un vrai plaisir. L’équipe a parfaitement compris notre esthétique et créé un souvenir inoubliable.', rating: 5 },
+  { name: 'Nina & Rafael', text: 'Le tableau de bord en temps réel a tout changé : plus de relances dispersées, chaque détail était parfaitement organisé.', rating: 5 }
+];
+
+const frenchFaqs = [
+  { q: 'Sous quel délai mon invitation sera-t-elle prête ?', a: 'Une fois toutes vos informations transmises, votre invitation personnalisée est prête sous 5 à 7 jours ouvrés, révisions comprises.' },
+  { q: 'Puis-je modifier les informations après l’envoi ?', a: 'Oui. Votre invitation est dynamique : vous pouvez mettre à jour le programme, le lieu ou les horaires sans renvoyer le lien.' },
+  { q: 'Le nombre d’invités est-il limité ?', a: 'Non. Toutes les formules comprennent un nombre d’invités illimité, sans frais supplémentaires.' },
+  { q: 'Proposez-vous des invitations multilingues ?', a: 'Oui. Nos formules prennent en charge plusieurs langues pour accueillir chaque invité dans la langue qui lui convient.' },
+  { q: 'Comment fonctionne le RSVP ?', a: 'Chaque invitation comprend un formulaire interactif. Les invités répondent et indiquent leurs préférences de repas en quelques instants ; les données arrivent directement dans votre tableau de bord privé.' }
+];
+
 const homeCopy = {
   en: {
     ratingAria: 'Rated 4.9 out of 5 by more than 500 happy couples', rating: 'Chosen by 500+ happy couples',
@@ -108,16 +128,26 @@ const homeCopy = {
     process: 'Nuestro proceso', processTitle: 'De la visión a una pieza única, paso a paso', processText: 'Un recorrido a medida en el que vuestras ideas se convierten en una experiencia inolvidable.',
     packages: 'Planes', packagesTitle: 'Elegid el plan perfecto para vuestra boda', packagesText: 'Planes pensados para elevar la experiencia de vuestra invitación de boda.',
   },
+  fr: {
+    ratingAria: 'Note de 4,9 sur 5 attribuée par plus de 500 couples', rating: 'Choisi par plus de 500 couples heureux',
+    heroTitle: 'Faire-part de mariage numériques haut de gamme et suivi des invités en direct', heroText: 'FOLDÈ crée des faire-part de mariage numériques sur mesure avec RSVP intégré, galerie photo et gestion des invités en temps réel.',
+    design: 'Créer votre invitation', explore: 'Explorer les collections', from: 'À partir de 49,90 €', tracking: 'Suivi RSVP intelligent', unlimited: 'Invités illimités', concierge: 'Conciergerie personnelle',
+    collections: 'Collections', universes: 'Explorez nos univers graphiques exclusifs', universesText: 'Chaque collection propose un univers esthétique singulier, conçu pour raconter votre histoire d’amour.', viewAll: 'Voir toutes les collections',
+    process: 'Notre méthode', processTitle: 'De votre vision à une création unique, étape par étape', processText: 'Un parcours sur mesure qui transforme vos idées en une expérience inoubliable.',
+    packages: 'Formules', packagesTitle: 'Choisissez la formule idéale pour votre mariage', packagesText: 'Des formules conçues pour sublimer l’expérience de votre faire-part de mariage.'
+  },
 };
 
 export default function Home({ locale = 'en' }) {
   const isSpanish = locale === 'es';
-  const t = (english, spanish) => isSpanish ? spanish : english;
-  const copy = homeCopy[isSpanish ? 'es' : 'en'];
-  const link = (path) => isSpanish && path !== '/checkout' ? (path === '/' ? '/es' : `/es${path}`) : path;
-  const localizedCarouselItems = isSpanish ? orderedCarouselItems.map((item) => ({ ...item, desc: spanishCarouselDescriptions[item.name] || item.desc })) : orderedCarouselItems;
-  const localizedTestimonials = isSpanish ? spanishTestimonials : testimonials;
-  const localizedFaqs = isSpanish ? spanishFaqs : faqs;
+  const isFrench = locale === 'fr';
+  const t = (english, spanish) => isFrench ? translateFr(english) : isSpanish ? spanish : english;
+  const copy = homeCopy[locale] || homeCopy.en;
+  const link = (path) => locale !== 'en' && path !== '/checkout' ? (path === '/' ? `/${locale}` : `/${locale}${path}`) : path;
+  const descriptions = isSpanish ? spanishCarouselDescriptions : isFrench ? frenchCarouselDescriptions : null;
+  const localizedCarouselItems = descriptions ? orderedCarouselItems.map((item) => ({ ...item, desc: descriptions[item.name] || item.desc })) : orderedCarouselItems;
+  const localizedTestimonials = isSpanish ? spanishTestimonials : isFrench ? frenchTestimonials : testimonials;
+  const localizedFaqs = isSpanish ? spanishFaqs : isFrench ? frenchFaqs : faqs;
   const carouselRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
@@ -200,8 +230,8 @@ export default function Home({ locale = 'en' }) {
                         partner1: "Anna",
                         partner2: "Tom",
                         date: "SEP 05, 2026",
-                        ceremonyVenue: isSpanish ? "El lugar de vuestros sueños" : "Your Dream Venue",
-                        language: isSpanish ? "es" : "en",
+                        ceremonyVenue: isSpanish ? "El lugar de vuestros sueños" : isFrench ? "Le lieu de vos rêves" : "Your Dream Venue",
+                        language: locale,
                         receptionVenue: "",
                         videos: {
                           envelope: "https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4",
@@ -254,7 +284,7 @@ export default function Home({ locale = 'en' }) {
                           isImage={item.isImage || false}
                            active={hoveredCarouselItem === i}
                            preloadEnvelopeFrame
-                           language={isSpanish ? 'es' : 'en'}
+                           language={locale}
                         />
                       </div>
                     </div>
@@ -290,6 +320,11 @@ export default function Home({ locale = 'en' }) {
               { num: '02', title: 'Personalización del contenido', desc: 'Compartid fotografías, horarios, lugar y preferencias de confirmación; os acompañaremos en cada paso.' },
               { num: '03', title: 'Creación y diseño a medida', desc: 'Nuestro estudio crea vuestra invitación digital y perfecciona cada detalle.' },
               { num: '04', title: 'Publicación y celebración', desc: 'Recibid el enlace personalizado y compartidlo fácilmente con vuestros invitados.' },
+            ] : isFrench ? [
+              { num: '01', title: 'Entretien découverte', desc: 'Un échange dédié pour comprendre votre vision, vos préférences esthétiques et les détails de votre célébration.' },
+              { num: '02', title: 'Personnalisation du contenu', desc: 'Partagez vos photos, votre programme, le lieu et vos préférences RSVP ; nous vous guidons à chaque étape.' },
+              { num: '03', title: 'Création et design sur mesure', desc: 'Notre studio façonne votre invitation numérique et affine chaque détail avec soin.' },
+              { num: '04', title: 'Mise en ligne et célébration', desc: 'Recevez votre lien personnalisé et partagez-le simplement avec tous vos invités.' },
             ] : [
               { num: '01', title: 'Discovery Session', desc: 'A dedicated exchange to explore your vision, aesthetic preferences, and event details.' },
               { num: '02', title: 'Content Personalization', desc: 'Share your photos, timeline, venue, and RSVP preferences — guided every step of the way.' },

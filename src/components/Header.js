@@ -9,17 +9,25 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentUser, logout } = useDatabase();
   const pathname = usePathname();
-  const isSpanish = pathname?.startsWith('/es');
-  const localizedPath = isSpanish ? pathname.replace(/^\/es(?=\/|$)/, '') || '/' : pathname || '/';
-  const spanishPath = localizedPath === '/' ? '/es' : `/es${localizedPath}`;
-  const t = isSpanish ? {
+  const locale = pathname?.startsWith('/es') ? 'es' : pathname?.startsWith('/fr') ? 'fr' : 'en';
+  const localizedPath = (pathname || '/').replace(/^\/(es|fr)(?=\/|$)/, '') || '/';
+  const localePath = (target) => target === 'en' ? localizedPath : (localizedPath === '/' ? `/${target}` : `/${target}${localizedPath}`);
+  const copy = {
+    es: {
     home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
     dashboard: 'Mi panel', signIn: 'Iniciar sesión / Registrarse', order: 'Crear invitación', logout: 'Cerrar sesión', menu: 'Abrir o cerrar el menú'
-  } : {
+    },
+    fr: {
+      home: 'Accueil', collections: 'Collections', process: 'Notre méthode', packages: 'Formules', journal: 'Journal', about: 'À propos',
+      dashboard: 'Mon tableau de bord', signIn: 'Se connecter / S’inscrire', order: 'Créer mon invitation', logout: 'Se déconnecter', menu: 'Ouvrir ou fermer le menu'
+    },
+    en: {
     home: 'Home', collections: 'Collections', process: 'Our Process', packages: 'Packages', journal: 'Journal', about: 'About',
     dashboard: 'My Dashboard', signIn: 'Sign In / Register', order: 'Order Now', logout: 'Log Out', menu: 'Toggle menu'
+    }
   };
-  const link = (path) => isSpanish ? (path === '/' ? '/es' : `/es${path}`) : path;
+  const t = copy[locale];
+  const link = (path) => locale === 'en' ? path : (path === '/' ? `/${locale}` : `/${locale}${path}`);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
@@ -34,7 +42,7 @@ export default function Header() {
       <header className="header">
         <div className="header-logo">
           <Link href={link('/')} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <img src="/images/logo.png" alt={isSpanish ? "Logotipo de FOLDÈ Design" : "FOLDÈ Design Logo"} style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/images/logo.png" alt={locale === 'es' ? "Logotipo de FOLDÈ Design" : locale === 'fr' ? "Logo FOLDÈ Design" : "FOLDÈ Design Logo"} style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
           </Link>
         </div>
         <nav className="header-nav">
@@ -73,7 +81,7 @@ export default function Header() {
           <Link href="/checkout" className="btn-primary header-cta">
             {t.order}
           </Link>
-          <Link href={isSpanish ? localizedPath : spanishPath} hrefLang={isSpanish ? 'en' : 'es'} lang={isSpanish ? 'en' : 'es'} style={{ fontSize: '.75rem', fontWeight: 700, color: '#5C3A1E', textDecoration: 'none', letterSpacing: '.05em' }}>{isSpanish ? 'EN' : 'ES'}</Link>
+          {['en', 'es', 'fr'].filter((item) => item !== locale).map((item) => <Link key={item} href={localePath(item)} hrefLang={item} lang={item} style={{ fontSize: '.75rem', fontWeight: 700, color: '#5C3A1E', textDecoration: 'none', letterSpacing: '.05em' }}>{item.toUpperCase()}</Link>)}
         </div>
         <button
           className={`burger ${menuOpen ? "active" : ""}`}
@@ -128,7 +136,7 @@ export default function Header() {
             <Link href="/checkout" className="btn-primary mobile-cta-btn" onClick={closeMenu}>
               {t.order}
             </Link>
-            <Link href={isSpanish ? localizedPath : spanishPath} hrefLang={isSpanish ? 'en' : 'es'} lang={isSpanish ? 'en' : 'es'} onClick={closeMenu} className="mobile-auth-btn">{isSpanish ? 'English' : 'Español'}</Link>
+            {['en', 'es', 'fr'].filter((item) => item !== locale).map((item) => <Link key={item} href={localePath(item)} hrefLang={item} lang={item} onClick={closeMenu} className="mobile-auth-btn">{{ en: 'English', es: 'Español', fr: 'Français' }[item]}</Link>)}
           </div>
         </div>
       </div>

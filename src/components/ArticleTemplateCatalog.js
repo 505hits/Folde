@@ -16,6 +16,9 @@ const featuredTemplates = [
 
 export default function ArticleTemplateCatalog({ locale = "en" }) {
   const isSpanish = locale === "es";
+  const isFrench = locale === "fr";
+  const root = locale === 'en' ? '' : `/${locale}`;
+  const ui = isFrench ? { label: 'COMMENCEZ PAR LE STYLE', title: 'Choisissez un modèle d’invitation', text: 'Explorez la collection, ouvrez un aperçu et personnalisez le modèle qui correspond le mieux à votre célébration.', previous: 'Afficher les modèles précédents', next: 'Afficher plus de modèles', all: 'Tout voir', choose: 'Choisir ce modèle', hint: 'Faites glisser ou utilisez les flèches pour découvrir davantage de créations. Vous pourrez ajuster le contenu après avoir choisi votre modèle.' } : null;
   const trackRef = useRef(null);
   const [activeTemplate, setActiveTemplate] = useState(null);
 
@@ -32,20 +35,20 @@ export default function ArticleTemplateCatalog({ locale = "en" }) {
     <section className={styles.templateCatalog} aria-labelledby="article-template-catalog-title">
       <div className={styles.catalogHeading}>
         <div>
-          <p className={styles.label}>{isSpanish ? "EMPEZAD POR EL DISEÑO" : "START WITH A DESIGN"}</p>
-          <h2 id="article-template-catalog-title">{isSpanish ? "Elegid una plantilla de invitación" : "Choose an invitation template"}</h2>
-          <p>{isSpanish ? "Explorad la colección, abrid una vista previa y personalizad el diseño que mejor represente vuestra celebración." : "Browse the collection, open a preview, then personalise the design that feels most like your celebration."}</p>
+          <p className={styles.label}>{isSpanish ? "EMPEZAD POR EL DISEÑO" : isFrench ? ui.label : "START WITH A DESIGN"}</p>
+          <h2 id="article-template-catalog-title">{isSpanish ? "Elegid una plantilla de invitación" : isFrench ? ui.title : "Choose an invitation template"}</h2>
+          <p>{isSpanish ? "Explorad la colección, abrid una vista previa y personalizad el diseño que mejor represente vuestra celebración." : isFrench ? ui.text : "Browse the collection, open a preview, then personalise the design that feels most like your celebration."}</p>
         </div>
         <div className={styles.catalogActions}>
-          <button type="button" onClick={() => scrollCatalog(-1)} aria-label={isSpanish ? "Mostrar las plantillas anteriores" : "Show previous templates"}>←</button>
-          <button type="button" onClick={() => scrollCatalog(1)} aria-label={isSpanish ? "Mostrar más plantillas" : "Show more templates"}>→</button>
-          <Link href={isSpanish ? "/es/collections" : "/collections"}>{isSpanish ? "Ver todas" : "View all"}</Link>
+          <button type="button" onClick={() => scrollCatalog(-1)} aria-label={isSpanish ? "Mostrar las plantillas anteriores" : isFrench ? ui.previous : "Show previous templates"}>←</button>
+          <button type="button" onClick={() => scrollCatalog(1)} aria-label={isSpanish ? "Mostrar más plantillas" : isFrench ? ui.next : "Show more templates"}>→</button>
+          <Link href={`${root}/collections`}>{isSpanish ? "Ver todas" : isFrench ? ui.all : "View all"}</Link>
         </div>
       </div>
       <div className={styles.catalogTrack} ref={trackRef}>
         {featuredTemplates.map((template) => (
           <article className={styles.catalogCard} key={template.id} onMouseEnter={() => setActiveTemplate(template.id)} onMouseLeave={() => setActiveTemplate(null)}>
-            <Link className={styles.catalogPreview} href={`/collections/${template.id}`} aria-label={isSpanish ? `Abrir la vista previa de ${template.name}` : `Open ${template.name} template preview`}>
+            <Link className={styles.catalogPreview} href={`/collections/${template.id}`} aria-label={isSpanish ? `Abrir la vista previa de ${template.name}` : isFrench ? `Ouvrir l’aperçu du modèle ${template.name}` : `Open ${template.name} template preview`}>
               <div className={styles.catalogPhone}>
                 <div className={styles.catalogNotch} />
                 <TemplateHeroPreview
@@ -57,19 +60,19 @@ export default function ArticleTemplateCatalog({ locale = "en" }) {
                   showEnvelope
                   active={activeTemplate === template.id}
                   preloadEnvelopeFrame
-                  language={isSpanish ? "es" : "en"}
+                  language={locale}
                 />
               </div>
             </Link>
             <div className={styles.catalogCardCopy}>
-              <div><h3>{template.name}</h3><span>{isSpanish ? ({ ELEGANT: "ELEGANTE", NATURAL: "NATURAL", ROMANTIC: "ROMÁNTICA", MINIMAL: "MINIMALISTA" }[template.tag] || template.tag) : template.tag}</span></div>
-              <p>{isSpanish ? ({ cisnes: "Un romántico encuentro entre cisnes.", bloom: "El amor en plena floración.", romanticgarden: "Un jardín floral encantado.", pressedlovecomo: "La elegancia del lago de Como.", tropical: "Un paraíso tropical lleno de color.", softscratch: "Una revelación delicada." }[template.id]) : template.description}</p>
-              <button type="button" onClick={() => chooseTemplate(template.id)}>{isSpanish ? "Elegir este diseño" : "Choose this design"} <span aria-hidden="true">→</span></button>
+              <div><h3>{template.name}</h3><span>{isSpanish ? ({ ELEGANT: "ELEGANTE", NATURAL: "NATURAL", ROMANTIC: "ROMÁNTICA", MINIMAL: "MINIMALISTA" }[template.tag] || template.tag) : isFrench ? ({ ELEGANT: 'ÉLÉGANTE', NATURAL: 'NATURELLE', ROMANTIC: 'ROMANTIQUE', MINIMAL: 'MINIMALISTE' }[template.tag] || template.tag) : template.tag}</span></div>
+              <p>{isSpanish ? ({ cisnes: "Un romántico encuentro entre cisnes.", bloom: "El amor en plena floración.", romanticgarden: "Un jardín floral encantado.", pressedlovecomo: "La elegancia del lago de Como.", tropical: "Un paraíso tropical lleno de color.", softscratch: "Una revelación delicada." }[template.id]) : isFrench ? ({ cisnes: 'Une romance élégante entre cygnes.', bloom: 'L’amour en pleine floraison.', romanticgarden: 'Un jardin floral enchanté.', pressedlovecomo: 'L’élégance du lac de Côme.', tropical: 'Un paradis tropical vibrant.', softscratch: 'Une révélation tout en douceur.' }[template.id]) : template.description}</p>
+              <button type="button" onClick={() => chooseTemplate(template.id)}>{isSpanish ? "Elegir este diseño" : isFrench ? ui.choose : "Choose this design"} <span aria-hidden="true">→</span></button>
             </div>
           </article>
         ))}
       </div>
-      <p className={styles.catalogHint}>{isSpanish ? "Deslizad o utilizad las flechas para descubrir más diseños. Podréis ajustar el contenido después de elegir la plantilla." : "Swipe or use the arrows to discover more designs. You can refine the content after choosing a template."}</p>
+      <p className={styles.catalogHint}>{isSpanish ? "Deslizad o utilizad las flechas para descubrir más diseños. Podréis ajustar el contenido después de elegir la plantilla." : isFrench ? ui.hint : "Swipe or use the arrows to discover more designs. You can refine the content after choosing a template."}</p>
     </section>
   );
 }

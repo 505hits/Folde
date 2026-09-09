@@ -6,6 +6,7 @@ export const metadata = {
     languages: {
       en: "/collections",
       es: "/es/collections",
+      fr: "/fr/collections",
       "x-default": "/collections",
     },
   },

@@ -50,6 +50,7 @@ function languageAlternates(path) {
     languages: {
       en: `${SITE_URL}${path || "/"}`,
       es: `${SITE_URL}/es${path}`,
+      fr: `${SITE_URL}/fr${path}`,
       "x-default": `${SITE_URL}${path || "/"}`,
     },
   };
@@ -67,7 +68,7 @@ export async function generateMetadata({ params }) {
       title: `${post.title} | FOLDÈ Wedding`,
       description: post.description,
       alternates: languageAlternates(path),
-      openGraph: { title: post.title, description: post.description, type: "article", locale: "es_ES", url: `${SITE_URL}/es${path}`, images: [post.heroImage] },
+      openGraph: { title: post.title, description: post.description, type: "article", locale: "es_ES", alternateLocale: ["en_US", "fr_FR"], url: `${SITE_URL}/es${path}`, images: [post.heroImage] },
     };
   }
 
@@ -75,7 +76,7 @@ export async function generateMetadata({ params }) {
   return {
     ...page,
     alternates: languageAlternates(path),
-    openGraph: { ...page, locale: "es_ES", url: `${SITE_URL}/es${path}` },
+    openGraph: { ...page, locale: "es_ES", alternateLocale: ["en_US", "fr_FR"], url: `${SITE_URL}/es${path}` },
   };
 }
 

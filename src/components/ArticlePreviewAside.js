@@ -7,6 +7,8 @@ import styles from "@/app/blog/blog.module.css";
 
 export default function ArticlePreviewAside({ locale = "en" }) {
   const isSpanish = locale === "es";
+  const isFrench = locale === "fr";
+  const root = locale === 'en' ? '' : `/${locale}`;
   const slotRef = useRef(null);
   const [isPinned, setIsPinned] = useState(false);
 
@@ -46,13 +48,13 @@ export default function ArticlePreviewAside({ locale = "en" }) {
             envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
             showEnvelope
             preloadEnvelopeFrame
-            language={isSpanish ? "es" : "en"}
+            language={locale}
           />
         </div>
-        <p>{isSpanish ? "CREAD VUESTRA INVITACIÓN" : "PLAN YOUR INVITATION"}</p>
-        <h2>{isSpanish ? "Un enlace elegante para todos los detalles." : "One elegant link for every guest detail."}</h2>
-        <Link className={styles.primaryButton} href={isSpanish ? "/es" : "/"}>{isSpanish ? "Crear la invitación ahora" : "Create your invitation card now"} <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
-        <Link className={styles.asideLink} href={isSpanish ? "/es/collections" : "/collections"}>{isSpanish ? "Explorar las plantillas →" : "Explore the templates →"}</Link>
+        <p>{isSpanish ? "CREAD VUESTRA INVITACIÓN" : isFrench ? "CRÉEZ VOTRE INVITATION" : "PLAN YOUR INVITATION"}</p>
+        <h2>{isSpanish ? "Un enlace elegante para todos los detalles." : isFrench ? "Un lien élégant pour tous les détails." : "One elegant link for every guest detail."}</h2>
+        <Link className={styles.primaryButton} href={root || "/"}>{isSpanish ? "Crear la invitación ahora" : isFrench ? "Créer mon invitation" : "Create your invitation card now"} <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
+        <Link className={styles.asideLink} href={`${root}/collections`}>{isSpanish ? "Explorar las plantillas →" : isFrench ? "Explorer les modèles →" : "Explore the templates →"}</Link>
       </aside>
     </div>
   );
