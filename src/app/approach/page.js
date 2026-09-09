@@ -54,25 +54,100 @@ const steps = [
   },
 ];
 
-export default function Method() {
+const spanishSteps = [
+  {
+    num: '01',
+    title: 'Reservad una llamada inicial',
+    desc: 'Todo empieza con una conversación. Dedicamos el tiempo necesario a conocer vuestra celebración, vuestras preferencias estéticas y aquello que la hace única. Esta primera llamada es gratuita, distendida y sin compromiso.',
+    details: [
+      'Comprender el estilo y la visión de vuestra boda',
+      'Comentar el calendario, el número de invitados y las fechas clave',
+      'Resolver todas vuestras dudas sobre las invitaciones digitales',
+      'Recomendar el plan que mejor se adapte a vuestras necesidades',
+    ],
+  },
+  {
+    num: '02',
+    title: 'Compartid los detalles del evento',
+    desc: 'Una vez definida la dirección, nos facilitáis la información esencial de la invitación. Os guiamos con una estructura clara para que no se pase nada por alto, desde el horario de la ceremonia hasta el alojamiento para quienes vienen de fuera.',
+    details: [
+      'Fecha de la boda, lugar y horario de la ceremonia',
+      'Fotografías de la pareja para el diseño de portada',
+      'Información de alojamiento y viaje para los invitados',
+      'Preferencias de confirmación y opciones de menú',
+    ],
+  },
+  {
+    num: '03',
+    title: 'Diseñamos vuestra invitación',
+    desc: 'Nuestro equipo da forma a vuestra visión. Creamos una invitación digital a medida a partir del universo visual elegido e integramos vuestros textos, fotografías y detalles personales. Ajustamos cada elemento con vuestros comentarios hasta que el resultado sea plenamente vuestro.',
+    details: [
+      'Diseño personalizado a partir del universo elegido',
+      'Integración de fotografía o vídeo de portada',
+      'Selección musical y apertura inmersiva',
+      'Revisiones ilimitadas hasta vuestra aprobación',
+    ],
+  },
+  {
+    num: '04',
+    title: 'Compartidla con vuestros invitados',
+    desc: 'Recibiréis la invitación terminada en un único enlace elegante. Podréis compartirlo por WhatsApp, correo electrónico o cualquier servicio de mensajería. Los invitados solo tienen que tocar el enlace para vivir la experiencia y confirmar su asistencia desde el móvil.',
+    details: [
+      'Un enlace para todos los invitados, sin instalar ninguna aplicación',
+      'Envío por WhatsApp, iMessage, correo electrónico o redes sociales',
+      'Seguimiento de confirmaciones en tiempo real desde vuestro panel',
+      'Actualización de los datos en cualquier momento, sin reenviar el enlace',
+    ],
+  },
+];
+
+const approachCopy = {
+  en: {
+    label: 'Our Method',
+    title: 'A Guided Experience, Designed Around You',
+    intro: 'Creating your digital wedding invitation should feel effortless. Our streamlined process ensures every detail is handled with care — so you can focus on what truly matters.',
+    promises: [
+      ['Ready in 5–7 Days', 'From first call to final link, your invitation is delivered within one week, including all revisions.'],
+      ['Unlimited Revisions', 'We refine every detail until you are completely satisfied. No hidden fees, no revision caps.'],
+      ['Dedicated Support', 'A single point of contact throughout the entire process. Your questions are always answered promptly.'],
+    ],
+    ctaTitle: 'Ready to Begin?', ctaText: 'Select your universe and complete your order.', cta: 'Order Now',
+  },
+  es: {
+    label: 'Nuestro proceso',
+    title: 'Una experiencia guiada y diseñada a vuestra medida',
+    intro: 'Crear vuestra invitación digital de boda debería ser sencillo. Nuestro proceso cuida cada detalle para que podáis centraros en lo que de verdad importa.',
+    promises: [
+      ['Lista en 5–7 días', 'Desde la primera llamada hasta el enlace definitivo, entregamos vuestra invitación en una semana, con todas las revisiones incluidas.'],
+      ['Revisiones ilimitadas', 'Perfeccionamos cada detalle hasta que estéis completamente satisfechos. Sin costes ocultos ni límite de revisiones.'],
+      ['Atención personalizada', 'Tendréis una única persona de contacto durante todo el proceso y respuestas rápidas a vuestras preguntas.'],
+    ],
+    ctaTitle: '¿Listos para empezar?', ctaText: 'Elegid vuestro universo y completad el pedido.', cta: 'Crear invitación',
+  },
+};
+
+export default function Method({ locale = 'en' }) {
+  const isSpanish = locale === 'es';
+  const copy = approachCopy[isSpanish ? 'es' : 'en'];
+  const localizedSteps = isSpanish ? spanishSteps : steps;
   return (
     <div className={styles.page}>
       <div className="container">
 
         {/* Hero */}
         <section className={styles.hero}>
-          <span className="label animate-fade-in-up">Our Method</span>
+          <span className="label animate-fade-in-up">{copy.label}</span>
           <h1 className="heading-xl animate-fade-in-up delay-1">
-            A Guided Experience, Designed Around You
+            {copy.title}
           </h1>
           <p className="text-lg animate-fade-in-up delay-2">
-            Creating your digital wedding invitation should feel effortless. Our streamlined process ensures every detail is handled with care — so you can focus on what truly matters.
+            {copy.intro}
           </p>
         </section>
 
         {/* Steps */}
         <section className={styles.stepsSection}>
-          {steps.map((step, i) => (
+          {localizedSteps.map((step, i) => (
             <div key={i} className={styles.stepRow}>
               <div className={styles.stepLeft}>
                 <span className={styles.stepNum}>{step.num}</span>
@@ -98,27 +173,27 @@ export default function Method() {
           <div className={styles.promiseGrid}>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>⏱</div>
-              <h3 className="heading-sm">Ready in 5–7 Days</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>From first call to final link, your invitation is delivered within one week, including all revisions.</p>
+              <h3 className="heading-sm">{copy.promises[0][0]}</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>{copy.promises[0][1]}</p>
             </div>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>♾️</div>
-              <h3 className="heading-sm">Unlimited Revisions</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>We refine every detail until you are completely satisfied. No hidden fees, no revision caps.</p>
+              <h3 className="heading-sm">{copy.promises[1][0]}</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>{copy.promises[1][1]}</p>
             </div>
             <div className={styles.promiseCard}>
               <div className={styles.promiseIcon}>🤝</div>
-              <h3 className="heading-sm">Dedicated Support</h3>
-              <p className="text-sm" style={{ marginTop: '0.5rem' }}>A single point of contact throughout the entire process. Your questions are always answered promptly.</p>
+              <h3 className="heading-sm">{copy.promises[2][0]}</h3>
+              <p className="text-sm" style={{ marginTop: '0.5rem' }}>{copy.promises[2][1]}</p>
             </div>
           </div>
         </section>
 
         {/* CTA */}
         <section className={styles.ctaSection}>
-          <h2 className="heading-lg">Ready to Begin?</h2>
-          <p className="text-lg" style={{ marginTop: '0.75rem' }}>Select your universe and complete your order.</p>
-          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>Order Now</Link>
+          <h2 className="heading-lg">{copy.ctaTitle}</h2>
+          <p className="text-lg" style={{ marginTop: '0.75rem' }}>{copy.ctaText}</p>
+          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>{copy.cta}</Link>
         </section>
 
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { getTranslation } from '@/lib/translations';
 
 const ScratchCircle = ({ size = 100, label, revealText, color = '#c5975b', onRevealed }) => {
   const canvasRef = useRef(null);
@@ -198,9 +199,10 @@ function darkenColor(hex, percent) {
   return `rgb(${r},${g},${b})`;
 }
 
-export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = '#c5975b', bgColor = '#1a1a1a', textColor = '#fff' }) {
+export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = '#c5975b', bgColor = '#1a1a1a', textColor = '#fff', language = 'en' }) {
   const [revealedCount, setRevealedCount] = useState(0);
   const allRevealed = revealedCount >= 3;
+  const copy = getTranslation(language);
 
   // Parse date
   const parts = dateStr.match(/^(\w+)\s+(\d+),?\s+(\d{4})$/);
@@ -233,7 +235,7 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
         marginBottom: '1.5rem',
         fontWeight: 500,
       }}>
-        Scratch all three circles to continue
+        {copy.scratchInstruction}
       </p>
 
       {/* Title */}
@@ -246,7 +248,7 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
         marginBottom: '0.5rem',
         letterSpacing: '1px',
       }}>
-        Reveal
+        {copy.scratchButton}
       </h2>
 
       <p style={{
@@ -258,7 +260,7 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
         marginBottom: '2.5rem',
         fontWeight: 500,
       }}>
-        Scratch to discover the date
+        {copy.scratchSubtext}
       </p>
 
       {/* Scratch Circles */}
@@ -271,21 +273,21 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
       }}>
         <ScratchCircle
           size={90}
-          label="Month"
+          label={copy.monthLabel}
           revealText={month}
           color={accentColor}
           onRevealed={() => setRevealedCount(c => c + 1)}
         />
         <ScratchCircle
           size={90}
-          label="Day"
+          label={copy.dayLabel}
           revealText={day}
           color={accentColor}
           onRevealed={() => setRevealedCount(c => c + 1)}
         />
         <ScratchCircle
           size={90}
-          label="Year"
+          label={copy.yearLabel}
           revealText={year}
           color={accentColor}
           onRevealed={() => setRevealedCount(c => c + 1)}
@@ -306,7 +308,7 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
           fontStyle: 'italic',
           letterSpacing: '1px',
         }}>
-          ✨ Save the date! ✨
+          {copy.saveTheDateSparkle}
         </p>
       </div>
     </div>

@@ -116,19 +116,19 @@ const VenueImage = ({ src }) => {
 };
 
 // Interactive Swatches & Custom Styled Dress Code Component
-const DressCodeSection = ({ t, accentColor }) => {
+const DressCodeSection = ({ t, copy, accentColor }) => {
   return (
     <section className={styles.dressCode} style={{ padding: '5rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
       <AnimatedSection type="fade">
-        <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Dress Code</h2>
+        <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{copy.dressCodeTitle}</h2>
       </AnimatedSection>
       <AnimatedSection type="fade">
-        <p className={styles.dressSubtitle}>Elegant &amp; Formal</p>
+        <p className={styles.dressSubtitle}>{copy.dressCodeInspiration}</p>
       </AnimatedSection>
 
       <AnimatedSection type="zoom">
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
-          <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt="Dress Code Inspiration" style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s ease' }}
+          <img src={t.dressCode?.image || "/images/dress_code_floral.png"} alt={copy.dressCodeInspiration} style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s ease' }}
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           />
@@ -238,6 +238,7 @@ const themes = {
 function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false }) {
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
+  const copy = getTranslation(data?.language || 'en');
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
 
@@ -256,7 +257,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     e.preventDefault();
     const fullName = `${rsvpFirstName.trim()} ${rsvpLastName.trim()}`.trim();
     if (!rsvpFirstName.trim() || !rsvpLastName.trim() || !rsvpAttending) {
-      setRsvpError('Please fill in both your First Name, Last Name, and attendance.');
+      setRsvpError(data?.language === 'es' ? 'Completad el nombre, los apellidos y la asistencia.' : 'Please fill in both your First Name, Last Name, and attendance.');
       return;
     }
     setRsvpSubmitting(true);
@@ -417,11 +418,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
   // Default structure for complex fields
   const timeline = t.timeline || [
-    { time: "14:00", title: "Lunch" },
-    { time: "18:00", title: "Ceremony" },
-    { time: "20:00", title: "Dinner" },
-    { time: "22:00", title: "Party" },
-    { time: "04:00", title: "End" }
+    { time: "14:00", title: copy.scheduleLunch },
+    { time: "18:00", title: copy.scheduleCeremony },
+    { time: "20:00", title: copy.scheduleDinner },
+    { time: "22:00", title: copy.scheduleParty },
+    { time: "04:00", title: copy.scheduleEnd }
   ];
 
   const accommodations = t.accommodations || [
@@ -570,7 +571,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) ? (
               <img
                 src={data?.videos?.envelope || '/images/bordeaux.png'}
-                alt="Envelope"
+                alt={copy.touchToOpen}
                 className={styles.envelopeVideo}
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
@@ -657,7 +658,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
             <div className={styles.heroSubInfo}>
               <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
-                <h2 className={styles.heroTitle}>Wedding Day</h2>
+                 <h2 className={styles.heroTitle}>{copy.weddingDay}</h2>
               </AnimatedSection>
 
               <AnimatedSection type="fade" style={{ animationDelay: '0.4s' }}>
@@ -669,7 +670,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               </AnimatedSection>
 
               <AnimatedSection type="fade" style={{ animationDelay: '0.6s' }}>
-                <p className={styles.heroDate}>SAVE THE DATE</p>
+                 <p className={styles.heroDate}>{copy.saveTheDate}</p>
               </AnimatedSection>
             </div>
           </div>
@@ -690,10 +691,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showIntro !== false && (
           <section className={styles.intro}>
             <AnimatedSection type="fade">
-              <h2 className={styles.introTitle}>The Day Has Arrived!</h2>
+               <h2 className={styles.introTitle}>{copy.dayHasArrived}</h2>
             </AnimatedSection>
             <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
-              <p className={styles.introSubtitle}>we can't wait to celebrate with you</p>
+               <p className={styles.introSubtitle}>{copy.cantWaitToCelebrate}</p>
             </AnimatedSection>
           </section>
         )}
@@ -701,6 +702,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {/* ================= SCRATCH REVEAL DATE ================= */}
         <ScratchReveal
           dateStr={dateStr}
+          language={data?.language || 'en'}
           accentColor="#c5975b"
           bgColor="#1a1a1a"
           textColor="#fff"
@@ -713,7 +715,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <h2 className={styles.venueTitle}>Venue</h2>
+               <h2 className={styles.venueTitle}>{copy.venueShort}</h2>
             </AnimatedSection>
 
             {/* Animated cover photo with reveal animation */}
@@ -730,7 +732,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             <AnimatedSection type="fade">
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(receptionVenue)}`} target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                Get directions
+                 {copy.getDirections}
               </a>
             </AnimatedSection>
 
@@ -751,15 +753,15 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showSchedule !== false && (
           <section className={styles.schedule}>
             <AnimatedSection type="fade">
-              <h2 className={styles.marbella}>The Celebration</h2>
+               <h2 className={styles.marbella}>{copy.celebrationTitle}</h2>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <h3 className={styles.scheduleTitle}>Schedule</h3>
+               <h3 className={styles.scheduleTitle}>{copy.scheduleTitle}</h3>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <p className={styles.scheduleSubtitle}>What we have planned for you</p>
+               <p className={styles.scheduleSubtitle}>{copy.scheduleSubtitle}</p>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
@@ -791,15 +793,15 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
         {/* ================= DRESS CODE SECTION ================= */}
         {sections.showDressCode !== false && (
-          <DressCodeSection t={t} accentColor="#c5975b" />
+          <DressCodeSection t={t} copy={copy} accentColor="#c5975b" />
         )}
 
         {/* ================= ACCOMMODATIONS SECTION ================= */}
         {sections.showAccommodations !== false && (
           <section style={{ padding: '4rem 2rem', backgroundColor: '#FAF9F6', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
             <AnimatedSection type="fade">
-              <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Accommodations &amp; Hotels</h2>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>Where to stay during our celebration</p>
+               <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{copy.accommodationsTitle}</h2>
+               <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>{copy.accommodationsSubtitle}</p>
             </AnimatedSection>
             <AnimatedSection type="zoom">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '450px', margin: '0 auto' }}>
@@ -818,8 +820,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showMenu !== false && (
           <section style={{ padding: '4rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
             <AnimatedSection type="fade">
-              <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>Wedding Menu</h2>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>A taste of what awaits you</p>
+               <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{copy.menuTitle}</h2>
+               <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>{copy.menuSubtitle}</p>
             </AnimatedSection>
             <AnimatedSection type="zoom">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '450px', margin: '0 auto' }}>
@@ -840,8 +842,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showGallery !== false && (
           <section id="gallery" className={styles.gallery}>
             <AnimatedSection type="fade">
-              <h2 className={styles.galleryTitle}>Memories</h2>
-              <p className={styles.gallerySubtitle}>A glimpse into our story</p>
+               <h2 className={styles.galleryTitle}>{copy.memoriesTitle}</h2>
+               <p className={styles.gallerySubtitle}>{copy.memoriesSubtitle}</p>
             </AnimatedSection>
 
             <GalleryCoverflow images={gallery && gallery.length > 0 ? gallery : [
@@ -857,15 +859,15 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showRSVP !== false && (
           <section id="rsvp" className={styles.rsvp}>
             <AnimatedSection type="fade">
-              <h2 className={styles.rsvpTitle}>RSVP</h2>
+               <h2 className={styles.rsvpTitle}>{copy.rsvpTitle}</h2>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <p className={styles.rsvpSubtitle}>We hope to count on you</p>
+               <p className={styles.rsvpSubtitle}>{copy.rsvpSubtitle}</p>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <p className={styles.rsvpDate}>Please reply by {t.rsvpDeadline || "March 30th, 2026"}</p>
+               <p className={styles.rsvpDate}>{copy.rsvpReplyBy} {t.rsvpDeadline || "March 30th, 2026"}</p>
             </AnimatedSection>
 
             {rsvpSubmitted ? (
@@ -873,15 +875,15 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
                   <h3 style={{ fontFamily: 'var(--color-font-heading, inherit)', fontSize: '1.6rem', marginBottom: '0.4rem', color: 'var(--color-foreground)' }}>
-                    Thank you, {rsvpFirstName}!
+                     {copy.rsvpThankYou}, {rsvpFirstName}!
                   </h3>
                   <div style={{ color: '#2e7d32', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.5px', marginBottom: '1rem' }}>
-                    ✓ Invitation well submitted!
+                     ✓ {copy.rsvpSubmitted}
                   </div>
                   <p style={{ opacity: 0.7, fontSize: '1rem', lineHeight: 1.6 }}>
                     {rsvpAttending === 'yes'
-                      ? 'We are so happy you will be joining us! See you soon 💕'
-                      : 'We understand and will miss you. Thank you for letting us know 🤍'}
+                      ? copy.rsvpSuccessYes
+                      : copy.rsvpSuccessNo}
                   </p>
                 </div>
               </AnimatedSection>
@@ -890,10 +892,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 <AnimatedSection type="fade">
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>First name *</label>
+                       <label className={styles.formLabel}>{copy.rsvpFirstName}</label>
                       <input
                         type="text"
-                        placeholder="First name"
+                         placeholder={copy.rsvpFirstName.replace(' *', '')}
                         className={styles.formInput}
                         value={rsvpFirstName}
                         onChange={(e) => setRsvpFirstName(e.target.value)}
@@ -901,10 +903,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Last name *</label>
+                       <label className={styles.formLabel}>{copy.rsvpLastName}</label>
                       <input
                         type="text"
-                        placeholder="Last name"
+                         placeholder={copy.rsvpLastName.replace(' *', '')}
                         className={styles.formInput}
                         value={rsvpLastName}
                         onChange={(e) => setRsvpLastName(e.target.value)}
@@ -916,7 +918,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
                 <AnimatedSection type="fade">
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Email</label>
+                     <label className={styles.formLabel}>{copy.rsvpEmail}</label>
                     <input
                       type="email"
                       placeholder="your@email.com"
@@ -930,7 +932,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 {/* STYLIZED SELECT QUESTIONS */}
                 <AnimatedSection type="fade">
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Will you attend? *</label>
+                     <label className={styles.formLabel}>{copy.rsvpAttendingQuestion} *</label>
                     <div className={styles.selectWrapper}>
                       <select
                         className={styles.formSelect}
@@ -938,9 +940,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                         onChange={(e) => setRsvpAttending(e.target.value)}
                         required
                       >
-                        <option value="" disabled hidden>Please select</option>
-                        <option value="yes">Joyfully Accept</option>
-                        <option value="no">Regretfully Decline</option>
+                         <option value="" disabled hidden>{copy.selectDefault}</option>
+                         <option value="yes">{copy.rsvpYes}</option>
+                         <option value="no">{copy.rsvpNo}</option>
                       </select>
                       <ChevronIcon />
                     </div>
@@ -949,17 +951,17 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
                 <AnimatedSection type="fade">
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Will you be accompanied? *</label>
+                     <label className={styles.formLabel}>{copy.rsvpFamilyQuestion} *</label>
                     <div className={styles.selectWrapper}>
                       <select
                         className={styles.formSelect}
                         value={accompaniedStatus}
                         onChange={(e) => setAccompaniedStatus(e.target.value)}
                       >
-                        <option value="" disabled hidden>Please select</option>
-                        <option value="alone">No, coming alone</option>
-                        <option value="plusOne">Yes, with a plus one</option>
-                        <option value="family">Yes, with family</option>
+                         <option value="" disabled hidden>{copy.selectDefault}</option>
+                         <option value="alone">{copy.rsvpAlone}</option>
+                         <option value="plusOne">{copy.rsvpPlusOneShort}</option>
+                         <option value="family">{copy.rsvpFamilyYes}</option>
                       </select>
                       <ChevronIcon />
                     </div>
@@ -970,11 +972,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   <AnimatedSection type="fade">
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}>
-                        {accompaniedStatus === "plusOne" ? "Name of your +1 *" : "Names of your family members *"}
+                         {accompaniedStatus === "plusOne" ? `${copy.rsvpPlusOneName} *` : copy.rsvpFamilyNames}
                       </label>
                       <input
                         type="text"
-                        placeholder="First names"
+                         placeholder={copy.rsvpPlusOneName}
                         className={styles.formInput}
                         value={rsvpPlusOneName}
                         onChange={(e) => setRsvpPlusOneName(e.target.value)}
@@ -985,10 +987,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
                 <AnimatedSection type="fade">
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Allergies & Food Intolerances</label>
+                     <label className={styles.formLabel}>{copy.allergiesLabel}</label>
                     <input
                       type="text"
-                      placeholder="e.g. None, Peanuts, Vegan..."
+                       placeholder={copy.allergiesPlaceholder}
                       className={styles.formInput}
                       value={rsvpMeal}
                       onChange={(e) => setRsvpMeal(e.target.value)}
@@ -1009,7 +1011,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                     disabled={rsvpSubmitting}
                     style={{ opacity: rsvpSubmitting ? 0.6 : 1, cursor: rsvpSubmitting ? 'wait' : 'pointer' }}
                   >
-                    {rsvpSubmitting ? 'Sending...' : 'Send RSVP'}
+                     {rsvpSubmitting ? copy.rsvpSubmitting : copy.rsvpSubmitBtn}
                   </button>
                 </AnimatedSection>
               </form>
@@ -1017,7 +1019,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
             <AnimatedSection type="fade">
               <div className={styles.footerCredit} style={{ width: '100%', textAlign: 'center', margin: '3rem auto 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <p style={{ textAlign: 'center', margin: '0 auto', width: '100%' }}>Made with Love ❤ With FOLDÈ Design</p>
+                 <p style={{ textAlign: 'center', margin: '0 auto', width: '100%' }}>{copy.madeWithLove}</p>
               </div>
             </AnimatedSection>
           </section>
@@ -1029,9 +1031,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             <AnimatedSection type="fade" style={{ width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', width: '100%' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
-                  <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)', textAlign: 'center', margin: '0 auto' }}>Photo Gallery</h1>
+                   <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)', textAlign: 'center', margin: '0 auto' }}>{copy.guestGalleryTitle}</h1>
                   <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem', textAlign: 'center', margin: '0 auto' }}>
-                    Share your wedding photos and videos — before, during, and after the celebration.
+                     {copy.guestGallerySubtitle}
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
@@ -1040,23 +1042,23 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                       <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
                       <circle cx="12" cy="13" r="3"></circle>
                     </svg>
-                    Add your photos & videos
+                     {copy.addPhotosBtn}
                   </a>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', margin: '0.5rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(guestUploadUrl)}`}
-                      alt="QR Code to upload photos"
+                       alt={copy.qrCodeTitle}
                       style={{ width: '130px', height: '130px', objectFit: 'contain' }}
                     />
                     <p style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontFamily: 'var(--font-body)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
-                      Scan to add your photos to this wedding gallery
+                       {copy.galleryScan}
                     </p>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', margin: '1rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     {guestGallery.map((img, idx) => (
                       <div key={idx} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-                        <img src={img} alt={`Guest Gallery ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                         <img src={img} alt={`${copy.guestGalleryTitle} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     ))}
                   </div>

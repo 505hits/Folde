@@ -47,7 +47,25 @@ const orderedTemplates = [...templates].sort((a, b) => {
   return (aIndex === -1 ? FEATURED_TEMPLATE_IDS.length : aIndex) - (bIndex === -1 ? FEATURED_TEMPLATE_IDS.length : bIndex);
 });
 
-export default function Templates() {
+const spanishDescriptions = {
+  champagne: 'Opulenta y dorada.', ivory: 'Luminosa y serena.', bordeaux: 'Audaz y atemporal.', sage: 'Botánica y fresca.',
+  terracotta: 'Cálida y radiante.', chocolate: 'Intensa y llena de carácter.', royalbordeaux: 'Majestuosa y distinguida.',
+  royalblue: 'Inspirada en el océano y refinada.', rosebow: 'Una romántica apertura con lazo.', majestic: 'Una entrada solemne y grandiosa.',
+  thelaceedit: 'Encaje delicado y romanticismo atemporal.', lejardin: 'Un exuberante jardín romántico.', lacephotoscratch: 'Una elegante revelación interactiva.',
+  oasisroyale: 'Una gran celebración en un oasis del desierto.', tropical: 'Un paraíso tropical lleno de color.', photoscratch: 'Descubrid vuestro recuerdo.',
+  softscratch: 'Una revelación delicada.', cisnes: 'Un romántico encuentro entre cisnes.', bloom: 'El amor en plena floración.', floral: 'Un lecho de flores.',
+  romanticgarden: 'Un jardín floral encantado y romántico.', dolcevita: 'La costa italiana y un romance bañado por el sol.',
+  webgencytemplate5: 'Lujo contemporáneo con detalles botánicos.', tildatemplate2: 'Lujo oscuro y minimalista con detalles dorados.',
+  pressedlovecomo: 'La elegancia de una villa en el lago de Como.', pressedloveteatro: 'Una apertura teatral con cortinas y oro.',
+  pressedlovethevenue: 'Una celebración en una villa de destino.', pressedlovesweetlove: 'Tonos melocotón, crema y un romanticismo delicado.',
+  pressedlovefloral: 'Pétalos suaves y un jardín en flor.', pressedlovebigentrance: 'Una entrada cinematográfica con un sello dorado majestuoso.',
+};
+
+const spanishTagLabels = { All: 'Todas', Popular: 'Populares', Elegant: 'Elegantes', Romantic: 'Románticas', Warm: 'Cálidas', New: 'Nuevas' };
+
+export default function Templates({ locale = 'en' }) {
+  const isSpanish = locale === 'es';
+  const t = (english, spanish) => isSpanish ? spanish : english;
   const router = useRouter();
   const [filter, setFilter] = useState('All');
   const [selectedId, setSelectedId] = useState(null);
@@ -97,21 +115,21 @@ export default function Templates() {
       `}</style>
 
       {/* Navigation / Back Button */}
-      <Link href="/" className="back-btn">
+      <Link href={isSpanish ? "/es" : "/"} className="back-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        Back
+        {t('Back', 'Volver')}
       </Link>
 
       {/* Header */}
       <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
         <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 400, marginBottom: '0.75rem' }}>
-          Explore Our Design Collections
+          {t('Explore Our Design Collections', 'Explora nuestras colecciones de diseño')}
         </h1>
         <p style={{ color: '#888', fontSize: '1rem', maxWidth: '500px', margin: '0 auto' }}>
-          Find the universe that matches your story. Every collection can be fully personalized.
+          {t('Find the universe that matches your story. Every collection can be fully personalized.', 'Encontrad el universo que mejor encaje con vuestra historia. Todas las colecciones se pueden personalizar por completo.')}
         </p>
       </div>
 
@@ -126,7 +144,7 @@ export default function Templates() {
               cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, fontFamily: 'inherit',
               transition: 'all 0.15s'
             }}>
-            {tag}
+            {isSpanish ? spanishTagLabels[tag] : tag}
           </button>
         ))}
       </div>
@@ -140,8 +158,8 @@ export default function Templates() {
               borderWidth: '1px'
             }}>
               <div className="tpl-img-wrap">
-                {t.popular && <div className="tpl-popular">⭐ POPULAR</div>}
-                <button className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
+                {t.popular && <div className="tpl-popular">⭐ {isSpanish ? 'DESTACADA' : 'POPULAR'}</div>}
+                <button aria-label={isSpanish ? `Ver una vista previa de ${t.name}` : `Preview ${t.name}`} className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
                 <div
                   className="tpl-phone"
                   onMouseEnter={() => setPlayingTemplate(t.id)}
@@ -158,8 +176,9 @@ export default function Templates() {
                       showEnvelope={!!t.envelope}
                       isImage={t.isImage || false}
                       previewImage={t.image}
-                      active={playingTemplate === t.id}
-                      preloadEnvelopeFrame
+                       active={playingTemplate === t.id}
+                       preloadEnvelopeFrame
+                       language={isSpanish ? 'es' : 'en'}
                     />
                   </div>
                 </div>
@@ -167,16 +186,16 @@ export default function Templates() {
               <div className="tpl-info">
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>{t.name}</span>
-                  <span className="tpl-badge">{t.tag}</span>
+                  <span className="tpl-badge">{isSpanish ? ({ ELEGANT: 'ELEGANTE', ROMANTIC: 'ROMÁNTICA', WARM: 'CÁLIDA', NATURAL: 'NATURAL', MINIMAL: 'MINIMALISTA', DRAMATIC: 'DRAMÁTICA', NEW: 'NUEVA' }[t.tag] || t.tag) : t.tag}</span>
                 </div>
-                <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.5 }}>{t.desc}</p>
+                <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.5 }}>{isSpanish ? spanishDescriptions[t.id] : t.desc}</p>
               </div>
               <div className="tpl-actions">
                 <button onClick={(e) => { e.stopPropagation(); openPreview(e, t); }}>
-                  <PreviewIcon /> Preview
+                  <PreviewIcon /> {isSpanish ? 'Vista previa' : 'Preview'}
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); handleSelectAndContinue(t.id); }} style={{ color: '#555', fontWeight: 500 }}>
-                  <SelectIcon /> Select
+                  <SelectIcon /> {isSpanish ? 'Elegir' : 'Select'}
                 </button>
               </div>
             </div>

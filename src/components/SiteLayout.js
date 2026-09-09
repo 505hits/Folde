@@ -12,9 +12,10 @@ export default function SiteLayout({ children }) {
                            pathname?.startsWith("/checkout") ||
                            pathname?.startsWith("/kissing-couple-wedding-invitation") ||
                            pathname?.startsWith("/collections") ||
+                           pathname?.startsWith("/es/collections") ||
                            pathname?.startsWith("/[couple]") ||
                            pathname?.startsWith("/invite");
-  const isBlog = pathname?.startsWith("/blog");
+  const isBlog = pathname?.startsWith("/blog") || pathname?.startsWith("/es/blog");
 
   return (
     <>

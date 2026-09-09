@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "@/app/blog/blog.module.css";
 
-export default function MobileArticleCta() {
+export default function MobileArticleCta({ locale = "en" }) {
+  const isSpanish = locale === "es";
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -16,8 +17,8 @@ export default function MobileArticleCta() {
 
   return (
     <div className={`${styles.mobileArticleCta} ${visible ? styles.mobileArticleCtaVisible : ""}`}>
-      <Link href="/" aria-label="Create your invitation card now">
-        Create your invitation card now <span aria-hidden="true">👇</span>
+      <Link href={isSpanish ? "/es" : "/"} aria-label={isSpanish ? "Crear la invitación ahora" : "Create your invitation card now"}>
+        {isSpanish ? "Crear la invitación ahora" : "Create your invitation card now"} <span aria-hidden="true">👇</span>
       </Link>
     </div>
   );

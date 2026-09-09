@@ -5,7 +5,8 @@ import Link from "next/link";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import styles from "@/app/blog/blog.module.css";
 
-export default function ArticlePreviewAside() {
+export default function ArticlePreviewAside({ locale = "en" }) {
+  const isSpanish = locale === "es";
   const slotRef = useRef(null);
   const [isPinned, setIsPinned] = useState(false);
 
@@ -45,12 +46,13 @@ export default function ArticlePreviewAside() {
             envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
             showEnvelope
             preloadEnvelopeFrame
+            language={isSpanish ? "es" : "en"}
           />
         </div>
-        <p>PLAN YOUR INVITATION</p>
-        <h2>One elegant link for every guest detail.</h2>
-        <Link className={styles.primaryButton} href="/">Create your invitation card now <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
-        <Link className={styles.asideLink} href="/collections">Explore the templates →</Link>
+        <p>{isSpanish ? "CREAD VUESTRA INVITACIÓN" : "PLAN YOUR INVITATION"}</p>
+        <h2>{isSpanish ? "Un enlace elegante para todos los detalles." : "One elegant link for every guest detail."}</h2>
+        <Link className={styles.primaryButton} href={isSpanish ? "/es" : "/"}>{isSpanish ? "Crear la invitación ahora" : "Create your invitation card now"} <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
+        <Link className={styles.asideLink} href={isSpanish ? "/es/collections" : "/collections"}>{isSpanish ? "Explorar las plantillas →" : "Explore the templates →"}</Link>
       </aside>
     </div>
   );

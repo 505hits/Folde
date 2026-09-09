@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Hls from 'hls.js';
+import { getTranslation } from '@/lib/translations';
 
 export const getFirstFramePoster = (url, useEnvelopePoster = false) => {
   if (!url) return undefined;
@@ -49,8 +50,10 @@ export default function TemplateHeroPreview({
   isImage = false,
   previewImage,
   active = false,
-  preloadEnvelopeFrame = false
+  preloadEnvelopeFrame = false,
+  language = 'en'
 }) {
+  const copy = getTranslation(language);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(!showEnvelope);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [videoActive, setVideoActive] = useState(false);
@@ -151,7 +154,7 @@ export default function TemplateHeroPreview({
           {isEnvImg ? (
             <img
               src={envelopeSrc}
-              alt="Envelope Preview"
+              alt={language === 'es' ? 'Vista previa del sobre' : 'Envelope Preview'}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
@@ -174,7 +177,7 @@ export default function TemplateHeroPreview({
       {isHeroImg ? (
         <img
           src={videoSrc}
-          alt="Hero Preview"
+          alt={language === 'es' ? 'Vista previa de la invitación' : 'Hero Preview'}
           loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
         />
@@ -223,7 +226,7 @@ export default function TemplateHeroPreview({
           gap: '4px',
           backdropFilter: 'blur(4px)'
         }}>
-          <span>▶</span> Tap to play video
+          <span>▶</span> {language === 'es' ? 'Toca para reproducir' : 'Tap to play video'}
         </div>
       )}
 
@@ -236,7 +239,7 @@ export default function TemplateHeroPreview({
           {partner2.toUpperCase()}
         </h3>
         <div style={{ marginTop: '1.5em' }}>
-          <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '0.85em', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>Wedding Day</p>
+          <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '0.85em', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{copy.weddingDay}</p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em', margin: '0.5em 0' }}>
             <div style={{ height: '1px', width: '2em', backgroundColor: '#fff', opacity: 0.8 }}></div>
             <div style={{ width: '0.3em', height: '0.3em', backgroundColor: '#fff', transform: 'rotate(45deg)', opacity: 0.8 }}></div>

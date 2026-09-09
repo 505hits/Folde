@@ -1,105 +1,100 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import Home from "@/app/page";
+import Collections from "@/app/collections/page";
+import Packages from "@/app/packages/page";
+import Approach from "@/app/approach/page";
+import Story from "@/app/story/page";
+import BlogIndex from "@/app/blog/page";
+import BlogArticle from "@/app/blog/[slug]/page";
+import { getPostEs } from "@/lib/blog-es";
 
 const SITE_URL = "https://www.folde-wedding.com";
 
-const pages = {
+const pageMetadata = {
   "": {
     title: "Invitaciones digitales de boda premium | FOLDÈ Wedding",
-    description: "Invitaciones digitales de boda elegantes con RSVP integrado, gestión de invitados y diseños personalizados.",
-    eyebrow: "INVITACIONES DIGITALES DE BODA",
-    heading: "Invitaciones de boda premium y una experiencia impecable para tus invitados",
-    body: "FOLDÈ Wedding reúne la invitación, el RSVP, la información del evento y la gestión de invitados en un enlace elegante. Elige una colección y crea una experiencia que se vea tan bien en móvil como en ordenador.",
-    cta: "Explorar colecciones",
-    ctaHref: "/es/collections",
+    description: "Invitaciones digitales de boda a medida con confirmación integrada, galerías de fotos y gestión de invitados en tiempo real.",
   },
   collections: {
     title: "Colecciones de invitaciones de boda | FOLDÈ Wedding",
-    description: "Explora colecciones de invitaciones digitales de boda, elegantes y personalizables.",
-    eyebrow: "COLECCIONES FOLDÈ",
-    heading: "Encuentra el universo visual de vuestra celebración",
-    body: "Desde jardines románticos hasta composiciones minimalistas y atmósferas mediterráneas, cada colección puede personalizarse con vuestros nombres, fechas, fotos y detalles del evento.",
-    cta: "Crear mi invitación",
-    ctaHref: "/checkout",
+    description: "Explora las colecciones de invitaciones digitales de boda de FOLDÈ: diseños elegantes, interactivos y completamente personalizables.",
   },
   packages: {
     title: "Planes de invitaciones digitales de boda | FOLDÈ Wedding",
-    description: "Compara los planes Estándar, Premium y Expert de FOLDÈ Wedding.",
-    eyebrow: "PLANES FOLDÈ",
-    heading: "Elige el acompañamiento que necesita vuestra boda",
-    body: "Estándar ofrece lo esencial: una invitación personalizada, RSVP y gestión de invitados. Premium añade créditos de imagen y música con IA. Con Expert, nuestro estudio crea y valida vuestra invitación con vosotros.",
-    cta: "Ver los planes en inglés",
-    ctaHref: "/packages",
+    description: "Compara los planes Estándar, Premium y Expert de FOLDÈ Wedding, con confirmación integrada e invitados ilimitados.",
   },
   approach: {
     title: "Nuestro proceso | FOLDÈ Wedding",
-    description: "Descubre cómo FOLDÈ convierte los detalles de una boda en una invitación digital cuidada.",
-    eyebrow: "NUESTRO PROCESO",
-    heading: "De vuestra historia a una invitación lista para compartir",
-    body: "Elegís una dirección visual, añadís los detalles importantes y comprobáis el resultado en una vista previa. Para el plan Expert, el estudio FOLDÈ revisa el briefing y publica el sitio tras vuestra aprobación.",
-    cta: "Ver colecciones",
-    ctaHref: "/es/collections",
+    description: "Descubre el proceso de cuatro pasos con el que FOLDÈ crea vuestra invitación digital de boda, desde la primera conversación hasta la publicación.",
   },
   story: {
-    title: "Sobre FOLDÈ Wedding | Invitaciones digitales de boda",
-    description: "La visión de FOLDÈ Wedding: tecnología útil, diseño editorial y una experiencia personal para invitados.",
-    eyebrow: "SOBRE FOLDÈ",
-    heading: "Más que un enlace: el primer momento de vuestra celebración",
-    body: "Creemos que una invitación digital debe combinar la emoción de la papelería de lujo con la comodidad de una herramienta moderna. Por eso ponemos el diseño, la claridad y la experiencia del invitado al mismo nivel.",
-    cta: "Empezar a crear",
-    ctaHref: "/checkout",
+    title: "Nuestra visión | FOLDÈ Wedding",
+    description: "Descubre la filosofía de FOLDÈ Wedding: diseño editorial, tecnología útil y una experiencia memorable para los invitados.",
   },
   blog: {
-    title: "Revista de bodas | FOLDÈ Wedding",
-    description: "Guías y consejos para diseñar invitaciones digitales de boda y organizar el RSVP.",
-    eyebrow: "REVISTA FOLDÈ",
-    heading: "Ideas claras para una invitación de boda memorable",
-    body: "Consulta guías prácticas sobre RSVP, bodas de destino, suites de invitación y diseño floral. Cada artículo está pensado para ayudaros a crear una experiencia elegante y fácil para los invitados.",
-    cta: "Leer las guías en inglés",
-    ctaHref: "/blog",
+    title: "Ideas y tutoriales para invitaciones de boda | FOLDÈ Wedding",
+    description: "Tutoriales, ideas de diseño, consejos de confirmación e inspiración para invitaciones digitales de boda de FOLDÈ Wedding.",
   },
 };
 
-function getPage(segments = []) {
-  // A hreflang pair must lead to a complete, equivalent human translation.
-  // Do not manufacture Spanish article pages from their slugs: thin template
-  // pages would be poor UX and would weaken the site's international SEO.
-  if (segments.length > 1 || (segments.length === 1 && !pages[segments[0]])) return null;
-  return pages[segments[0] || ""];
+function routeFromSegments(segments = []) {
+  if (segments.length === 0) return { type: "page", key: "" };
+  if (segments.length === 1 && pageMetadata[segments[0]]) return { type: "page", key: segments[0] };
+  if (segments.length === 2 && segments[0] === "blog" && getPostEs(segments[1])) return { type: "article", slug: segments[1] };
+  return null;
+}
+
+function languageAlternates(path) {
+  return {
+    canonical: `${SITE_URL}/es${path}`,
+    languages: {
+      en: `${SITE_URL}${path || "/"}`,
+      es: `${SITE_URL}/es${path}`,
+      "x-default": `${SITE_URL}${path || "/"}`,
+    },
+  };
 }
 
 export async function generateMetadata({ params }) {
   const { segments = [] } = await params;
-  const page = getPage(segments);
-  if (!page) return {};
+  const route = routeFromSegments(segments);
+  if (!route) return {};
   const path = segments.length ? `/${segments.join("/")}` : "";
+
+  if (route.type === "article") {
+    const post = getPostEs(route.slug);
+    return {
+      title: `${post.title} | FOLDÈ Wedding`,
+      description: post.description,
+      alternates: languageAlternates(path),
+      openGraph: { title: post.title, description: post.description, type: "article", locale: "es_ES", url: `${SITE_URL}/es${path}`, images: [post.heroImage] },
+    };
+  }
+
+  const page = pageMetadata[route.key];
   return {
-    title: page.title,
-    description: page.description,
-    alternates: {
-      canonical: `${SITE_URL}/es${path}`,
-      languages: { en: `${SITE_URL}${path}`, es: `${SITE_URL}/es${path}`, "x-default": `${SITE_URL}${path}` },
-    },
-    openGraph: { title: page.title, description: page.description, locale: "es_ES", url: `${SITE_URL}/es${path}` },
+    ...page,
+    alternates: languageAlternates(path),
+    openGraph: { ...page, locale: "es_ES", url: `${SITE_URL}/es${path}` },
   };
 }
 
 export default async function SpanishPage({ params }) {
   const { segments = [] } = await params;
-  const page = getPage(segments);
-  if (!page) notFound();
-  const path = segments.length ? `/${segments.join("/")}` : "";
-  return (
-    <main style={{ minHeight: "68vh", padding: "clamp(4rem, 10vw, 8rem) 1.5rem", background: "#faf8f4", color: "#3d2b1f" }}>
-      <section style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-        <p style={{ color: "#a97934", fontSize: ".78rem", fontWeight: 800, letterSpacing: ".16em" }}>{page.eyebrow}</p>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontWeight: 400, fontSize: "clamp(2.6rem, 6vw, 5.2rem)", lineHeight: 1.05, margin: ".9rem 0 1.4rem" }}>{page.heading}</h1>
-        <p style={{ maxWidth: "720px", margin: "0 auto", color: "rgba(61,43,31,.75)", fontSize: "1.15rem", lineHeight: 1.7 }}>{page.body}</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginTop: "2.2rem" }}>
-          <Link href={page.ctaHref} className="btn-primary">{page.cta}</Link>
-          <Link href={path || "/"} hrefLang="en" lang="en" className="btn-secondary">Read in English</Link>
-        </div>
-      </section>
-    </main>
-  );
+  const route = routeFromSegments(segments);
+  if (!route) notFound();
+
+  if (route.type === "article") {
+    return <BlogArticle locale="es" params={Promise.resolve({ slug: route.slug })} />;
+  }
+
+  switch (route.key) {
+    case "": return <Home locale="es" />;
+    case "collections": return <Collections locale="es" />;
+    case "packages": return <Packages locale="es" />;
+    case "approach": return <Approach locale="es" />;
+    case "story": return <Story locale="es" />;
+    case "blog": return <BlogIndex locale="es" />;
+    default: notFound();
+  }
 }

@@ -14,7 +14,7 @@ export default function Header() {
   const spanishPath = localizedPath === '/' ? '/es' : `/es${localizedPath}`;
   const t = isSpanish ? {
     home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
-    dashboard: 'Mi panel', signIn: 'Iniciar sesión / Registrarse', order: 'Crear invitación', logout: 'Cerrar sesión', menu: 'Abrir menú'
+    dashboard: 'Mi panel', signIn: 'Iniciar sesión / Registrarse', order: 'Crear invitación', logout: 'Cerrar sesión', menu: 'Abrir o cerrar el menú'
   } : {
     home: 'Home', collections: 'Collections', process: 'Our Process', packages: 'Packages', journal: 'Journal', about: 'About',
     dashboard: 'My Dashboard', signIn: 'Sign In / Register', order: 'Order Now', logout: 'Log Out', menu: 'Toggle menu'
@@ -34,7 +34,7 @@ export default function Header() {
       <header className="header">
         <div className="header-logo">
           <Link href={link('/')} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <img src="/images/logo.png" alt="FOLDÈ Design Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/images/logo.png" alt={isSpanish ? "Logotipo de FOLDÈ Design" : "FOLDÈ Design Logo"} style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
           </Link>
         </div>
         <nav className="header-nav">

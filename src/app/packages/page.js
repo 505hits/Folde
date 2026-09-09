@@ -7,19 +7,20 @@ export const metadata = {
   alternates: { canonical: "https://www.folde-wedding.com/packages", languages: { en: "https://www.folde-wedding.com/packages", es: "https://www.folde-wedding.com/es/packages", "x-default": "https://www.folde-wedding.com/packages" } },
 };
 
-export default function Offers() {
+export default function Offers({ locale = 'en' }) {
+  const t = (english, spanish) => locale === 'es' ? spanish : english;
   return (
     <div className={styles.page}>
       <div className="container">
 
         {/* Hero */}
         <section className={styles.hero} style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 4rem' }}>
-          <span className="label animate-fade-in-up">Choose Your Formula</span>
+          <span className="label animate-fade-in-up">{t('Choose Your Formula', 'Elegid vuestro plan')}</span>
           <h1 className="heading-xl animate-fade-in-up delay-1" style={{ marginBottom: '1rem' }}>
-            Everything you need for a perfect digital invitation
+            {t('Everything you need for a perfect digital invitation', 'Todo lo necesario para una invitación digital perfecta')}
           </h1>
           <p className="text-lg animate-fade-in-up delay-2">
-            No hidden fees, no subscriptions. A single payment for an elegant, interactive digital wedding invitation with dedicated guidance.
+            {t('No hidden fees, no subscriptions. A single payment for an elegant, interactive digital wedding invitation with dedicated guidance.', 'Sin costes ocultos ni suscripciones. Un único pago por una invitación digital de boda elegante e interactiva, con acompañamiento personalizado.')}
           </p>
         </section>
 
@@ -51,7 +52,7 @@ export default function Offers() {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Standard</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  Choose from our +15 exclusive templates and receive a personalized digital wedding invitation.
+                  {t('Choose from our +15 exclusive templates and receive a personalized digital wedding invitation.', 'Elige entre más de 15 plantillas exclusivas y recibe una invitación digital de boda personalizada.')}
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>99.90€</span>
@@ -59,26 +60,26 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> Choose 1 template from over 15 options</li>
-                <li><span className="check">✓</span> Your colors and info applied</li>
-                <li><span className="check">✓</span> RSVP + private dashboard</li>
-                <li><span className="check">✓</span> Guest directory & table planner</li>
-                <li><span className="check">✓</span> No AI credits included</li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+                <li><span className="check">✓</span> {t('Choose 1 template from over 15 options', 'Elige una plantilla entre más de 15 opciones')}</li>
+                <li><span className="check">✓</span> {t('Your colors and info applied', 'Aplicamos vuestros colores y datos')}</li>
+                <li><span className="check">✓</span> {t('RSVP + private dashboard', 'Confirmación de asistencia y panel privado')}</li>
+                <li><span className="check">✓</span> {t('Guest directory & table planner', 'Directorio de invitados y organización de mesas')}</li>
+                <li><span className="check">✓</span> {t('No AI credits included', 'No incluye créditos de IA')}</li>
+                <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('Unlimited guests included', 'Invitados ilimitados incluidos')}</strong></li>
               </ul>
               <Link href="/checkout?plan=essential" className="price-btn btn-secondary-plan">
-                Start with Standard
+                {t('Start with Standard', 'Elegir Estándar')}
               </Link>
             </div>
 
             {/* Premium */}
             <div className="price-card popular">
-              <div className="price-badge">Most Popular</div>
+              <div className="price-badge">{t('Most Popular', 'Más elegido')}</div>
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  A self-service dashboard with everything in Standard, 5 AI image credits, 5 AI music credits, priority support, and custom sections.
+                  {t('A self-service dashboard with everything in Standard, 5 AI image credits, 5 AI music credits, priority support, and custom sections.', 'Un panel de autoservicio con todo lo incluido en Estándar, 5 créditos para imágenes con IA, 5 créditos para música con IA, soporte prioritario y secciones personalizadas.')}
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>149.90€</span>
@@ -86,17 +87,17 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> Everything in Standard included</li>
-                <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
-                <li><span className="check">✓</span> Express 24h Dedicated Support</li>
-                <li><span className="check">✓</span> Self-service dashboard + priority support</li>
-                <li><span className="check">✓</span> Custom sections (boarding pass, RSVP)</li>
-                <li><span className="check">✓</span> Unlimited revisions</li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Unlimited guests included</strong></li>
+                <li><span className="check">✓</span> {t('Everything in Standard included', 'Todo lo incluido en Estándar')}</li>
+                <li><span className="check">✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                <li><span className="check">✓</span> {t('Express 24h Dedicated Support', 'Atención prioritaria en 24 horas')}</li>
+                <li><span className="check">✓</span> {t('Self-service dashboard + priority support', 'Panel de autoservicio y soporte prioritario')}</li>
+                <li><span className="check">✓</span> {t('Custom sections (boarding pass, RSVP)', 'Secciones personalizadas (tarjeta de embarque, confirmación)')}</li>
+                <li><span className="check">✓</span> {t('Unlimited revisions', 'Revisiones ilimitadas')}</li>
+                <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('Unlimited guests included', 'Invitados ilimitados incluidos')}</strong></li>
               </ul>
               <Link href="/checkout?plan=premium" className="price-btn btn-primary-plan">
-                Start with Premium
+                {t('Start with Premium', 'Elegir Premium')}
               </Link>
             </div>
 
@@ -105,7 +106,7 @@ export default function Offers() {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem' }}>Expert</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  A hand-crafted bespoke experience with a dedicated creative brief, team review, and studio validation.
+                  {t('A hand-crafted bespoke experience with a dedicated creative brief, team review, and studio validation.', 'Una experiencia artesanal y a medida, con briefing creativo, revisión del equipo y validación del estudio.')}
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>290.00€</span>
@@ -113,18 +114,18 @@ export default function Offers() {
                 </div>
               </div>
               <ul className="price-features">
-                <li><span className="check">✓</span> 100% bespoke questionnaire onboarding</li>
-                <li><span className="check">✓</span> Hand-crafted art direction</li>
-                <li><span className="check">✓</span> Custom Envelope, Hero video, Menu & Photos</li>
-                <li><span className="check">✓</span> Direct review & validation by our team</li>
-                <li><span className="check">✓</span> Studio crafts and publishes your invitation after approval</li>
-                <li><span className="check">✓</span> Personal concierge & priority support</li>
-                <li><span className="check">✓</span> <strong>5 AI image credits + 5 AI music credits</strong></li>
-                <li><span className="check">✓</span> <strong>All languages supported</strong></li>
-                <li><span className="check">✓</span> <strong>Everything in Premium</strong></li>
+                <li><span className="check">✓</span> {t('100% bespoke questionnaire onboarding', 'Cuestionario inicial completamente personalizado')}</li>
+                <li><span className="check">✓</span> {t('Hand-crafted art direction', 'Dirección artística creada a medida')}</li>
+                <li><span className="check">✓</span> {t('Custom Envelope, Hero video, Menu & Photos', 'Sobre, vídeo de portada, menú y fotografías personalizados')}</li>
+                <li><span className="check">✓</span> {t('Direct review & validation by our team', 'Revisión y validación directa por nuestro equipo')}</li>
+                <li><span className="check">✓</span> {t('Studio crafts and publishes your invitation after approval', 'El estudio crea y publica vuestra invitación tras la aprobación')}</li>
+                <li><span className="check">✓</span> {t('Personal concierge & priority support', 'Atención personalizada y soporte prioritario')}</li>
+                <li><span className="check">✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('Everything in Premium', 'Todo lo incluido en Premium')}</strong></li>
               </ul>
               <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
-                Start with Expert
+                {t('Start with Expert', 'Elegir Expert')}
               </Link>
             </div>
 
@@ -134,11 +135,16 @@ export default function Offers() {
         {/* What's included breakdown */}
         <section className={styles.includesSection}>
           <div className="section-header" style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <span className="label">What&apos;s Included</span>
-            <h2 className="heading-lg">Every Detail, Covered</h2>
+            <span className="label">{t("What's Included", 'Qué incluye')}</span>
+            <h2 className="heading-lg">{t('Every Detail, Covered', 'Cada detalle, resuelto')}</h2>
           </div>
           <div className={styles.includesGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '3rem' }}>
-            {[
+            {(locale === 'es' ? [
+              { icon: null, title: 'Diseño pensado para móviles', desc: 'La invitación se adapta a móviles, tabletas y ordenadores para ofrecer una experiencia impecable a cada invitado.' },
+              { icon: null, title: 'Confirmación integrada', desc: 'Los invitados confirman, rechazan o añaden sus datos directamente desde la invitación, sin herramientas externas ni pasos innecesarios.' },
+              { icon: null, title: 'Panel en tiempo real', desc: 'Consulta confirmaciones, respuestas pendientes y rechazos en una interfaz clara e intuitiva. Exporta la lista de invitados a Excel cuando quieras.' },
+              { icon: null, title: 'Un enlace, invitados ilimitados', desc: 'Comparte un único enlace elegante por WhatsApp, correo electrónico o redes sociales. Todos los invitados disfrutan de la misma experiencia premium.' },
+            ] : [
               {
                 icon: (
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
@@ -182,9 +188,9 @@ export default function Offers() {
                 title: 'One Link, Unlimited Guests',
                 desc: 'Share a single elegant link via WhatsApp, email, or social media. Every guest receives the same premium experience.'
               },
-            ].map((item, i) => (
+            ]).map((item, i) => (
               <div key={i} className={styles.includeCard} style={{ textAlign: 'center' }}>
-                <div className={styles.includeIcon} style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.icon}</div>
+                <div className={styles.includeIcon} style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.icon || <span aria-hidden="true" style={{ color: 'var(--color-accent)', fontSize: '2.4rem', lineHeight: 1 }}>✦</span>}</div>
                 <h4 className="heading-sm" style={{ marginBottom: '0.75rem', fontFamily: 'var(--font-heading)', fontSize: '1.25rem', color: 'var(--color-foreground)' }}>{item.title}</h4>
                 <p className="text-sm" style={{ opacity: 0.85, lineHeight: '1.6', maxWidth: '300px', margin: '0 auto' }}>{item.desc}</p>
               </div>

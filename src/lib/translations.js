@@ -130,7 +130,18 @@ export const TRANSLATIONS = {
         scheduleCeremony: "Ceremony",
         scheduleDinner: "Gala Dinner",
         scheduleParty: "Party & Celebration",
-        scheduleEnd: "End of Celebration"
+        scheduleEnd: "End of Celebration",
+        venueShort: "Venue",
+        rsvpThankYou: "Thank you",
+        rsvpSubmitted: "Your response has been sent.",
+        rsvpFamilyQuestion: "Will you be accompanied?",
+        rsvpFamilyYes: "Yes, with family",
+        rsvpPlusOneShort: "Yes, with a plus one",
+        rsvpFamilyNames: "Names of your family members *",
+        allergiesLabel: "Allergies & Food Intolerances",
+        allergiesPlaceholder: "e.g. None, Peanuts, Vegan...",
+        madeWithLove: "Made with love by FOLDÈ Design",
+        galleryScan: "Scan to add your photos to this wedding gallery"
     },
     es: {
         touchToOpen: "Toca para abrir la invitación",
@@ -196,7 +207,18 @@ export const TRANSLATIONS = {
         scheduleCeremony: "Ceremonia",
         scheduleDinner: "Cena de Gala",
         scheduleParty: "Fiesta y Baile",
-        scheduleEnd: "Fin de la Fiesta"
+        scheduleEnd: "Fin de la Fiesta",
+        venueShort: "Lugar de celebración",
+        rsvpThankYou: "Gracias",
+        rsvpSubmitted: "Hemos recibido vuestra respuesta.",
+        rsvpFamilyQuestion: "¿Vendréis acompañados?",
+        rsvpFamilyYes: "Sí, con la familia",
+        rsvpPlusOneShort: "Sí, con acompañante",
+        rsvpFamilyNames: "Nombres de los familiares *",
+        allergiesLabel: "Alergias e intolerancias alimentarias",
+        allergiesPlaceholder: "Por ejemplo: ninguna, frutos secos, menú vegano...",
+        madeWithLove: "Creado con cariño por FOLDÈ Design",
+        galleryScan: "Escanead el código para añadir fotos a la galería de la boda"
     },
     it: {
         touchToOpen: "Tocca per aprire l'invito",
@@ -596,6 +618,6 @@ export const TRANSLATIONS = {
     }
 };
 
-export function getTranslation(lang = 'fr') {
-    return TRANSLATIONS[lang] || TRANSLATIONS.fr;
+export function getTranslation(lang = 'en') {
+    return TRANSLATIONS[lang] || TRANSLATIONS.en;
 }
