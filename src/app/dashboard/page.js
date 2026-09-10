@@ -93,6 +93,7 @@ export default function Dashboard({ locale = "en" }) {
 }
 
 function DashboardContent({ locale = "en" }) {
+  const dashboardRootRef = useRef(null);
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
@@ -107,6 +108,23 @@ function DashboardContent({ locale = "en" }) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [envelopeKey, setEnvelopeKey] = useState(0);
+
+  // Starting a new audio preview stops and rewinds the previous one.
+  useEffect(() => {
+    const root = dashboardRootRef.current;
+    if (!root) return;
+    const stopOtherTracks = (event) => {
+      if (!(event.target instanceof HTMLAudioElement)) return;
+      root.querySelectorAll('audio').forEach((audio) => {
+        if (audio !== event.target && !audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+    };
+    root.addEventListener('play', stopOtherTracks, true);
+    return () => root.removeEventListener('play', stopOtherTracks, true);
+  }, [currentUser]);
 
   // Revision Request State
   const [revisionComment, setRevisionComment] = useState('');
@@ -755,7 +773,7 @@ function DashboardContent({ locale = "en" }) {
   ];
 
   return (
-    <div className="dashboard-layout">
+    <div className="dashboard-layout" ref={dashboardRootRef}>
       <style>{`
         .dashboard-layout {
           display: flex;

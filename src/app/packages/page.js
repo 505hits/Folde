@@ -81,7 +81,7 @@ export default function Offers({ locale = 'en' }) {
               <div className="price-header">
                 <h2 className="heading-lg" style={{ marginBottom: '0.75rem', fontSize: '1.8rem', color: '#5C3A1E' }}>Premium</h2>
                 <p className="text-sm" style={{ opacity: 0.7, minHeight: '60px' }}>
-                  {t('A self-service dashboard with everything in Standard, 5 AI image credits, 5 AI music credits, priority support, and custom sections.', 'Un panel de autoservicio con todo lo incluido en Estándar, 5 créditos para imágenes con IA, 5 créditos para música con IA, soporte prioritario y secciones personalizadas.')}
+                  {t('Personalize your invitation yourself with everything in Standard, priority support, custom sections, and AI creation tools.', 'Personaliza tú mismo la invitación con todo lo incluido en Estándar, asistencia prioritaria, secciones a medida y herramientas de creación con IA.')}
                 </p>
                 <div className="price-amount">
                   <span style={{ fontSize: '1.1rem', opacity: 0.4, textDecoration: 'line-through' }}>149.90€</span>
@@ -90,7 +90,7 @@ export default function Offers({ locale = 'en' }) {
               </div>
               <ul className="price-features">
                 <li><span className="check">✓</span> {t('Everything in Standard included', 'Todo lo incluido en Estándar')}</li>
-                <li><span className="check">✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                 <li><span className="check">✓</span> {t('Express 24h Dedicated Support', 'Atención prioritaria en 24 horas')}</li>
                 <li><span className="check">✓</span> {t('Self-service dashboard + priority support', 'Panel de autoservicio y soporte prioritario')}</li>
                 <li><span className="check">✓</span> {t('Custom sections (boarding pass, RSVP)', 'Secciones personalizadas (tarjeta de embarque, confirmación)')}</li>
@@ -122,7 +122,7 @@ export default function Offers({ locale = 'en' }) {
                 <li><span className="check">✓</span> {t('Direct review & validation by our team', 'Revisión y validación directa por nuestro equipo')}</li>
                 <li><span className="check">✓</span> {t('Studio crafts and publishes your invitation after approval', 'El estudio crea y publica vuestra invitación tras la aprobación')}</li>
                 <li><span className="check">✓</span> {t('Personal concierge & priority support', 'Atención personalizada y soporte prioritario')}</li>
-                <li><span className="check">✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                <li><span className="check">✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                 <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
                 <li><span className="check">✓</span> <strong>{t('Everything in Premium', 'Todo lo incluido en Premium')}</strong></li>
               </ul>

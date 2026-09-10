@@ -377,7 +377,7 @@ export default function Home({ locale = 'en' }) {
                 <div className={styles.pricingPrice}>79.90 €</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('Everything in Standard included', 'Todo lo incluido en Estándar')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Express 24h Dedicated Support', 'Atención prioritaria en 24 horas')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Self-service dashboard + priority support', 'Panel de autoservicio y soporte prioritario')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Custom sections (boarding pass, RSVP)', 'Secciones personalizadas (tarjeta de embarque, confirmación)')}</li>
@@ -398,7 +398,7 @@ export default function Home({ locale = 'en' }) {
                   <li><span className={styles.checkIcon}>✓</span> {t('Direct review & validation by our team', 'Revisión y validación directa por nuestro equipo')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Studio crafts and publishes your invitation after approval', 'El estudio crea y publica vuestra invitación tras la aprobación')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Personal concierge & priority support', 'Atención personalizada y soporte prioritario')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Everything included in Premium', 'Todo lo incluido en Premium')}</li>
                 </ul>
               </div>

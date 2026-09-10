@@ -49,6 +49,8 @@ const packages = [
     name: 'Standard',
     price: 49.90,
     originalPrice: 99.90,
+    audience: 'A polished invitation, ready quickly',
+    aiTools: 'AI creation tools not included',
     desc: 'Choose from our +15 exclusive templates and receive a personalized digital wedding invitation with your texts, photos and colours.',
     features: [
       'Choose 1 template from over 15 options',
@@ -65,10 +67,13 @@ const packages = [
     name: 'Premium',
     price: 79.90,
     originalPrice: 149.90,
-    desc: 'A self-service invitation dashboard with 5 AI image credits, 5 AI music credits, priority support, and custom sections.',
+    audience: 'More creative freedom, managed by you',
+    aiTools: 'Create up to 5 images and 5 music tracks with AI',
+    desc: 'Personalize your invitation yourself with priority support, custom sections, and AI creation tools included.',
     features: [
       'Everything in Standard included',
-      '5 AI image credits + 5 AI music credits',
+      'Create up to 5 images with AI',
+      'Create up to 5 music tracks with AI',
       'Express 24h Dedicated Support',
       'Self-service dashboard + priority support',
       'Custom sections (boarding pass, RSVP options)',
@@ -80,6 +85,8 @@ const packages = [
     name: 'Expert',
     price: 149.90,
     originalPrice: 290.00,
+    audience: 'A unique design, created for you',
+    aiTools: 'Create up to 5 images and 5 music tracks with AI',
     desc: 'A bespoke hand-crafted experience with a dedicated creative brief, team review, and studio validation.',
     features: [
       '100% bespoke questionnaire onboarding',
@@ -88,7 +95,8 @@ const packages = [
       'Direct review & validation by our team',
       'Studio crafts and publishes your invitation after approval',
       'Concierge priority support',
-      '5 AI image credits + 5 AI music credits',
+      'Create up to 5 images with AI',
+      'Create up to 5 music tracks with AI',
       'Everything in Premium'
     ]
   }
@@ -937,6 +945,39 @@ function CheckoutContent({ locale = "en" }) {
           border: 1px solid #ddd;
         }
 
+        /* ─── Package selection ─── */
+        .pricing-step { width: 100%; }
+        .pricing-intro { text-align: center; margin-bottom: 2rem; }
+        .pricing-kicker { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.8rem; border: 1px solid #e7dbcf; border-radius: 999px; background: #fff; color: #6a4931; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1rem; }
+        .pricing-title { max-width: 560px; margin: 0 auto; font-size: clamp(2rem, 5vw, 2.7rem); line-height: 1.08; font-weight: 400; font-family: var(--font-heading); color: #241a15; }
+        .pricing-subtitle { max-width: 560px; margin: 0.8rem auto 0; color: #75685f; font-size: 0.96rem; line-height: 1.6; }
+        .pricing-assurance { display: flex; align-items: flex-start; gap: 0.75rem; max-width: 510px; margin: 1.25rem auto 0; padding: 0.9rem 1rem; border-radius: 16px; background: #f2ebe3; color: #5c3a1e; text-align: left; }
+        .pricing-assurance-icon { width: 24px; height: 24px; border-radius: 50%; background: #5c3a1e; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; font-size: 0.75rem; }
+        .pricing-assurance strong { display: block; font-size: 0.9rem; margin-bottom: 0.15rem; }
+        .pricing-assurance span:last-child { display: block; font-size: 0.83rem; line-height: 1.45; color: #765b47; }
+        .pricing-list { display: flex; flex-direction: column; gap: 1rem; }
+        .pricing-card { position: relative; overflow: hidden; background: #fff; padding: 1.75rem; border-radius: 22px; cursor: pointer; border: 1px solid rgba(92,58,30,0.11); box-shadow: 0 8px 28px rgba(75,48,29,0.04); transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; outline: none; }
+        .pricing-card:hover { transform: translateY(-2px); border-color: #c8ad96; }
+        .pricing-card:focus-visible { box-shadow: 0 0 0 4px rgba(92,58,30,0.16); }
+        .pricing-card.is-selected { border: 2px solid #5c3a1e; box-shadow: 0 18px 42px rgba(92,58,30,0.13); }
+        .pricing-card.is-recommended::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 5px; background: linear-gradient(#b98a62, #5c3a1e); }
+        .pricing-badge { display: inline-flex; padding: 0.32rem 0.65rem; border-radius: 999px; background: #5c3a1e; color: #fff; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .pricing-card-top { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+        .pricing-audience { color: #89776a; font-size: 0.78rem; line-height: 1.35; margin-bottom: 0.25rem; }
+        .pricing-name { font-size: 1.85rem; line-height: 1; font-weight: 400; font-family: var(--font-heading); color: #241a15; margin: 0; }
+        .pricing-price { text-align: right; flex: 0 0 auto; }
+        .pricing-old-price { font-size: 0.85rem; text-decoration: line-through; color: #a79b93; }
+        .pricing-current-price { font-size: 1.65rem; line-height: 1.1; font-weight: 800; color: #5c3a1e; }
+        .pricing-one-time { color: #9b8a7e; font-size: 0.7rem; margin-top: 0.15rem; }
+        .pricing-description { font-size: 0.9rem; color: #665a52; margin: 0.9rem 0 0; line-height: 1.5; }
+        .pricing-ai-note { display: flex; gap: 0.5rem; align-items: center; padding: 0.7rem 0.8rem; margin-top: 0.9rem; border-radius: 12px; background: #f8f3ee; color: #63442e; font-size: 0.82rem; font-weight: 700; line-height: 1.35; }
+        .pricing-card-state { display: none; }
+        .pricing-features { border-top: 1px solid #f0e8e1; padding-top: 1.15rem; margin-top: 1.15rem; }
+        .pricing-feature-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.62rem; }
+        .pricing-feature { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.86rem; color: #433832; line-height: 1.4; }
+        .pricing-feature-check { color: #8c6344; font-weight: 800; }
+        .pricing-detail-note { margin-top: 1rem; padding: 0.8rem 0.9rem; background: #faf5f0; border-radius: 12px; border: 1px solid #e8ddd4; font-size: 0.82rem; color: #765b47; line-height: 1.45; }
+
         /* ─── Preview Step Layout ─── */
         .preview-step-wrapper {
           display: flex;
@@ -1123,6 +1164,30 @@ function CheckoutContent({ locale = "en" }) {
           .checkout-container:not(.preview-active) { padding-bottom: 80px !important; }
           .checkout-container.preview-active { padding: 0 !important; max-width: none !important; }
           input, select, textarea { width: 100% !important; box-sizing: border-box; }
+          .pricing-step { margin: -1.4rem -0.5rem 0; width: auto; }
+          .pricing-intro { margin-bottom: 1.15rem; }
+          .pricing-kicker { font-size: 0.7rem; margin-bottom: 0.75rem; padding: 0.4rem 0.7rem; }
+          .pricing-title { font-size: 2rem; padding: 0 0.25rem; }
+          .pricing-subtitle { font-size: 0.9rem; line-height: 1.5; padding: 0 0.2rem; }
+          .pricing-assurance { margin-top: 0.9rem; padding: 0.8rem; border-radius: 14px; }
+          .pricing-list { gap: 0.75rem; }
+          .pricing-card { padding: 1.1rem; border-radius: 20px; box-shadow: 0 5px 20px rgba(75,48,29,0.05); }
+          .pricing-card:hover { transform: none; }
+          .pricing-card.is-selected { padding: 1.15rem; box-shadow: 0 14px 32px rgba(92,58,30,0.13); }
+          .pricing-card.is-recommended::before { width: 4px; }
+          .pricing-badge { font-size: 0.65rem; margin-bottom: 0.6rem; }
+          .pricing-card-top { gap: 0.7rem; }
+          .pricing-audience { font-size: 0.75rem; max-width: 190px; }
+          .pricing-name { font-size: 1.55rem; }
+          .pricing-current-price { font-size: 1.45rem; }
+          .pricing-description { font-size: 0.86rem; margin-top: 0.7rem; }
+          .pricing-ai-note { font-size: 0.78rem; padding: 0.62rem 0.7rem; margin-top: 0.7rem; }
+          .pricing-card-state { display: flex; align-items: center; justify-content: space-between; margin-top: 0.85rem; color: #5c3a1e; font-size: 0.78rem; font-weight: 800; }
+          .pricing-features { transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease, padding 0.3s ease; max-height: 520px; opacity: 1; }
+          .pricing-card:not(.is-selected) .pricing-features { max-height: 0; opacity: 0; overflow: hidden; margin-top: 0; padding-top: 0; border-top: 0; }
+          .pricing-feature { font-size: 0.82rem; }
+          .pricing-detail-note { font-size: 0.78rem; }
+          .pricing-promise { padding: 1rem !important; margin-top: 0.25rem !important; border-radius: 16px !important; }
         }
       `}</style>
 
@@ -1426,56 +1491,73 @@ function CheckoutContent({ locale = "en" }) {
 
         {/* ═══ STEP 2: CHOOSE PACKAGE ═══ */}
         {step === 2 && (
-          <div>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>Choose your package — full customization unlocks after payment</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.75rem', lineHeight: 1.6 }}>It is completely normal that you have not entered every detail yet. After payment, your private dashboard lets you customize all photos, videos, music, wording, RSVP settings, and event information.</p>
+          <div className="pricing-step">
+            <div className="pricing-intro">
+              <div className="pricing-kicker"><span>✓</span> Simple, one-time payment</div>
+              <h1 className="pricing-title">Choose how you want to create</h1>
+              <p className="pricing-subtitle">Select the level of creative support that feels right for you. Every plan includes unlimited guests and RSVP management.</p>
+              <div className="pricing-assurance">
+                <span className="pricing-assurance-icon">✓</span>
+                <div>
+                  <strong>Complete everything after payment</strong>
+                  <span>You do not need all your details yet. Your private dashboard unlocks photos, videos, music, wording, RSVP settings, and event information.</span>
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="pricing-list" role="radiogroup" aria-label="Choose your package">
               {packages.map(p => (
-                <div key={p.id} onClick={() => setSelectedPackage(p)}
-                  style={{
-                    backgroundColor: '#fff', padding: '2rem', borderRadius: '20px', cursor: 'pointer',
-                    border: selectedPackage.id === p.id ? '2px solid #5C3A1E' : '1px solid rgba(0,0,0,0.06)',
-                    boxShadow: selectedPackage.id === p.id ? '0 8px 24px rgba(107,54,62,0.08)' : 'none',
-                    transition: 'all 0.2s ease', position: 'relative'
-                  }}>
-                  {selectedPackage.id === p.id && (
-                    <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
-                  )}
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <div style={{ fontSize: '0.75rem', color: '#888', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Your plan</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <h3 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>{p.name}</h3>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '0.9rem', textDecoration: 'line-through', color: '#aaa' }}>{p.originalPrice}$</div>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#5C3A1E' }}>{p.price}$</div>
-                      </div>
+                <div
+                  key={p.id}
+                  className={`pricing-card ${selectedPackage.id === p.id ? 'is-selected' : ''} ${p.id === 'premium' ? 'is-recommended' : ''}`}
+                  onClick={() => setSelectedPackage(p)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelectedPackage(p);
+                    }
+                  }}
+                  role="radio"
+                  aria-checked={selectedPackage.id === p.id}
+                  tabIndex={0}
+                >
+                  {p.id === 'premium' && <div className="pricing-badge">Most popular</div>}
+                  <div className="pricing-card-top">
+                    <div>
+                      <div className="pricing-audience">{p.audience}</div>
+                      <h3 className="pricing-name">{p.name}</h3>
                     </div>
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.75rem', lineHeight: 1.5 }}>{p.desc}</p>
+                    <div className="pricing-price">
+                      <div className="pricing-old-price">{p.originalPrice}$</div>
+                      <div className="pricing-current-price">{p.price}$</div>
+                      <div className="pricing-one-time">one-time</div>
+                    </div>
                   </div>
-                  <div style={{ borderTop: '1px solid #f0ede9', paddingTop: '1.5rem' }}>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <p className="pricing-description">{p.desc}</p>
+                  <div className="pricing-ai-note"><span aria-hidden="true">✦</span><span>{p.aiTools}</span></div>
+                  <div className="pricing-card-state">
+                    <span>{selectedPackage.id === p.id ? '✓ Selected plan' : 'Tap to view details'}</span>
+                    <span aria-hidden="true">{selectedPackage.id === p.id ? '⌃' : '⌄'}</span>
+                  </div>
+                  <div className="pricing-features">
+                    <ul className="pricing-feature-list">
                       {p.features.map((f, i) => (
-                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', fontSize: '0.85rem', color: '#444' }}>
-                          <span style={{ color: '#b08968', marginTop: '2px' }}>✓</span>
+                        <li key={i} className="pricing-feature">
+                          <span className="pricing-feature-check">✓</span>
                           <span>{f}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   {(p.id === 'premium' || p.id === 'Custom') && selectedPackage.id === p.id && (
-                    <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', backgroundColor: '#faf5f0', borderRadius: '10px', border: '1px solid #e8ddd4', fontSize: '0.8rem', color: '#8b6e5a', display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b6e5a" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
-                      <span>{p.id === 'Custom'
+                    <div className="pricing-detail-note">
+                      {p.id === 'Custom'
                         ? 'We handle everything for you. After payment, share your wedding details and our design studio will craft, review, and publish your bespoke invitation.'
                         : 'After payment, complete your wedding details and personalize your invitation yourself in your private dashboard.'}
-                      </span>
                     </div>
                   )}
                 </div>
               ))}
-              <div style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginTop: '1rem', border: '1px solid rgba(0,0,0,0.04)' }}>
+              <div className="pricing-promise" style={{ backgroundColor: '#faf8f5', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', marginTop: '1rem', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ color: '#5C3A1E', flexShrink: 0 }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
                 </div>
@@ -1863,13 +1945,17 @@ function CheckoutContent({ locale = "en" }) {
                 </div>}
               </button>
             </div>
-            <div className="checkout-pay-badge">
-              <span>1 tap with</span>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <span className="pay-chip pay-chip-apple">Pay</span>
-                <span className="pay-chip pay-chip-google">G Pay</span>
+            {step === 2 ? (
+              <div className="checkout-pay-badge"><span>✓ One-time payment · no subscription</span></div>
+            ) : (
+              <div className="checkout-pay-badge">
+                <span>1 tap with</span>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <span className="pay-chip pay-chip-apple">Pay</span>
+                  <span className="pay-chip pay-chip-google">G Pay</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
