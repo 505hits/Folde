@@ -232,9 +232,11 @@ const selectStyle = {
   paddingRight: '2.5rem',
 };
 
-const LazyThumbnail = ({ src, isEnvelope = false }) => {
-  const [inView, setInView] = useState(true);
+const LazyThumbnail = ({ src, isEnvelope = false, active = false, interactive = false }) => {
+  const [inView, setInView] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const ref = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -242,20 +244,40 @@ const LazyThumbnail = ({ src, isEnvelope = false }) => {
         setInView(true);
         observer.disconnect();
       }
-    }, { rootMargin: '300px' });
+    }, { rootMargin: '160px' });
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
+  const shouldPlay = interactive && (active || hovered);
+  const shouldLoad = inView || active || hovered;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (shouldPlay) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [shouldPlay, shouldLoad]);
+
   return (
-    <div ref={ref} style={{ width: '100%', height: '100%' }}>
-      {inView ? (
+    <div
+      ref={ref}
+      onPointerEnter={(event) => interactive && event.pointerType === 'mouse' && setHovered(true)}
+      onPointerLeave={(event) => interactive && event.pointerType === 'mouse' && setHovered(false)}
+      style={{ width: '100%', height: '100%', position: 'relative', background: 'linear-gradient(145deg, #e8e0d8, #8b7564)' }}
+    >
+      {shouldLoad ? (
         <video
+          ref={videoRef}
           src={src}
           poster={getFirstFramePoster(src, isEnvelope)}
-          preload="auto"
-          fetchPriority="high"
+          preload={shouldPlay ? "auto" : "metadata"}
+          autoPlay={shouldPlay}
+          loop={shouldPlay}
           muted
           playsInline
           style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
@@ -267,7 +289,7 @@ const LazyThumbnail = ({ src, isEnvelope = false }) => {
   );
 };
 
-const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelope = false) => {
+const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelope = false, active = false, interactive = false) => {
   if (!url) {
     return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
   }
@@ -279,7 +301,7 @@ const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelop
     return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
   }
   const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
-  return <LazyThumbnail src={videoSrc} isEnvelope={isEnvelope} />;
+  return <LazyThumbnail src={videoSrc} isEnvelope={isEnvelope} active={active} interactive={interactive} />;
 };
 
 const labelStyle = {
@@ -499,9 +521,20 @@ function CheckoutContent({ locale = "en" }) {
       showSchedule: true,
       showBoardingPass: false,
       showRSVP: true,
-      showGallery: false,
-      showDressCode: false,
+      showGallery: true,
+      showDressCode: true,
+      showGuestGallery: true,
     },
+    gallery: [
+      "/images/couple_beach_sunset_1782995185709.png",
+      "/images/couple_elegant_dinner_1782995195329.png",
+      "/images/couple_forest_walk_1782995203954.png",
+      "/images/couple_cafe_smile_1782995212728.png",
+    ],
+    guestGallery: [
+      "/images/couple_cafe_smile_1782995212728.png",
+      "/images/couple_beach_sunset_1782995185709.png",
+    ],
     images: {},
   }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
@@ -1360,7 +1393,7 @@ function CheckoutContent({ locale = "en" }) {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
-                            {renderMediaStartingFrame(hero.url, hero.name, '#33403a')}
+                            {renderMediaStartingFrame(hero.url, hero.name, '#33403a', false, isSelected, true)}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {hero.name}
@@ -1767,7 +1800,7 @@ function CheckoutContent({ locale = "en" }) {
                               {h.id === 'hero_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
-                                renderMediaStartingFrame(h.url, h.name, '#33403a')
+                                renderMediaStartingFrame(h.url, h.name, '#33403a', false, isSelected, true)
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
