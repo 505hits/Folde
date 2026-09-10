@@ -6,6 +6,9 @@ import Approach from "@/app/approach/page";
 import Story from "@/app/story/page";
 import BlogIndex from "@/app/blog/page";
 import BlogArticle from "@/app/blog/[slug]/page";
+import Checkout from "@/app/checkout/page";
+import Dashboard from "@/app/dashboard/page";
+import Success from "@/app/success/page";
 import { getPostFr } from "@/lib/blog-fr";
 
 const SITE_URL = "https://www.folde-wedding.com";
@@ -15,7 +18,10 @@ const pageMetadata = {
   packages: { title: "Formules de faire-part de mariage numérique | FOLDÈ Wedding", description: "Comparez les formules Standard, Premium et Expert de FOLDÈ Wedding, avec RSVP intégré et nombre d’invités illimité." },
   approach: { title: "Notre méthode de création | FOLDÈ Wedding", description: "Découvrez les quatre étapes de création de votre faire-part de mariage numérique, du premier échange jusqu’à sa mise en ligne." },
   story: { title: "Notre vision | FOLDÈ Wedding", description: "Découvrez la philosophie FOLDÈ : direction artistique éditoriale, technologie utile et expérience mémorable pour vos invités." },
-  blog: { title: "Idées et conseils pour vos faire-part de mariage | FOLDÈ Wedding", description: "Guides, inspirations graphiques et conseils RSVP pour concevoir un faire-part de mariage numérique élégant et pratique." }
+  blog: { title: "Idées et conseils pour vos faire-part de mariage | FOLDÈ Wedding", description: "Guides, inspirations graphiques et conseils RSVP pour concevoir un faire-part de mariage numérique élégant et pratique." },
+  checkout: { title: "Finaliser votre faire-part | FOLDÈ Wedding", description: "Choisissez votre formule et personnalisez votre faire-part de mariage numérique FOLDÈ.", robots: { index: false, follow: false } },
+  dashboard: { title: "Votre tableau de bord mariage | FOLDÈ Wedding", description: "Gérez votre faire-part, vos invités, vos RSVP et votre plan de table dans votre espace privé.", robots: { index: false, follow: false } },
+  success: { title: "Paiement confirmé | FOLDÈ Wedding", description: "Confirmation de votre commande FOLDÈ Wedding.", robots: { index: false, follow: false } }
 };
 
 function routeFromSegments(segments = []) {
@@ -54,6 +60,9 @@ export default async function FrenchPage({ params }) {
     case "approach": return <Approach locale="fr" />;
     case "story": return <Story locale="fr" />;
     case "blog": return <BlogIndex locale="fr" />;
+    case "checkout": return <Checkout locale="fr" />;
+    case "dashboard": return <Dashboard locale="fr" />;
+    case "success": return <Success locale="fr" />;
     default: notFound();
   }
 }

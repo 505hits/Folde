@@ -139,6 +139,7 @@ const approachCopy = {
 };
 
 export default function Method({ locale = 'en' }) {
+  const link = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const copy = approachCopy[locale] || approachCopy.en;
   const localizedSteps = locale === 'es' ? spanishSteps : locale === 'fr' ? frenchSteps : steps;
   return (
@@ -204,7 +205,7 @@ export default function Method({ locale = 'en' }) {
         <section className={styles.ctaSection}>
           <h2 className="heading-lg">{copy.ctaTitle}</h2>
           <p className="text-lg" style={{ marginTop: '0.75rem' }}>{copy.ctaText}</p>
-          <Link href="/checkout" className="btn-primary" style={{ marginTop: '2rem' }}>{copy.cta}</Link>
+          <Link href={link('/checkout')} className="btn-primary" style={{ marginTop: '2rem' }}>{copy.cta}</Link>
         </section>
 
       </div>

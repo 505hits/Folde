@@ -11,6 +11,7 @@ export const metadata = {
 
 export default function Vision({ locale = 'en' }) {
   const t = (english, spanish) => locale === 'fr' ? translateFr(english) : locale === 'es' ? spanish : english;
+  const checkoutPath = locale === 'en' ? '/checkout' : `/${locale}/checkout`;
   return (
     <div className={styles.page}>
 
@@ -171,7 +172,7 @@ export default function Vision({ locale = 'en' }) {
           <h2 className="heading-lg">{t("Let's Create Something Beautiful Together", 'Creemos juntos algo extraordinario')}</h2>
           <p className="text-lg" style={{ marginTop: '0.75rem' }}>{t('Your story deserves an invitation worthy of it.', 'Vuestra historia merece una invitación a su altura.')}</p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/checkout" className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
+            <Link href={checkoutPath} className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
               {t('Order Now', 'Crear invitación')}
             </Link>
             <Link href={locale === 'en' ? "/collections" : `/${locale}/collections`} className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>

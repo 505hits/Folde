@@ -136,10 +136,9 @@
 }
 
 .heroTemplateScale {
-  width: 156.25%;
-  min-height: 156.25%;
-  transform: scale(0.64);
-  transform-origin: top left;
+  width: 450px;
+  min-height: 0;
+  zoom: 0.64;
 }
 
 .mockupContent {
@@ -182,6 +181,10 @@
     height: 590px;
   }
 
+  .heroTemplateScale {
+    zoom: 0.5867;
+  }
+
 }
 
 @media (max-width: 480px) {
@@ -202,6 +205,10 @@
     width: 76px;
     height: 18px;
     border-radius: 0 0 12px 12px;
+  }
+
+  .heroTemplateScale {
+    zoom: 0.5111;
   }
 }
 

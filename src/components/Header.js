@@ -55,7 +55,7 @@ export default function Header() {
         </nav>
         <div className="header-cta-desktop">
           {currentUser ? (
-            <Link href="/dashboard" style={{
+            <Link href={link('/dashboard')} style={{
               textDecoration: 'none', color: '#5C3A1E', fontWeight: 600, fontSize: '0.88rem',
               letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '0.4rem'
             }}>
@@ -66,7 +66,7 @@ export default function Header() {
               {t.dashboard}
             </Link>
           ) : (
-            <Link href="/dashboard" style={{
+            <Link href={link('/dashboard')} style={{
               textDecoration: 'none', color: '#5C3A1E', fontWeight: 600, fontSize: '0.88rem',
               letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '0.4rem'
             }}>
@@ -78,7 +78,7 @@ export default function Header() {
               {t.signIn}
             </Link>
           )}
-          <Link href="/checkout" className="btn-primary header-cta">
+          <Link href={link('/checkout')} className="btn-primary header-cta">
             {t.order}
           </Link>
           {['en', 'es', 'fr'].filter((item) => item !== locale).map((item) => <Link key={item} href={localePath(item)} hrefLang={item} lang={item} style={{ fontSize: '.75rem', fontWeight: 700, color: '#5C3A1E', textDecoration: 'none', letterSpacing: '.05em' }}>{item.toUpperCase()}</Link>)}
@@ -111,7 +111,7 @@ export default function Header() {
           <div className="mobile-nav-actions">
             {currentUser ? (
               <div className="mobile-user-row">
-                <Link href="/dashboard" onClick={closeMenu} className="mobile-auth-btn">
+                <Link href={link('/dashboard')} onClick={closeMenu} className="mobile-auth-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
@@ -123,7 +123,7 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <Link href="/dashboard" onClick={closeMenu} className="mobile-auth-btn">
+              <Link href={link('/dashboard')} onClick={closeMenu} className="mobile-auth-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
                   <polyline points="10 17 15 12 10 7"/>
@@ -133,7 +133,7 @@ export default function Header() {
               </Link>
             )}
 
-            <Link href="/checkout" className="btn-primary mobile-cta-btn" onClick={closeMenu}>
+            <Link href={link('/checkout')} className="btn-primary mobile-cta-btn" onClick={closeMenu}>
               {t.order}
             </Link>
             {['en', 'es', 'fr'].filter((item) => item !== locale).map((item) => <Link key={item} href={localePath(item)} hrefLang={item} lang={item} onClick={closeMenu} className="mobile-auth-btn">{{ en: 'English', es: 'Español', fr: 'Français' }[item]}</Link>)}

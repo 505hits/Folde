@@ -10,6 +10,7 @@ export const metadata = {
 
 export default function Offers({ locale = 'en' }) {
   const t = (english, spanish) => locale === 'fr' ? translateFr(english) : locale === 'es' ? spanish : english;
+  const checkout = (plan) => `${locale === 'en' ? '' : `/${locale}`}/checkout?plan=${plan}`;
   return (
     <div className={styles.page}>
       <div className="container">
@@ -69,7 +70,7 @@ export default function Offers({ locale = 'en' }) {
                 <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
                 <li><span className="check">✓</span> <strong>{t('Unlimited guests included', 'Invitados ilimitados incluidos')}</strong></li>
               </ul>
-              <Link href="/checkout?plan=essential" className="price-btn btn-secondary-plan">
+              <Link href={checkout('essential')} className="price-btn btn-secondary-plan">
                 {t('Start with Standard', 'Elegir Estándar')}
               </Link>
             </div>
@@ -97,7 +98,7 @@ export default function Offers({ locale = 'en' }) {
                 <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
                 <li><span className="check">✓</span> <strong>{t('Unlimited guests included', 'Invitados ilimitados incluidos')}</strong></li>
               </ul>
-              <Link href="/checkout?plan=premium" className="price-btn btn-primary-plan">
+              <Link href={checkout('premium')} className="price-btn btn-primary-plan">
                 {t('Start with Premium', 'Elegir Premium')}
               </Link>
             </div>
@@ -125,7 +126,7 @@ export default function Offers({ locale = 'en' }) {
                 <li><span className="check">✓</span> <strong>{t('All languages supported', 'Compatible con todos los idiomas')}</strong></li>
                 <li><span className="check">✓</span> <strong>{t('Everything in Premium', 'Todo lo incluido en Premium')}</strong></li>
               </ul>
-              <Link href="/checkout?plan=Custom" className="price-btn btn-secondary-plan">
+              <Link href={checkout('Custom')} className="price-btn btn-secondary-plan">
                 {t('Start with Expert', 'Elegir Expert')}
               </Link>
             </div>

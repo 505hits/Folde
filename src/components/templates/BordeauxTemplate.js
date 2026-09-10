@@ -235,7 +235,7 @@ const themes = {
   }
 };
 
-function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false }) {
+function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground }) {
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
   const copy = getTranslation(data?.language || 'en');
@@ -566,14 +566,14 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
             onMouseEnter={() => activateEnvelopeOnHover && handleEnvelopeClick()}
-            style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer' }}
+            style={{ height: heroHeight || '100%', minHeight: heroHeight || '100%', cursor: 'pointer', backgroundColor: envelopeBackground || theme.bgColor }}
           >
             {(data?.videos?.envelope || "/videos/bordeaux.mp4").match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) ? (
               <img
                 src={data?.videos?.envelope || '/images/bordeaux.png'}
                 alt={copy.touchToOpen}
                 className={styles.envelopeVideo}
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                style={{ objectFit: envelopeFit, objectPosition: 'center center', width: '100%', height: '100%', backgroundColor: envelopeBackground || theme.bgColor }}
               />
             ) : (
               <video
@@ -586,7 +586,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                 poster={getFirstFramePoster(data?.videos?.envelope || "/videos/bordeaux.mp4", true)}
                 src={(data?.videos?.envelope || "/videos/bordeaux.mp4").replace(/#t=.*$/, '') + '#t=0.001'}
                 onEnded={handleVideoEnded}
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                style={{ objectFit: envelopeFit, objectPosition: 'center center', width: '100%', height: '100%', backgroundColor: envelopeBackground || theme.bgColor }}
               />
             )}
           </div>

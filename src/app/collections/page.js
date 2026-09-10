@@ -72,6 +72,7 @@ export default function Templates({ locale = 'en' }) {
   const isFrench = locale === 'fr';
   const t = (english, spanish, french) => isFrench ? french : isSpanish ? spanish : english;
   const router = useRouter();
+  const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const [filter, setFilter] = useState('All');
   const [selectedId, setSelectedId] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
@@ -89,7 +90,7 @@ export default function Templates({ locale = 'en' }) {
 
   const handleSelectAndContinue = (id) => {
     localStorage.setItem('selectedTemplate', id);
-    router.push('/checkout');
+    router.push(localizedRoute(`/checkout?template=${encodeURIComponent(id)}`));
   };
 
   const openPreview = (e, t) => {
