@@ -207,7 +207,9 @@ export default function ScratchReveal({ dateStr = 'MAY 27, 2026', accentColor = 
   // Parse date
   const parts = dateStr.match(/^(\w+)\s+(\d+),?\s+(\d{4})$/);
   const rawMonth = parts ? parts[1] : 'MAY';
-  const month = rawMonth.substring(0, 3).toUpperCase();
+  const monthCode = rawMonth.substring(0, 3).toUpperCase();
+  const localizedMonths = language === 'fr' ? { JAN: 'JANV', FEB: 'FÉVR', MAR: 'MARS', APR: 'AVR', MAY: 'MAI', JUN: 'JUIN', JUL: 'JUIL', AUG: 'AOÛT', SEP: 'SEPT', OCT: 'OCT', NOV: 'NOV', DEC: 'DÉC' } : language === 'es' ? { JAN: 'ENE', FEB: 'FEB', MAR: 'MAR', APR: 'ABR', MAY: 'MAY', JUN: 'JUN', JUL: 'JUL', AUG: 'AGO', SEP: 'SEP', OCT: 'OCT', NOV: 'NOV', DEC: 'DIC' } : {};
+  const month = localizedMonths[monthCode] || monthCode;
   const day = parts ? parts[2] : '27';
   const year = parts ? parts[3] : '2026';
 

@@ -40,6 +40,16 @@ export const getFirstFrameVideoSrc = (url) => {
   return `${url}#t=0.001`;
 };
 
+const localizedDate = (date, language) => {
+  if (language === 'en') return date;
+  const match = date.match(/^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d+),?\s+(\d{4})$/i);
+  if (!match) return date;
+  const months = language === 'fr'
+    ? { JAN: 'JANV.', FEB: 'FÉVR.', MAR: 'MARS', APR: 'AVR.', MAY: 'MAI', JUN: 'JUIN', JUL: 'JUIL.', AUG: 'AOÛT', SEP: 'SEPT.', OCT: 'OCT.', NOV: 'NOV.', DEC: 'DÉC.' }
+    : { JAN: 'ENE', FEB: 'FEB', MAR: 'MAR', APR: 'ABR', MAY: 'MAY', JUN: 'JUN', JUL: 'JUL', AUG: 'AGO', SEP: 'SEP', OCT: 'OCT', NOV: 'NOV', DEC: 'DIC' };
+  return language === 'fr' ? `${match[2]} ${months[match[1].toUpperCase()]} ${match[3]}` : `${match[2]} ${months[match[1].toUpperCase()]} ${match[3]}`;
+};
+
 export default function TemplateHeroPreview({
   partner1 = "Emma",
   partner2 = "Liam",
@@ -154,7 +164,7 @@ export default function TemplateHeroPreview({
           {isEnvImg ? (
             <img
               src={envelopeSrc}
-              alt={language === 'es' ? 'Vista previa del sobre' : 'Envelope Preview'}
+              alt={language === 'es' ? 'Vista previa del sobre' : language === 'fr' ? 'Aperçu de l’enveloppe' : 'Envelope Preview'}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
@@ -177,7 +187,7 @@ export default function TemplateHeroPreview({
       {isHeroImg ? (
         <img
           src={videoSrc}
-          alt={language === 'es' ? 'Vista previa de la invitación' : 'Hero Preview'}
+          alt={language === 'es' ? 'Vista previa de la invitación' : language === 'fr' ? 'Aperçu de l’invitation' : 'Hero Preview'}
           loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
         />
@@ -226,7 +236,7 @@ export default function TemplateHeroPreview({
           gap: '4px',
           backdropFilter: 'blur(4px)'
         }}>
-          <span>▶</span> {language === 'es' ? 'Toca para reproducir' : 'Tap to play video'}
+          <span>▶</span> {language === 'es' ? 'Toca para reproducir' : language === 'fr' ? 'Touchez pour lire la vidéo' : 'Tap to play video'}
         </div>
       )}
 
@@ -245,7 +255,7 @@ export default function TemplateHeroPreview({
             <div style={{ width: '0.3em', height: '0.3em', backgroundColor: '#fff', transform: 'rotate(45deg)', opacity: 0.8 }}></div>
             <div style={{ height: '1px', width: '2em', backgroundColor: '#fff', opacity: 0.8 }}></div>
           </div>
-          <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '0.75em', letterSpacing: '0.2em', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{date.toUpperCase()}</p>
+          <p style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '0.75em', letterSpacing: '0.2em', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{localizedDate(date, language).toUpperCase()}</p>
         </div>
       </div>
     </div>

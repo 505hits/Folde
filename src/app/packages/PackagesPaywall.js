@@ -61,6 +61,7 @@ export default function PackagesPaywall({ locale = "en" }) {
   const [selectedId, setSelectedId] = useState("premium");
   const selected = plans.find((plan) => plan.id === selectedId) || plans[1];
   const selectedCopy = copy.plans[selected.id];
+  const localeQuery = locale === "en" ? "" : `&locale=${locale}`;
 
   return (
     <div className={styles.page}>
@@ -107,7 +108,7 @@ export default function PackagesPaywall({ locale = "en" }) {
 
       <div className={styles.purchaseBar}>
         <div className={styles.purchaseSummary}><span>{selectedCopy.name}</span><strong>{selected.price}</strong></div>
-        <Link href={`/checkout?plan=${selected.checkoutId}`} className={styles.purchaseButton}>
+        <Link href={`/checkout?plan=${selected.checkoutId}&step=3${localeQuery}`} className={styles.purchaseButton}>
           {copy.buy} {selectedCopy.name}<span aria-hidden="true">→</span>
         </Link>
         <small>{copy.secure}</small>

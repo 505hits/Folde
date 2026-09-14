@@ -356,12 +356,33 @@ export default function CheckoutClient() {
     }
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const plan = params.get('plan');
-      if (plan) {
-        const found = packages.find(p => p.id.toLowerCase() === plan.toLowerCase());
-        if (found) setSelectedPackage(found);
+      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
+      if (savedPreviewDraft) {
+        try {
+          const draft = JSON.parse(savedPreviewDraft);
+          setAccount(prev => ({
+            ...prev,
+            name: draft.name || prev.name,
+            partnerName: draft.partnerName || prev.partnerName,
+          }));
+          if (themes.some(t => t.id === draft.selectedTheme)) setSelectedTheme(draft.selectedTheme);
+          if (ORDERED_ENVELOPE_OPTIONS.some(option => option.id === draft.selectedEnvelope)) setSelectedEnvelope(draft.selectedEnvelope);
+          if (HERO_VIDEO_OPTIONS.some(option => option.id === draft.selectedHeroVideo)) setSelectedHeroVideo(draft.selectedHeroVideo);
+          if (draft.previewDate) setPreviewDate(draft.previewDate);
+          if (draft.previewVenue) setPreviewVenue(draft.previewVenue);
+        } catch (error) {
+          console.warn('Unable to restore the live preview draft.', error);
+        }
       }
-      if (params.get('step') === '4') {
+      const plan = params.get('plan');
+      let foundPlan = null;
+      if (plan) {
+        foundPlan = packages.find(p => p.id.toLowerCase() === plan.toLowerCase());
+        if (foundPlan) setSelectedPackage(foundPlan);
+      }
+      if (params.get('step') === '3' && foundPlan) {
+        setStep(3);
+      } else if (params.get('step') === '4') {
         setStep(4);
         const slugParam = params.get('slug');
         if (slugParam) setCreatedOrderSlug(slugParam);
@@ -454,8 +475,19 @@ export default function CheckoutClient() {
         setAuthError('Please enter both names to continue.');
         return;
       }
-      setStep(2);
-      window.scrollTo(0, 0);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify({
+          name: account.name,
+          partnerName: account.partnerName,
+          selectedTheme,
+          selectedEnvelope,
+          selectedHeroVideo,
+          previewDate,
+          previewVenue,
+        }));
+        const locale = new URLSearchParams(window.location.search).get('locale');
+        router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
+      }
       return;
     }
     if (step === 2) {
@@ -494,7 +526,8 @@ export default function CheckoutClient() {
 
   const handleBack = () => {
     if (step === 3) {
-      setStep(2);
+      const locale = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('locale') : null;
+      router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
     } else if (step === 2) {
       setStep(1);
     } else {
@@ -1444,7 +1477,10 @@ export default function CheckoutClient() {
                   {!previewDate && !previewVenue ? themeName : ''}
                 </div>
               </div>
-              <button onClick={() => { setStep(2); window.scrollTo(0, 0); }} style={{ background: 'none', border: 'none', color: '#5C3A1E', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Edit</button>
+              <button onClick={() => {
+                const locale = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('locale') : null;
+                router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
+              }} style={{ background: 'none', border: 'none', color: '#5C3A1E', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Edit</button>
             </div>
 
             <div style={{ marginBottom: '0.25rem' }}>

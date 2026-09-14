@@ -257,7 +257,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     e.preventDefault();
     const fullName = `${rsvpFirstName.trim()} ${rsvpLastName.trim()}`.trim();
     if (!rsvpFirstName.trim() || !rsvpLastName.trim() || !rsvpAttending) {
-      setRsvpError(data?.language === 'es' ? 'Completad el nombre, los apellidos y la asistencia.' : 'Please fill in both your First Name, Last Name, and attendance.');
+      setRsvpError(data?.language === 'es' ? 'Completad el nombre, los apellidos y la asistencia.' : data?.language === 'fr' ? 'Veuillez renseigner votre prénom, votre nom et votre présence.' : 'Please fill in both your First Name, Last Name, and attendance.');
       return;
     }
     setRsvpSubmitting(true);
@@ -431,9 +431,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   ];
 
   const menu = t.menu || [
-    { course: "Starter", dish: "Caviar" },
-    { course: "Main", dish: "Steak friete" },
-    { course: "Dessert", dish: "Dame blanche" }
+    { course: data?.language === 'fr' ? "Entrée" : data?.language === 'es' ? "Entrante" : "Starter", dish: "Caviar" },
+    { course: data?.language === 'fr' ? "Plat" : data?.language === 'es' ? "Plato" : "Main", dish: "Steak frites" },
+    { course: data?.language === 'fr' ? "Dessert" : data?.language === 'es' ? "Postre" : "Dessert", dish: "Dame blanche" }
   ];
 
   const sections = t.sections || {
@@ -867,7 +867,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-               <p className={styles.rsvpDate}>{copy.rsvpReplyBy} {t.rsvpDeadline || "March 30th, 2026"}</p>
+               <p className={styles.rsvpDate}>{copy.rsvpReplyBy} {t.rsvpDeadline || (data?.language === 'fr' ? "30 mars 2026" : data?.language === 'es' ? "30 de marzo de 2026" : "March 30th, 2026")}</p>
             </AnimatedSection>
 
             {rsvpSubmitted ? (

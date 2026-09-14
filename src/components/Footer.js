@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const pathname = usePathname();
-  const isSpanish = pathname?.startsWith("/es");
-  const link = (path) => isSpanish ? (path === "/" ? "/es" : `/es${path}`) : path;
-  const t = isSpanish ? {
+  const locale = pathname?.startsWith("/es") ? "es" : pathname?.startsWith("/fr") ? "fr" : "en";
+  const link = (path) => locale === "en" ? path : (path === "/" ? `/${locale}` : `/${locale}${path}`);
+  const translations = { es: {
     home: "Inicio",
     collections: "Colecciones",
     process: "Nuestro proceso",
@@ -18,7 +18,10 @@ export default function Footer() {
     privacy: "Política de privacidad",
     terms: "Términos y condiciones",
     rights: "Todos los derechos reservados.",
-  } : {
+  }, fr: {
+    home: "Accueil", collections: "Collections", process: "Notre méthode", packages: "Formules", about: "À propos de FOLDÈ",
+    dashboard: "Tableau de bord", legal: "Mentions légales", privacy: "Politique de confidentialité", terms: "Conditions générales", rights: "Tous droits réservés.",
+  }, en: {
     home: "Home",
     collections: "Collections",
     process: "Our Process",
@@ -29,7 +32,8 @@ export default function Footer() {
     privacy: "Privacy Policy",
     terms: "Terms & Conditions",
     rights: "All rights reserved.",
-  };
+  }};
+  const t = translations[locale];
   return (
     <footer className="footer">
       <div className="footer-inner">

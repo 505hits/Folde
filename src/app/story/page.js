@@ -1,15 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./vision.module.css";
+import { translateFr } from "@/lib/fr-ui";
 
 export const metadata = {
   title: "Our Vision | FOLDÈ Design — Redefining the Digital Wedding Invitation",
   description: "Discover the philosophy behind FOLDÈ Design. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
-  alternates: { canonical: "https://www.folde-wedding.com/story", languages: { en: "https://www.folde-wedding.com/story", es: "https://www.folde-wedding.com/es/story", "x-default": "https://www.folde-wedding.com/story" } },
+  alternates: { canonical: "https://www.folde-wedding.com/story", languages: { en: "https://www.folde-wedding.com/story", es: "https://www.folde-wedding.com/es/story", fr: "https://www.folde-wedding.com/fr/story", "x-default": "https://www.folde-wedding.com/story" } },
 };
 
 export default function Vision({ locale = 'en' }) {
-  const t = (english, spanish) => locale === 'es' ? spanish : english;
+  const t = (english, spanish) => locale === 'fr' ? translateFr(english) : locale === 'es' ? spanish : english;
   return (
     <div className={styles.page}>
 
@@ -146,6 +147,10 @@ export default function Vision({ locale = 'en' }) {
               { title: 'Precios transparentes', desc: 'Sin costes ocultos ni sorpresas. Desde la primera conversación sabréis exactamente qué pagáis y qué recibiréis.' },
               { title: 'Revisiones ilimitadas', desc: 'Afinamos y ajustamos cada detalle hasta que el resultado os encante, sin límite de cambios ni cargos adicionales.' },
               { title: 'Acceso duradero', desc: 'El enlace de vuestra invitación seguirá activo mientras lo necesitéis y, después de la boda, podrá convertirse en un precioso recuerdo digital.' },
+            ] : locale === 'fr' ? [
+              { title: 'Tarifs transparents', desc: 'Aucuns frais cachés ni mauvaise surprise. Dès le premier échange, vous savez exactement ce que vous payez et ce que vous recevrez.' },
+              { title: 'Révisions illimitées', desc: 'Nous affinons chaque détail jusqu’à votre entière satisfaction, sans limite d’itérations ni supplément pour les modifications.' },
+              { title: 'Accès durable', desc: 'Le lien de votre invitation reste actif aussi longtemps que nécessaire et peut devenir un précieux souvenir numérique après le mariage.' },
             ] : [
               { title: 'Transparent Pricing', desc: 'No hidden fees, no surprises. You know exactly what you pay for and what you receive — from the very first call.' },
               { title: 'Unlimited Revisions', desc: 'We refine and adjust until you are truly delighted. There is no cap on iterations and no extra charge for changes.' },
@@ -166,10 +171,10 @@ export default function Vision({ locale = 'en' }) {
           <h2 className="heading-lg">{t("Let's Create Something Beautiful Together", 'Creemos juntos algo extraordinario')}</h2>
           <p className="text-lg" style={{ marginTop: '0.75rem' }}>{t('Your story deserves an invitation worthy of it.', 'Vuestra historia merece una invitación a su altura.')}</p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/checkout" className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
+            <Link href={locale === 'en' ? "/checkout" : `/checkout?locale=${locale}`} className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
               {t('Order Now', 'Crear invitación')}
             </Link>
-            <Link href="/collections" className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
+            <Link href={locale === 'en' ? "/collections" : `/${locale}/collections`} className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
               {t('Explore Gallery', 'Explorar colecciones')}
             </Link>
           </div>
