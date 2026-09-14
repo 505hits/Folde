@@ -224,8 +224,8 @@ export default function Home({ locale = 'en' }) {
                       editMode={false}
                       autoPlaySimulation={false}
                       heroHeight="988px"
-                      envelopeFit="contain"
-                      envelopeBackground="#d8c3a5"
+                      envelopeFit="cover"
+                      envelopeBackground="#f2eadf"
                       onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
                       data={{
                         themeId: "ivory",

@@ -578,6 +578,19 @@ function CheckoutContent({ locale = "en" }) {
           selectedHeroVideo,
           previewDate,
           previewVenue,
+          previewData: {
+            ...previewData,
+            partner1: account.name,
+            partner2: account.partnerName,
+            date: formatPreviewDate(previewDate),
+            ceremonyVenue: previewVenue || 'Your Dream Venue',
+            receptionVenue: previewVenue || '',
+            themeId: selectedTheme,
+            videos: {
+              envelope: envObj?.url || '',
+              hero: heroObj?.url || '',
+            },
+          },
         }));
         router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
       }
