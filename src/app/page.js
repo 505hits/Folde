@@ -43,6 +43,17 @@ const carouselItems = [
 ];
 
 const FEATURED_TEMPLATE_NAMES = ['Cisnes', 'Bloom', 'Romantic Garden', 'Como', 'Tropical', 'Soft Scratch'];
+const carouselThemeIds = {
+  'Luxe Gold': 'champagne', Pearl: 'ivory', 'Velvet Noir': 'bordeaux', 'Olive Grove': 'sage',
+  Amber: 'terracotta', Mocha: 'chocolate', 'Crimson Royal': 'royalbordeaux', Sapphire: 'royalblue',
+  Cisnes: 'cisnes', Bloom: 'bloom', 'Romantic Garden': 'romanticgarden', Como: 'pressedlovecomo',
+  Tropical: 'tropical', 'Soft Scratch': 'softscratch', 'The Lace Edit': 'thelaceedit', 'Le Jardin': 'lejardin',
+  'Lace Photo Scratch': 'lacephotoscratch', 'Oasis Royale': 'oasisroyale', 'Photo Scratch': 'photoscratch',
+  'Blush Ribbon': 'rosebow', 'Grand Heritage': 'majestic', 'Dolce Vita': 'dolcevita', 'Velvet Garden': 'webgencytemplate5',
+  'Blossom Oud': 'blossomoud', 'Noir Gold': 'tildatemplate2',
+  Teatro: 'pressedloveteatro', 'The Venue': 'pressedlovethevenue', 'Sweet Love': 'pressedlovesweetlove',
+  'Botanical Floral': 'pressedlovefloral', 'Big Entrance': 'pressedlovebigentrance', Floral: 'floral',
+};
 const orderedCarouselItems = [...carouselItems].sort((a, b) => {
   const aIndex = FEATURED_TEMPLATE_NAMES.indexOf(a.name);
   const bIndex = FEATURED_TEMPLATE_NAMES.indexOf(b.name);
@@ -117,6 +128,7 @@ const homeCopy = {
     heroTitle: 'Premium Digital Wedding Invitations & Live Guest Tracking', heroText: 'FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.',
     design: 'Design Your Invitation', explore: 'Explore Collections', from: 'From €49.90', tracking: 'Smart RSVP Tracking', unlimited: 'Unlimited Guests', concierge: 'Personal Concierge',
     collections: 'Collections', universes: 'Explore Our Exclusive Design Universes', universesText: 'Each collection is a distinct aesthetic universe — crafted to tell your unique love story.', viewAll: 'View All Collections',
+    chooseDesign: 'Choose This Design',
     process: 'Our Process', processTitle: 'From Vision to Masterpiece, Step by Step', processText: 'A tailored journey where your ideas become an unforgettable experience.',
     packages: 'Packages', packagesTitle: 'Select the Perfect Package for Your Wedding', packagesText: 'Tailored packages designed to elevate your wedding invitation experience.',
   },
@@ -125,6 +137,7 @@ const homeCopy = {
     heroTitle: 'Invitaciones digitales de boda premium y gestión de invitados en tiempo real', heroText: 'FOLDÈ crea invitaciones digitales de boda a medida con confirmación de asistencia, galerías de fotos y gestión de invitados en tiempo real.',
     design: 'Diseñar vuestra invitación', explore: 'Explorar colecciones', from: 'Desde 49,90 €', tracking: 'Confirmaciones inteligentes', unlimited: 'Invitados ilimitados', concierge: 'Atención personalizada',
     collections: 'Colecciones', universes: 'Explorad nuestros universos de diseño exclusivos', universesText: 'Cada colección propone un universo estético propio, creado para contar vuestra historia de amor.', viewAll: 'Ver todas las colecciones',
+    chooseDesign: 'Elegir este diseño',
     process: 'Nuestro proceso', processTitle: 'De la visión a una pieza única, paso a paso', processText: 'Un recorrido a medida en el que vuestras ideas se convierten en una experiencia inolvidable.',
     packages: 'Planes', packagesTitle: 'Elegid el plan perfecto para vuestra boda', packagesText: 'Planes pensados para elevar la experiencia de vuestra invitación de boda.',
   },
@@ -133,6 +146,7 @@ const homeCopy = {
     heroTitle: 'Faire-part de mariage numériques haut de gamme et suivi des invités en direct', heroText: 'FOLDÈ crée des faire-part de mariage numériques sur mesure avec RSVP intégré, galerie photo et gestion des invités en temps réel.',
     design: 'Créer votre invitation', explore: 'Explorer les collections', from: 'À partir de 49,90 €', tracking: 'Suivi RSVP intelligent', unlimited: 'Invités illimités', concierge: 'Conciergerie personnelle',
     collections: 'Collections', universes: 'Explorez nos univers graphiques exclusifs', universesText: 'Chaque collection propose un univers esthétique singulier, conçu pour raconter votre histoire d’amour.', viewAll: 'Voir toutes les collections',
+    chooseDesign: 'Choisir ce design',
     process: 'Notre méthode', processTitle: 'De votre vision à une création unique, étape par étape', processText: 'Un parcours sur mesure qui transforme vos idées en une expérience inoubliable.',
     packages: 'Formules', packagesTitle: 'Choisissez la formule idéale pour votre mariage', packagesText: 'Des formules conçues pour sublimer l’expérience de votre faire-part de mariage.'
   },
@@ -151,6 +165,7 @@ export default function Home({ locale = 'en' }) {
   const carouselRef = useRef(null);
   const [showCta, setShowCta] = useState(false);
   const [hoveredCarouselItem, setHoveredCarouselItem] = useState(null);
+  const [activeCarouselItem, setActiveCarouselItem] = useState(null);
   const [heroEnvelopeDismissed, setHeroEnvelopeDismissed] = useState(false);
 
   useEffect(() => {
@@ -266,36 +281,77 @@ export default function Home({ locale = 'en' }) {
           <div className="carousel-wrapper">
             <div className="carousel-track" ref={carouselRef}>
               {localizedCarouselItems.map((item, i) => (
-                <Link href={link('/collections')} key={i} style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}>
+                <div key={i} className={styles.carouselItem}>
                   <div
                     className="carousel-card"
                     onMouseEnter={() => setHoveredCarouselItem(i)}
                     onMouseLeave={() => setHoveredCarouselItem(null)}
                     style={{ paddingBottom: '2rem', transition: 'transform 0.2s' }}
                   >
-                    <div className={styles.phoneFrame} style={{ width: '240px', height: '490px', margin: '0 auto' }}>
+                    <div
+                      className={styles.phoneFrame}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={t(`Preview ${item.name}`, `Ver una vista previa de ${item.name}`)}
+                      onClick={() => setActiveCarouselItem(i)}
+                      onKeyDown={(event) => {
+                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                        event.preventDefault();
+                        setActiveCarouselItem(i);
+                      }}
+                      style={{ width: '240px', height: '490px', margin: '0 auto' }}
+                    >
                       <div className={styles.phoneNotch}></div>
                       <div className={styles.phoneScreen}>
-                        <TemplateHeroPreview
-                          partner1={item.partner1}
-                          partner2={item.partner2}
-                          date={item.date}
-                          videoSrc={item.video}
-                          envelopeSrc={item.envelope}
-                          showEnvelope
-                          isImage={item.isImage || false}
-                           active={hoveredCarouselItem === i}
-                           preloadEnvelopeFrame
-                           language={locale}
-                        />
+                        {activeCarouselItem === i ? (
+                          <div className={styles.carouselTemplateViewport}>
+                            <div className={styles.carouselTemplateScale}>
+                              <BordeauxTemplate
+                                editMode={false}
+                                autoOpenEnvelope
+                                heroHeight="970px"
+                                data={{
+                                  themeId: carouselThemeIds[item.name] || 'ivory',
+                                  partner1: item.partner1,
+                                  partner2: item.partner2,
+                                  date: item.date,
+                                  ceremonyVenue: t('Your Dream Venue', 'El lugar de vuestros sueños'),
+                                  receptionVenue: '',
+                                  language: locale,
+                                  videos: { envelope: item.envelope, hero: item.video },
+                                  sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true },
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <TemplateHeroPreview
+                            partner1={item.partner1}
+                            partner2={item.partner2}
+                            date={item.date}
+                            videoSrc={item.video}
+                            envelopeSrc={item.envelope}
+                            showEnvelope
+                            isImage={item.isImage || false}
+                            active={hoveredCarouselItem === i}
+                            preloadEnvelopeFrame
+                            language={locale}
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="carousel-card-content" style={{ marginTop: '1rem' }}>
                       <h4>{item.name}</h4>
                       <p>{item.desc}</p>
+                      <Link
+                        className={styles.carouselChooseButton}
+                        href={`${link('/checkout')}?template=${encodeURIComponent(carouselThemeIds[item.name] || 'ivory')}`}
+                      >
+                        {copy.chooseDesign}<span aria-hidden="true">→</span>
+                      </Link>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>

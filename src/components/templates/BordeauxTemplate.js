@@ -235,7 +235,7 @@ const themes = {
   }
 };
 
-function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground }) {
+function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, autoOpenEnvelope = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground }) {
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
   const copy = getTranslation(data?.language || 'en');
@@ -331,10 +331,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   }, []);
 
   // Envelope & Hero Video Activation States (Default to static image posters until clicked)
-  const [envelopeOpen, setEnvelopeOpen] = useState(false);
+  const [envelopeOpen, setEnvelopeOpen] = useState(autoOpenEnvelope);
   const [envelopeDismissed, setEnvelopeDismissed] = useState(false);
-  const [envelopeVideoActive, setEnvelopeVideoActive] = useState(false);
-  const [heroVideoActive, setHeroVideoActive] = useState(false);
+  const [envelopeVideoActive, setEnvelopeVideoActive] = useState(autoOpenEnvelope);
+  const [heroVideoActive, setHeroVideoActive] = useState(autoOpenEnvelope);
   const envelopeVideoRef = useRef(null);
   const heroVideoRef = useRef(null);
   const audioRef = useRef(null);
@@ -350,9 +350,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   useEffect(() => {
     // Reset envelope state whenever envelope source changes so new selection is shown
     setEnvelopeDismissed(false);
-    setEnvelopeOpen(false);
-    setEnvelopeVideoActive(false);
-    setHeroVideoActive(false);
+    setEnvelopeOpen(autoOpenEnvelope);
+    setEnvelopeVideoActive(autoOpenEnvelope);
+    setHeroVideoActive(autoOpenEnvelope);
 
     // Setup HLS for the envelope video
     const video = envelopeVideoRef.current;
@@ -360,9 +360,16 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
     const src = data?.videos?.envelope || "/videos/bordeaux.mp4";
 
-    // If src is an image, we don't need to do video setup
-    if (src.match(/\.(jpeg|jpg|gif|png)$/i)) {
-      return;
+    // Image envelopes cannot emit an `ended` event, so reveal the invitation
+    // after a short opening beat when this compact preview starts automatically.
+    if (src.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
+      if (!autoOpenEnvelope) return;
+
+      const imageEnvelopeTimer = window.setTimeout(() => {
+        setEnvelopeDismissed(true);
+      }, 1800);
+
+      return () => window.clearTimeout(imageEnvelopeTimer);
     }
 
     if (src.endsWith('.m3u8') && Hls.isSupported()) {
@@ -381,8 +388,27 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
       video.src = videoSrc;
       video.preload = "auto";
       if (typeof video.load === 'function') video.load();
+
+      // Calling load() resets native autoplay in some browsers. Restart playback
+      // explicitly so the tap that expands a mobile card also opens its envelope.
+      if (autoOpenEnvelope) {
+        const startEnvelopePreview = () => {
+          video.play().catch(() => {
+            // Keep the cover interactive if the browser declines autoplay.
+            setEnvelopeOpen(false);
+            setEnvelopeVideoActive(false);
+          });
+        };
+
+        if (video.readyState >= 2) {
+          startEnvelopePreview();
+        } else {
+          video.addEventListener('canplay', startEnvelopePreview, { once: true });
+          return () => video.removeEventListener('canplay', startEnvelopePreview);
+        }
+      }
     }
-  }, [data?.videos?.envelope]);
+  }, [data?.videos?.envelope, autoOpenEnvelope]);
 
   // Envelope opening is strictly user-touch triggered across all pages & previews
 
@@ -579,6 +605,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               <video
                 ref={envelopeVideoRef}
                 className={styles.envelopeVideo}
+                autoPlay={autoOpenEnvelope}
                 muted
                 playsInline
                 preload="auto"

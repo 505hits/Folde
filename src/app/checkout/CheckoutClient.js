@@ -114,6 +114,7 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_majestic', name: 'Majestic', url: 'https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4', color: '#7a5e42' },
   { id: 'env_thelaceedit', name: 'The Lace Edit', url: 'https://savethedate-thelaceedit.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_lejardin', name: 'Le Jardin', url: 'https://savethedate-lejardin.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
+  { id: 'env_lejardin_image', name: 'Le Jardin Still', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/08254d3d-25f6-40e6-a54a-6bc01219ec3e/envelope-v2.jpg', color: '#f3e5d8' },
   { id: 'env_lacephotoscratch', name: 'Lace Photo Scratch', url: 'https://savethedate-lacephotoscratch.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/276cb847-0eab-41c6-9ad6-30c90ab5ec34/envelope-open.mp4', color: '#f3e5d8' },
@@ -121,6 +122,7 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_softscratch', name: 'Soft Scratch', url: 'https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_cisnes', name: 'Cisnes', url: 'https://savethedate-cisnes.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
+  { id: 'env_save_date_floral', name: 'Floral', url: 'https://savethedate-floral.thedigitalyes.com/video/envelope-open.mp4', color: '#f3e5d8' },
   { id: 'env_romanticgarden', name: 'Romantic Garden', url: 'https://eftesa.com/assets/themes/romantic-garden/Floral-garden-intro-video.mp4', color: '#e8f0e8' },
   { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340' },
   { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810' },
@@ -152,6 +154,7 @@ const HERO_VIDEO_OPTIONS = [
   { id: 'hero_oasisroyale', name: 'Oasis Royale', url: 'https://savethedate-oasisroyale.thedigitalyes.com/__l5e/assets-v1/775de535-0300-4a62-ae3b-dceee4b22ab7/hero-video-compressed.mp4' },
   { id: 'hero_tropical', name: 'Tropical', url: 'https://savethedate-tropical.thedigitalyes.com/__l5e/assets-v1/4689b4cd-298d-4b59-b560-7d443345b459/hero-bg.mp4' },
   { id: 'hero_bloom', name: 'Bloom', url: 'https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4' },
+  { id: 'hero_blossomoud', name: 'Blossom Oud', url: 'https://static.tildacdn.net/tild3332-3762-4233-a636-636233333133/Vector.png' },
   { id: 'hero_dolcevita', name: 'Dolce Vita', url: 'https://static.tildacdn.net/tild3733-3133-4232-b033-623736623262/romantic-moments-bea.png' },
   { id: 'hero_webgencytemplate5', name: 'Velvet Garden', url: 'https://static.tildacdn.net/tild3338-6332-4463-b639-623665353237/300592484d1f31590325.png' },
   { id: 'hero_pressedlovecomo', name: 'Como Villa', url: 'https://pressedlove.com/demo-media/como/hero-video.mp4' },
@@ -185,7 +188,7 @@ const TEMPLATE_PRESETS = {
   rosebow: { envelope: 'env_rose_bow', hero: 'hero_rose_bow' },
   majestic: { envelope: 'env_majestic', hero: 'hero_royal' },
   thelaceedit: { envelope: 'env_thelaceedit', hero: 'hero_thelaceedit' },
-  lejardin: { envelope: 'env_lejardin', hero: 'hero_lejardin' },
+  lejardin: { envelope: 'env_lejardin_image', hero: 'hero_lejardin' },
   lacephotoscratch: { envelope: 'env_lacephotoscratch', hero: 'hero_lacephotoscratch' },
   oasisroyale: { envelope: 'env_oasisroyale', hero: 'hero_oasisroyale' },
   tropical: { envelope: 'env_tropical', hero: 'hero_tropical' },
@@ -193,10 +196,12 @@ const TEMPLATE_PRESETS = {
   softscratch: { envelope: 'env_softscratch', hero: 'hero_palm' },
   cisnes: { envelope: 'env_cisnes', hero: 'hero_couple' },
   bloom: { envelope: 'env_bloom', hero: 'hero_bloom' },
-  floral: { envelope: 'env_floral', hero: 'hero_sea_anim' },
+  floral: { envelope: 'env_save_date_floral', hero: 'hero_sea_anim' },
   romanticgarden: { envelope: 'env_romanticgarden', hero: 'hero_bloom' },
+  blossomoud: { envelope: 'env_luxury', hero: 'hero_blossomoud' },
   dolcevita: { envelope: 'env_floral', hero: 'hero_dolcevita' },
   webgencytemplate5: { envelope: 'env_luxury', hero: 'hero_webgencytemplate5' },
+  tildatemplate2: { envelope: 'env_royal', hero: 'hero_royal' },
   pressedlovecomo: { envelope: 'env_pressedlovecomo', hero: 'hero_pressedlovecomo' },
   pressedloveteatro: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedloveteatro' },
   pressedlovethevenue: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovethevenue' },
@@ -420,16 +425,6 @@ function CheckoutContent({ locale = "en" }) {
     const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const requestedTemplate = params.get('template');
     const initialTemplate = requestedTemplate || saved;
-    if (initialTemplate && themes.find(t => t.id === initialTemplate)) {
-      setSelectedTheme(initialTemplate);
-      localStorage.setItem('selectedTemplate', initialTemplate);
-      const preset = TEMPLATE_PRESETS[initialTemplate];
-      if (preset) {
-        setSelectedEnvelope(preset.envelope);
-        setSelectedHeroVideo(preset.hero);
-        setEnvelopeKey(k => k + 1);
-      }
-    }
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
@@ -448,6 +443,18 @@ function CheckoutContent({ locale = "en" }) {
           if (draft.previewVenue) setPreviewVenue(draft.previewVenue);
         } catch (error) {
           console.warn('Unable to restore the live preview draft.', error);
+        }
+      }
+      // A design explicitly chosen from the landing page always wins over an
+      // older preview draft, while the couple's previously entered details stay intact.
+      if (initialTemplate && themes.some(theme => theme.id === initialTemplate)) {
+        setSelectedTheme(initialTemplate);
+        localStorage.setItem('selectedTemplate', initialTemplate);
+        const preset = TEMPLATE_PRESETS[initialTemplate];
+        if (preset) {
+          setSelectedEnvelope(preset.envelope);
+          setSelectedHeroVideo(preset.hero);
+          setEnvelopeKey(key => key + 1);
         }
       }
       const plan = params.get('plan');
