@@ -10,6 +10,7 @@ import { useDatabase } from "@/context/DatabaseContext";
 import { supabase } from "@/lib/supabase";
 import InteractiveVideo from "@/components/InteractiveVideo";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
+import LocalizedSurface from "@/components/LocalizedSurface";
 
 const HoverVideoThumbnail = ({ url, fallbackColor }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -83,7 +84,17 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
   );
 };
 
-export default function Dashboard() {
+export default function Dashboard({ locale = "en" }) {
+  return (
+    <LocalizedSurface locale={locale}>
+      <DashboardContent locale={locale} />
+    </LocalizedSurface>
+  );
+}
+
+function DashboardContent({ locale = "en" }) {
+  const dashboardRootRef = useRef(null);
+  const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
@@ -97,6 +108,23 @@ export default function Dashboard() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [envelopeKey, setEnvelopeKey] = useState(0);
+
+  // Starting a new audio preview stops and rewinds the previous one.
+  useEffect(() => {
+    const root = dashboardRootRef.current;
+    if (!root) return;
+    const stopOtherTracks = (event) => {
+      if (!(event.target instanceof HTMLAudioElement)) return;
+      root.querySelectorAll('audio').forEach((audio) => {
+        if (audio !== event.target && !audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+    };
+    root.addEventListener('play', stopOtherTracks, true);
+    return () => root.removeEventListener('play', stopOtherTracks, true);
+  }, [currentUser]);
 
   // Revision Request State
   const [revisionComment, setRevisionComment] = useState('');
@@ -449,7 +477,7 @@ export default function Dashboard() {
           </form>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid #f0ede9' }}>
-            <Link href="/collections" style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
+            <Link href={localizedRoute('/collections')} style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
               Don't have an account yet? Explore collections →
             </Link>
           </div>
@@ -480,7 +508,7 @@ export default function Dashboard() {
           <p style={{ color: '#aaa', fontSize: '0.8rem', marginBottom: '2rem' }}>
             Signed in as <strong style={{ color: '#666' }}>{currentUser?.email}</strong>
           </p>
-          <Link href="/packages" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.85rem 2.5rem', borderRadius: '12px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+          <Link href={localizedRoute('/packages')} style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '0.85rem 2.5rem', borderRadius: '12px', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
             Explore packages →
           </Link>
           <div style={{ marginTop: '1.5rem' }}>
@@ -745,7 +773,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="dashboard-layout">
+    <div className="dashboard-layout" ref={dashboardRootRef}>
       <style>{`
         .dashboard-layout {
           display: flex;

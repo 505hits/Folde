@@ -5,10 +5,36 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
 
-function SuccessContent() {
+const COPY = {
+  en: {
+    confirming: 'Confirming Payment', waiting: 'Please wait while we verify your payment...', issue: 'Payment Issue',
+    issueText: "We couldn't verify your payment. If you believe this is an error, please contact us at folde.wedding@gmail.com.",
+    retry: 'TRY AGAIN', validated: 'Payment Validated!', questionnaire: 'FILL OUT THE QUESTIONNAIRE →', dashboard: 'ACCESS MY DASHBOARD →',
+    custom: (name, plan) => `Welcome ${name}! Your ${plan} order is confirmed. Please complete your customization questionnaire so we can start crafting your design.`,
+    standard: 'Your order has been successfully confirmed. Welcome to FOLDÈ Design! You can now access your private dashboard to start personalizing your invitation.',
+  },
+  fr: {
+    confirming: 'Confirmation du paiement', waiting: 'Veuillez patienter pendant la vérification de votre paiement…', issue: 'Problème de paiement',
+    issueText: "Nous n’avons pas pu vérifier votre paiement. Si vous pensez qu’il s’agit d’une erreur, contactez-nous à folde.wedding@gmail.com.",
+    retry: 'RÉESSAYER', validated: 'Paiement validé !', questionnaire: 'REMPLIR LE QUESTIONNAIRE →', dashboard: 'ACCÉDER À MON TABLEAU DE BORD →',
+    custom: (name, plan) => `Bienvenue ${name} ! Votre commande ${plan} est confirmée. Remplissez maintenant votre questionnaire de personnalisation afin que nous puissions commencer votre création.`,
+    standard: 'Votre commande est confirmée. Bienvenue chez FOLDÈ Design ! Vous pouvez maintenant accéder à votre tableau de bord privé et personnaliser entièrement votre faire-part.',
+  },
+  es: {
+    confirming: 'Confirmando el pago', waiting: 'Espera mientras verificamos tu pago…', issue: 'Problema con el pago',
+    issueText: 'No hemos podido verificar tu pago. Si crees que se trata de un error, escríbenos a folde.wedding@gmail.com.',
+    retry: 'INTENTAR DE NUEVO', validated: '¡Pago confirmado!', questionnaire: 'COMPLETAR EL CUESTIONARIO →', dashboard: 'ACCEDER A MI PANEL →',
+    custom: (name, plan) => `¡Bienvenido/a, ${name}! Tu pedido ${plan} está confirmado. Completa ahora el cuestionario de personalización para que podamos empezar a crear tu diseño.`,
+    standard: 'Tu pedido se ha confirmado correctamente. ¡Te damos la bienvenida a FOLDÈ Design! Ya puedes acceder a tu panel privado y personalizar por completo tu invitación.',
+  },
+};
+
+function SuccessContent({ locale }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { register, login, createOrder } = useDatabase();
+  const copy = COPY[locale] || COPY.en;
+  const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
 
   const [status, setStatus] = useState('verifying'); // 'verifying' | 'success' | 'error'
   const [orderData, setOrderData] = useState(null);
@@ -91,8 +117,8 @@ function SuccessContent() {
         <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '4rem 3rem', maxWidth: '500px', width: '100%', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>
           <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '3px solid #f0ede9', borderTopColor: '#5C3A1E', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
           <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-          <h1 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '0.5rem' }}>Confirming Payment</h1>
-          <p style={{ color: '#888', fontSize: '0.95rem' }}>Please wait while we verify your payment...</p>
+          <h1 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '0.5rem' }}>{copy.confirming}</h1>
+          <p style={{ color: '#888', fontSize: '0.95rem' }}>{copy.waiting}</p>
         </div>
       </div>
     );
@@ -104,12 +130,12 @@ function SuccessContent() {
       <div style={{ backgroundColor: '#F5F0E8', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', color: '#3D2B1F', padding: '2rem' }}>
         <div style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '4rem 3rem', maxWidth: '500px', width: '100%', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#dc2626', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem' }}>✕</div>
-          <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '1rem' }}>Payment Issue</h1>
+          <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '1rem' }}>{copy.issue}</h1>
           <p style={{ color: '#666', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-            We couldn't verify your payment. If you believe this is an error, please contact us at folde.wedding@gmail.com.
+            {copy.issueText}
           </p>
-          <Link href="/checkout" style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem 2.5rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', letterSpacing: '1px' }}>
-            TRY AGAIN
+          <Link href={localizedRoute('/checkout')} style={{ display: 'inline-block', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem 2.5rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', letterSpacing: '1px' }}>
+            {copy.retry}
           </Link>
         </div>
       </div>
@@ -125,22 +151,22 @@ function SuccessContent() {
         <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#5C3A1E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 2rem', boxShadow: '0 4px 12px rgba(92,58,30,0.2)' }}>
           ✓
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '1rem' }}>Payment Validated!</h1>
+        <h1 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-heading)', color: '#3D2B1F', marginBottom: '1rem' }}>{copy.validated}</h1>
         <p style={{ color: '#666', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
           {isCustom
-            ? `Welcome ${orderData?.name || ''}! Your ${orderData?.plan} order is confirmed. Please complete your customization questionnaire so we can start crafting your design.`
-            : `Your order has been successfully confirmed. Welcome to FOLDÈ Design! You can now access your private dashboard to start personalizing your invitation.`
+            ? copy.custom(orderData?.name || '', orderData?.plan || '')
+            : copy.standard
           }
         </p>
-        <Link href={isCustom ? `/checkout?step=4&plan=${orderData?.planId}&slug=${orderData?.slug || ''}` : "/dashboard"} style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
-          {isCustom ? "FILL OUT THE QUESTIONNAIRE →" : "ACCESS MY DASHBOARD →"}
+        <Link href={isCustom ? `${localizedRoute('/checkout')}?step=4&plan=${orderData?.planId}&slug=${orderData?.slug || ''}` : localizedRoute('/dashboard')} style={{ display: 'inline-block', width: '100%', backgroundColor: '#5C3A1E', color: '#fff', padding: '1rem', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s', letterSpacing: '1px' }}>
+          {isCustom ? copy.questionnaire : copy.dashboard}
         </Link>
       </div>
     </div>
   );
 }
 
-export default function Success() {
+export default function Success({ locale = 'en' }) {
   return (
     <Suspense fallback={
       <div style={{ backgroundColor: '#F5F0E8', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -148,7 +174,7 @@ export default function Success() {
         <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
       </div>
     }>
-      <SuccessContent />
+      <SuccessContent locale={locale} />
     </Suspense>
   );
 }

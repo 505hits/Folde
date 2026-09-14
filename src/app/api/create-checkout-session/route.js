@@ -16,7 +16,7 @@ const PRICE_MAP = {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { plan, name, partnerName, email, theme } = body;
+    const { plan, name, partnerName, email, theme, locale } = body;
 
     const priceId = PRICE_MAP[plan];
     if (!priceId) {
@@ -25,6 +25,8 @@ export async function POST(request) {
 
     // Déterminer l'URL de base
     const origin = request.headers.get('origin') || 'https://folde-wedding.com';
+    const localePrefix = ['fr', 'es'].includes(locale) ? `/${locale}` : '';
+    const selectedTheme = theme || 'bordeaux';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -41,10 +43,11 @@ export async function POST(request) {
         partnerName,
         email,
         plan,
-        theme: theme || 'bordeaux',
+        theme: selectedTheme,
+        locale: ['fr', 'es'].includes(locale) ? locale : 'en',
       },
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout`,
+      success_url: `${origin}${localePrefix}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}${localePrefix}/checkout?template=${encodeURIComponent(selectedTheme)}`,
     });
 
     return NextResponse.json({ url: session.url });

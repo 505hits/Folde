@@ -6,6 +6,9 @@ import Approach from "@/app/approach/page";
 import Story from "@/app/story/page";
 import BlogIndex from "@/app/blog/page";
 import BlogArticle from "@/app/blog/[slug]/page";
+import Checkout from "@/app/checkout/page";
+import Dashboard from "@/app/dashboard/page";
+import Success from "@/app/success/page";
 import { getPostEs } from "@/lib/blog-es";
 
 const SITE_URL = "https://www.folde-wedding.com";
@@ -34,6 +37,21 @@ const pageMetadata = {
   blog: {
     title: "Ideas y tutoriales para invitaciones de boda | FOLDÈ Wedding",
     description: "Tutoriales, ideas de diseño, consejos de confirmación e inspiración para invitaciones digitales de boda de FOLDÈ Wedding.",
+  },
+  checkout: {
+    title: "Finaliza tu invitación | FOLDÈ Wedding",
+    description: "Elige tu plan y personaliza tu invitación digital de boda FOLDÈ.",
+    robots: { index: false, follow: false },
+  },
+  dashboard: {
+    title: "Tu panel de boda | FOLDÈ Wedding",
+    description: "Gestiona tu invitación, invitados, confirmaciones y mesas desde tu espacio privado.",
+    robots: { index: false, follow: false },
+  },
+  success: {
+    title: "Pago confirmado | FOLDÈ Wedding",
+    description: "Confirmación de tu pedido de FOLDÈ Wedding.",
+    robots: { index: false, follow: false },
   },
 };
 
@@ -96,6 +114,9 @@ export default async function SpanishPage({ params }) {
     case "approach": return <Approach locale="es" />;
     case "story": return <Story locale="es" />;
     case "blog": return <BlogIndex locale="es" />;
+    case "checkout": return <Checkout locale="es" />;
+    case "dashboard": return <Dashboard locale="es" />;
+    case "success": return <Success locale="es" />;
     default: notFound();
   }
 }

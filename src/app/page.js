@@ -143,8 +143,7 @@ export default function Home({ locale = 'en' }) {
   const isFrench = locale === 'fr';
   const t = (english, spanish) => isFrench ? translateFr(english) : isSpanish ? spanish : english;
   const copy = homeCopy[locale] || homeCopy.en;
-  const link = (path) => locale !== 'en' && path !== '/checkout' ? (path === '/' ? `/${locale}` : `/${locale}${path}`) : path;
-  const checkoutHref = locale === 'en' ? '/checkout' : `/checkout?locale=${locale}`;
+  const link = (path) => locale === 'en' ? path : (path === '/' ? `/${locale}` : `/${locale}${path}`);
   const descriptions = isSpanish ? spanishCarouselDescriptions : isFrench ? frenchCarouselDescriptions : null;
   const localizedCarouselItems = descriptions ? orderedCarouselItems.map((item) => ({ ...item, desc: descriptions[item.name] || item.desc })) : orderedCarouselItems;
   const localizedTestimonials = isSpanish ? spanishTestimonials : isFrench ? frenchTestimonials : testimonials;
@@ -192,7 +191,7 @@ export default function Home({ locale = 'en' }) {
               {copy.heroText}
             </p>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
-              <Link href={checkoutHref} className="btn-primary">{copy.design}</Link>
+              <Link href={link('/checkout')} className="btn-primary">{copy.design}</Link>
               <Link href={link('/collections')} className="btn-secondary">{copy.explore}</Link>
             </div>
 
@@ -225,6 +224,8 @@ export default function Home({ locale = 'en' }) {
                       editMode={false}
                       autoPlaySimulation={false}
                       heroHeight="988px"
+                      envelopeFit="contain"
+                      envelopeBackground="#d8c3a5"
                       onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
                       data={{
                         themeId: "ivory",
@@ -376,7 +377,7 @@ export default function Home({ locale = 'en' }) {
                 <div className={styles.pricingPrice}>79.90 €</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('Everything in Standard included', 'Todo lo incluido en Estándar')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Express 24h Dedicated Support', 'Atención prioritaria en 24 horas')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Self-service dashboard + priority support', 'Panel de autoservicio y soporte prioritario')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Custom sections (boarding pass, RSVP)', 'Secciones personalizadas (tarjeta de embarque, confirmación)')}</li>
@@ -397,7 +398,7 @@ export default function Home({ locale = 'en' }) {
                   <li><span className={styles.checkIcon}>✓</span> {t('Direct review & validation by our team', 'Revisión y validación directa por nuestro equipo')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Studio crafts and publishes your invitation after approval', 'El estudio crea y publica vuestra invitación tras la aprobación')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Personal concierge & priority support', 'Atención personalizada y soporte prioritario')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('5 AI image credits + 5 AI music credits', '5 créditos para imágenes con IA y 5 para música con IA')}</strong></li>
+                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Everything included in Premium', 'Todo lo incluido en Premium')}</li>
                 </ul>
               </div>
@@ -534,8 +535,8 @@ export default function Home({ locale = 'en' }) {
                 </li>
               </ul>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Link href={checkoutHref} className="btn-primary">{t('Order Now', 'Crear invitación')}</Link>
-                <Link href={checkoutHref} className="btn-secondary">{t('Start Live Preview', 'Abrir la vista previa')}</Link>
+                <Link href={link('/checkout')} className="btn-primary">{t('Order Now', 'Crear invitación')}</Link>
+                <Link href={link('/checkout')} className="btn-secondary">{t('Start Live Preview', 'Abrir la vista previa')}</Link>
               </div>
             </div>
           </div>
@@ -566,7 +567,7 @@ export default function Home({ locale = 'en' }) {
         <div className="container" style={{ textAlign: 'center' }}>
           <h2 className="heading-lg">{t('Bring Your Invitation to Life', 'Dad vida a vuestra invitación')}</h2>
           <p className="text-lg" style={{ marginTop: '0.5rem' }}>{t('Bespoke digital creations starting at €49.90', 'Creaciones digitales a medida desde 49,90 €')}</p>
-          <Link href={checkoutHref} className="btn-primary" style={{ marginTop: '2rem' }}>{t('Design Your Invitation', 'Diseñar vuestra invitación')}</Link>
+          <Link href={link('/checkout')} className="btn-primary" style={{ marginTop: '2rem' }}>{t('Design Your Invitation', 'Diseñar vuestra invitación')}</Link>
         </div>
       </section>
 
@@ -605,7 +606,7 @@ export default function Home({ locale = 'en' }) {
         transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         pointerEvents: showCta ? 'auto' : 'none'
       }}>
-        <Link href={link('/collections')} style={{
+        <Link href={link('/checkout')} style={{
           backgroundColor: '#5C3A1E', color: '#fff',
           display: 'flex', alignItems: 'center', gap: '0.75rem',
           padding: '1rem 1.8rem', borderRadius: '40px',

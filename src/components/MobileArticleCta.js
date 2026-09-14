@@ -19,7 +19,7 @@ export default function MobileArticleCta({ locale = "en" }) {
 
   return (
     <div className={`${styles.mobileArticleCta} ${visible ? styles.mobileArticleCtaVisible : ""}`}>
-      <Link href={locale === 'en' ? "/checkout" : `/checkout?locale=${locale}`} aria-label={label}>
+      <Link href={locale === 'en' ? "/checkout" : `/${locale}/checkout`} aria-label={label}>
         {label} <span aria-hidden="true">👇</span>
       </Link>
     </div>

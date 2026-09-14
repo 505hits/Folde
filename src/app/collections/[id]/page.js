@@ -55,7 +55,7 @@ export default function TemplateDetailPage({ params }) {
 
   const handleSelect = () => {
     localStorage.setItem('selectedTemplate', tpl.id);
-    router.push('/checkout');
+    router.push(`/checkout?template=${encodeURIComponent(tpl.id)}`);
   };
 
   return (

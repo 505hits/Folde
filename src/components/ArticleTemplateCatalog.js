@@ -28,7 +28,7 @@ export default function ArticleTemplateCatalog({ locale = "en" }) {
 
   const chooseTemplate = (templateId) => {
     window.localStorage.setItem("selectedTemplate", templateId);
-    window.location.assign(locale === 'en' ? '/checkout' : `/checkout?locale=${locale}`);
+    window.location.assign(locale === 'en' ? '/checkout' : `/${locale}/checkout`);
   };
 
   return (

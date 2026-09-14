@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
+import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 
 
 const themes = [
@@ -64,10 +65,11 @@ const packages = [
     name: 'Premium',
     price: 79.90,
     originalPrice: 149.90,
-    desc: 'A self-service invitation dashboard with 5 AI image credits, 5 AI music credits, priority support, and custom sections.',
+    desc: 'Personalize your invitation yourself with priority support, custom sections, and AI creation tools included.',
     features: [
       'Everything in Standard included',
-      '5 AI image credits + 5 AI music credits',
+      'Create up to 5 images with AI',
+      'Create up to 5 music tracks with AI',
       'Express 24h Dedicated Support',
       'Self-service dashboard + priority support',
       'Custom sections (boarding pass, RSVP options)',
@@ -87,7 +89,8 @@ const packages = [
       'Direct review & validation by our team',
       'Studio crafts and publishes your invitation after approval',
       'Concierge priority support',
-      '5 AI image credits + 5 AI music credits',
+      'Create up to 5 images with AI',
+      'Create up to 5 music tracks with AI',
       'Everything in Premium'
     ]
   }
@@ -170,6 +173,38 @@ const SECTION_OPTIONS = [
   { key: 'gifts', label: 'Gift Registry' },
 ];
 
+const TEMPLATE_PRESETS = {
+  bordeaux: { envelope: 'env_bordeaux', hero: 'hero_couple' },
+  champagne: { envelope: 'env_golden_palace', hero: 'hero_palm' },
+  ivory: { envelope: 'env_ivory_veil', hero: 'hero_seaview' },
+  sage: { envelope: 'env_floral', hero: 'hero_sea_anim' },
+  terracotta: { envelope: 'env_royal', hero: 'hero_car' },
+  royalbordeaux: { envelope: 'env_horizon_bordeaux', hero: 'hero_castle' },
+  royalblue: { envelope: 'env_celestial_veil', hero: 'hero_royal' },
+  chocolate: { envelope: 'env_luxury', hero: 'hero_sea_balcony' },
+  rosebow: { envelope: 'env_rose_bow', hero: 'hero_rose_bow' },
+  majestic: { envelope: 'env_majestic', hero: 'hero_royal' },
+  thelaceedit: { envelope: 'env_thelaceedit', hero: 'hero_thelaceedit' },
+  lejardin: { envelope: 'env_lejardin', hero: 'hero_lejardin' },
+  lacephotoscratch: { envelope: 'env_lacephotoscratch', hero: 'hero_lacephotoscratch' },
+  oasisroyale: { envelope: 'env_oasisroyale', hero: 'hero_oasisroyale' },
+  tropical: { envelope: 'env_tropical', hero: 'hero_tropical' },
+  photoscratch: { envelope: 'env_photoscratch', hero: 'hero_seaview' },
+  softscratch: { envelope: 'env_softscratch', hero: 'hero_palm' },
+  cisnes: { envelope: 'env_cisnes', hero: 'hero_couple' },
+  bloom: { envelope: 'env_bloom', hero: 'hero_bloom' },
+  floral: { envelope: 'env_floral', hero: 'hero_sea_anim' },
+  romanticgarden: { envelope: 'env_romanticgarden', hero: 'hero_bloom' },
+  dolcevita: { envelope: 'env_floral', hero: 'hero_dolcevita' },
+  webgencytemplate5: { envelope: 'env_luxury', hero: 'hero_webgencytemplate5' },
+  pressedlovecomo: { envelope: 'env_pressedlovecomo', hero: 'hero_pressedlovecomo' },
+  pressedloveteatro: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedloveteatro' },
+  pressedlovethevenue: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovethevenue' },
+  pressedlovesweetlove: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovesweetlove' },
+  pressedlovefloral: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovefloral' },
+  pressedlovebigentrance: { envelope: 'env_pressedlovegold', hero: 'hero_pressedlovebigentrance' },
+};
+
 const inputStyle = {
   width: '100%',
   padding: '1rem',
@@ -191,9 +226,11 @@ const selectStyle = {
   paddingRight: '2.5rem',
 };
 
-const LazyThumbnail = ({ src, isEnvelope = false }) => {
-  const [inView, setInView] = useState(true);
+const LazyThumbnail = ({ src, isEnvelope = false, active = false, interactive = false }) => {
+  const [inView, setInView] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const ref = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -201,20 +238,40 @@ const LazyThumbnail = ({ src, isEnvelope = false }) => {
         setInView(true);
         observer.disconnect();
       }
-    }, { rootMargin: '300px' });
+    }, { rootMargin: '160px' });
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
+  const shouldPlay = interactive && (active || hovered);
+  const shouldLoad = inView || active || hovered;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (shouldPlay) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [shouldPlay, shouldLoad]);
+
   return (
-    <div ref={ref} style={{ width: '100%', height: '100%' }}>
-      {inView ? (
+    <div
+      ref={ref}
+      onPointerEnter={(event) => interactive && event.pointerType === 'mouse' && setHovered(true)}
+      onPointerLeave={(event) => interactive && event.pointerType === 'mouse' && setHovered(false)}
+      style={{ width: '100%', height: '100%', position: 'relative', background: 'linear-gradient(145deg, #e8e0d8, #8b7564)' }}
+    >
+      {shouldLoad ? (
         <video
+          ref={videoRef}
           src={src}
           poster={getFirstFramePoster(src, isEnvelope)}
-          preload="auto"
-          fetchPriority="high"
+          preload={shouldPlay ? "auto" : "metadata"}
+          autoPlay={shouldPlay}
+          loop={shouldPlay}
           muted
           playsInline
           style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
@@ -226,7 +283,7 @@ const LazyThumbnail = ({ src, isEnvelope = false }) => {
   );
 };
 
-const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelope = false) => {
+const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelope = false, active = false, interactive = false) => {
   if (!url) {
     return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
   }
@@ -238,7 +295,7 @@ const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', isEnvelop
     return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
   }
   const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
-  return <LazyThumbnail src={videoSrc} isEnvelope={isEnvelope} />;
+  return <LazyThumbnail src={videoSrc} isEnvelope={isEnvelope} active={active} interactive={interactive} />;
 };
 
 const labelStyle = {
@@ -250,7 +307,15 @@ const labelStyle = {
   display: 'block',
 };
 
-export default function CheckoutClient() {
+export default function CheckoutClient({ locale = "en" }) {
+  return (
+    <LocalizedSurface locale={locale}>
+      <CheckoutContent locale={locale} />
+    </LocalizedSurface>
+  );
+}
+
+function CheckoutContent({ locale = "en" }) {
   const router = useRouter();
   const { currentUser, register, login, createOrder, saveOrderDetails } = useDatabase();
 
@@ -300,6 +365,7 @@ export default function CheckoutClient() {
   const [selectedEnvelope, setSelectedEnvelope] = useState(ORDERED_ENVELOPE_OPTIONS[0].id);
   const [selectedHeroVideo, setSelectedHeroVideo] = useState(HERO_VIDEO_OPTIONS[0].id);
   const [envelopeKey, setEnvelopeKey] = useState(0);
+  const previewPhoneScreenRef = useRef(null);
 
   const handleFileChange = (e, field) => {
     const files = Array.from(e.target.files);
@@ -351,8 +417,18 @@ export default function CheckoutClient() {
 
   useEffect(() => {
     const saved = typeof window !== 'undefined' && localStorage.getItem('selectedTemplate');
-    if (saved && themes.find(t => t.id === saved)) {
-      setSelectedTheme(saved);
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+    const requestedTemplate = params.get('template');
+    const initialTemplate = requestedTemplate || saved;
+    if (initialTemplate && themes.find(t => t.id === initialTemplate)) {
+      setSelectedTheme(initialTemplate);
+      localStorage.setItem('selectedTemplate', initialTemplate);
+      const preset = TEMPLATE_PRESETS[initialTemplate];
+      if (preset) {
+        setSelectedEnvelope(preset.envelope);
+        setSelectedHeroVideo(preset.hero);
+        setEnvelopeKey(k => k + 1);
+      }
     }
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -390,6 +466,11 @@ export default function CheckoutClient() {
     }
   }, []);
 
+  const restartInvitationPreview = () => {
+    if (previewPhoneScreenRef.current) previewPhoneScreenRef.current.scrollTop = 0;
+    setEnvelopeKey(k => k + 1);
+  };
+
   // Debounced preview state to prevent video re-initialization memory leaks while typing
   const [debouncedAccount, setDebouncedAccount] = useState(account);
   const [debouncedPreviewDate, setDebouncedPreviewDate] = useState(previewDate);
@@ -414,19 +495,21 @@ export default function CheckoutClient() {
   const originalTotal = selectedPackage.originalPrice;
   const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
 
+  const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const formatPreviewDate = (dateStr) => {
-    if (!dateStr) return 'MAY 27, 2026';
+    if (!dateStr) return locale === 'fr' ? '27 MAI 2026' : locale === 'es' ? '27 MAY 2026' : 'MAY 27, 2026';
     const d = new Date(dateStr + 'T00:00:00');
-    if (isNaN(d.getTime())) return 'MAY 27, 2026';
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+    if (isNaN(d.getTime())) return locale === 'fr' ? '27 MAI 2026' : locale === 'es' ? '27 MAY 2026' : 'MAY 27, 2026';
+    return d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   };
 
   const envObj = ORDERED_ENVELOPE_OPTIONS.find(e => e.id === selectedEnvelope);
   const heroObj = HERO_VIDEO_OPTIONS.find(h => h.id === selectedHeroVideo);
 
   const previewData = useMemo(() => ({
-    partner1: debouncedAccount.name || 'Your Name',
-    partner2: debouncedAccount.partnerName || "Partner's Name",
+    language: locale,
+    partner1: debouncedAccount.name || interfaceText(locale, 'Your Name'),
+    partner2: debouncedAccount.partnerName || interfaceText(locale, "Partner's Name"),
     date: formatPreviewDate(debouncedPreviewDate),
     time: '16:00',
     ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
@@ -454,11 +537,22 @@ export default function CheckoutClient() {
       showSchedule: true,
       showBoardingPass: false,
       showRSVP: true,
-      showGallery: false,
-      showDressCode: false,
+      showGallery: true,
+      showDressCode: true,
+      showGuestGallery: true,
     },
+    gallery: [
+      "/images/couple_beach_sunset_1782995185709.png",
+      "/images/couple_elegant_dinner_1782995195329.png",
+      "/images/couple_forest_walk_1782995203954.png",
+      "/images/couple_cafe_smile_1782995212728.png",
+    ],
+    guestGallery: [
+      "/images/couple_cafe_smile_1782995212728.png",
+      "/images/couple_beach_sunset_1782995185709.png",
+    ],
     images: {},
-  }), [debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, selectedTheme, selectedEnvelope, selectedHeroVideo]);
+  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
   const handleNextStep = async () => {
     setAuthError('');
@@ -485,8 +579,7 @@ export default function CheckoutClient() {
           previewDate,
           previewVenue,
         }));
-        const locale = new URLSearchParams(window.location.search).get('locale');
-        router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
+        router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
       }
       return;
     }
@@ -526,12 +619,11 @@ export default function CheckoutClient() {
 
   const handleBack = () => {
     if (step === 3) {
-      const locale = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('locale') : null;
-      router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
+      router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
     } else if (step === 2) {
       setStep(1);
     } else {
-      router.push('/collections');
+      router.push(localizedRoute('/collections'));
     }
     window.scrollTo(0, 0);
   };
@@ -568,7 +660,7 @@ export default function CheckoutClient() {
           setPaymentProcessing(false);
           setStep(4);
         } else {
-          router.push('/dashboard');
+          router.push(localizedRoute('/dashboard'));
         }
         return;
       } catch (err) {
@@ -587,6 +679,7 @@ export default function CheckoutClient() {
           partnerName: account.partnerName,
           email: account.email,
           theme: selectedTheme,
+          locale,
         }),
       });
 
@@ -598,12 +691,12 @@ export default function CheckoutClient() {
       } else {
         console.error('No checkout URL returned:', data.error);
         setPaymentProcessing(false);
-        alert('Payment error: ' + (data.error || 'Please try again.'));
+        alert(interfaceText(locale, 'Payment error:') + ' ' + (data.error || interfaceText(locale, 'Please try again.')));
       }
     } catch (error) {
       console.error('Payment error:', error);
       setPaymentProcessing(false);
-      alert('An error occurred. Please try again.');
+      alert(interfaceText(locale, 'An error occurred. Please try again.'));
     }
   };
 
@@ -986,7 +1079,7 @@ export default function CheckoutClient() {
         .preview-phone-template-inner {
           width: 450px;
           min-height: 100%;
-          height: 100%;
+          height: auto;
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
@@ -1109,7 +1202,7 @@ export default function CheckoutClient() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#2c2c2c' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b08968' }}></span>
-              {selectedPackage.name} Package
+              {locale === 'fr' ? `Formule ${interfaceText(locale, selectedPackage.name)}` : locale === 'es' ? `Plan ${interfaceText(locale, selectedPackage.name)}` : `${selectedPackage.name} Package`}
             </div>
             {step > 1 && step <= 3 && (
               <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
@@ -1119,10 +1212,12 @@ export default function CheckoutClient() {
               </div>
             )}
           </div>
-          <div style={{ fontSize: '1rem' }}>
-            <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}$</span>
-            <span style={{ fontWeight: 700 }}>{total}$</span>
-          </div>
+          {step === 1 ? <div style={{ width: '64px' }} aria-hidden="true" /> : (
+            <div style={{ fontSize: '1rem' }}>
+              <span style={{ textDecoration: 'line-through', opacity: 0.4, marginRight: '0.4rem', fontSize: '0.85rem' }}>{originalTotal}$</span>
+              <span style={{ fontWeight: 700 }}>{total}$</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -1267,7 +1362,7 @@ export default function CheckoutClient() {
                           }}
                         >
                           <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#eaeaea', position: 'relative' }}>
-                            {renderMediaStartingFrame(hero.url, hero.name, '#33403a')}
+                            {renderMediaStartingFrame(hero.url, hero.name, '#33403a', false, isSelected, true)}
                           </div>
                           <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                             {hero.name}
@@ -1377,9 +1472,14 @@ export default function CheckoutClient() {
             {/* ── Phone Preview Panel ── */}
             <div className="preview-phone-side">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ fontSize: '0.68rem', letterSpacing: '2.5px', textTransform: 'uppercase', color: '#999', fontWeight: 600 }}>Live Preview</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ fontSize: '0.68rem', letterSpacing: '2.5px', textTransform: 'uppercase', color: '#999', fontWeight: 600 }}>Live Preview</div>
+                  <button type="button" onClick={restartInvitationPreview} style={{ border: '1px solid #d8cfc4', background: '#fff', color: '#5C3A1E', borderRadius: '999px', padding: '0.42rem 0.75rem', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    ↻ Replay opening
+                  </button>
+                </div>
                 <div className="preview-phone-frame">
-                  <div className="preview-phone-screen">
+                  <div className="preview-phone-screen" ref={previewPhoneScreenRef}>
                     <div className="preview-phone-template-inner">
                       <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} activateEnvelopeOnHover heroHeight="970px" />
                     </div>
@@ -1395,8 +1495,8 @@ export default function CheckoutClient() {
         {step === 2 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>Choose your package</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Select the level of service you need.</p>
+              <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a' }}>Choose your package — full customization unlocks after payment</h1>
+              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.75rem', lineHeight: 1.6 }}>It is completely normal that you have not entered every detail yet. After payment, your private dashboard lets you customize all photos, videos, music, wording, RSVP settings, and event information.</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {packages.map(p => (
@@ -1478,8 +1578,7 @@ export default function CheckoutClient() {
                 </div>
               </div>
               <button onClick={() => {
-                const locale = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('locale') : null;
-                router.push(locale === 'es' || locale === 'fr' ? `/${locale}/packages` : '/packages');
+                router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
               }} style={{ background: 'none', border: 'none', color: '#5C3A1E', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Edit</button>
             </div>
 
@@ -1489,7 +1588,7 @@ export default function CheckoutClient() {
             </div>
             {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
             <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
-              Already have an account? <Link href="/dashboard" style={{ color: '#5C3A1E', fontWeight: 600, textDecoration: 'underline' }}>Log in to your dashboard</Link>
+              Already have an account? <Link href={localizedRoute('/dashboard')} style={{ color: '#5C3A1E', fontWeight: 600, textDecoration: 'underline' }}>Log in to your dashboard</Link>
             </div>
           </div>
         )}
@@ -1518,7 +1617,7 @@ export default function CheckoutClient() {
                 <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
                   Our team will review, refine, and validate your custom invitation. You'll receive a notification email at <strong>{account.email || currentUser?.email}</strong> when it's ready. You can also check the status from your studio space.
                 </p>
-                <button onClick={() => router.push('/dashboard')} style={{ width: '100%', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1.1rem 2rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(92,58,30,0.25)' }}>
+                <button onClick={() => router.push(localizedRoute('/dashboard'))} style={{ width: '100%', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', padding: '1.1rem 2rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(92,58,30,0.25)' }}>
                   VIEW MY STUDIO SPACE →
                 </button>
               </div>
@@ -1655,7 +1754,7 @@ export default function CheckoutClient() {
                               {h.id === 'hero_custom' ? (
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#555' }}>Upload</span>
                               ) : (
-                                renderMediaStartingFrame(h.url, h.name, '#33403a')
+                                renderMediaStartingFrame(h.url, h.name, '#33403a', false, isSelected, true)
                               )}
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.5rem', color: isSelected ? '#5C3A1E' : '#333', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -1802,11 +1901,11 @@ export default function CheckoutClient() {
             <div className="mobile-hide" style={{ display: 'flex', gap: '1rem', color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>
               <span>✓ Secure payment</span><span>·</span><span>✓ Instant confirmation</span><span>·</span><span>✓ Designer-made</span>
             </div>
-            <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            {step === 3 && <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
               <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#5C3A1E', letterSpacing: '2px', textTransform: 'uppercase' }}>SPECIAL OFFER · You save ${Math.round(originalTotal - total)}</span>
               <div style={{ height: '1px', width: '40px', backgroundColor: '#e0dcd7' }}></div>
-            </div>
+            </div>}
           </div>
         )}
       </div>
@@ -1825,12 +1924,12 @@ export default function CheckoutClient() {
               <button onClick={handleBack} className="checkout-back-btn" aria-label="Back">←</button>
               <button onClick={handleNextStep} className="checkout-main-btn" disabled={paymentProcessing}>
                 <span className="checkout-btn-text">{step === 1 ? 'CONTINUE TO PACKAGES →' : step === 2 ? 'CONTINUE TO PAYMENT →' : (paymentProcessing ? 'PROCESSING...' : 'PAY & START')}</span>
-                <div className="checkout-btn-price">
+                {step !== 1 && <div className="checkout-btn-price">
                   {originalTotal > total && (
                     <span className="checkout-old-price">{originalTotal}$</span>
                   )}
                   <span className="checkout-final-price">{total}$ →</span>
-                </div>
+                </div>}
               </button>
             </div>
             <div className="checkout-pay-badge">
