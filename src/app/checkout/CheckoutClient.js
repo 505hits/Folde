@@ -421,6 +421,19 @@ function CheckoutContent({ locale = "en" }) {
   // Note: checkout fields intentionally start empty — the client enters their own details.
 
   useEffect(() => {
+    const scrollToPageTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+    scrollToPageTop();
+    const frameId = window.requestAnimationFrame(scrollToPageTop);
+    const timerId = window.setTimeout(scrollToPageTop, 100);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timerId);
+    };
+  }, []);
+
+  useEffect(() => {
     const saved = typeof window !== 'undefined' && localStorage.getItem('selectedTemplate');
     const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const requestedTemplate = params.get('template');
