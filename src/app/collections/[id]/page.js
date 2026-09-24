@@ -34,6 +34,11 @@ const templates = [
   { id: 'pressedlovesweetlove', name: 'Sweet Love', tag: 'ROMANTIC', desc: 'Warm peach, cream & tender romance.', video: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', partner1: 'Javier', partner2: 'Laura', date: 'SEP 10, 2026', popular: true },
   { id: 'pressedlovefloral', name: 'Botanical Floral', tag: 'NATURAL', desc: 'Soft floral petals and garden blooming.', video: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', partner1: 'Carlos', partner2: 'María', date: 'OCT 15, 2026', popular: false },
   { id: 'pressedlovebigentrance', name: 'Big Entrance', tag: 'DRAMATIC', desc: 'Cinematic debut and regal golden seal.', video: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', partner1: 'Raphaël', partner2: 'Victoria', date: 'NOV 08, 2026', popular: true },
+  { id: 'rosas', name: 'Rosas', tag: 'ROMANTIC', desc: 'Velvet roses and deep burgundy romance.', video: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', envelope: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', partner1: 'Aylin', partner2: 'Berkan', date: 'SEP 19, 2026' },
+  { id: 'atelierindigo', name: 'Atelier Indigo', tag: 'ELEGANT', desc: 'Editorial ivory with refined indigo details.', video: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', isImage: true, envelope: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', partner1: 'Selin', partner2: 'Kaan', date: 'OCT 03, 2026' },
+  { id: 'orange', name: 'Orange', tag: 'WARM', desc: 'Sun-washed terracotta with Mediterranean warmth.', video: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', envelope: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', partner1: 'Esin', partner2: 'Cemal', date: 'OCT 17, 2026' },
+  { id: 'editorial', name: 'Editorial', tag: 'MINIMAL', desc: 'Modern typography and understated ivory paper.', video: 'https://wedgo.co/editorial-assets/wedding-dance.png', isImage: true, envelope: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', partner1: 'Elena', partner2: 'Nicolas', date: 'NOV 07, 2026' },
+  { id: 'excellence', name: 'Excellence', tag: 'ELEGANT', desc: 'Architectural florals with champagne refinement.', video: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', envelope: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', partner1: 'Cristina', partner2: 'Josh', date: 'NOV 21, 2026' },
 ];
 
 export default function TemplateDetailPage({ params }) {
@@ -70,6 +75,7 @@ export default function TemplateDetailPage({ params }) {
           themeId: tpl.id,
           partner1: tpl.partner1,
           partner2: tpl.partner2,
+          date: tpl.date || 'MAY 27, 2026',
           videos: {
             envelope: tpl.envelope,
             hero: tpl.isImage ? null : tpl.video

@@ -1312,7 +1312,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       showDressCode: true,
       showAccommodations: true,
       showMenu: true,
-      showGallery: true
+      showGallery: true,
+      showGifts: true
     },
     images: {}
   };
@@ -1644,6 +1645,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'pressedlovesweetlove', name: 'Sweet Love', desc: 'Soft peach and cream tones with delicate romance' },
     { id: 'pressedlovefloral', name: 'Botanical Floral', desc: 'Floral petals and a romantic bloom' },
     { id: 'pressedlovebigentrance', name: 'Big Entrance', desc: 'A majestic entrance with a golden wax seal' },
+    { id: 'rosas', name: 'Rosas', desc: 'Velvet roses and deep burgundy romance', envelope: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', hero: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', color: '#3D0103' },
+    { id: 'atelierindigo', name: 'Atelier Indigo', desc: 'Editorial ivory with refined indigo details', envelope: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', hero: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', color: '#122B45' },
+    { id: 'orange', name: 'Orange', desc: 'Sun-washed terracotta and Mediterranean warmth', envelope: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', hero: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', color: '#8A3F13' },
+    { id: 'editorial', name: 'Editorial', desc: 'Modern typography on understated ivory paper', envelope: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', hero: 'https://wedgo.co/editorial-assets/wedding-dance.png', color: '#38332E' },
+    { id: 'excellence', name: 'Excellence', desc: 'Architectural florals and champagne refinement', envelope: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', hero: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3A5542' },
   ];
 
   const AVAILABLE_ENVELOPE_VIDEOS = [
@@ -1676,6 +1682,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340', desc: 'Como wax seal blue opening' },
     { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810', desc: 'Classic Pressed Love envelope opening' },
     { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744', desc: 'Regal golden wax seal opening' },
+    { id: 'env_rosas', name: 'Rosas Velvet', url: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', color: '#3d0103', desc: 'Deep rose velvet opening' },
+    { id: 'env_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', color: '#f7f2ea', desc: 'Ivory paper and wax seal opening' },
+    { id: 'env_orange', name: 'Orange Terracotta', url: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', color: '#8a3f13', desc: 'Warm terracotta wax seal opening' },
+    { id: 'env_editorial', name: 'Editorial Paper', url: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', color: '#f2efe9', desc: 'Minimal editorial paper opening' },
+    { id: 'env_excellence', name: 'Excellence Floral', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542', desc: 'Architectural floral opening' },
     { id: 'env_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own envelope video' },
   ];
 
@@ -1711,6 +1722,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'hero_pressedlovesweetlove', name: 'Sweet Love', url: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4', color: '#f5f5f0', desc: 'Sweet Love romantic hero video' },
     { id: 'hero_pressedlovefloral', name: 'Botanical Floral', url: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4', color: '#f8f4f0', desc: 'Botanical floral video' },
     { id: 'hero_pressedlovebigentrance', name: 'Big Entrance', url: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', color: '#1a2744', desc: 'Big Entrance cinematic video' },
+    { id: 'hero_rosas', name: 'Rosas', url: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', color: '#3d0103', desc: 'Burgundy floral hero' },
+    { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', color: '#122b45', desc: 'Indigo editorial artwork' },
+    { id: 'hero_orange', name: 'Orange', url: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', color: '#8a3f13', desc: 'Terracotta Mediterranean hero' },
+    { id: 'hero_editorial', name: 'Editorial', url: 'https://wedgo.co/editorial-assets/wedding-dance.png', color: '#f2efe9', desc: 'Minimal editorial illustration' },
+    { id: 'hero_excellence', name: 'Excellence', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542', desc: 'Champagne floral architecture' },
     { id: 'hero_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own hero video' },
   ];
 
@@ -1723,8 +1739,65 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'sound_custom', name: 'Custom Upload', url: 'custom', desc: 'Upload your own audio file' },
   ];
 
+  const applyTemplate = (template) => {
+    const heroIsImage = template.hero?.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || template.hero?.includes('/_next/image?');
+    const updated = {
+      ...local,
+      themeId: template.id,
+      videos: {
+        ...(local.videos || {}),
+        ...(template.envelope ? { envelope: template.envelope } : {}),
+        ...(template.hero ? { hero: heroIsImage ? null : template.hero } : {})
+      },
+      images: {
+        ...(local.images || {}),
+        ...(template.hero ? { hero: heroIsImage ? template.hero : null } : {})
+      }
+    };
+
+    setSelectedTheme?.(template.id);
+    setLocal(updated);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      setEventInfo(prev => ({ ...prev, [slug]: updated }));
+      saveOrderDetails?.(slug, updated);
+    }, 250);
+    triggerReplayEnvelope?.();
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+      <div style={sectionStyle}>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>Invitation Design</h2>
+          <p style={{ fontSize: '0.82rem', color: '#666', margin: '0.3rem 0 0' }}>Choose a complete design, then personalize every detail below.</p>
+        </div>
+        <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch' }}>
+          {AVAILABLE_TEMPLATES.map(template => {
+            const activeTemplate = (local.themeId || selectedTheme) === template.id;
+            return (
+              <button
+                key={template.id}
+                type="button"
+                onClick={() => applyTemplate(template)}
+                style={{
+                  flex: '0 0 158px', textAlign: 'left', padding: '0.65rem', cursor: 'pointer',
+                  borderRadius: '16px', background: activeTemplate ? '#F7F0E8' : '#fff',
+                  border: activeTemplate ? '2px solid #8A5A35' : '1px solid #E6DED6',
+                  boxShadow: activeTemplate ? '0 8px 22px rgba(92,58,30,.12)' : 'none', fontFamily: 'inherit'
+                }}
+              >
+                <span style={{ display: 'block', height: '64px', borderRadius: '11px', marginBottom: '0.65rem', background: `linear-gradient(145deg, ${template.color || '#E9DFD4'}, #FFF8F0)`, overflow: 'hidden' }}>
+                  {template.hero && renderMediaStartingFrame(template.hero, template.name, template.color || '#E9DFD4')}
+                </span>
+                <strong style={{ display: 'block', color: '#3D2B1F', fontSize: '0.82rem', marginBottom: '0.2rem' }}>{template.name}</strong>
+                <span style={{ display: 'block', color: '#75685E', fontSize: '0.68rem', lineHeight: 1.35 }}>{template.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Visible Sections */}
       <div style={sectionStyle}>
@@ -1745,6 +1818,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             { key: 'showMenu', label: 'Wedding Menu' },
             { key: 'showDressCode', label: 'Dress Code' },
             { key: 'showGallery', label: 'Memories (Photo Slider)' },
+            { key: 'showGifts', label: 'Gift Message' },
             { key: 'showRSVP', label: 'RSVP Form' },
             { key: 'showGuestGallery', label: 'Guest Photo Gallery' }
           ].map(sec => {
@@ -2179,6 +2253,36 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               >✕</button>
             </div>
           ))}
+        </div>
+      </div>
+
+
+      <div style={sectionStyle}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '0.4rem', fontFamily: 'var(--font-heading)' }}>Story & Invitation Copy</h2>
+        <p style={{ fontSize: '0.82rem', color: '#746A61', margin: '0 0 1.4rem' }}>These texts inherit the selected design by default. Add your own wording whenever you want.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={labelStyle}>Story heading</label>
+            <input type="text" value={local.storyTitle || ''} onChange={e => handleChange('storyTitle', e.target.value)} style={inputStyle} placeholder="Leave empty to use the design’s wording" />
+          </div>
+          <div>
+            <label style={labelStyle}>Your story</label>
+            <textarea value={local.storyText || ''} onChange={e => handleChange('storyText', e.target.value)} style={{ ...inputStyle, minHeight: '110px', resize: 'vertical' }} placeholder="Tell guests a few words about your celebration…" />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>Gift section heading</label>
+              <input type="text" value={local.giftTitle || ''} onChange={e => handleChange('giftTitle', e.target.value)} style={inputStyle} placeholder="Your presence is our gift" />
+            </div>
+            <div>
+              <label style={labelStyle}>Registry or contribution link</label>
+              <input type="url" value={local.giftLink || ''} onChange={e => handleChange('giftLink', e.target.value)} style={inputStyle} placeholder="https://…" />
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Gift message</label>
+            <textarea value={local.giftText || ''} onChange={e => handleChange('giftText', e.target.value)} style={{ ...inputStyle, minHeight: '88px', resize: 'vertical' }} placeholder="Write an optional, personal note for your guests…" />
+          </div>
         </div>
       </div>
 

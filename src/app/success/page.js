@@ -80,6 +80,18 @@ function SuccessContent({ locale }) {
         const planId = pending?.planId || plan.toLowerCase();
         const password = pending?.password || 'welcome123';
         const price = pending?.price || (session.amountTotal / 100);
+        const invitationDetails = pending?.previewData && typeof pending.previewData === 'object'
+          ? {
+              ...pending.previewData,
+              themeId: theme,
+              partner1: name,
+              partner2: partnerName,
+            }
+          : {
+              themeId: theme,
+              partner1: name,
+              partner2: partnerName,
+            };
 
         // 3. Register/Login the user (if not already logged in)
         const registerResult = await register(email, password, name, partnerName);
@@ -89,7 +101,7 @@ function SuccessContent({ locale }) {
         }
 
         // 4. Create the order
-        const newOrder = await createOrder(email, name, partnerName, theme, plan, price);
+        const newOrder = await createOrder(email, name, partnerName, theme, plan, price, invitationDetails);
         const orderSlug = newOrder?.slug || '';
 
         // 5. Clean up

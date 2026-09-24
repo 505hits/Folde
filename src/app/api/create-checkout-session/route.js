@@ -2,24 +2,22 @@ import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const STANDARD_LAUNCH_PRICE_ID = 'price_1UItNjDepfiMdtp46fHveRN0';
 
-// Mapping des plans vers les Price IDs Stripe
-const PRICE_MAP = {
-  essential: 'price_1Tw4pSDepfiMdtp4CtFaXDs9',
-  Standard: 'price_1Tw4pSDepfiMdtp4CtFaXDs9',
-  premium: 'price_1TzgWtDepfiMdtp4XOkG0Mvj',
-  Premium: 'price_1TzgWtDepfiMdtp4XOkG0Mvj',
-  Custom: 'price_1TzgY5DepfiMdtp4r6cTJAK2',
-  custom: 'price_1TzgY5DepfiMdtp4r6cTJAK2',
+const PLAN_CONFIG = {
+  essential: { name: 'FOLDÈ Standard', unitAmount: 4990 },
+  Standard: { name: 'FOLDÈ Standard', unitAmount: 4990 },
+  Custom: { name: 'FOLDÈ Expert', unitAmount: 14900 },
+  custom: { name: 'FOLDÈ Expert', unitAmount: 14900 },
 };
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { plan, name, partnerName, email, theme, locale } = body;
+    const { plan, name, partnerName, email, theme, locale, launchOffer, offerExpires } = body;
 
-    const priceId = PRICE_MAP[plan];
-    if (!priceId) {
+    const planConfig = PLAN_CONFIG[plan];
+    if (!planConfig) {
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
     }
 
@@ -28,16 +26,19 @@ export async function POST(request) {
     const localePrefix = ['fr', 'es'].includes(locale) ? `/${locale}` : '';
     const selectedTheme = theme || 'bordeaux';
 
+    const now = Date.now();
+    const parsedExpiry = Number(offerExpires);
+    const isStandard = plan === 'essential' || plan === 'Standard';
+    const validLaunchOffer = isStandard && launchOffer === true && parsedExpiry > now && parsedExpiry <= now + (5 * 60 * 1000) + 30000;
+    const lineItem = validLaunchOffer
+      ? { price: STANDARD_LAUNCH_PRICE_ID, quantity: 1 }
+      : { price_data: { currency: 'usd', unit_amount: planConfig.unitAmount, product_data: { name: planConfig.name } }, quantity: 1 };
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      customer_email: email,
+      line_items: [lineItem],
+      ...(email ? { customer_email: email } : {}),
       metadata: {
         name,
         partnerName,
@@ -45,6 +46,7 @@ export async function POST(request) {
         plan,
         theme: selectedTheme,
         locale: ['fr', 'es'].includes(locale) ? locale : 'en',
+        launchOffer: validLaunchOffer ? 'true' : 'false',
       },
       success_url: `${origin}${localePrefix}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${localePrefix}/checkout?template=${encodeURIComponent(selectedTheme)}`,

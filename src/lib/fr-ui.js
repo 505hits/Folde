@@ -56,7 +56,7 @@ const fr = {
   'Start Live Preview': 'Ouvrir l’aperçu',
   'Everything you need to know before getting started.': 'Tout ce qu’il faut savoir avant de commencer.',
   'Bring Your Invitation to Life': 'Donnez vie à votre invitation',
-  'Bespoke digital creations starting at €49.90': 'Créations numériques sur mesure à partir de 49,90 €',
+  'Bespoke digital creations starting at €29.90': 'Créations numériques sur mesure à partir de 29,90 €',
   'Design Your Invitation': 'Créer votre invitation',
   'Have Questions? Get in Touch': 'Une question ? Écrivez-nous',
   'Whether you are exploring options or ready to begin, our team is here to assist you.': 'Que vous compariez encore les possibilités ou soyez prêts à commencer, notre équipe est là pour vous accompagner.',

@@ -82,6 +82,10 @@ export default function TemplateHeroPreview({
       e.stopPropagation();
       setVideoActive(true);
     }
+    if (isEnvImg && showEnvelope && !envelopeDismissed) {
+      setEnvelopeOpen(true);
+      setEnvelopeDismissed(true);
+    }
   };
 
   useEffect(() => {

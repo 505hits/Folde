@@ -38,9 +38,14 @@ const templates = [
   { id: 'pressedlovesweetlove', name: 'Sweet Love', tag: 'ROMANTIC', desc: 'Warm peach, cream & tender romance.', video: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', partner1: 'Javier', partner2: 'Laura', date: 'SEP 10, 2026', popular: true },
   { id: 'pressedlovefloral', name: 'Botanical Floral', tag: 'NATURAL', desc: 'Soft floral petals and garden blooming.', video: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', partner1: 'Carlos', partner2: 'María', date: 'OCT 15, 2026', popular: false },
   { id: 'pressedlovebigentrance', name: 'Big Entrance', tag: 'DRAMATIC', desc: 'Cinematic debut and regal golden seal.', video: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', isImage: false, envelope: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', partner1: 'Raphaël', partner2: 'Victoria', date: 'NOV 08, 2026', popular: true },
+  { id: 'rosas', name: 'Rosas', tag: 'ROMANTIC', desc: 'Velvet roses and deep burgundy romance.', video: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', envelope: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', partner1: 'Aylin', partner2: 'Berkan', date: 'SEP 19, 2026', popular: true, isNew: true },
+  { id: 'atelierindigo', name: 'Atelier Indigo', tag: 'ELEGANT', desc: 'Editorial ivory with refined indigo details.', video: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', isImage: true, envelope: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', partner1: 'Selin', partner2: 'Kaan', date: 'OCT 03, 2026', popular: true, isNew: true },
+  { id: 'orange', name: 'Orange', tag: 'WARM', desc: 'Sun-washed terracotta with Mediterranean warmth.', video: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', envelope: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', partner1: 'Esin', partner2: 'Cemal', date: 'OCT 17, 2026', popular: true, isNew: true },
+  { id: 'editorial', name: 'Editorial', tag: 'MINIMAL', desc: 'Modern typography and understated ivory paper.', video: 'https://wedgo.co/editorial-assets/wedding-dance.png', isImage: true, envelope: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', partner1: 'Elena', partner2: 'Nicolas', date: 'NOV 07, 2026', popular: false, isNew: true },
+  { id: 'excellence', name: 'Excellence', tag: 'ELEGANT', desc: 'Architectural florals with champagne refinement.', video: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', envelope: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', partner1: 'Cristina', partner2: 'Josh', date: 'NOV 21, 2026', popular: true, isNew: true },
 ];
 
-const FEATURED_TEMPLATE_IDS = ['cisnes', 'bloom', 'romanticgarden', 'pressedlovecomo', 'tropical', 'softscratch'];
+const FEATURED_TEMPLATE_IDS = ['rosas', 'atelierindigo', 'orange', 'editorial', 'excellence', 'cisnes', 'bloom', 'romanticgarden', 'pressedlovecomo', 'tropical', 'softscratch'];
 const orderedTemplates = [...templates].sort((a, b) => {
   const aIndex = FEATURED_TEMPLATE_IDS.indexOf(a.id);
   const bIndex = FEATURED_TEMPLATE_IDS.indexOf(b.id);
@@ -59,12 +64,16 @@ const spanishDescriptions = {
   pressedlovecomo: 'La elegancia de una villa en el lago de Como.', pressedloveteatro: 'Una apertura teatral con cortinas y oro.',
   pressedlovethevenue: 'Una celebración en una villa de destino.', pressedlovesweetlove: 'Tonos melocotón, crema y un romanticismo delicado.',
   pressedlovefloral: 'Pétalos suaves y un jardín en flor.', pressedlovebigentrance: 'Una entrada cinematográfica con un sello dorado majestuoso.',
+  rosas: 'Rosas aterciopeladas y un romanticismo burdeos profundo.', atelierindigo: 'Marfil editorial con refinados detalles índigo.',
+  orange: 'Terracota bañada por el sol y calidez mediterránea.', editorial: 'Tipografía moderna sobre un papel marfil minimalista.',
+  excellence: 'Flores arquitectónicas con una elegancia color champán.',
 };
 
 const spanishTagLabels = { All: 'Todas', Popular: 'Populares', Elegant: 'Elegantes', Romantic: 'Románticas', Warm: 'Cálidas', New: 'Nuevas' };
 const frenchTagLabels = { All: 'Toutes', Popular: 'Populaires', Elegant: 'Élégantes', Romantic: 'Romantiques', Warm: 'Chaleureuses', New: 'Nouveautés' };
 const frenchDescriptions = {
-  cisnes: 'Une romance élégante entre cygnes.', bloom: 'L’amour en pleine floraison.', romanticgarden: 'Un jardin floral enchanté.', pressedlovecomo: 'L’élégance du lac de Côme.', tropical: 'Un paradis tropical vibrant.', softscratch: 'Une révélation tout en douceur.', floral: 'Un écrin de fleurs délicates.', dolcevita: 'La côte italienne baignée de soleil.', webgencytemplate5: 'Un luxe contemporain aux détails botaniques.', tildatemplate2: 'Un minimalisme sombre aux accents dorés.', pressedloveteatro: 'Un lever de rideau théâtral et opulent.', pressedlovethevenue: 'Une célébration dans une villa de destination.', pressedlovesweetlove: 'Pêche, crème et tendresse romantique.', pressedlovefloral: 'Des pétales délicats et un jardin en fleurs.', pressedlovebigentrance: 'Une entrée cinématographique au sceau doré.'
+  cisnes: 'Une romance élégante entre cygnes.', bloom: 'L’amour en pleine floraison.', romanticgarden: 'Un jardin floral enchanté.', pressedlovecomo: 'L’élégance du lac de Côme.', tropical: 'Un paradis tropical vibrant.', softscratch: 'Une révélation tout en douceur.', floral: 'Un écrin de fleurs délicates.', dolcevita: 'La côte italienne baignée de soleil.', webgencytemplate5: 'Un luxe contemporain aux détails botaniques.', tildatemplate2: 'Un minimalisme sombre aux accents dorés.', pressedloveteatro: 'Un lever de rideau théâtral et opulent.', pressedlovethevenue: 'Une célébration dans une villa de destination.', pressedlovesweetlove: 'Pêche, crème et tendresse romantique.', pressedlovefloral: 'Des pétales délicats et un jardin en fleurs.', pressedlovebigentrance: 'Une entrée cinématographique au sceau doré.',
+  rosas: 'Des roses veloutées dans un bordeaux profond.', atelierindigo: 'Un ivoire éditorial aux détails indigo raffinés.', orange: 'Une terracotta solaire à la chaleur méditerranéenne.', editorial: 'Une typographie moderne sur un papier ivoire épuré.', excellence: 'Des fleurs architecturales à l’élégance champagne.'
 };
 
 export default function Templates({ locale = 'en' }) {
@@ -86,6 +95,7 @@ export default function Templates({ locale = 'en' }) {
 
   const filtered = filter === 'All' ? orderedTemplates
     : filter === 'Popular' ? orderedTemplates.filter(t => t.popular)
+      : filter === 'New' ? orderedTemplates.filter(t => t.isNew)
       : orderedTemplates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
 
   const handleSelectAndContinue = (id) => {
@@ -177,6 +187,7 @@ export default function Templates({ locale = 'en' }) {
                     <TemplateHeroPreview
                       partner1={t.partner1}
                       partner2={t.partner2}
+                      date={t.date}
                       videoSrc={t.video}
                       envelopeSrc={t.envelope}
                       showEnvelope={!!t.envelope}

@@ -232,6 +232,74 @@ const themes = {
     accent: '#c5975b',
     fontHeading: "'Cormorant Garamond', serif",
     bgColor: '#FCFAF7'
+  },
+  rosas: {
+    primary: '#3D0103', secondary: '#875A56', accent: '#C99793',
+    fontHeading: "'Cormorant Garamond', serif", bgColor: '#FFFAF6'
+  },
+  atelierindigo: {
+    primary: '#122B45', secondary: '#465D75', accent: '#B79B8C',
+    fontHeading: "'Cormorant Garamond', serif", bgColor: '#F7F2EA'
+  },
+  orange: {
+    primary: '#8A3F13', secondary: '#5F321B', accent: '#CF8C52',
+    fontHeading: "'Playfair Display', serif", bgColor: '#FBF5EC'
+  },
+  editorial: {
+    primary: '#38332E', secondary: '#777067', accent: '#B9AFA2',
+    fontHeading: "'EB Garamond', serif", bgColor: '#F2EFE9'
+  },
+  excellence: {
+    primary: '#3A5542', secondary: '#778977', accent: '#C9B98F',
+    fontHeading: "'Cormorant Garamond', serif", bgColor: '#F6F4EE'
+  }
+};
+
+const signatureContent = {
+  rosas: {
+    ornament: '❦', eyebrow: 'A celebration in full bloom',
+    storyTitle: 'Our story, written in roses',
+    storyText: 'A romantic celebration shaped by deep florals, candlelight and the people who have made our story unforgettable.',
+    introTitle: 'The countdown to forever', introText: 'We cannot wait to celebrate this beautiful chapter with you.',
+    venueTitle: 'The place', scheduleTitle: 'Wedding timeline', menuTitle: 'At the table', galleryTitle: 'Photo album',
+    giftTitle: 'Your presence is our gift', giftText: 'Celebrating together is what matters most. If you wish, you may also contribute to our next chapter.',
+    mode: 'dark'
+  },
+  atelierindigo: {
+    ornament: 'A · I', eyebrow: 'Atelier de mariage',
+    storyTitle: 'A quiet story, beautifully composed',
+    storyText: 'A considered gathering where timeless paper, indigo details and personal words come together with effortless elegance.',
+    introTitle: 'Our story begins here', introText: 'Join us for a day designed with care, joy and the people we love.',
+    venueTitle: 'Location', scheduleTitle: 'Wedding flow', menuTitle: 'The menu', galleryTitle: 'Our story',
+    giftTitle: 'A note on gifts', giftText: 'Your presence is already a precious gift. For those who ask, our wishes are shared here with gratitude.',
+    mode: 'lined'
+  },
+  orange: {
+    ornament: '☼', eyebrow: 'Under the Mediterranean sun',
+    storyTitle: 'A celebration made of warmth',
+    storyText: 'Sunlit tables, joyful colour and a long evening together set the tone for the beginning of our next adventure.',
+    introTitle: 'The day is getting closer', introText: 'Come for the ceremony, stay for the sunset and dance with us into the night.',
+    venueTitle: 'Meet us here', scheduleTitle: 'Wedding flow', menuTitle: 'A taste of the day', galleryTitle: 'Our photos',
+    giftTitle: 'For our next adventure', giftText: 'Having you with us is enough. If you would like to contribute, you can help us create memories beyond the wedding day.',
+    mode: 'sun'
+  },
+  editorial: {
+    ornament: 'ISSUE 01', eyebrow: 'The wedding edition',
+    storyTitle: 'We are getting married',
+    storyText: 'The essential details, the people and the moments that will make this day ours — collected in one beautifully edited invitation.',
+    introTitle: 'Save this date', introText: 'A new chapter is about to begin, and we would love you to be part of it.',
+    venueTitle: 'Wedding details', scheduleTitle: 'The day, in order', menuTitle: 'On the menu', galleryTitle: 'Selected moments',
+    giftTitle: 'The registry', giftText: 'The greatest gift is celebrating together. Optional registry details can be shared here for friends and family.',
+    mode: 'editorial'
+  },
+  excellence: {
+    ornament: '✦', eyebrow: 'An exceptional celebration',
+    storyTitle: 'A timeless beginning',
+    storyText: 'An elegant weekend of meaningful details, beautiful surroundings and the people closest to us.',
+    introTitle: 'Together, at last', introText: 'We look forward to welcoming you into a celebration created with intention.',
+    venueTitle: 'The destination', scheduleTitle: 'Your itinerary', menuTitle: 'Dining', galleryTitle: 'Our story',
+    giftTitle: 'With gratitude', giftText: 'Your presence means everything to us. If you wish to mark the occasion further, our registry is available here.',
+    mode: 'arched'
   }
 };
 
@@ -422,6 +490,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const t = data || {};
   const themeId = t.themeId || data?.themeId || "royalbordeaux";
   const theme = themes[themeId] || themes.royalbordeaux;
+  const signature = signatureContent[themeId];
 
   const styleVariables = {
     '--color-primary': theme.primary,
@@ -475,19 +544,30 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const videos = t.videos || {};
   const sounds = t.sounds || {};
   const gallery = t.gallery || [];
-  const guestGallery = t.guestGallery && t.guestGallery.length > 0 ? t.guestGallery : [
+  const previewGuestGallery = [
     "/images/couple_beach_sunset_1782995185709.png",
     "/images/couple_elegant_dinner_1782995195329.png",
     "/images/couple_forest_walk_1782995203954.png",
     "/images/couple_cafe_smile_1782995212728.png"
   ];
-  const guestUploadUrl = (() => {
+  const guestGallery = t.guestGallery && t.guestGallery.length > 0
+    ? t.guestGallery
+    : (!t.slug || t.slug === 'wedding' ? previewGuestGallery : []);
+  const guestPhotoUrls = (() => {
     try {
-      return `${new URL(currentUrl).origin}/guest-upload/${encodeURIComponent(t.slug || 'wedding')}`;
+      const origin = new URL(currentUrl).origin;
+      const slug = encodeURIComponent(t.slug || 'wedding');
+      return { upload: `${origin}/guest-upload/${slug}`, gallery: `${origin}/guest-gallery/${slug}` };
     } catch {
-      return `https://folde-wedding.com/guest-upload/${encodeURIComponent(t.slug || 'wedding')}`;
+      const slug = encodeURIComponent(t.slug || 'wedding');
+      return {
+        upload: `https://folde-wedding.com/guest-upload/${slug}`,
+        gallery: `https://folde-wedding.com/guest-gallery/${slug}`
+      };
     }
   })();
+  const guestUploadUrl = guestPhotoUrls.upload;
+  const guestGalleryUrl = guestPhotoUrls.gallery;
 
   const ChevronIcon = () => (
     <svg className={styles.selectChevron} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -714,26 +794,73 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </button>
         </section>
 
+        {signature && (
+          <section style={{
+            position: 'relative', overflow: 'hidden', textAlign: 'center',
+            padding: signature.mode === 'arched' ? '5.5rem 2rem 4.5rem' : '4.5rem 2rem',
+            background: signature.mode === 'dark'
+              ? `linear-gradient(145deg, ${theme.primary}, #210001)`
+              : signature.mode === 'sun'
+                ? `radial-gradient(circle at 86% 12%, ${theme.accent}55 0 90px, transparent 92px), ${theme.bgColor}`
+                : theme.bgColor,
+            color: signature.mode === 'dark' ? '#FFFAF6' : theme.primary,
+            borderTop: signature.mode === 'lined' ? `6px double ${theme.primary}` : 'none',
+            borderBottom: signature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none'
+          }}>
+            {signature.mode === 'arched' && (
+              <div aria-hidden="true" style={{ position: 'absolute', inset: '1.3rem 1.4rem -5rem', border: `1px solid ${theme.accent}`, borderRadius: '48% 48% 0 0', opacity: 0.58 }} />
+            )}
+            <AnimatedSection type="fade">
+              <div style={{ position: 'relative', maxWidth: '620px', margin: '0 auto' }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: signature.mode === 'editorial' ? '84px' : '46px', minHeight: '34px',
+                  padding: signature.mode === 'editorial' ? '0.4rem 0.75rem' : '0.35rem', marginBottom: '1.15rem',
+                  border: signature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none', borderRadius: signature.mode === 'sun' ? '50%' : '0',
+                  fontSize: signature.mode === 'editorial' ? '0.62rem' : '1.45rem', letterSpacing: '0.18em', color: signature.mode === 'dark' ? theme.accent : theme.secondary
+                }}>{signature.ornament}</div>
+                <p style={{ margin: '0 0 0.9rem', fontSize: '0.66rem', fontWeight: 700, letterSpacing: signature.mode === 'editorial' ? '0.28em' : '0.2em', textTransform: 'uppercase', opacity: 0.78 }}>
+                  {t.storyEyebrow || signature.eyebrow}
+                </p>
+                <h2 style={{ margin: '0 auto 1.1rem', maxWidth: '540px', fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.35rem)', fontWeight: 400, lineHeight: 1.04, letterSpacing: signature.mode === 'editorial' ? '-0.025em' : 'normal' }}>
+                  {t.storyTitle || signature.storyTitle}
+                </h2>
+                <p style={{ margin: '0 auto', maxWidth: '510px', fontSize: 'clamp(0.92rem, 3.5cqw, 1.08rem)', lineHeight: 1.75, opacity: 0.8 }}>
+                  {t.storyText || signature.storyText}
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginTop: '2.5rem', paddingTop: '1.3rem', borderTop: `1px solid ${signature.mode === 'dark' ? '#ffffff42' : theme.accent}` }}>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Date</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{dateStr}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>With</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Place</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
+                </div>
+              </div>
+            </AnimatedSection>
+          </section>
+        )}
+
         {/* ================= INTRO SECTION ================= */}
         {sections.showIntro !== false && (
           <section className={styles.intro}>
             <AnimatedSection type="fade">
-               <h2 className={styles.introTitle}>{copy.dayHasArrived}</h2>
+               <h2 className={styles.introTitle}>{t.introTitle || signature?.introTitle || copy.dayHasArrived}</h2>
             </AnimatedSection>
             <AnimatedSection type="fade" style={{ animationDelay: '0.2s' }}>
-               <p className={styles.introSubtitle}>{copy.cantWaitToCelebrate}</p>
+               <p className={styles.introSubtitle}>{t.introText || signature?.introText || copy.cantWaitToCelebrate}</p>
             </AnimatedSection>
           </section>
         )}
 
         {/* ================= SCRATCH REVEAL DATE ================= */}
-        <ScratchReveal
-          dateStr={dateStr}
-          language={data?.language || 'en'}
-          accentColor="#c5975b"
-          bgColor="#1a1a1a"
-          textColor="#fff"
-        />
+        {signature ? (
+          <FlipCountdown targetDate={targetDate} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
+        ) : (
+          <ScratchReveal
+            dateStr={dateStr}
+            language={data?.language || 'en'}
+            accentColor="#c5975b"
+            bgColor="#1a1a1a"
+            textColor="#fff"
+          />
+        )}
         {/* ================= VENUE SECTION ================= */}
         {sections.showVenue !== false && (
           <section className={styles.venue}>
@@ -742,7 +869,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-               <h2 className={styles.venueTitle}>{copy.venueShort}</h2>
+               <h2 className={styles.venueTitle}>{t.venueTitle || signature?.venueTitle || copy.venueShort}</h2>
             </AnimatedSection>
 
             {/* Animated cover photo with reveal animation */}
@@ -784,7 +911,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-               <h3 className={styles.scheduleTitle}>{copy.scheduleTitle}</h3>
+               <h3 className={styles.scheduleTitle}>{t.scheduleTitle || signature?.scheduleTitle || copy.scheduleTitle}</h3>
             </AnimatedSection>
 
             <AnimatedSection type="fade">
@@ -847,7 +974,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showMenu !== false && (
           <section style={{ padding: '4rem 2rem', backgroundColor: '#fff', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
             <AnimatedSection type="fade">
-               <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{copy.menuTitle}</h2>
+               <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{t.menuTitle || signature?.menuTitle || copy.menuTitle}</h2>
                <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '2rem' }}>{copy.menuSubtitle}</p>
             </AnimatedSection>
             <AnimatedSection type="zoom">
@@ -869,7 +996,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         {sections.showGallery !== false && (
           <section id="gallery" className={styles.gallery}>
             <AnimatedSection type="fade">
-               <h2 className={styles.galleryTitle}>{copy.memoriesTitle}</h2>
+               <h2 className={styles.galleryTitle}>{t.galleryTitle || signature?.galleryTitle || copy.memoriesTitle}</h2>
                <p className={styles.gallerySubtitle}>{copy.memoriesSubtitle}</p>
             </AnimatedSection>
 
@@ -879,6 +1006,20 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               "/images/couple_forest_walk_1782995203954.png",
               "/images/couple_cafe_smile_1782995212728.png"
             ]} />
+          </section>
+        )}
+
+        {signature && sections.showGifts !== false && (
+          <section style={{ padding: '4.5rem 2rem', textAlign: 'center', background: signature.mode === 'dark' ? theme.bgColor : '#fff', borderTop: `1px solid ${theme.accent}55`, borderBottom: `1px solid ${theme.accent}55` }}>
+            <AnimatedSection type="fade">
+              <div style={{ width: '48px', height: '48px', margin: '0 auto 1.25rem', borderRadius: signature.mode === 'editorial' ? '0' : '50%', border: `1px solid ${theme.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primary, fontSize: '1.15rem' }}>✦</div>
+              <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>Gift</p>
+              <h2 style={{ margin: '0 auto 1rem', maxWidth: '520px', color: theme.primary, fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.2rem)', lineHeight: 1.05, fontWeight: 400 }}>{t.giftTitle || signature.giftTitle}</h2>
+              <p style={{ margin: '0 auto', maxWidth: '500px', color: theme.secondary, fontSize: '1rem', lineHeight: 1.75 }}>{t.giftText || signature.giftText}</p>
+              {t.giftLink && (
+                <a href={t.giftLink} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', marginTop: '1.6rem', padding: '0.8rem 1.4rem', borderRadius: '999px', background: theme.primary, color: theme.bgColor, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>View our gift wishes</a>
+              )}
+            </AnimatedSection>
           </section>
         )}
 
@@ -1064,13 +1205,18 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-                  <a href={guestUploadUrl} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.1rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease', margin: '0 auto', textDecoration: 'none' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
-                      <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
-                      <circle cx="12" cy="13" r="3"></circle>
-                    </svg>
-                     {copy.addPhotosBtn}
-                  </a>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
+                    <a href={guestUploadUrl} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '9999px', backgroundColor: 'var(--color-foreground)', color: 'var(--color-background)', padding: '0.8rem 1.5rem', fontSize: '1.05rem', cursor: 'pointer', border: 'none', transition: 'opacity 0.2s ease', textDecoration: 'none' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
+                        <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path>
+                        <circle cx="12" cy="13" r="3"></circle>
+                      </svg>
+                      {copy.addPhotosBtn}
+                    </a>
+                    <a href={guestGalleryUrl} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '9999px', color: 'var(--color-foreground)', padding: '0.8rem 1.5rem', fontSize: '1.05rem', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
+                      {copy.viewGalleryBtn || 'View the private gallery'}
+                    </a>
+                  </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', margin: '0.5rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
                     <img
@@ -1082,13 +1228,15 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                        {copy.galleryScan}
                     </p>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', margin: '1rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
-                    {guestGallery.map((img, idx) => (
-                      <div key={idx} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-                         <img src={img} alt={`${copy.guestGalleryTitle} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                    ))}
-                  </div>
+                  {guestGallery.length > 0 && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.8rem', margin: '1rem auto 0', width: '100%', maxWidth: '280px', boxSizing: 'border-box' }}>
+                      {guestGallery.map((img, idx) => (
+                        <div key={idx} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+                          <img src={img} alt={`${copy.guestGalleryTitle} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </AnimatedSection>

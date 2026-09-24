@@ -7,6 +7,7 @@ import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
+import MobileInvitationFunnel from "./MobileInvitationFunnel";
 
 
 const themes = [
@@ -41,14 +42,19 @@ const themes = [
   { id: 'pressedlovesweetlove', name: 'Sweet Love' },
   { id: 'pressedlovefloral', name: 'Botanical Floral' },
   { id: 'pressedlovebigentrance', name: 'Big Entrance' },
+  { id: 'rosas', name: 'Rosas' },
+  { id: 'atelierindigo', name: 'Atelier Indigo' },
+  { id: 'orange', name: 'Orange' },
+  { id: 'editorial', name: 'Editorial' },
+  { id: 'excellence', name: 'Excellence' },
 ];
 
 const packages = [
   {
     id: 'essential',
     name: 'Standard',
-    price: 49.90,
-    originalPrice: 99.90,
+    price: 29.90,
+    originalPrice: 49.90,
     desc: 'Choose from our +15 exclusive templates and receive a personalized digital wedding invitation with your texts, photos and colours.',
     features: [
       'Choose 1 template from over 15 options',
@@ -63,8 +69,8 @@ const packages = [
   {
     id: 'premium',
     name: 'Premium',
-    price: 79.90,
-    originalPrice: 149.90,
+    price: 49.90,
+    originalPrice: 83.20,
     desc: 'Personalize your invitation yourself with priority support, custom sections, and AI creation tools included.',
     features: [
       'Everything in Standard included',
@@ -79,8 +85,8 @@ const packages = [
   {
     id: 'Custom',
     name: 'Expert',
-    price: 149.90,
-    originalPrice: 290.00,
+    price: 99.90,
+    originalPrice: 166.50,
     desc: 'A bespoke hand-crafted experience with a dedicated creative brief, team review, and studio validation.',
     features: [
       '100% bespoke questionnaire onboarding',
@@ -127,6 +133,11 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340' },
   { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810' },
   { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744' },
+  { id: 'env_rosas', name: 'Rosas Velvet', url: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', color: '#3d0103' },
+  { id: 'env_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', color: '#f7f2ea' },
+  { id: 'env_orange', name: 'Orange Terracotta', url: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', color: '#8a3f13' },
+  { id: 'env_editorial', name: 'Editorial Paper', url: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', color: '#f2efe9' },
+  { id: 'env_excellence', name: 'Excellence Floral', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542' },
   { id: 'env_custom', name: "I'll provide my own", color: '#888' },
 ];
 
@@ -163,6 +174,11 @@ const HERO_VIDEO_OPTIONS = [
   { id: 'hero_pressedlovesweetlove', name: 'Sweet Love', url: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4' },
   { id: 'hero_pressedlovefloral', name: 'Botanical Floral', url: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4' },
   { id: 'hero_pressedlovebigentrance', name: 'Big Entrance', url: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4' },
+  { id: 'hero_rosas', name: 'Rosas', url: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4' },
+  { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75' },
+  { id: 'hero_orange', name: 'Orange', url: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4' },
+  { id: 'hero_editorial', name: 'Editorial', url: 'https://wedgo.co/editorial-assets/wedding-dance.png' },
+  { id: 'hero_excellence', name: 'Excellence', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4' },
   { id: 'hero_custom', name: "I'll provide my own" },
 ];
 
@@ -208,6 +224,11 @@ const TEMPLATE_PRESETS = {
   pressedlovesweetlove: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovesweetlove' },
   pressedlovefloral: { envelope: 'env_pressedloveenvelope', hero: 'hero_pressedlovefloral' },
   pressedlovebigentrance: { envelope: 'env_pressedlovegold', hero: 'hero_pressedlovebigentrance' },
+  rosas: { envelope: 'env_rosas', hero: 'hero_rosas' },
+  atelierindigo: { envelope: 'env_atelierindigo', hero: 'hero_atelierindigo' },
+  orange: { envelope: 'env_orange', hero: 'hero_orange' },
+  editorial: { envelope: 'env_editorial', hero: 'hero_editorial' },
+  excellence: { envelope: 'env_excellence', hero: 'hero_excellence' },
 };
 
 const inputStyle = {
@@ -327,6 +348,7 @@ function CheckoutContent({ locale = "en" }) {
   // Flow: 1=Package, 2=Preview+Personalize, 3=Email+Pay → /success
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
@@ -367,6 +389,8 @@ function CheckoutContent({ locale = "en" }) {
   // Preview step state
   const [previewDate, setPreviewDate] = useState('');
   const [previewVenue, setPreviewVenue] = useState('');
+  const [previewStoryTitle, setPreviewStoryTitle] = useState('');
+  const [previewStoryText, setPreviewStoryText] = useState('');
   const [selectedEnvelope, setSelectedEnvelope] = useState(ORDERED_ENVELOPE_OPTIONS[0].id);
   const [selectedHeroVideo, setSelectedHeroVideo] = useState(HERO_VIDEO_OPTIONS[0].id);
   const [envelopeKey, setEnvelopeKey] = useState(0);
@@ -421,6 +445,14 @@ function CheckoutContent({ locale = "en" }) {
   // Note: checkout fields intentionally start empty — the client enters their own details.
 
   useEffect(() => {
+    const query = window.matchMedia('(max-width: 768px)');
+    const updateViewport = () => setIsMobileViewport(query.matches);
+    updateViewport();
+    query.addEventListener?.('change', updateViewport);
+    return () => query.removeEventListener?.('change', updateViewport);
+  }, []);
+
+  useEffect(() => {
     const scrollToPageTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
     scrollToPageTop();
@@ -440,6 +472,29 @@ function CheckoutContent({ locale = "en" }) {
     const initialTemplate = requestedTemplate || saved;
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      const resumeToken = params.get('resume');
+      if (resumeToken) {
+        try {
+          const normalized = resumeToken.replace(/-/g, '+').replace(/_/g, '/');
+          const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+          const bytes = Uint8Array.from(atob(padded), char => char.charCodeAt(0));
+          const resumed = JSON.parse(new TextDecoder().decode(bytes));
+          window.requestAnimationFrame(() => {
+            setAccount(prev => ({
+              ...prev,
+              name: resumed.name || prev.name,
+              partnerName: resumed.partnerName || prev.partnerName,
+              email: resumed.email || prev.email,
+            }));
+            if (themes.some(theme => theme.id === resumed.selectedTheme)) setSelectedTheme(resumed.selectedTheme);
+            if (ORDERED_ENVELOPE_OPTIONS.some(option => option.id === resumed.selectedEnvelope)) setSelectedEnvelope(resumed.selectedEnvelope);
+            if (HERO_VIDEO_OPTIONS.some(option => option.id === resumed.selectedHeroVideo)) setSelectedHeroVideo(resumed.selectedHeroVideo);
+            if (resumed.previewDate) setPreviewDate(resumed.previewDate);
+          });
+        } catch (error) {
+          console.warn('Unable to restore the emailed preview.', error);
+        }
+      }
       const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
       if (savedPreviewDraft) {
         try {
@@ -448,15 +503,27 @@ function CheckoutContent({ locale = "en" }) {
             ...prev,
             name: draft.name || prev.name,
             partnerName: draft.partnerName || prev.partnerName,
+            email: draft.email || prev.email,
           }));
           if (themes.some(t => t.id === draft.selectedTheme)) setSelectedTheme(draft.selectedTheme);
           if (ORDERED_ENVELOPE_OPTIONS.some(option => option.id === draft.selectedEnvelope)) setSelectedEnvelope(draft.selectedEnvelope);
           if (HERO_VIDEO_OPTIONS.some(option => option.id === draft.selectedHeroVideo)) setSelectedHeroVideo(draft.selectedHeroVideo);
           if (draft.previewDate) setPreviewDate(draft.previewDate);
           if (draft.previewVenue) setPreviewVenue(draft.previewVenue);
+          if (draft.previewStoryTitle) setPreviewStoryTitle(draft.previewStoryTitle);
+          if (draft.previewStoryText) setPreviewStoryText(draft.previewStoryText);
         } catch (error) {
           console.warn('Unable to restore the live preview draft.', error);
         }
+      }
+      const landingPartner1 = params.get('partner1')?.trim();
+      const landingPartner2 = params.get('partner2')?.trim();
+      if (landingPartner1 || landingPartner2) {
+        setAccount(prev => ({
+          ...prev,
+          name: landingPartner1 || prev.name,
+          partnerName: landingPartner2 || prev.partnerName,
+        }));
       }
       // A design explicitly chosen from the landing page always wins over an
       // older preview draft, while the couple's previously entered details stay intact.
@@ -477,7 +544,7 @@ function CheckoutContent({ locale = "en" }) {
         if (foundPlan) setSelectedPackage(foundPlan);
       }
       if (params.get('step') === '3' && foundPlan) {
-        setStep(3);
+        router.replace(locale === 'en' ? '/packages' : `/${locale}/packages`);
       } else if (params.get('step') === '4') {
         setStep(4);
         const slugParam = params.get('slug');
@@ -495,6 +562,8 @@ function CheckoutContent({ locale = "en" }) {
   const [debouncedAccount, setDebouncedAccount] = useState(account);
   const [debouncedPreviewDate, setDebouncedPreviewDate] = useState(previewDate);
   const [debouncedPreviewVenue, setDebouncedPreviewVenue] = useState(previewVenue);
+  const [debouncedPreviewStoryTitle, setDebouncedPreviewStoryTitle] = useState(previewStoryTitle);
+  const [debouncedPreviewStoryText, setDebouncedPreviewStoryText] = useState(previewStoryText);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedAccount(account), 300);
@@ -511,12 +580,23 @@ function CheckoutContent({ locale = "en" }) {
     return () => clearTimeout(timer);
   }, [previewVenue]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedPreviewStoryTitle(previewStoryTitle), 300);
+    return () => clearTimeout(timer);
+  }, [previewStoryTitle]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedPreviewStoryText(previewStoryText), 300);
+    return () => clearTimeout(timer);
+  }, [previewStoryText]);
+
   const total = selectedPackage.price;
   const originalTotal = selectedPackage.originalPrice;
   const themeName = themes.find(t => t.id === selectedTheme)?.name || 'Editorial';
 
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
   const formatPreviewDate = (dateStr) => {
+    if (dateStr === 'TBD') return locale === 'fr' ? 'DATE À CONFIRMER' : locale === 'es' ? 'FECHA POR CONFIRMAR' : 'DATE TO BE CONFIRMED';
     if (!dateStr) return locale === 'fr' ? '27 MAI 2026' : locale === 'es' ? '27 MAY 2026' : 'MAY 27, 2026';
     const d = new Date(dateStr + 'T00:00:00');
     if (isNaN(d.getTime())) return locale === 'fr' ? '27 MAI 2026' : locale === 'es' ? '27 MAY 2026' : 'MAY 27, 2026';
@@ -534,6 +614,8 @@ function CheckoutContent({ locale = "en" }) {
     time: '16:00',
     ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
     receptionVenue: debouncedPreviewVenue || '',
+    storyTitle: debouncedPreviewStoryTitle,
+    storyText: debouncedPreviewStoryText,
     themeId: selectedTheme,
     videos: {
       envelope: envObj?.url || '',
@@ -560,6 +642,7 @@ function CheckoutContent({ locale = "en" }) {
       showGallery: true,
       showDressCode: true,
       showGuestGallery: true,
+      showGifts: true,
     },
     gallery: [
       "/images/couple_beach_sunset_1782995185709.png",
@@ -572,7 +655,7 @@ function CheckoutContent({ locale = "en" }) {
       "/images/couple_beach_sunset_1782995185709.png",
     ],
     images: {},
-  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, selectedTheme, selectedEnvelope, selectedHeroVideo]);
+  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, debouncedPreviewStoryTitle, debouncedPreviewStoryText, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
   const handleNextStep = async () => {
     setAuthError('');
@@ -598,6 +681,8 @@ function CheckoutContent({ locale = "en" }) {
           selectedHeroVideo,
           previewDate,
           previewVenue,
+          previewStoryTitle,
+          previewStoryText,
           previewData: {
             ...previewData,
             partner1: account.name,
@@ -605,6 +690,8 @@ function CheckoutContent({ locale = "en" }) {
             date: formatPreviewDate(previewDate),
             ceremonyVenue: previewVenue || 'Your Dream Venue',
             receptionVenue: previewVenue || '',
+            storyTitle: previewStoryTitle,
+            storyText: previewStoryText,
             themeId: selectedTheme,
             videos: {
               envelope: envObj?.url || '',
@@ -672,6 +759,16 @@ function CheckoutContent({ locale = "en" }) {
         email: account.email,
         password: account.password,
         theme: selectedTheme,
+        previewData: {
+          ...previewData,
+          partner1: account.name,
+          partner2: account.partnerName,
+          date: formatPreviewDate(previewDate),
+          ceremonyVenue: previewVenue || 'Your Dream Venue',
+          receptionVenue: previewVenue || '',
+          storyTitle: previewStoryTitle,
+          storyText: previewStoryText,
+        },
         plan: selectedPackage.name,
         planId: selectedPackage.id,
         price: total,
@@ -687,7 +784,24 @@ function CheckoutContent({ locale = "en" }) {
         if (!currentUser) {
           await register(account.email, account.password || 'test123', account.name, account.partnerName);
         }
-        const newOrder = await createOrder(account.email, account.name, account.partnerName, selectedTheme, selectedPackage.name, total);
+        const newOrder = await createOrder(
+          account.email,
+          account.name,
+          account.partnerName,
+          selectedTheme,
+          selectedPackage.name,
+          total,
+          {
+            ...previewData,
+            partner1: account.name,
+            partner2: account.partnerName,
+            date: formatPreviewDate(previewDate),
+            ceremonyVenue: previewVenue || 'Your Dream Venue',
+            receptionVenue: previewVenue || '',
+            storyTitle: previewStoryTitle,
+            storyText: previewStoryText,
+          }
+        );
         if (newOrder?.slug) setCreatedOrderSlug(newOrder.slug);
         if (selectedPackage.id === 'Custom' || selectedPackage.id === 'custom') {
           setPaymentProcessing(false);
@@ -796,6 +910,8 @@ function CheckoutContent({ locale = "en" }) {
           ceremonyVenue: premiumForm.weddingVenue || '',
           receptionVenue: premiumForm.weddingCity || '',
           themeId: selectedTheme,
+          storyTitle: previewStoryTitle || '',
+          storyText: previewStoryText || '',
           videos: {
             envelope: envObj?.url || '',
             hero: heroObj?.url || '',
@@ -808,6 +924,7 @@ function CheckoutContent({ locale = "en" }) {
             showGallery: sectionsMap.showGallery || false,
             showDressCode: sectionsMap.showDressCode || false,
             showMenu: true,
+            showGifts: true,
             showBoardingPass: false,
           },
           timeline: [
@@ -906,6 +1023,66 @@ function CheckoutContent({ locale = "en" }) {
     }));
   };
 
+  const completeMobileFunnel = async (email) => {
+    const finalAccount = { ...account, email };
+    const draft = {
+      name: finalAccount.name,
+      partnerName: finalAccount.partnerName,
+      email,
+      selectedTheme,
+      selectedEnvelope,
+      selectedHeroVideo,
+      previewDate,
+      previewVenue,
+      previewStoryTitle,
+      previewStoryText,
+      previewData: {
+        ...previewData,
+        themeId: selectedTheme,
+        selectedEnvelope,
+        selectedHeroVideo,
+        partner1: finalAccount.name,
+        partner2: finalAccount.partnerName,
+        date: formatPreviewDate(previewDate),
+        ceremonyVenue: previewVenue || 'Your Dream Venue',
+        receptionVenue: previewVenue || '',
+        storyTitle: previewStoryTitle,
+        storyText: previewStoryText,
+      },
+    };
+    setAccount(finalAccount);
+    sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
+    localStorage.setItem('selectedTemplate', selectedTheme);
+
+    const bytes = new TextEncoder().encode(JSON.stringify({
+      name: draft.name,
+      partnerName: draft.partnerName,
+      email: draft.email,
+      selectedTheme,
+      selectedEnvelope,
+      selectedHeroVideo,
+      previewDate,
+    }));
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    const resumeToken = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+    try {
+      const response = await fetch('/api/send-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, locale, name: draft.name, partnerName: draft.partnerName, resumeToken, draft }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.saved) throw new Error(result.error || 'Unable to save preview.');
+    } catch (error) {
+      console.warn('Preview could not be saved.', error);
+      throw error;
+    }
+
+    router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
+  };
+
   // ─── STEP 4: Payment processing overlay ───
   if (paymentProcessing) {
     return (
@@ -917,6 +1094,25 @@ function CheckoutContent({ locale = "en" }) {
           <p style={{ color: '#888', fontSize: '0.95rem' }}>Please wait while we secure your order...</p>
         </div>
       </div>
+    );
+  }
+
+  if (isMobileViewport && step === 1) {
+    return (
+      <MobileInvitationFunnel
+        locale={locale}
+        account={account}
+        setAccount={setAccount}
+        previewDate={previewDate}
+        setPreviewDate={setPreviewDate}
+        selectedEnvelope={selectedEnvelope}
+        setSelectedEnvelope={setSelectedEnvelope}
+        selectedHeroVideo={selectedHeroVideo}
+        setSelectedHeroVideo={setSelectedHeroVideo}
+        envelopeOptions={ORDERED_ENVELOPE_OPTIONS}
+        heroOptions={HERO_VIDEO_OPTIONS}
+        onComplete={completeMobileFunnel}
+      />
     );
   }
 
@@ -1474,6 +1670,28 @@ function CheckoutContent({ locale = "en" }) {
                       onFocus={e => e.target.classList.add('preview-input-active')}
                       onBlur={e => e.target.classList.remove('preview-input-active')}
                       style={{ ...inputStyle, transition: 'border-color 0.3s, box-shadow 0.3s' }}
+                    />
+                  </div>
+                  <div style={{ marginTop: '1.15rem', paddingTop: '1.15rem', borderTop: '1px solid #EEE7E0' }}>
+                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Story heading <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                    <input
+                      type="text"
+                      placeholder="Leave empty to use the design’s wording"
+                      value={previewStoryTitle}
+                      onChange={e => setPreviewStoryTitle(e.target.value)}
+                      onFocus={e => e.target.classList.add('preview-input-active')}
+                      onBlur={e => e.target.classList.remove('preview-input-active')}
+                      style={{ ...inputStyle, transition: 'border-color 0.3s, box-shadow 0.3s', marginBottom: '0.85rem' }}
+                    />
+                    <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>A few words for your guests <span style={{ fontWeight: 400, opacity: 0.5, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                    <textarea
+                      placeholder="Tell guests a little about your celebration…"
+                      value={previewStoryText}
+                      onChange={e => setPreviewStoryText(e.target.value)}
+                      onFocus={e => e.target.classList.add('preview-input-active')}
+                      onBlur={e => e.target.classList.remove('preview-input-active')}
+                      rows={3}
+                      style={{ ...inputStyle, transition: 'border-color 0.3s, box-shadow 0.3s', resize: 'vertical' }}
                     />
                   </div>
                 </div>
