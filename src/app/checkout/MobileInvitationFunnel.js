@@ -131,12 +131,14 @@ export default function MobileInvitationFunnel({
   const [building, setBuilding] = useState(false);
   const envelopeRail = useRef(null);
   const heroRail = useRef(null);
+  const stageRef = useRef(null);
   const featuredEnvelopes = useMemo(() => envelopeOptions.filter((item) => item.url && item.id !== "env_custom"), [envelopeOptions]);
   const featuredHeroes = useMemo(() => heroOptions.filter((item) => item.url && item.id !== "hero_custom"), [heroOptions]);
 
   useEffect(() => {
     if (screen !== 3) return;
     const frameId = requestAnimationFrame(() => {
+      stageRef.current?.scrollTo({ top: 0, behavior: "instant" });
       heroRail.current?.scrollTo({ left: 0, behavior: "instant" });
     });
     return () => cancelAnimationFrame(frameId);
@@ -166,7 +168,10 @@ export default function MobileInvitationFunnel({
     }
     if (screen === 2) {
       setScreen(3);
-      requestAnimationFrame(() => heroRail.current?.scrollTo({ left: 0, behavior: "instant" }));
+      requestAnimationFrame(() => {
+        stageRef.current?.scrollTo({ top: 0, behavior: "instant" });
+        heroRail.current?.scrollTo({ left: 0, behavior: "instant" });
+      });
       return;
     }
     if (screen === 3) {
@@ -200,7 +205,7 @@ export default function MobileInvitationFunnel({
         {copy.steps.map((label, index) => <i key={label} className={index < screen ? styles.done : ""} />)}
       </div>
 
-      <section className={`${styles.stage} ${(screen === 2 || screen === 3) ? `${styles.stageGallery} ${layoutStyles.galleryStage}` : ""}`}>
+      <section ref={stageRef} className={`${styles.stage} ${(screen === 2 || screen === 3) ? `${styles.stageGallery} ${layoutStyles.galleryStage}` : ""}`}>
         {screen !== 4 && (
           <div className={styles.copy}>
             <p>{copy.kicker}</p>

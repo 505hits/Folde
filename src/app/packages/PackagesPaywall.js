@@ -21,9 +21,9 @@ const content = {
     afterPoints: ["Finish the design at your own pace", "Preview every update live", "Publish only when everything feels right"],
     phoneHint: "Example of the mobile invitation your guests will receive",
     plans: {
-      standard: { name: "Standard", summary: "Everything you need to publish beautifully.", features: ["Your chosen design", "RSVP & guest tools", "Unlimited guests"] },
+      standard: { name: "Standard", summary: "Everything you need to publish beautifully.", features: ["Unlock every invitation design", "Complete creative customisation", "RSVP tools & unlimited guests"] },
       premium: { name: "Premium", summary: "More creative freedom and AI tools.", features: ["Everything in Standard", "AI images & music", "Priority support"] },
-      expert: { name: "Expert", summary: "Our studio creates and reviews it for you.", features: ["Everything in Standard", "Bespoke art direction", "Studio publishing"] },
+      expert: { name: "Expert", summary: "Our studio creates and reviews it for you.", features: ["Every design fully unlocked", "Tailored art direction, made for you", "Studio review & publishing"] },
     },
   },
   es: {
@@ -42,9 +42,9 @@ const content = {
     afterPoints: ["Termináis el diseño a vuestro ritmo", "Previsualizáis cada cambio en directo", "Publicáis únicamente cuando todo esté listo"],
     phoneHint: "Ejemplo de la invitación móvil que recibirán vuestros invitados",
     plans: {
-      standard: { name: "Estándar", summary: "Todo lo necesario para publicar con elegancia.", features: ["Diseño elegido", "Confirmaciones e invitados", "Invitados ilimitados"] },
+      standard: { name: "Estándar", summary: "Todo lo necesario para publicar con elegancia.", features: ["Todos los diseños desbloqueados", "Personalización creativa completa", "Confirmaciones e invitados ilimitados"] },
       premium: { name: "Premium", summary: "Más libertad creativa y herramientas de IA.", features: ["Todo Estándar", "Imágenes y música con IA", "Soporte prioritario"] },
-      expert: { name: "Expert", summary: "Nuestro estudio lo crea y revisa por vosotros.", features: ["Todo Estándar", "Dirección artística", "Publicación por el estudio"] },
+      expert: { name: "Expert", summary: "Nuestro estudio lo crea y revisa por vosotros.", features: ["Todos los diseños desbloqueados", "Dirección artística totalmente a medida", "Revisión y publicación del estudio"] },
     },
   },
   fr: {
@@ -63,9 +63,9 @@ const content = {
     afterPoints: ["Terminez le design à votre rythme", "Prévisualisez chaque modification en direct", "Publiez uniquement lorsque tout est prêt"],
     phoneHint: "Exemple de l’invitation mobile que recevront vos invités",
     plans: {
-      standard: { name: "Standard", summary: "Tout le nécessaire pour publier avec élégance.", features: ["Design sélectionné", "RSVP et gestion invités", "Invités illimités"] },
+      standard: { name: "Standard", summary: "Tout le nécessaire pour publier avec élégance.", features: ["Tous les designs débloqués", "Personnalisation créative complète", "RSVP et invités illimités"] },
       premium: { name: "Premium", summary: "Plus de liberté créative et des outils IA.", features: ["Tout Standard", "Images et musique IA", "Assistance prioritaire"] },
-      expert: { name: "Expert", summary: "Notre studio crée et vérifie votre invitation.", features: ["Tout Standard", "Direction artistique", "Publication par le studio"] },
+      expert: { name: "Expert", summary: "Notre studio crée et vérifie votre invitation.", features: ["Tous les designs débloqués", "Direction artistique entièrement sur mesure", "Révision et publication par le studio"] },
     },
   },
 };
