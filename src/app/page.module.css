@@ -439,9 +439,9 @@
 
 .pricingGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2rem;
-  max-width: 1200px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
@@ -663,6 +663,7 @@
 
 .mockupContent {
   padding: 1rem;
+  min-height: 0;
 }
 
 .mockupRow {
@@ -890,6 +891,34 @@
   background: #ffffff !important;
   color: #5C3A1E !important;
   border-color: #ffffff !important;
+}
+
+.pricingPrice del {
+  margin-right: .35rem;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: .95rem;
+  font-weight: 500;
+}
+
+.pricingPrice small {
+  display: inline-block;
+  padding: .2rem .42rem;
+  border-radius: 999px;
+  color: #fff;
+  background: #a85f43;
+  font-family: var(--font-body);
+  font-size: .62rem;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+.finalCtaButton {
+  width: max-content;
+  display: flex !important;
+  margin: 2rem auto 0 !important;
+  align-items: center;
+  justify-content: center;
 }
 
 .finalCta :global(.btn-primary):hover {

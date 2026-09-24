@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./mobile-funnel.module.css";
 import phoneStyles from "./mobile-funnel-phone.module.css";
 import buildingStyles from "./mobile-building.module.css";
+import layoutStyles from "./mobile-funnel-layout.module.css";
 
 const COPY = {
   en: {
@@ -188,7 +189,7 @@ export default function MobileInvitationFunnel({
     : featuredHeroes.find((item) => item.id === selectedHeroVideo)?.name;
 
   return (
-    <main className={styles.funnel} style={{ height: "100svh" }}>
+    <main className={`${styles.funnel} ${layoutStyles.fullPage}`}>
       <header className={styles.header}>
         <button type="button" onClick={() => screen === 1 ? history.back() : setScreen((current) => current - 1)} aria-label="Back">←</button>
         <a href={locale === "en" ? "/" : `/${locale}`} className={styles.logo}>FOLDÈ</a>
@@ -199,7 +200,7 @@ export default function MobileInvitationFunnel({
         {copy.steps.map((label, index) => <i key={label} className={index < screen ? styles.done : ""} />)}
       </div>
 
-      <section className={`${styles.stage} ${(screen === 2 || screen === 3) ? styles.stageGallery : ""}`}>
+      <section className={`${styles.stage} ${(screen === 2 || screen === 3) ? `${styles.stageGallery} ${layoutStyles.galleryStage}` : ""}`}>
         {screen !== 4 && (
           <div className={styles.copy}>
             <p>{copy.kicker}</p>
@@ -271,7 +272,7 @@ export default function MobileInvitationFunnel({
         )}
       </section>
 
-      {!building && <footer className={styles.footer}>
+      {!building && <footer className={`${styles.footer} ${(screen === 2 || screen === 3) ? layoutStyles.galleryFooter : ""}`}>
         {error && <p role="alert">{error}</p>}
         <div className={phoneStyles.footerInner}>
           <div className={phoneStyles.socialProof}><strong>★★★★★ 4.9/5</strong><span>{copy.proof}</span></div>

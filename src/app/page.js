@@ -422,7 +422,7 @@ export default function Home({ locale = 'en' }) {
               <div>
                 <h3 className="heading-md">Standard</h3>
                  <p className="text-sm" style={{ marginTop: '0.5rem' }}>{t('Everything you need for an elegant, personalized invitation.', 'Todo lo necesario para una invitación elegante y personalizada.')}</p>
-                <div className={styles.pricingPrice}>29.90 €</div>
+                <div className={styles.pricingPrice}><del>49.90 €</del> 29.90 € <small>-40%</small></div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('Select from exclusive design universes', 'Elegid entre universos de diseño exclusivos')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Personalized with your colors & details', 'Personalización con vuestros colores y datos')}</li>
@@ -436,27 +436,11 @@ export default function Home({ locale = 'en' }) {
               <Link href={link('/collections')} className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>{t('Select Standard', 'Elegir Estándar')}</Link>
             </div>
             <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
-              <div className={styles.pricingBadge}>{t('Most Popular', 'Más elegido')}</div>
-              <div>
-                <h3 className="heading-md">Premium</h3>
-                <p className="text-sm" style={{ marginTop: '0.5rem', opacity: 0.7 }}>{t('A self-service invitation dashboard with AI credits and priority support.', 'Un panel de autoservicio con créditos de IA y soporte prioritario.')}</p>
-                <div className={styles.pricingPrice}>49.90 €</div>
-                <ul className={styles.pricingList}>
-                  <li><span className={styles.checkIcon}>✓</span> {t('Everything in Standard included', 'Todo lo incluido en Estándar')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> <strong>{t('Create up to 5 images and 5 music tracks with AI', 'Crea hasta 5 imágenes y 5 pistas de música con IA')}</strong></li>
-                  <li><span className={styles.checkIcon}>✓</span> {t('Express 24h Dedicated Support', 'Atención prioritaria en 24 horas')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> {t('Self-service dashboard + priority support', 'Panel de autoservicio y soporte prioritario')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> {t('Custom sections (boarding pass, RSVP)', 'Secciones personalizadas (tarjeta de embarque, confirmación)')}</li>
-                  <li><span className={styles.checkIcon}>✓</span> {t('Unlimited revisions', 'Revisiones ilimitadas')}</li>
-                </ul>
-              </div>
-              <Link href={link('/collections')} className="btn-primary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem', backgroundColor: '#ffffff', color: '#5C3A1E', borderColor: '#ffffff', fontWeight: 700 }}>{t('Select Premium', 'Elegir Premium')}</Link>
-            </div>
-            <div className={styles.pricingCard}>
+              <div className={styles.pricingBadge}>{t('Studio service', 'Servicio de estudio')}</div>
               <div>
                 <h3 className="heading-md">{t('Custom', 'Expert')}</h3>
                 <p className="text-sm" style={{ marginTop: '0.5rem' }}>{t('100% bespoke "Fait main" questionnaire onboarding, team review & site validation.', 'Cuestionario inicial completamente personalizado, revisión del equipo y validación del sitio.')}</p>
-                <div className={styles.pricingPrice}>99.90 €</div>
+                <div className={styles.pricingPrice}>149.00 €</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('100% bespoke questionnaire onboarding', 'Cuestionario inicial completamente personalizado')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Hand-crafted ("Fait main") art direction', 'Dirección artística creada a medida')}</li>
@@ -468,7 +452,7 @@ export default function Home({ locale = 'en' }) {
                   <li><span className={styles.checkIcon}>✓</span> {t('Everything included in Premium', 'Todo lo incluido en Premium')}</li>
                 </ul>
               </div>
-              <Link href={link('/collections')} className="btn-secondary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem' }}>{t('Select Custom', 'Elegir Expert')}</Link>
+              <Link href={link('/collections')} className="btn-primary" style={{ width: '100%', textAlign: 'center', marginTop: '2rem', backgroundColor: '#ffffff', color: '#5C3A1E', borderColor: '#ffffff', fontWeight: 700 }}>{t('Select Expert', 'Elegir Expert')}</Link>
             </div>
           </div>
           <div className={styles.pricingAddons}>
@@ -633,7 +617,7 @@ export default function Home({ locale = 'en' }) {
         <div className="container" style={{ textAlign: 'center' }}>
           <h2 className="heading-lg">{t('Bring Your Invitation to Life', 'Dad vida a vuestra invitación')}</h2>
           <p className="text-lg" style={{ marginTop: '0.5rem' }}>{t('Bespoke digital creations starting at €29.90', 'Creaciones digitales a medida desde 29,90 €')}</p>
-          <Link href={link('/checkout')} className="btn-primary" style={{ marginTop: '2rem' }}>{t('Design Your Invitation', 'Diseñar vuestra invitación')}</Link>
+          <Link href={link('/checkout')} className={`btn-primary ${styles.finalCtaButton}`}>{t('Design Your Invitation', 'Diseñar vuestra invitación')}</Link>
         </div>
       </section>
 

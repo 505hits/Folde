@@ -8,6 +8,7 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
+import buildingStyles from "./mobile-building.module.css";
 
 
 const themes = [
@@ -349,6 +350,8 @@ function CheckoutContent({ locale = "en" }) {
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
+  const [desktopSaving, setDesktopSaving] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
@@ -672,35 +675,8 @@ function CheckoutContent({ locale = "en" }) {
         setAuthError('Please enter both names to continue.');
         return;
       }
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify({
-          name: account.name,
-          partnerName: account.partnerName,
-          selectedTheme,
-          selectedEnvelope,
-          selectedHeroVideo,
-          previewDate,
-          previewVenue,
-          previewStoryTitle,
-          previewStoryText,
-          previewData: {
-            ...previewData,
-            partner1: account.name,
-            partner2: account.partnerName,
-            date: formatPreviewDate(previewDate),
-            ceremonyVenue: previewVenue || 'Your Dream Venue',
-            receptionVenue: previewVenue || '',
-            storyTitle: previewStoryTitle,
-            storyText: previewStoryText,
-            themeId: selectedTheme,
-            videos: {
-              envelope: envObj?.url || '',
-              hero: heroObj?.url || '',
-            },
-          },
-        }));
-        router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
-      }
+      setDesktopPreviewStage('building');
+      window.setTimeout(() => setDesktopPreviewStage('email'), 3200);
       return;
     }
     if (step === 2) {
@@ -1113,6 +1089,43 @@ function CheckoutContent({ locale = "en" }) {
         heroOptions={HERO_VIDEO_OPTIONS}
         onComplete={completeMobileFunnel}
       />
+    );
+  }
+
+  if (!isMobileViewport && step === 1 && desktopPreviewStage !== 'editing') {
+    const emailCopy = locale === 'fr'
+      ? { title: 'Votre aperçu est prêt', text: 'Indiquez votre e-mail pour enregistrer vos choix et recevoir le lien de votre invitation.', button: 'ENREGISTRER ET VOIR LES FORMULES' }
+      : locale === 'es'
+        ? { title: 'Vuestra vista previa está lista', text: 'Introducid vuestro e-mail para guardar las opciones y recibir el enlace de la invitación.', button: 'GUARDAR Y VER LOS PLANES' }
+        : { title: 'Your preview is ready', text: 'Enter your email to save your choices and receive your invitation preview link.', button: 'SAVE PREVIEW & SEE PACKAGES' };
+    const submitDesktopPreview = async (event) => {
+      event.preventDefault();
+      setAuthError('');
+      if (!/^\S+@\S+\.\S+$/.test(account.email || '')) return setAuthError('Please enter a valid email address.');
+      setDesktopSaving(true);
+      try { await completeMobileFunnel(account.email.trim()); }
+      catch { setAuthError('We could not securely save your preview. Please try again.'); setDesktopSaving(false); }
+    };
+    return (
+      <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '2rem', color: '#3d2b1f', background: 'radial-gradient(circle at 80% 10%, rgba(176,137,104,.18), transparent 32%), #faf7f1' }}>
+        {desktopPreviewStage === 'building' ? (
+          <div className={buildingStyles.buildingCard} role="status" aria-live="polite" style={{ width: 'min(100%, 520px)' }}>
+            <div className={buildingStyles.buildingVisual} aria-hidden="true"><i /><i className={buildingStyles.orbitTwo} /><div className={buildingStyles.miniInvitation}><span>{account.name?.[0] || 'F'}</span><b>&amp;</b><span>{account.partnerName?.[0] || 'W'}</span></div><span className={buildingStyles.sparkOne}>✦</span><span className={buildingStyles.sparkTwo}>✦</span><span className={buildingStyles.sparkThree}>✦</span></div>
+            <div className={buildingStyles.buildingCopy}><strong>{locale === 'fr' ? 'Création de votre invitation' : locale === 'es' ? 'Creando vuestra invitación' : 'Creating your invitation'}</strong><span>{locale === 'fr' ? 'Nous assemblons vos prénoms, votre date et le design choisi…' : locale === 'es' ? 'Estamos reuniendo vuestros nombres, la fecha y el diseño elegido…' : 'Bringing your names, date and chosen design together…'}</span></div>
+            <div className={buildingStyles.buildingProgress}><i /></div>
+          </div>
+        ) : (
+          <form onSubmit={submitDesktopPreview} style={{ width: 'min(100%, 540px)', padding: 'clamp(2rem,5vw,3.5rem)', border: '1px solid rgba(61,43,31,.12)', borderRadius: 30, background: '#fffdf9', boxShadow: '0 28px 80px rgba(61,43,31,.13)', textAlign: 'center' }}>
+            <div style={{ width: 64, height: 64, display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem', borderRadius: '50%', color: '#fff', background: '#6e7b56', boxShadow: '0 0 0 12px #eef1e9', fontSize: '1.6rem' }}>✓</div>
+            <h1 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem,5vw,3.4rem)', fontWeight: 400 }}>{emailCopy.title}</h1>
+            <p style={{ margin: '0 auto 1.7rem', maxWidth: 430, color: '#806f62', lineHeight: 1.6 }}>{emailCopy.text}</p>
+            <input type="email" autoFocus autoComplete="email" value={account.email || ''} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder="you@example.com" style={{ ...inputStyle, height: 62, marginBottom: '1rem' }} />
+            {authError && <p role="alert" style={{ color: '#a33b32', margin: '0 0 .75rem', fontSize: '.84rem' }}>{authError}</p>}
+            <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : emailCopy.button} →</button>
+            <small style={{ display: 'block', marginTop: '.9rem', color: '#8b796b' }}>Private, secure and editable at any time.</small>
+          </form>
+        )}
+      </main>
     );
   }
 
