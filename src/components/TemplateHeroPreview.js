@@ -7,6 +7,8 @@ import { getTranslation } from '@/lib/translations';
 export const getFirstFramePoster = (url, useEnvelopePoster = false) => {
   if (!url) return undefined;
   if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
+  const localHeroPoster = url.match(/\/videos\/hero\/([^/?#]+)\.mp4/i);
+  if (localHeroPoster) return `/images/hero-posters/${localHeroPoster[1]}.webp`;
   if (url.includes('cloudflarestream')) {
     return url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s');
   }

@@ -44,7 +44,7 @@ export default function ArticlePreviewAside({ locale = "en" }) {
             partner1="Anna"
             partner2="Tom"
             date="SEP 05, 2026"
-            videoSrc="https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4"
+            videoSrc="/videos/hero/palm-zoom.mp4"
             envelopeSrc="https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4"
             showEnvelope
             preloadEnvelopeFrame

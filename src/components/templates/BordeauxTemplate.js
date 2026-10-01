@@ -708,7 +708,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           )}
 
           {(() => {
-            const heroSrc = data?.customHeroImage || images.hero || videos.hero || "https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4";
+            const heroSrc = data?.customHeroImage || images.hero || videos.hero || "/videos/hero/kissing-couple.mp4";
             const isHeroImage = data?.customHeroImage || images.hero || (typeof heroSrc === 'string' && (heroSrc.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || heroSrc.includes('Vector.png') || heroSrc.includes('romantic-moments-bea.png')));
 
             if (isHeroImage) {

@@ -1698,14 +1698,14 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   });
 
   const AVAILABLE_HERO_VIDEOS = [
-    { id: 'hero_couple', name: 'Kissing Couple', url: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4', color: '#1a1a1a', desc: 'Romantic couple embrace' },
-    { id: 'hero_seaview', name: 'Sea View', url: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4', color: '#8fb1cc', desc: 'Beautiful ocean balcony view' },
-    { id: 'hero_palm', name: 'Palm Zoom', url: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4', color: '#7ba08a', desc: 'Tropical palm leaves zoom' },
-    { id: 'hero_car', name: 'Just Married Car', url: 'https://www.wooowinvites.com/assets/just-married-car-theme-BhahCrzF.mp4', color: '#a08b76', desc: 'Classic vintage getaway car' },
-    { id: 'hero_castle', name: 'Castle', url: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4', color: '#8b8b83', desc: 'Majestic castle reveal' },
-    { id: 'hero_royal', name: 'Royal Heritage', url: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4', color: '#3d4742', desc: 'Elegant palace archway' },
-    { id: 'hero_sea_anim', name: 'Sea Animation', url: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4', color: '#567c9c', desc: 'Animated ocean waves' },
-    { id: 'hero_sea_balcony', name: 'Seaview Balcony', url: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4', color: '#a9b7c2', desc: 'Coastal balcony view' },
+    { id: 'hero_couple', name: 'Kissing Couple', url: '/videos/hero/kissing-couple.mp4', color: '#1a1a1a', desc: 'Romantic couple embrace' },
+    { id: 'hero_seaview', name: 'Sea View', url: '/videos/hero/sea-view.mp4', color: '#8fb1cc', desc: 'Beautiful ocean balcony view' },
+    { id: 'hero_palm', name: 'Palm Zoom', url: '/videos/hero/palm-zoom.mp4', color: '#7ba08a', desc: 'Tropical palm leaves zoom' },
+    { id: 'hero_car', name: 'Just Married Car', url: '/videos/hero/just-married-car.mp4', color: '#a08b76', desc: 'Classic vintage getaway car' },
+    { id: 'hero_castle', name: 'Castle', url: '/videos/hero/castle.mp4', color: '#8b8b83', desc: 'Majestic castle reveal' },
+    { id: 'hero_royal', name: 'Royal Heritage', url: '/videos/hero/royal-heritage.mp4', color: '#3d4742', desc: 'Elegant palace archway' },
+    { id: 'hero_sea_anim', name: 'Sea Animation', url: '/videos/hero/sea-animation.mp4', color: '#567c9c', desc: 'Animated ocean waves' },
+    { id: 'hero_sea_balcony', name: 'Seaview Balcony', url: '/videos/hero/seaview-balcony.mp4', color: '#a9b7c2', desc: 'Coastal balcony view' },
     { id: 'hero_thelaceedit', name: 'The Lace Edit', url: 'https://savethedate-thelaceedit.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png', color: '#f3e5d8', desc: 'The Lace Edit hero' },
     { id: 'hero_lejardin', name: 'Le Jardin', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/0d44b575-21a3-498b-856a-eaf9614d23c6/hero-video-compressed.mp4', color: '#f3e5d8', desc: 'Le Jardin hero' },
     { id: 'hero_lacephotoscratch', name: 'Lace Photo Scratch', url: 'https://savethedate-lacephotoscratch.thedigitalyes.com/assets/hero-scratch-cover-reference-CIK32eF4.png', color: '#f3e5d8', desc: 'Lace Photo Scratch hero' },

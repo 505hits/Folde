@@ -151,14 +151,14 @@ const prioritizedEnvelopes = (items) => [...items].sort((a, b) => {
 const ORDERED_ENVELOPE_OPTIONS = prioritizedEnvelopes(ENVELOPE_OPTIONS);
 
 const HERO_VIDEO_OPTIONS = [
-  { id: 'hero_couple', name: 'Kissing Couple', url: 'https://www.wooowinvites.com/assets/kissing-couple-theme-m4dGzKxs.mp4' },
-  { id: 'hero_seaview', name: 'Sea View', url: 'https://www.wooowinvites.com/assets/sea-view-theme-CqN1unYE.mp4' },
-  { id: 'hero_palm', name: 'Palm Zoom', url: 'https://www.wooowinvites.com/assets/palm-zoom-theme-DTmwX1Yh.mp4' },
-  { id: 'hero_car', name: 'Just Married Car', url: 'https://www.wooowinvites.com/assets/just-married-car-theme-BhahCrzF.mp4' },
-  { id: 'hero_castle', name: 'Castle', url: 'https://www.wooowinvites.com/assets/castle-theme-DW5muDbc.mp4' },
-  { id: 'hero_royal', name: 'Royal Heritage', url: 'https://www.wooowinvites.com/assets/royal-heritage-theme-Czr23y-Y.mp4' },
-  { id: 'hero_sea_anim', name: 'Sea Animation', url: 'https://www.wooowinvites.com/assets/sea-theme-animation-D5DLPcRz.mp4' },
-  { id: 'hero_sea_balcony', name: 'Seaview Balcony', url: 'https://www.wooowinvites.com/assets/seaview-balcony-theme-X8-zUaoe.mp4' },
+  { id: 'hero_couple', name: 'Kissing Couple', url: '/videos/hero/kissing-couple.mp4' },
+  { id: 'hero_seaview', name: 'Sea View', url: '/videos/hero/sea-view.mp4' },
+  { id: 'hero_palm', name: 'Palm Zoom', url: '/videos/hero/palm-zoom.mp4' },
+  { id: 'hero_car', name: 'Just Married Car', url: '/videos/hero/just-married-car.mp4' },
+  { id: 'hero_castle', name: 'Castle', url: '/videos/hero/castle.mp4' },
+  { id: 'hero_royal', name: 'Royal Heritage', url: '/videos/hero/royal-heritage.mp4' },
+  { id: 'hero_sea_anim', name: 'Sea Animation', url: '/videos/hero/sea-animation.mp4' },
+  { id: 'hero_sea_balcony', name: 'Seaview Balcony', url: '/videos/hero/seaview-balcony.mp4' },
   { id: 'hero_rose_bow', name: 'Blush Ribbon', url: 'https://maldives-demo.thedigitalyes.com/__l5e/assets-v1/ca66d869-63f5-40cc-8421-1b0df31922c2/rs-bow-v2.mp4' },
   { id: 'hero_thelaceedit', name: 'The Lace Edit', url: 'https://savethedate-thelaceedit.thedigitalyes.com/assets/hero-scratch-cover-CwPyg4DV.png' },
   { id: 'hero_lejardin', name: 'Le Jardin', url: 'https://savethedate-lejardin.thedigitalyes.com/__l5e/assets-v1/0d44b575-21a3-498b-856a-eaf9614d23c6/hero-video-compressed.mp4' },
