@@ -111,7 +111,7 @@ const FlipCard = ({ value, label, accentColor }) => {
 
 export default function FlipCountdown({ targetDate = '2026-05-27', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff' }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [isPast, setIsPast] = useState(false);
+  const [isPast, setIsPast] = useState(() => new Date(targetDate + 'T14:00:00').getTime() <= Date.now());
 
   useEffect(() => {
     const target = new Date(targetDate + 'T14:00:00');
@@ -139,6 +139,11 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
   }, [targetDate]);
+
+  // Once the wedding date has passed, the countdown no longer adds useful
+  // information to the invitation. Hide the section instead of replacing it
+  // with a large celebratory end state.
+  if (isPast) return null;
 
   return (
     <>
@@ -179,7 +184,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '0.8rem',
           fontWeight: 500,
         }}>
-          {isPast ? 'The day has arrived' : 'Counting down to'}
+          Counting down to
         </p>
 
         <h2 style={{
@@ -191,11 +196,10 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '2rem',
           letterSpacing: '1px',
         }}>
-          {isPast ? '✨ Today is the Day ✨' : 'Our Forever'}
+          Our Forever
         </h2>
 
-        {!isPast && (
-          <div style={{
+        <div style={{
             display: 'flex',
             justifyContent: 'center',
             gap: '0.5rem',
@@ -221,19 +225,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
               animation: 'countdownPulse 1s ease-in-out infinite',
             }}>:</div>
             <FlipCard value={timeLeft.seconds} label="Sec" accentColor={accentColor} />
-          </div>
-        )}
-
-        {isPast && (
-          <p style={{
-            fontSize: '1rem',
-            color: accentColor,
-            fontStyle: 'italic',
-            fontFamily: "'Harmond', 'Zen Old Mincho', serif",
-          }}>
-            Let the celebration begin 🥂
-          </p>
-        )}
+        </div>
 
         {/* Bottom decorative line */}
         <div style={{
