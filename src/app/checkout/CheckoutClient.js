@@ -271,7 +271,11 @@ const LazyThumbnail = ({ src, isEnvelope = false, active = false, interactive = 
     return () => observer.disconnect();
   }, []);
 
-  const shouldPlay = interactive && (active || hovered);
+  // Hero videos do not have local poster images. Playing only the selected or
+  // hovered item leaves every other visible card on its neutral placeholder.
+  // Limit loading to cards near the viewport, but play those cards so their
+  // actual first frames are always visible in the horizontal selector.
+  const shouldPlay = interactive && (inView || active || hovered);
   const shouldLoad = inView || active || hovered;
 
   useEffect(() => {
