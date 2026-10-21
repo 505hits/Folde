@@ -1,6 +1,7 @@
 import { blogPosts } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsEs } from "@/lib/articles-es";
+import { longPostsEs } from "@/lib/articles-es-long";
 
 const seeds = {
   "wedding-invitations-with-floral-design": {
@@ -174,7 +175,8 @@ const translatedPostsEs = blogPosts.map((post) => {
 }).filter(Boolean);
 
 export const blogPostsEs = [
-  ...originalPostsEs.map((post) => ({ ...post, original: true, indexable: true })),
+  ...longPostsEs.map((post) => ({ excerpt: post.description, ...post, original: true, longform: true, indexable: true })),
+  ...originalPostsEs.map((post) => ({ excerpt: post.description, ...post, original: true, indexable: true })),
   ...translatedPostsEs,
 ];
 

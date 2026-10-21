@@ -1,6 +1,7 @@
 import { blogPosts } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsFr } from "@/lib/articles-fr";
+import { longPostsFr } from "@/lib/articles-fr-long";
 
 // Traductions de sujets pensés pour le marché anglophone : conservées, mais non indexées
 // tant qu’elles n’ont pas été réécrites pour des recherches françaises.
@@ -150,7 +151,8 @@ const translatedPostsFr = blogPosts.map((base) => {
 });
 
 export const blogPostsFr = [
-  ...originalPostsFr.map((post) => ({ ...post, original: true, indexable: true })),
+  ...longPostsFr.map((post) => ({ excerpt: post.description, ...post, original: true, longform: true, indexable: true })),
+  ...originalPostsFr.map((post) => ({ excerpt: post.description, ...post, original: true, indexable: true })),
   ...translatedPostsFr,
 ];
 

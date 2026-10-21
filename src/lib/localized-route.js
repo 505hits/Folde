@@ -40,7 +40,7 @@ export function localizedMetadata(locale, segments, getPost, pageMetadata) {
     const post = getPost(route.slug);
     const url = absolute(blogPath(locale, post.slug));
     return {
-      title: `${post.metaTitle || post.title} | FOLDÈ`,
+      title: { absolute: post.metaTitle && post.metaTitle.length > 52 ? post.metaTitle : `${post.metaTitle || post.title} | FOLDÈ` },
       description: post.description,
       alternates: articleAlternates(locale, post),
       robots: post.indexable === false ? { index: false, follow: true } : undefined,
