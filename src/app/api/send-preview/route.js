@@ -41,7 +41,7 @@ export async function POST(request) {
       return NextResponse.json({ success: true, saved: true, delivered: false });
     }
 
-    const origin = request.headers.get("origin") || "https://www.folde-wedding.com";
+    const origin = request.headers.get("origin") || "https://folde-wedding.com";
     const localePrefix = ["fr", "es"].includes(locale) ? `/${locale}` : "";
     const previewUrl = `${origin}${localePrefix}/checkout?resume=${encodeURIComponent(resumeToken)}`;
     const safeNames = `${escapeHtml(name)} &amp; ${escapeHtml(partnerName)}`;

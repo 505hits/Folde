@@ -303,7 +303,10 @@ const signatureContent = {
   }
 };
 
-function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, autoOpenEnvelope = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground }) {
+function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, autoOpenEnvelope = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground, embedded = false }) {
+  // When the template is shown as a preview inside another page, the couple's
+  // names must not become that page's H1.
+  const HeroHeading = embedded ? 'p' : 'h1';
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
   const copy = getTranslation(data?.language || 'en');
@@ -752,7 +755,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
           <div className={styles.heroContent}>
             <AnimatedSection type="zoom">
-              <h1 className={styles.heroNames}>
+              <HeroHeading className={styles.heroNames} style={embedded ? { margin: 0, fontWeight: 400 } : undefined}>
                 {partner1.toUpperCase()} <br />
                 {showPartner2 && (
                   <>
@@ -760,7 +763,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                     {partner2.toUpperCase()}
                   </>
                 )}
-              </h1>
+              </HeroHeading>
             </AnimatedSection>
 
             <div className={styles.heroSubInfo}>
@@ -1199,7 +1202,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             <AnimatedSection type="fade" style={{ width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', width: '100%' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
-                   <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)', textAlign: 'center', margin: '0 auto' }}>{copy.guestGalleryTitle}</h1>
+                   <h2 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: 'var(--color-foreground)', textAlign: 'center', margin: '0 auto' }}>{copy.guestGalleryTitle}</h2>
                   <p style={{ fontSize: '1.1rem', fontFamily: 'var(--font-body)', maxWidth: '400px', color: 'var(--color-muted)', padding: '0 1rem', textAlign: 'center', margin: '0 auto' }}>
                      {copy.guestGallerySubtitle}
                   </p>

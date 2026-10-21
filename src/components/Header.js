@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
+import { equivalentPath, localizeHref } from "@/lib/routes.mjs";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentUser, logout } = useDatabase();
   const pathname = usePathname();
   const locale = pathname?.startsWith('/es') ? 'es' : pathname?.startsWith('/fr') ? 'fr' : 'en';
-  const localizedPath = (pathname || '/').replace(/^\/(es|fr)(?=\/|$)/, '') || '/';
-  const localePath = (target) => target === 'en' ? localizedPath : (localizedPath === '/' ? `/${target}` : `/${target}${localizedPath}`);
+  const localePath = (target) => equivalentPath(pathname || '/', target);
   const copy = {
     es: {
     home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
@@ -27,7 +27,7 @@ export default function Header() {
     }
   };
   const t = copy[locale];
-  const link = (path) => locale === 'en' ? path : (path === '/' ? `/${locale}` : `/${locale}${path}`);
+  const link = (path) => localizeHref(locale, path);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);

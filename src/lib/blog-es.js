@@ -1,4 +1,6 @@
 import { blogPosts } from "@/lib/blog";
+import { POST_SLUGS } from "@/lib/routes.mjs";
+import { originalPostsEs } from "@/lib/articles-es";
 
 const seeds = {
   "wedding-invitations-with-floral-design": {
@@ -152,20 +154,29 @@ function planningNote(keyword) {
   return `Para revisar las ${keyword}, resulta útil separar la dimensión emocional de la dimensión práctica. La primera es la bienvenida: la apertura visual, el tono de las palabras y la imagen que hace que alguien se sienta incluido. La segunda permite actuar: una fecha exacta, un lugar localizable, una confirmación sencilla y una vía de contacto. Ninguna debe quedar en segundo plano. Si la parte emocional es preciosa pero la práctica resulta confusa, los invitados disfrutarán de la página y aun así enviarán preguntas. Si todo funciona pero falta calidez, parecerá un portal logístico. Una invitación digital premium sostiene ambas ideas a la vez. Durante la revisión final, pedid a una persona ajena a la organización que la abra sin explicaciones y observad dónde se detiene. Esas dudas son señales valiosas para el último ajuste. Probadla también en el contexto real: durante un viaje, en una semana ocupada o desde un teléfono que no conocéis. Mantened visible la siguiente acción y utilizad etiquetas descriptivas. Esa capa de cuidado protege la experiencia sin perder la serenidad editorial que hace especial a una invitación de boda.`;
 }
 
-export const blogPostsEs = blogPosts.map((post) => {
+// Traducciones de los artículos en inglés. Su cuerpo era una plantilla común a todos,
+// así que se mantienen accesibles pero sin indexar hasta reescribirlas para el mercado español.
+const translatedPostsEs = blogPosts.map((post) => {
   const seed = seeds[post.slug];
   if (!seed) return null;
   return {
     ...post,
     ...seed,
+    slug: POST_SLUGS[post.slug].es,
+    enSlug: post.slug,
+    indexable: false,
     articleImages: post.articleImages.map(([src], index) => [src, imageAlts[index]]),
     extendedIntro: `Esta guía explica cómo abordar las ${seed.keyword} desde la perspectiva de los invitados: una apertura clara, datos prácticos, una confirmación sencilla y una dirección visual refinada en cualquier dispositivo.`,
     planningNote: planningNote(seed.keyword),
     deepDive: longGuide(seed),
-    closingGuide: `Antes de publicar vuestras ${seed.keyword}, probad cada parte como lo haría un invitado. Comprobad en el móvil la fecha, el lugar, el mapa, el programa, la confirmación y todos los enlaces. Utilizad una URL estable para cada recordatorio y mantened las acciones importantes a la vista. El resultado debe sentirse personal, actualizado y sencillo para todas las personas invitadas.`,
     faqs: [...seed.faqs, ...extraFaqs(seed.keyword)].slice(0, 15),
   };
 }).filter(Boolean);
+
+export const blogPostsEs = [
+  ...originalPostsEs.map((post) => ({ ...post, original: true, indexable: true })),
+  ...translatedPostsEs,
+];
 
 export const currentSourcesEs = [
   { label: "The Knot Worldwide — Informe mundial sobre bodas 2025", href: "https://www.theknotww.com/press-releases/the-knot-worldwides-2025-global-wedding-report-reveals-bold-new-era-of-personalization-and-purpose", note: "Publicado el 14 de agosto de 2025 a partir de 33.174 parejas de ocho países; analiza personalización, autenticidad y experiencia de los invitados." },

@@ -1,4 +1,10 @@
 import { blogPosts } from "@/lib/blog";
+import { POST_SLUGS } from "@/lib/routes.mjs";
+import { originalPostsFr } from "@/lib/articles-fr";
+
+// Traductions de sujets pensés pour le marché anglophone : conservées, mais non indexées
+// tant qu’elles n’ont pas été réécrites pour des recherches françaises.
+const NOINDEX_FR = ["wedding-welcome-signs", "winter-wedding-invitations", "traditional-wedding-invitations", "photo-wedding-invitations", "vintage-wedding-invitations", "wedding-invitation-suite"];
 
 const content = {
   "wedding-invitations-with-floral-design": {
@@ -118,62 +124,35 @@ const content = {
   "vintage-wedding-invitations": { keyword: "faire-part de mariage vintage", title: "Les meilleurs faire-part vintage sans paraître démodés", description: "Références authentiques, lisibilité moderne et RSVP en ligne pour créer un faire-part vintage raffiné.", quickAnswer: "Un faire-part vintage convaincant s’appuie sur une seule époque à travers la typographie, la couleur ou l’illustration. L’espace, le contraste et le fonctionnement mobile doivent rester contemporains. FOLDÈ associe ainsi une atmosphère d’archive à des outils actuels.", extendedIntro: "Le vintage devient élégant lorsqu’il est précis. Choisir une période et en comprendre le vocabulaire visuel donne un résultat plus cohérent qu’un assemblage général de papier vieilli, de dentelle et de filtres sépia.", tutorial: ["Choisissez une époque précise et étudiez son langage visuel.", "Traduisez deux ou trois caractéristiques dans une composition moderne.", "Vérifiez que carte, date et RSVP restent immédiatement utilisables."], sections: [["Choisir une époque, pas un filtre", "Art nouveau, Art déco, époque victorienne et milieu du siècle possèdent des codes très différents."], ["Employer la patine avec mesure", "Papier vieilli et encre douce apportent du caractère sans devoir réduire la lisibilité."], ["Garder une interaction actuelle", "L’ouverture peut sembler historique tandis que la navigation et le RSVP restent rapides."], ["Rester cohérent", "Limitez les références à quelques signes précis et répétez-les avec légèreté."]], faqs: [["Qu’est-ce qui crée l’effet vintage ?", "Une typographie, une illustration, une couleur et une texture fidèles à une période."], ["Quelle époque choisir ?", "Celle qui correspond au lieu ou à votre histoire."], ["Peut-il être minimaliste ?", "Oui, une seule référence historique peut suffire."], ["Reste-t-il lisible sur mobile ?", "Oui, si les polices décoratives sont utilisées avec mesure."], ["Peut-il inclure un RSVP numérique ?", "Oui, l’esthétique peut être ancienne et l’interaction actuelle."]] }
 };
 
-const extraFaqsFr = (keyword) => [
-  ["Que faut-il montrer en premier ?", "Les noms, la date et un accès clair aux informations essentielles ou au RSVP."],
-  ["Peut-on modifier les informations après l’envoi ?", "Oui. Prévenez directement les invités lorsqu’un changement influence leur organisation."],
-  ["Un QR code est-il utile ?", "Oui sur un support imprimé, s’il mène vers le même lien stable."],
-  ["Comment aider les invités moins à l’aise en ligne ?", "Utilisez des libellés simples, un texte lisible et un contact direct."],
-  ["Peut-on ajouter une carte et une tenue ?", "Oui, placez-les près du lieu et du programme."],
-  ["Combien de questions poser dans le RSVP ?", "Demandez seulement les informations que vous utiliserez réellement."],
-  ["Peut-on ajouter des photos après le mariage ?", "Oui, avec une galerie respectueuse de la vie privée."],
-  ["Cela convient-il à un mariage à l’étranger ?", `Oui, votre ${keyword} peut réunir voyage, hébergement, programme et RSVP.`],
-  ["Comment choisir une offre FOLDÈ ?", "Choisissez selon le niveau d’accompagnement créatif et les outils nécessaires."],
-  ["Comment tester avant l’envoi ?", "Ouvrez le lien sur mobile, testez le RSVP et chaque lien, puis faites relire le parcours."]
-];
 
-const approfondissements = [
-  "Distinguez clairement la première impression de la suite du parcours. L’ouverture peut créer une émotion forte, mais elle ne doit pas obliger à deviner où se trouvent la date, le lieu ou la réponse attendue. Sur un téléphone, une action principale visible et un vocabulaire direct donnent immédiatement confiance. Cette discipline ne rend pas le design froid : elle lui offre au contraire un cadre dans lequel une photographie, une typographie ou une animation peut prendre toute sa valeur. Demandez-vous enfin si une personne découvrant le mariage sans contexte comprendrait la proposition en quelques secondes.",
-  "Les libellés courts comme « Programme », « Accès », « RSVP » ou « Hébergement » sont préférables aux formulations créatives difficiles à interpréter. Chaque section doit répondre à une question précise, puis conduire naturellement vers la suivante. La hiérarchie visuelle peut soutenir ce mouvement grâce aux tailles, aux espacements et aux contrastes, sans multiplier les couleurs. Une invitation bien ordonnée devient la référence que les invités rouvrent avant le départ ou le jour même. Ils ne devraient jamais devoir retrouver une ancienne capture d’écran ou comparer plusieurs versions envoyées dans une conversation.",
-  "Testez la palette sur les images définitives et dans plusieurs conditions de lumière. Un texte élégant sur un écran lumineux peut devenir illisible au soleil ou sur un appareil réglé en mode sombre. Les noms et les dates méritent une zone calme, tandis que les informations longues gagnent à être placées sur un fond uni. Vérifiez aussi le recadrage des photographies sur des proportions différentes : aucun visage, geste ou élément narratif important ne doit disparaître. Cette vérification technique protège l’intention artistique et évite qu’un détail décoratif prenne le dessus sur le message.",
-  "Rédigez pour une personne qui n’a jamais visité la région ni rencontré tous les proches. Donnez le nom complet du lieu, une heure d’arrivée réaliste, un lien cartographique et, si nécessaire, une précision sur le stationnement ou l’accessibilité. Pour un événement sur plusieurs jours, différenciez clairement les rendez-vous obligatoires des moments facultatifs. Les recommandations peuvent enrichir l’expérience, mais elles ne doivent jamais repousser les informations essentielles trop loin dans la page. Un texte précis est une forme d’attention : il réduit l’incertitude sans alourdir l’invitation.",
-  "Le formulaire de réponse doit rester proportionné aux décisions d’organisation. Commencez par la présence, puis affichez les accompagnants, le repas ou les besoins particuliers uniquement lorsque la réponse le justifie. Indiquez une échéance et un contact pour les changements tardifs. Effectuez vous-même un test complet depuis un petit écran, puis vérifiez que les données arrivent avec le bon nom et le bon statut. Cette étape paraît simple, mais elle évite les listes parallèles, les captures et les réponses perdues. FOLDÈ réunit ce parcours et le tableau de bord dans une même expérience.",
-  "Préparez la manière dont le lien sera partagé avant la publication. Le même lien stable peut être envoyé par message, courriel ou code QR imprimé, ce qui évite les versions concurrentes. Accompagnez-le d’une phrase courte qui annonce clairement ce que l’invité va trouver et l’action attendue. Avant l’envoi général, vérifiez le temps de chargement, la carte, le RSVP et tous les liens externes. Une personne de confiance, extérieure à l’organisation, peut effectuer ce test sans instruction : ses hésitations montreront exactement les formulations ou les emplacements à améliorer.",
-  "Adaptez la profondeur du contenu au type de célébration. Un dîner local peut rester très succinct, tandis qu’un mariage à l’étranger nécessite souvent plusieurs horaires, des conseils de transport et une zone d’hébergement. Ajouter une section simplement parce qu’un modèle la propose crée du bruit. À l’inverse, omettre une information utile génère des messages individuels et de l’inquiétude. L’édition consiste donc à conserver ce qui aide réellement une décision ou renforce l’émotion. Cette sélection attentive produit une expérience plus haut de gamme qu’une page longue dont chaque bloc semble avoir le même poids.",
-  "Lorsqu’une information évolue, modifiez la page centrale puis avertissez directement les personnes concernées si leur trajet ou leur horaire change. Une note datée placée près de l’élément mis à jour permet de comprendre rapidement la situation. Évitez d’envoyer un nouveau document complet pour une seule correction : les invités risqueraient de consulter l’ancienne version. Après le mariage, le même espace peut accueillir un remerciement ou une galerie, à condition de respecter le consentement des personnes photographiées. Cette continuité transforme l’invitation en objet vivant plutôt qu’en simple annonce temporaire.",
-  "Une direction artistique cohérente repose sur peu d’éléments bien choisis : une palette limitée, deux rôles typographiques et un motif récurrent. Il n’est pas nécessaire de répéter exactement la même composition dans chaque section. Variez plutôt le rythme tout en conservant la même logique de contraste et d’espacement. Les références visuelles doivent être sélectionnées après avoir clarifié le parcours, afin qu’elles accompagnent l’information au lieu de la masquer. Vous pouvez explorer les collections FOLDÈ comme point de départ, puis ajuster le ton, les images et les textes à l’histoire réelle du couple.",
-  "Terminez par une relecture complète dans les conditions d’usage : téléphone tenu d’une main, connexion moyenne et peu de temps disponible. Vérifiez chaque date, adresse, nom propre, bouton et lien. Demandez ensuite à quelqu’un de retrouver le lieu, la tenue et le délai de réponse sans aide. Si cette personne réussit rapidement, le parcours est prêt. Si elle hésite, simplifiez avant d’ajouter une nouvelle explication. Cette dernière passe protège à la fois l’expérience des invités et la sérénité des hôtes. Lorsque tout est clair, le design peut enfin jouer pleinement son rôle : donner envie de célébrer ensemble."
-];
 
-const genericDeepDive = (post) => [
-  ["Définir le rôle principal de l’invitation", `Commencez par la question la plus concrète : que doit comprendre ou faire l’invité en premier ? Pour ${post.keyword}, il peut s’agir de confirmer sa présence, de retenir la date ou de préparer son déplacement. Construisez l’ouverture autour de cette priorité, puis laissez l’identité visuelle créer l’émotion sans concurrencer l’information.`],
-  ["Construire un ordre d’information naturel", "Présentez le couple et la célébration, puis la date, le lieu, le programme, les informations pratiques et le RSVP. Cette progression réduit les hésitations et permet au lien de devenir la source de référence lorsque les invités reviennent le consulter."],
-  ["Concevoir d’abord pour le mobile", "Vérifiez chaque titre, bouton, image et animation sur un petit écran. Les caractères doivent rester confortables à lire, les zones tactiles faciles à utiliser et les contenus essentiels accessibles sans recherche inutile."],
-  ["Écrire pour quelqu’un qui ne connaît pas les lieux", "Donnez le nom exact du lieu, l’heure d’arrivée, un lien vers la carte et toute consigne d’accès importante. Un texte précis est plus accueillant qu’un long paragraphe qui oblige l’invité à deviner."],
-  ["Rendre le RSVP rapide et utile", "Demandez d’abord la présence, puis seulement les renseignements qui influencent réellement votre organisation. Expliquez l’échéance et indiquez à qui écrire si les plans changent."],
-  ["Préparer le partage du lien", "Choisissez un lien stable et un court message d’accompagnement. Testez le chargement, la carte, le formulaire et les liens externes avant de l’envoyer par message, courriel ou QR code."],
-  ["Adapter le niveau de détail", "Un dîner local n’exige pas les mêmes informations qu’un mariage sur plusieurs jours. Ajoutez uniquement les sections qui aident vos invités ou renforcent réellement l’expérience."],
-  ["Gérer les mises à jour avec clarté", "Actualisez la page centrale lorsqu’un horaire ou une consigne évolue. Si le changement affecte les déplacements, prévenez aussi les invités directement et ajoutez une note visible près de l’information concernée."],
-  ["Maintenir une direction artistique cohérente", "Limitez-vous à une palette, deux familles typographiques et quelques détails graphiques récurrents. Cette discipline donne une impression plus raffinée et libère de l’espace pour les informations importantes."],
-  ["Effectuer une dernière relecture côté invité", "Demandez à une personne extérieure à l’organisation d’ouvrir le lien sur son téléphone. Si elle comprend la célébration, trouve le lieu et peut répondre sans explication, le parcours est prêt à être partagé."]
-].map(([heading, body], index) => ({ heading, body: `${body} ${approfondissements[index]}` }));
 
-const closingGuide = (post) => `Avant la publication de votre ${post.keyword}, vérifiez la date, le lieu, la carte, le programme, le RSVP et tous les liens sur mobile. Relisez les textes pour leur clarté et leur chaleur, puis conservez la même adresse pour les rappels et les mises à jour. L’expérience finale doit être personnelle, actuelle et simple pour chaque invité.`;
 
-export const blogPostsFr = blogPosts.map((base) => {
+
+
+const translatedPostsFr = blogPosts.map((base) => {
   const translated = content[base.slug];
   const sections = translated.sections.map(([heading, body]) => ({ heading, body }));
   return {
     ...base,
     ...translated,
-    imageAlt: `${translated.keyword} élégant présenté par FOLDÈ Wedding`,
-    articleImages: base.articleImages.map(([src], index) => [src, `${translated.keyword} — inspiration visuelle ${index + 1}`]),
+    slug: POST_SLUGS[base.slug].fr,
+    enSlug: base.slug,
+    indexable: !NOINDEX_FR.includes(base.slug),
+    imageAlt: translated.imageAlt || base.imageAlt,
     sections,
-    deepDive: genericDeepDive(translated),
-    planningNote: `Pour évaluer votre ${translated.keyword}, séparez la dimension émotionnelle de la dimension pratique. La première crée l’accueil grâce aux images, au ton et au rythme. La seconde permet d’agir grâce à une date exacte, un lieu clair, un RSVP simple et un contact utile. Une invitation haut de gamme tient ces deux promesses à la fois : elle suscite l’envie tout en rendant chaque décision évidente. Faites ensuite une lecture par profil : un proche connaît déjà le contexte, mais une personne venant de loin cherchera d’abord les horaires, le trajet et l’hébergement. Un invité âgé appréciera des caractères confortables et une façon simple de contacter les hôtes. Quelqu’un qui consulte le lien entre deux activités voudra répondre sans parcourir toute la narration. Ces usages ne demandent pas plusieurs invitations ; ils exigent une hiérarchie capable de servir chacun au bon moment. Vérifiez aussi la cohérence entre le titre partagé dans les messages, l’ouverture visuelle et le contenu réel de la page. Une promesse trop vague ou un bouton peu explicite crée une hésitation inutile. Enfin, relisez chaque phrase à voix haute. Supprimez les répétitions, remplacez les termes abstraits par des indications concrètes et conservez un ton chaleureux. Ce travail éditorial naturel aide autant les invités que les moteurs de recherche : il rend le sujet précis sans répéter artificiellement le mot-clé. Les variantes sémantiques, les réponses directes et les exemples utiles donnent à la page une vraie profondeur.`,
-    closingGuide: closingGuide(translated),
-    faqs: [...translated.faqs, ...extraFaqsFr(translated.keyword)].slice(0, 15)
+    // Le guide générique commun à tous les articles a été retiré : il dupliquait le même texte sur chaque page.
+    deepDive: null,
+    planningNote: null,
+    closingGuide: null,
+    faqs: translated.faqs,
   };
 });
+
+export const blogPostsFr = [
+  ...originalPostsFr.map((post) => ({ ...post, original: true, indexable: true })),
+  ...translatedPostsFr,
+];
 
 export const currentSourcesFr = [
   { label: "The Knot Worldwide — Rapport mondial sur le mariage 2025", href: "https://www.theknotww.com/press-releases/the-knot-worldwides-2025-global-wedding-report-reveals-bold-new-era-of-personalization-and-purpose", note: "Étude publiée le 14 août 2025 auprès de 33 174 couples dans huit pays, sur la personnalisation, l’authenticité et l’expérience des invités." },

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { localizeHref } from "@/lib/routes.mjs";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import styles from "@/app/blog/blog.module.css";
 
@@ -54,7 +55,7 @@ export default function ArticlePreviewAside({ locale = "en" }) {
         <p>{isSpanish ? "CREAD VUESTRA INVITACIÓN" : isFrench ? "CRÉEZ VOTRE INVITATION" : "PLAN YOUR INVITATION"}</p>
         <h2>{isSpanish ? "Un enlace elegante para todos los detalles." : isFrench ? "Un lien élégant pour tous les détails." : "One elegant link for every guest detail."}</h2>
         <Link className={styles.primaryButton} href={`${root}/checkout`}>{isSpanish ? "Crear la invitación ahora" : isFrench ? "Créer mon invitation" : "Create your invitation card now"} <span className={styles.ctaPointer} aria-hidden="true">👇</span></Link>
-        <Link className={styles.asideLink} href={`${root}/collections`}>{isSpanish ? "Explorar las plantillas →" : isFrench ? "Explorer les modèles →" : "Explore the templates →"}</Link>
+        <Link className={styles.asideLink} href={localizeHref(locale, "/collections")}>{isSpanish ? "Explorar las plantillas →" : isFrench ? "Explorer les modèles →" : "Explore the templates →"}</Link>
       </aside>
     </div>
   );

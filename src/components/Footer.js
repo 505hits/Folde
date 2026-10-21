@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { localizeHref, pagePath } from "@/lib/routes.mjs";
 
 export default function Footer() {
   const pathname = usePathname();
   const locale = pathname?.startsWith("/es") ? "es" : pathname?.startsWith("/fr") ? "fr" : "en";
-  const link = (path) => locale === "en" ? path : (path === "/" ? `/${locale}` : `/${locale}${path}`);
+  const link = (path) => localizeHref(locale, path);
   const translations = { es: {
     home: "Inicio",
     collections: "Colecciones",
@@ -43,6 +44,8 @@ export default function Footer() {
         <div className="footer-links">
           <Link href={link("/")}>{t.home}</Link>
           <Link href={link("/collections")}>{t.collections}</Link>
+          {locale !== "en" && <Link href={pagePath(locale, "landing")}>{locale === "fr" ? "Faire-part de mariage numérique" : "Invitaciones de boda digitales"}</Link>}
+          <Link href={link("/blog")}>{locale === "fr" ? "Blog" : locale === "es" ? "Blog" : "Journal"}</Link>
           <Link href={link("/approach")}>{t.process}</Link>
           <Link href={link("/packages")}>{t.packages}</Link>
           <Link href={link("/story")}>{t.about}</Link>
