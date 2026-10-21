@@ -66,6 +66,16 @@ export default async function BlogArticle({ params, locale = "en" }) {
   };
 
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: ui.home, item: `${SITE_URL}${root || "/"}` }, { "@type": "ListItem", position: 2, name: ui.journal, item: `${SITE_URL}${root}/blog` }, { "@type": "ListItem", position: 3, name: post.title, item: url }] };
+  const isLong = Boolean(post.longform);
+  const fmtDate = (d) => new Date(d).toLocaleDateString(isSpanish ? "es-ES" : isFrench ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const longByline = isLong ? (isSpanish
+    ? `Por el equipo de FOLDÈ · Publicado el ${fmtDate(post.datePublished)} · Actualizado el ${fmtDate(post.dateModified || post.datePublished)} · ${post.readingTime} min de lectura`
+    : `Par l’équipe FOLDÈ · Publié le ${fmtDate(post.datePublished)} · Mis à jour le ${fmtDate(post.dateModified || post.datePublished)} · ${post.readingTime} min de lecture`) : null;
+  const tocLabel = isSpanish ? "En esta guía" : "Dans ce guide";
+  const heroCta = isSpanish ? "Crear nuestra invitación" : "Créer mon faire-part";
+  const editorial = isSpanish
+    ? "Nota editorial: esta guía la ha escrito el equipo de FOLDÈ, que diseña invitaciones de boda digitales. Los consejos se basan en las preguntas que nos hacen las parejas y en lo que vemos al preparar sus invitaciones. Las funciones de FOLDÈ citadas son las disponibles en la fecha de actualización."
+    : "Note de la rédaction : ce guide est rédigé par l’équipe FOLDÈ, qui conçoit des faire-part de mariage numériques. Les conseils s’appuient sur les questions que nous posent les couples et sur ce que nous observons en préparant leurs faire-part. Les fonctionnalités FOLDÈ citées sont celles disponibles à la date de mise à jour.";
   const byline = post.readingTime ? ui.byline.replace(/\d+/, String(post.readingTime)) : ui.byline;
   const eyebrow = isOriginal ? (isSpanish ? "GUÍA FOLDÈ · OCTUBRE DE 2026" : isFrench ? "GUIDE FOLDÈ · OCTOBRE 2026" : ui.eyebrow) : ui.eyebrow;
   const discoverHref = locale === "en" ? "/" : pagePath(locale, "landing");
@@ -79,7 +89,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <nav className={styles.breadcrumb} aria-label={ui.breadcrumb}><Link href={root || "/"}>{ui.home}</Link><span>/</span><Link href={`${root}/blog`}>{ui.journal}</Link><span>/</span><span>{post.keyword}</span></nav>
       <header className={styles.articleHero}>
-        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1><p className={styles.lede}>{post.description}</p><p className={styles.byline}>{byline}</p></div>
+        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1><p className={styles.lede}>{isLong ? post.intro : post.description}</p>{isLong && <div className={styles.introActions}><Link className={styles.primaryButton} href={`${root}/checkout`}>{heroCta}</Link></div>}<p className={styles.byline}>{longByline || byline}</p></div>
         <div className={styles.heroImage}><Image src={post.heroImage} alt={post.imageAlt} fill priority sizes="(max-width: 900px) 100vw, 50vw" /></div>
       </header>
       {!isOriginal && <ArticleTemplateCatalog locale={locale} />}
@@ -88,12 +98,16 @@ export default async function BlogArticle({ params, locale = "en" }) {
         <article className={styles.articleContent}>
           <section className={styles.quickAnswer}><p className={styles.label}>{ui.quick}</p><p>{post.quickAnswer}</p><Link href={discoverHref}>{discoverLabel}</Link></section>
           {isOriginal ? (
-            post.sections.map((section, index) => (
+            <>
+            {isLong && <nav className={styles.toc} aria-label={tocLabel}><p className={styles.label}>{tocLabel.toUpperCase()}</p><ol>{post.sections.map((section, index) => <li key={section.heading}><a href={`#s${index + 1}`}>{section.heading}</a></li>)}<li><a href="#faq">FAQ</a></li></ol></nav>}
+            {post.sections.map((section, index) => (
               <div key={section.heading}>
-                <section><h2>{section.heading}</h2><div dangerouslySetInnerHTML={{ __html: section.body }} /></section>
+                <section id={`s${index + 1}`}><h2>{section.heading}</h2><div dangerouslySetInnerHTML={{ __html: section.body }} /></section>
                 {index === ctaAfter && <ArticleCta locale={locale} variant="mid" />}
               </div>
-            ))
+            ))}
+            {isLong && post.sources?.length > 0 && <section className={styles.sources}><p className={styles.label}>SOURCES</p><ul>{post.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a></li>)}</ul></section>}
+            </>
           ) : (
             <>
               {hasLongGuide && <section className={styles.extendedIntro}><p>{post.extendedIntro}</p></section>}
@@ -105,7 +119,8 @@ export default async function BlogArticle({ params, locale = "en" }) {
             </>
           )}
           <ArticleCta locale={locale} variant="end" />
-          <section className={styles.faq}><p className={styles.label}>FAQ</p><h2>{isOriginal ? (isSpanish ? "Preguntas frecuentes" : isFrench ? "Questions fréquentes" : "Common questions") : `${post.keyword}: ${ui.questions}`}</h2>{post.faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
+          {isLong && <p className={styles.byline}>{editorial}</p>}
+          <section className={styles.faq} id="faq"><p className={styles.label}>FAQ</p><h2>{isOriginal ? (isSpanish ? "Preguntas frecuentes" : isFrench ? "Questions fréquentes" : "Common questions") : `${post.keyword}: ${ui.questions}`}</h2>{post.faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
           {!isOriginal && <section className={styles.sources}><p className={styles.label}>{ui.context}</p><h2>{ui.reading}</h2><p>{ui.sourceText}</p><ul>{sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
         </article>
         <ArticlePreviewAside locale={locale} />
