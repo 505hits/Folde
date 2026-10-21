@@ -1,68 +1,26 @@
-import { notFound } from "next/navigation";
-import Home from "@/app/page";
-import Collections from "@/app/collections/page";
-import Packages from "@/app/packages/page";
-import Approach from "@/app/approach/page";
-import Story from "@/app/story/page";
-import BlogIndex from "@/app/blog/page";
-import BlogArticle from "@/app/blog/[slug]/page";
-import Checkout from "@/app/checkout/page";
-import Dashboard from "@/app/dashboard/page";
-import Success from "@/app/success/page";
 import { getPostFr } from "@/lib/blog-fr";
+import { landingContent } from "@/lib/landing-content";
+import { localizedMetadata, renderLocalized } from "@/lib/localized-route";
 
-const SITE_URL = "https://www.folde-wedding.com";
 const pageMetadata = {
-  "": { title: "Faire-part de mariage numérique haut de gamme | FOLDÈ Wedding", description: "FOLDÈ crée des faire-part de mariage numériques sur mesure avec RSVP intégré, galerie photo et gestion des invités en temps réel." },
-  collections: { title: "Collections de faire-part de mariage | FOLDÈ Wedding", description: "Découvrez les collections de faire-part de mariage numériques FOLDÈ : des créations élégantes, interactives et entièrement personnalisables." },
-  packages: { title: "Formules de faire-part de mariage numérique | FOLDÈ Wedding", description: "Comparez les formules Standard, Premium et Expert de FOLDÈ Wedding, avec RSVP intégré et nombre d’invités illimité." },
-  approach: { title: "Notre méthode de création | FOLDÈ Wedding", description: "Découvrez les quatre étapes de création de votre faire-part de mariage numérique, du premier échange jusqu’à sa mise en ligne." },
-  story: { title: "Notre vision | FOLDÈ Wedding", description: "Découvrez la philosophie FOLDÈ : direction artistique éditoriale, technologie utile et expérience mémorable pour vos invités." },
-  blog: { title: "Idées et conseils pour vos faire-part de mariage | FOLDÈ Wedding", description: "Guides, inspirations graphiques et conseils RSVP pour concevoir un faire-part de mariage numérique élégant et pratique." },
-  checkout: { title: "Finaliser votre faire-part | FOLDÈ Wedding", description: "Choisissez votre formule et personnalisez votre faire-part de mariage numérique FOLDÈ.", robots: { index: false, follow: false } },
-  dashboard: { title: "Votre tableau de bord mariage | FOLDÈ Wedding", description: "Gérez votre faire-part, vos invités, vos RSVP et votre plan de table dans votre espace privé.", robots: { index: false, follow: false } },
-  success: { title: "Paiement confirmé | FOLDÈ Wedding", description: "Confirmation de votre commande FOLDÈ Wedding.", robots: { index: false, follow: false } }
+  home: { title: "FOLDÈ – Faire-part et site de mariage en ligne, avec RSVP", description: "Créez un faire-part de mariage élégant qui s’envoie par lien : RSVP en ligne, programme, plan d’accès, galerie photo et gestion des invités en temps réel." },
+  landing: { title: landingContent.fr.metaTitle, description: landingContent.fr.description },
+  collections: { title: "Modèles de faire-part de mariage numérique | FOLDÈ", description: "Parcourez nos modèles de faire-part de mariage numérique : ouverture d’enveloppe animée, typographies élégantes, entièrement personnalisables." },
+  packages: { title: "Tarifs des faire-part de mariage numériques | FOLDÈ", description: "Formules Standard et Expert : paiement unique, invités illimités, RSVP intégré. Comparez ce que comprend chaque formule." },
+  approach: { title: "Notre méthode : de l’idée au faire-part en ligne | FOLDÈ", description: "Les quatre étapes de création de votre faire-part de mariage numérique, du premier échange jusqu’à l’envoi à vos invités." },
+  story: { title: "Notre histoire | FOLDÈ Wedding", description: "La philosophie FOLDÈ : une direction artistique de papeterie, une technologie utile et une expérience mémorable pour vos invités." },
+  blog: { title: "Blog mariage : textes, faire-part et save the date | FOLDÈ", description: "Textes de faire-part, formules d’invitation, save the date, budget : nos guides pour préparer et envoyer vos faire-part de mariage." },
+  checkout: { title: "Créer votre faire-part | FOLDÈ", description: "Choisissez votre formule et personnalisez votre faire-part de mariage numérique." },
+  dashboard: { title: "Votre tableau de bord | FOLDÈ", description: "Gérez votre faire-part, vos invités et vos RSVP." },
+  success: { title: "Paiement confirmé | FOLDÈ", description: "Confirmation de votre commande FOLDÈ." },
 };
-
-function routeFromSegments(segments = []) {
-  if (!segments.length) return { type: "page", key: "" };
-  if (segments.length === 1 && pageMetadata[segments[0]]) return { type: "page", key: segments[0] };
-  if (segments.length === 2 && segments[0] === "blog" && getPostFr(segments[1])) return { type: "article", slug: segments[1] };
-  return null;
-}
-
-function alternates(path) {
-  return { canonical: `${SITE_URL}/fr${path}`, languages: { en: `${SITE_URL}${path || "/"}`, es: `${SITE_URL}/es${path}`, fr: `${SITE_URL}/fr${path}`, "x-default": `${SITE_URL}${path || "/"}` } };
-}
 
 export async function generateMetadata({ params }) {
   const { segments = [] } = await params;
-  const route = routeFromSegments(segments);
-  if (!route) return {};
-  const path = segments.length ? `/${segments.join("/")}` : "";
-  if (route.type === "article") {
-    const post = getPostFr(route.slug);
-    return { title: `${post.title} | FOLDÈ Wedding`, description: post.description, alternates: alternates(path), openGraph: { title: post.title, description: post.description, type: "article", locale: "fr_FR", alternateLocale: ["en_US", "es_ES"], url: `${SITE_URL}/fr${path}`, images: [post.heroImage] }, twitter: { card: "summary_large_image", title: post.title, description: post.description, images: [post.heroImage] } };
-  }
-  const page = pageMetadata[route.key];
-  return { ...page, alternates: alternates(path), openGraph: { ...page, locale: "fr_FR", alternateLocale: ["en_US", "es_ES"], url: `${SITE_URL}/fr${path}` }, twitter: { card: "summary_large_image", ...page } };
+  return localizedMetadata("fr", segments, getPostFr, pageMetadata);
 }
 
 export default async function FrenchPage({ params }) {
   const { segments = [] } = await params;
-  const route = routeFromSegments(segments);
-  if (!route) notFound();
-  if (route.type === "article") return <BlogArticle locale="fr" params={Promise.resolve({ slug: route.slug })} />;
-  switch (route.key) {
-    case "": return <Home locale="fr" />;
-    case "collections": return <Collections locale="fr" />;
-    case "packages": return <Packages locale="fr" />;
-    case "approach": return <Approach locale="fr" />;
-    case "story": return <Story locale="fr" />;
-    case "blog": return <BlogIndex locale="fr" />;
-    case "checkout": return <Checkout locale="fr" />;
-    case "dashboard": return <Dashboard locale="fr" />;
-    case "success": return <Success locale="fr" />;
-    default: notFound();
-  }
+  return renderLocalized("fr", segments, getPostFr);
 }

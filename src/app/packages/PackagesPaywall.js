@@ -108,7 +108,7 @@ function InvitationPhone({ data, compact = false }) {
       <div className={compact ? styles.notch : styles.finalNotch} />
       <div className={styles.phoneScreen}>
         <div className={styles.phoneTemplate}>
-          <BordeauxTemplate key={previewKey} data={data} editMode={false} autoPlaySimulation={false} heroHeight="970px" />
+          <BordeauxTemplate embedded key={previewKey} data={data} editMode={false} autoPlaySimulation={false} heroHeight="970px" />
         </div>
       </div>
     </div>

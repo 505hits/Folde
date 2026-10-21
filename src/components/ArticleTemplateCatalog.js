@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { localizeHref } from "@/lib/routes.mjs";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import styles from "@/app/blog/blog.module.css";
 
@@ -42,7 +43,7 @@ export default function ArticleTemplateCatalog({ locale = "en" }) {
         <div className={styles.catalogActions}>
           <button type="button" onClick={() => scrollCatalog(-1)} aria-label={isSpanish ? "Mostrar las plantillas anteriores" : isFrench ? ui.previous : "Show previous templates"}>←</button>
           <button type="button" onClick={() => scrollCatalog(1)} aria-label={isSpanish ? "Mostrar más plantillas" : isFrench ? ui.next : "Show more templates"}>→</button>
-          <Link href={`${root}/collections`}>{isSpanish ? "Ver todas" : isFrench ? ui.all : "View all"}</Link>
+          <Link href={localizeHref(locale, "/collections")}>{isSpanish ? "Ver todas" : isFrench ? ui.all : "View all"}</Link>
         </div>
       </div>
       <div className={styles.catalogTrack} ref={trackRef}>

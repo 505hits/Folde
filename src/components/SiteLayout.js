@@ -3,24 +3,16 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
+import { pagePath } from "@/lib/routes.mjs";
+
+const FULLSCREEN = ["/dashboard", "/checkout", "/es/checkout", "/fr/checkout", "/kissing-couple-wedding-invitation", "/invite",
+  ...["en", "fr", "es"].flatMap((l) => [pagePath(l, "packages"), pagePath(l, "collections")])];
 
 export default function SiteLayout({ children }) {
   const pathname = usePathname();
   
   // Hide header and footer on checkout, dashboard and invitation routes
-  const hideHeaderFooter = pathname?.startsWith("/dashboard") || 
-                           pathname?.startsWith("/checkout") ||
-                           pathname?.startsWith("/packages") ||
-                           pathname?.startsWith("/es/checkout") ||
-                           pathname?.startsWith("/fr/checkout") ||
-                           pathname?.startsWith("/es/packages") ||
-                           pathname?.startsWith("/fr/packages") ||
-                           pathname?.startsWith("/kissing-couple-wedding-invitation") ||
-                           pathname?.startsWith("/collections") ||
-                           pathname?.startsWith("/es/collections") ||
-                           pathname?.startsWith("/fr/collections") ||
-                           pathname?.startsWith("/[couple]") ||
-                           pathname?.startsWith("/invite");
+  const hideHeaderFooter = FULLSCREEN.some((prefix) => pathname === prefix || pathname?.startsWith(`${prefix}/`));
   const isBlog = pathname?.startsWith("/blog") || pathname?.startsWith("/es/blog") || pathname?.startsWith("/fr/blog");
 
   return (

@@ -3,6 +3,8 @@ import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
 import SiteLayout from "@/components/SiteLayout";
+import { SITE_URL } from "@/lib/routes.mjs";
+import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -13,59 +15,16 @@ const zenOldMincho = Zen_Old_Mincho({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://www.folde-wedding.com"),
-  title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-  description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management. Designed for celebrations worldwide.",
-  keywords: ["digital wedding invitations", "premium wedding sites", "bespoke wedding RSVP", "elegant wedding invitations", "destination wedding websites", "FOLDÈ Design"],
-  icons: {
-    icon: '/icon.png',
-  },
+  metadataBase: new URL(SITE_URL),
+  title: { default: "FOLDÈ Wedding | Digital Wedding Invitations", template: "%s" },
+  description: "Elegant digital wedding invitations with online RSVP, photo galleries, maps and live guest management.",
+  icons: { icon: "/icon.png" },
   openGraph: {
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
-    url: "https://www.folde-wedding.com",
-    siteName: "FOLDÈ Design",
-    images: [
-      {
-        url: "https://www.folde-wedding.com/images/logo.png",
-        width: 800,
-        height: 600,
-        alt: "FOLDÈ Design Logo"
-      }
-    ],
-    locale: "en_US",
+    siteName: "FOLDÈ Wedding",
+    images: [{ url: `${SITE_URL}/images/logo.png`, alt: "FOLDÈ Wedding" }],
     type: "website",
   },
-  alternates: {
-    canonical: "/",
-    languages: { en: "/", es: "/es", fr: "/fr", "x-default": "/" },
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "FOLDÈ Design | Premium Digital Wedding Invitations",
-    description: "Premium bespoke digital wedding invitations with integrated RSVPs, photo galleries, interactive maps, and live guest management.",
-    images: ["https://www.folde-wedding.com/images/logo.png"],
-  }
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "FOLDÈ Design",
-  "image": "https://www.folde-wedding.com/images/logo.png",
-  "@id": "https://www.folde-wedding.com/#website",
-  "url": "https://www.folde-wedding.com",
-  "priceRange": "$$",
-  "areaServed": [
-    { "@type": "AdministrativeArea", "name": "France" },
-    { "@type": "AdministrativeArea", "name": "Provence" },
-    { "@type": "AdministrativeArea", "name": "French Riviera" },
-    { "@type": "AdministrativeArea", "name": "Europe" },
-    { "@type": "AdministrativeArea", "name": "Worldwide" }
-  ],
-  "sameAs": [
-    "https://www.instagram.com/foldedesign"
-  ]
+  twitter: { card: "summary_large_image" },
 };
 
 export default async function RootLayout({ children }) {
@@ -84,7 +43,7 @@ gtag('config', 'G-G5CB9NQHZL');`}
         </Script>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationSchema, websiteSchema]) }}
         />
       </head>
       <body className={`${inter.variable} ${zenOldMincho.variable}`}>

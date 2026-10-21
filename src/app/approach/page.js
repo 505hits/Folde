@@ -1,10 +1,12 @@
+import { pageAlternates } from "@/lib/seo";
 import Link from "next/link";
 import styles from "./method.module.css";
+import { localizeHref } from "@/lib/routes.mjs";
 
 export const metadata = {
   title: "Our Method | FOLDÈ Design — How We Create Your Digital Wedding Invitation",
   description: "Discover our streamlined 4-step process to design your premium digital wedding invitation. From consultation to delivery, we guide you every step of the way.",
-  alternates: { canonical: "https://www.folde-wedding.com/approach", languages: { en: "https://www.folde-wedding.com/approach", es: "https://www.folde-wedding.com/es/approach", fr: "https://www.folde-wedding.com/fr/approach", "x-default": "https://www.folde-wedding.com/approach" } },
+  alternates: pageAlternates("en", "approach"),
 };
 
 const steps = [
@@ -139,7 +141,7 @@ const approachCopy = {
 };
 
 export default function Method({ locale = 'en' }) {
-  const link = (path) => locale === 'en' ? path : `/${locale}${path}`;
+  const link = (path) => localizeHref(locale, path);
   const copy = approachCopy[locale] || approachCopy.en;
   const localizedSteps = locale === 'es' ? spanishSteps : locale === 'fr' ? frenchSteps : steps;
   return (

@@ -1749,7 +1749,7 @@ function CheckoutContent({ locale = "en" }) {
                 <div className="preview-phone-frame">
                   <div className="preview-phone-screen" ref={previewPhoneScreenRef}>
                     <div className="preview-phone-template-inner">
-                      <BordeauxTemplate key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} activateEnvelopeOnHover heroHeight="970px" />
+                      <BordeauxTemplate embedded key={`${selectedEnvelope}-${envelopeKey}-${selectedTheme}`} data={previewData} editMode={false} autoPlaySimulation={false} activateEnvelopeOnHover heroHeight="970px" />
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,7 @@
+import { pageAlternates } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
+import { localizeHref } from "@/lib/routes.mjs";
 import { blogPosts } from "@/lib/blog";
 import { blogPostsEs } from "@/lib/blog-es";
 import { blogPostsFr } from "@/lib/blog-fr";
@@ -9,7 +11,7 @@ import styles from "./blog.module.css";
 export const metadata = {
   title: "Wedding Invitation Ideas & Tutorials | FOLDÈ Wedding",
   description: "Wedding invitation tutorials, planning ideas, RSVP guidance, and premium digital invitation inspiration from FOLDÈ Wedding.",
-  alternates: { canonical: "https://www.folde-wedding.com/blog", languages: { en: "https://www.folde-wedding.com/blog", es: "https://www.folde-wedding.com/es/blog", fr: "https://www.folde-wedding.com/fr/blog", "x-default": "https://www.folde-wedding.com/blog" } }
+  alternates: pageAlternates("en", "blog")
 };
 
 export default function BlogIndex({ locale = "en" }) {
@@ -26,7 +28,7 @@ export default function BlogIndex({ locale = "en" }) {
         <p>{ui.intro}</p>
         <div className={styles.introActions}>
           <Link className={styles.primaryButton} href={root || "/"}>{ui.discover}</Link>
-          <Link className={styles.secondaryButton} href={`${root}/collections`}>{ui.collections}</Link>
+          <Link className={styles.secondaryButton} href={localizeHref(locale, "/collections")}>{ui.collections}</Link>
         </div>
       </section>
       <section className={styles.cardGrid} aria-label={ui.aria}>
