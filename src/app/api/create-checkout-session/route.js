@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const STANDARD_LAUNCH_PRICE_ID = 'price_1UItNjDepfiMdtp46fHveRN0';
@@ -14,7 +15,13 @@ const PLAN_CONFIG = {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { plan, name, partnerName, email, theme, locale, launchOffer, offerExpires } = body;
+    const { plan, name, partnerName, theme, locale, launchOffer, offerExpires } = body;
+    const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+    if (!token) return NextResponse.json({ error: 'Please sign in before paying.' }, { status: 401 });
+    const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    const { data: { user }, error: authError } = await auth.auth.getUser(token);
+    if (authError || !user?.email) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
+    const email = user.email;
 
     const planConfig = PLAN_CONFIG[plan];
     if (!planConfig) {
@@ -47,6 +54,7 @@ export async function POST(request) {
         theme: selectedTheme,
         locale: ['fr', 'es'].includes(locale) ? locale : 'en',
         launchOffer: validLaunchOffer ? 'true' : 'false',
+        userId: user.id,
       },
       success_url: `${origin}${localePrefix}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${localePrefix}/checkout?template=${encodeURIComponent(selectedTheme)}`,

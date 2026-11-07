@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
+import { supabase } from '@/lib/supabase';
 
 const COPY = {
   en: {
@@ -32,7 +33,7 @@ const COPY = {
 function SuccessContent({ locale }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { register, login, createOrder } = useDatabase();
+  const { createOrder } = useDatabase();
   const copy = COPY[locale] || COPY.en;
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
 
@@ -43,17 +44,18 @@ function SuccessContent({ locale }) {
     const sessionId = searchParams.get('session_id');
 
     if (!sessionId) {
-      // No session ID — might be a direct visit, show generic success
-      setStatus('success');
+      setStatus('error');
       return;
     }
 
     const verifyAndCreateOrder = async () => {
       try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        if (!authSession) throw new Error('Please sign in to recover your order.');
         // 1. Verify the Stripe session
         const res = await fetch('/api/verify-session', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authSession.access_token}` },
           body: JSON.stringify({ sessionId }),
         });
 
@@ -74,12 +76,11 @@ function SuccessContent({ locale }) {
         // Use Stripe metadata as fallback if localStorage is empty
         const name = pending?.name || session.metadata?.name || '';
         const partnerName = pending?.partnerName || session.metadata?.partnerName || '';
-        const email = pending?.email || session.metadata?.email || session.customerEmail || '';
+        const email = session.metadata?.email || session.customerEmail || '';
         const theme = pending?.theme || session.metadata?.theme || 'bordeaux';
         const plan = pending?.plan || session.metadata?.plan || 'Standard';
         const planId = pending?.planId || plan.toLowerCase();
-        const password = pending?.password || 'welcome123';
-        const price = pending?.price || (session.amountTotal / 100);
+        const price = session.amountTotal / 100;
         const invitationDetails = pending?.previewData && typeof pending.previewData === 'object'
           ? {
               ...pending.previewData,
@@ -92,13 +93,6 @@ function SuccessContent({ locale }) {
               partner1: name,
               partner2: partnerName,
             };
-
-        // 3. Register/Login the user (if not already logged in)
-        const registerResult = await register(email, password, name, partnerName);
-        if (!registerResult.success) {
-          // Account might already exist, try login
-          await login(email, password);
-        }
 
         // 4. Create the order
         const newOrder = await createOrder(email, name, partnerName, theme, plan, price, invitationDetails);
@@ -114,8 +108,7 @@ function SuccessContent({ locale }) {
 
       } catch (error) {
         console.error('Verification error:', error);
-        // Still show success (payment was likely successful)
-        setStatus('success');
+        setStatus('error');
       }
     };
 

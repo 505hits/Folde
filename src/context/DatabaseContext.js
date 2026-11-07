@@ -7,33 +7,12 @@ const DatabaseContext = createContext();
 
 export function DatabaseProvider({ children }) {
   // ============ AUTH ============
-  const [users, setUsers] = useState([
-    { email: 'emma@test.com', password: 'test123', name: 'Emma', partnerName: 'Lucas' },
-    { email: 'sophie@test.com', password: 'test123', name: 'Sophie', partnerName: 'Marc' }
-  ]);
+  const users = [];
   const [currentUser, setCurrentUser] = useState(null);
 
   React.useEffect(() => {
-    // 1. Initial local load
-    const saved = typeof window !== 'undefined' && localStorage.getItem('currentUser');
-    if (saved) {
-      try { setCurrentUser(JSON.parse(saved)); } catch (e) { }
-    }
-
-    // 2. Initial Supabase session load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        const profile = {
-          email: session.user.email,
-          name: session.user.user_metadata?.name || '',
-          partnerName: session.user.user_metadata?.partner_name || '',
-          supabaseId: session.user.id
-        };
-        setCurrentUser(profile);
-        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
-      }
-    }).catch(err => console.warn('Supabase getSession error:', err));
-
+    // Supabase is the sole source of authentication state.
+    localStorage.removeItem('currentUser');
     // 3. Listen to active auth state changes (login, logout, OAuth redirect)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
@@ -45,7 +24,7 @@ export function DatabaseProvider({ children }) {
         };
         setCurrentUser(profile);
         if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
-      } else if (_event === 'SIGNED_OUT') {
+      } else {
         setCurrentUser(null);
         if (typeof window !== 'undefined') localStorage.removeItem('currentUser');
       }
@@ -57,111 +36,25 @@ export function DatabaseProvider({ children }) {
   }, []);
 
   const register = async (email, password, name, partnerName) => {
-    const cleanEmail = email ? email.trim() : '';
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
-        password,
-        options: {
-          data: { name, partner_name: partnerName }
-        }
+        email: email?.trim() || '', password,
+        options: { data: { name, partner_name: partnerName } }
       });
-
-      if (error) {
-        console.warn('Supabase register error:', error.message);
-        let errorMsg = 'An error occurred during registration.';
-        if (error.message.includes('User already registered') || error.message.includes('already exists')) {
-          errorMsg = 'An account already exists with this email.';
-        } else if (error.message.includes('Password should be')) {
-          errorMsg = 'Password must be at least 6 characters.';
-        } else if (
-          error.message.toLowerCase().includes('rate limit') ||
-          error.message.toLowerCase().includes('rate_limit') ||
-          error.message.toLowerCase().includes('invalid') ||
-          cleanEmail.endsWith('@test.com') ||
-          cleanEmail.endsWith('@example.com')
-        ) {
-          const fallbackUser = { email: cleanEmail, password, name, partnerName };
-          setCurrentUser(fallbackUser);
-          if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(fallbackUser));
-          return { success: true, fallback: true };
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        return { success: false, error: errorMsg };
-      }
-
-      if (data?.user) {
-        const newUser = {
-          email: data.user.email,
-          name: name || data.user.user_metadata?.name || '',
-          partnerName: partnerName || data.user.user_metadata?.partner_name || '',
-          supabaseId: data.user.id
-        };
-        setCurrentUser(newUser);
-        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(newUser));
-        return { success: true };
-      }
-
-      return { success: true };
-    } catch (err) {
-      console.error('Register error:', err);
-      const newUser = { email: cleanEmail, password, name, partnerName };
-      setUsers(prev => [...prev, newUser]);
-      setCurrentUser(newUser);
-      if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(newUser));
-      return { success: true };
+      if (error) return { success: false, error: error.message };
+      return { success: true, requiresConfirmation: !data.session };
+    } catch {
+      return { success: false, error: 'Unable to create your account. Please try again.' };
     }
   };
 
   const login = async (email, password) => {
-    const cleanEmail = email ? email.trim() : '';
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password
-      });
-
-      if (error) {
-        console.warn('Supabase login error:', error.message);
-
-        // Fallback check for local mock users
-        const localUser = users.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === password);
-        if (localUser) {
-          setCurrentUser(localUser);
-          if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(localUser));
-          return { success: true };
-        }
-
-        let errorMsg = 'Invalid email or password.';
-        if (error.message.includes('Invalid login credentials')) {
-          errorMsg = 'Invalid email or password.';
-        } else if (error.message.includes('Email not confirmed')) {
-          errorMsg = 'Please confirm your email address before signing in.';
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        return { success: false, error: errorMsg };
-      }
-
-      const profile = {
-        email: data.user.email,
-        name: data.user.user_metadata?.name || '',
-        partnerName: data.user.user_metadata?.partner_name || '',
-        supabaseId: data.user.id
-      };
-      setCurrentUser(profile);
-      if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(profile));
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email?.trim() || '', password });
+      if (error || !data.session) return { success: false, error: error?.message || 'Please sign in again.' };
       return { success: true };
-    } catch (err) {
-      console.error('Login error:', err);
-      const localUser = users.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === password);
-      if (localUser) {
-        setCurrentUser(localUser);
-        if (typeof window !== 'undefined') localStorage.setItem('currentUser', JSON.stringify(localUser));
-        return { success: true };
-      }
-      return { success: false, error: 'An error occurred while signing in.' };
+    } catch {
+      return { success: false, error: 'Unable to sign in. Please try again.' };
     }
   };
 
