@@ -10,6 +10,7 @@ import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
 import { getTranslation } from '@/lib/translations';
 import styles from './BordeauxTemplate.module.css';
+import { resolveTemplateMedia } from '@/lib/template-media.mjs';
 
 // Hook for scroll animations
 function useScrollAnimation() {
@@ -304,6 +305,7 @@ const signatureContent = {
 };
 
 function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, autoOpenEnvelope = false, onEnvelopeDismissed, heroHeight = '100vh', activateEnvelopeOnHover = false, envelopeFit = 'cover', envelopeBackground, embedded = false }) {
+  data = { ...data, videos: { ...data?.videos, envelope: resolveTemplateMedia(data?.videos?.envelope), hero: resolveTemplateMedia(data?.videos?.hero) } };
   // When the template is shown as a preview inside another page, the couple's
   // names must not become that page's H1.
   const HeroHeading = embedded ? 'p' : 'h1';

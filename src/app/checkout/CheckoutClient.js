@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { supabase } from '@/lib/supabase';
 import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
@@ -134,11 +135,11 @@ const ENVELOPE_OPTIONS = [
   { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340' },
   { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810' },
   { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744' },
-  { id: 'env_rosas', name: 'Rosas Velvet', url: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', color: '#3d0103' },
-  { id: 'env_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', color: '#f7f2ea' },
-  { id: 'env_orange', name: 'Orange Terracotta', url: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', color: '#8a3f13' },
-  { id: 'env_editorial', name: 'Editorial Paper', url: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', color: '#f2efe9' },
-  { id: 'env_excellence', name: 'Excellence Floral', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542' },
+  { id: 'env_rosas', name: 'Rosas Velvet', url: '/videos/bordeaux.mp4', color: '#3d0103' },
+  { id: 'env_atelierindigo', name: 'Atelier Indigo', url: '/videos/ivory.mp4', color: '#f7f2ea' },
+  { id: 'env_orange', name: 'Orange Terracotta', url: '/videos/terracotta.mp4', color: '#8a3f13' },
+  { id: 'env_editorial', name: 'Editorial Paper', url: '/images/envelope-posters/ivory.webp', color: '#f2efe9' },
+  { id: 'env_excellence', name: 'Excellence Floral', url: '/videos/sage.mp4', color: '#3a5542' },
   { id: 'env_custom', name: "I'll provide my own", color: '#888' },
 ];
 
@@ -175,11 +176,11 @@ const HERO_VIDEO_OPTIONS = [
   { id: 'hero_pressedlovesweetlove', name: 'Sweet Love', url: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4' },
   { id: 'hero_pressedlovefloral', name: 'Botanical Floral', url: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4' },
   { id: 'hero_pressedlovebigentrance', name: 'Big Entrance', url: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4' },
-  { id: 'hero_rosas', name: 'Rosas', url: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4' },
-  { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75' },
-  { id: 'hero_orange', name: 'Orange', url: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4' },
-  { id: 'hero_editorial', name: 'Editorial', url: 'https://wedgo.co/editorial-assets/wedding-dance.png' },
-  { id: 'hero_excellence', name: 'Excellence', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4' },
+  { id: 'hero_rosas', name: 'Rosas', url: '/videos/hero/kissing-couple.mp4' },
+  { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: '/images/hero-posters/royal-heritage.webp' },
+  { id: 'hero_orange', name: 'Orange', url: '/videos/hero/sea-view.mp4' },
+  { id: 'hero_editorial', name: 'Editorial', url: '/images/hero-posters/kissing-couple.webp' },
+  { id: 'hero_excellence', name: 'Excellence', url: '/videos/sage.mp4' },
   { id: 'hero_custom', name: "I'll provide my own" },
 ];
 
@@ -361,7 +362,7 @@ function CheckoutContent({ locale = "en" }) {
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
 
   // Account details (shared by all)
-  const [account, setAccount] = useState({ name: '', partnerName: '', email: '', password: 'welcome123' });
+  const [account, setAccount] = useState({ name: '', partnerName: '', email: '', password: '' });
   const [authError, setAuthError] = useState('');
 
   // Premium/Custom wedding form (shown AFTER payment)
@@ -694,23 +695,9 @@ function CheckoutContent({ locale = "en" }) {
         return;
       }
       if (!currentUser) {
-        const result = await register(account.email, account.password || 'test123', account.name, account.partnerName);
-        if (!result.success) {
-          const isRateLimit = result.error?.toLowerCase().includes('rate limit') || result.error?.toLowerCase().includes('rate_limit');
-          const isInvalid = result.error?.toLowerCase().includes('invalid') || account.email?.toLowerCase().endsWith('@test.com');
-          const isExists = result.error === 'Email already exists' || result.error === 'Un compte existe déjà avec cet email.' || result.error?.toLowerCase().includes('already exists');
-
-          if (isExists) {
-            const loginRes = await login(account.email, account.password || 'test123');
-            if (!loginRes.success) {
-              // Fallback: continue to payment anyway
-            }
-          } else if (isRateLimit || isInvalid) {
-            // Fallback: continue to payment anyway
-          } else {
-            setAuthError(result.error); return;
-          }
-        }
+        setAuthError('Please sign in from the packages page before paying.');
+        router.push(localizedRoute('/packages'));
+        return;
       }
       await handlePayment();
       return;
@@ -737,7 +724,6 @@ function CheckoutContent({ locale = "en" }) {
         name: account.name,
         partnerName: account.partnerName,
         email: account.email,
-        password: account.password,
         theme: selectedTheme,
         previewData: {
           ...previewData,
@@ -755,51 +741,12 @@ function CheckoutContent({ locale = "en" }) {
       }));
     }
 
-    // Fast Test Bypass: if email contains 'test' or 'bypass' (e.g. emma@test.com, test@test.com, user@test.com)
-    const cleanEmail = (account.email || '').trim().toLowerCase();
-    const isTestEmail = cleanEmail.includes('test') || cleanEmail.includes('bypass') || cleanEmail.endsWith('@test.com');
-
-    if (isTestEmail) {
-      try {
-        if (!currentUser) {
-          await register(account.email, account.password || 'test123', account.name, account.partnerName);
-        }
-        const newOrder = await createOrder(
-          account.email,
-          account.name,
-          account.partnerName,
-          selectedTheme,
-          selectedPackage.name,
-          total,
-          {
-            ...previewData,
-            partner1: account.name,
-            partner2: account.partnerName,
-            date: formatPreviewDate(previewDate),
-            ceremonyVenue: previewVenue || 'Your Dream Venue',
-            receptionVenue: previewVenue || '',
-            storyTitle: previewStoryTitle,
-            storyText: previewStoryText,
-          }
-        );
-        if (newOrder?.slug) setCreatedOrderSlug(newOrder.slug);
-        if (selectedPackage.id === 'Custom' || selectedPackage.id === 'custom') {
-          setPaymentProcessing(false);
-          setStep(4);
-        } else {
-          router.push(localizedRoute('/dashboard'));
-        }
-        return;
-      } catch (err) {
-        console.warn('Fast test payment bypass failed:', err);
-        setPaymentProcessing(false);
-      }
-    }
-
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Please sign in before paying.');
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({
           plan: selectedPackage.id,
           name: account.name,

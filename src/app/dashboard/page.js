@@ -248,7 +248,7 @@ function DashboardContent({ locale = "en" }) {
           if (!result.success) {
             setLoginError(result.error || 'An error occurred during registration.');
           } else {
-            setAuthSuccessMsg('Account created successfully!');
+            setAuthSuccessMsg(result.requiresConfirmation ? 'Please check your email to confirm your account, then sign in.' : 'Account created successfully!');
           }
         }
       } catch (err) {
@@ -1645,11 +1645,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'pressedlovesweetlove', name: 'Sweet Love', desc: 'Soft peach and cream tones with delicate romance' },
     { id: 'pressedlovefloral', name: 'Botanical Floral', desc: 'Floral petals and a romantic bloom' },
     { id: 'pressedlovebigentrance', name: 'Big Entrance', desc: 'A majestic entrance with a golden wax seal' },
-    { id: 'rosas', name: 'Rosas', desc: 'Velvet roses and deep burgundy romance', envelope: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', hero: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', color: '#3D0103' },
-    { id: 'atelierindigo', name: 'Atelier Indigo', desc: 'Editorial ivory with refined indigo details', envelope: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', hero: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', color: '#122B45' },
-    { id: 'orange', name: 'Orange', desc: 'Sun-washed terracotta and Mediterranean warmth', envelope: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', hero: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', color: '#8A3F13' },
-    { id: 'editorial', name: 'Editorial', desc: 'Modern typography on understated ivory paper', envelope: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', hero: 'https://wedgo.co/editorial-assets/wedding-dance.png', color: '#38332E' },
-    { id: 'excellence', name: 'Excellence', desc: 'Architectural florals and champagne refinement', envelope: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', hero: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3A5542' },
+    { id: 'rosas', name: 'Rosas', desc: 'Velvet roses and deep burgundy romance', envelope: '/videos/bordeaux.mp4', hero: '/videos/hero/kissing-couple.mp4', color: '#3D0103' },
+    { id: 'atelierindigo', name: 'Atelier Indigo', desc: 'Editorial ivory with refined indigo details', envelope: '/videos/ivory.mp4', hero: '/images/hero-posters/royal-heritage.webp', color: '#122B45' },
+    { id: 'orange', name: 'Orange', desc: 'Sun-washed terracotta and Mediterranean warmth', envelope: '/videos/terracotta.mp4', hero: '/videos/hero/sea-view.mp4', color: '#8A3F13' },
+    { id: 'editorial', name: 'Editorial', desc: 'Modern typography on understated ivory paper', envelope: '/images/envelope-posters/ivory.webp', hero: '/images/hero-posters/kissing-couple.webp', color: '#38332E' },
+    { id: 'excellence', name: 'Excellence', desc: 'Architectural florals and champagne refinement', envelope: '/videos/sage.mp4', hero: '/videos/sage.mp4', color: '#3A5542' },
   ];
 
   const AVAILABLE_ENVELOPE_VIDEOS = [
@@ -1682,11 +1682,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'env_pressedlovecomo', name: 'Como Blue Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-blue-e30ba1e0.mp4', color: '#0c2340', desc: 'Como wax seal blue opening' },
     { id: 'env_pressedloveenvelope', name: 'Pressed Love Envelope', url: 'https://pressedlove.com/demo-media/shared/pressed-love-envelope-52d49bf5.mp4', color: '#221810', desc: 'Classic Pressed Love envelope opening' },
     { id: 'env_pressedlovegold', name: 'Big Entrance Gold Seal', url: 'https://pressedlove.com/demo-media/shared/wax-seal-yellow-dc798fa1.mp4', color: '#1a2744', desc: 'Regal golden wax seal opening' },
-    { id: 'env_rosas', name: 'Rosas Velvet', url: 'https://wedgo.co/prototype-assets/videos/rosas-intro.mp4', color: '#3d0103', desc: 'Deep rose velvet opening' },
-    { id: 'env_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/prototype-assets/external/wedgo__waxsealintrobeige.mp4', color: '#f7f2ea', desc: 'Ivory paper and wax seal opening' },
-    { id: 'env_orange', name: 'Orange Terracotta', url: 'https://wedgo.co/prototype-assets/videos/orange-intro.mp4', color: '#8a3f13', desc: 'Warm terracotta wax seal opening' },
-    { id: 'env_editorial', name: 'Editorial Paper', url: 'https://wedgo.co/editorial-assets/intro-poster-clean.jpg', color: '#f2efe9', desc: 'Minimal editorial paper opening' },
-    { id: 'env_excellence', name: 'Excellence Floral', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542', desc: 'Architectural floral opening' },
+    { id: 'env_rosas', name: 'Rosas Velvet', url: '/videos/bordeaux.mp4', color: '#3d0103', desc: 'Deep rose velvet opening' },
+    { id: 'env_atelierindigo', name: 'Atelier Indigo', url: '/videos/ivory.mp4', color: '#f7f2ea', desc: 'Ivory paper and wax seal opening' },
+    { id: 'env_orange', name: 'Orange Terracotta', url: '/videos/terracotta.mp4', color: '#8a3f13', desc: 'Warm terracotta wax seal opening' },
+    { id: 'env_editorial', name: 'Editorial Paper', url: '/images/envelope-posters/ivory.webp', color: '#f2efe9', desc: 'Minimal editorial paper opening' },
+    { id: 'env_excellence', name: 'Excellence Floral', url: '/videos/sage.mp4', color: '#3a5542', desc: 'Architectural floral opening' },
     { id: 'env_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own envelope video' },
   ];
 
@@ -1722,11 +1722,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'hero_pressedlovesweetlove', name: 'Sweet Love', url: 'https://pressedlove.com/demo-media/boda-laura-javier/hero-video-new-G6oopIOA.mp4', color: '#f5f5f0', desc: 'Sweet Love romantic hero video' },
     { id: 'hero_pressedlovefloral', name: 'Botanical Floral', url: 'https://pressedlove.com/demo-media/boda-maria-carlos/hero-video-1230-C27srnl9.mp4', color: '#f8f4f0', desc: 'Botanical floral video' },
     { id: 'hero_pressedlovebigentrance', name: 'Big Entrance', url: 'https://pressedlove.com/demo-media/theme-previews/theme-big-entrance.mp4', color: '#1a2744', desc: 'Big Entrance cinematic video' },
-    { id: 'hero_rosas', name: 'Rosas', url: 'https://wedgo.co/prototype-assets/external/rosas-template__plantilla-floral-v2-Cl-HZWE8.mp4', color: '#3d0103', desc: 'Burgundy floral hero' },
-    { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: 'https://wedgo.co/_next/image?url=%2Fprototype-assets%2Fexternal%2Fwedgo__navy-timeline-footer-custom.webp&w=3840&q=75', color: '#122b45', desc: 'Indigo editorial artwork' },
-    { id: 'hero_orange', name: 'Orange', url: 'https://wedgo.co/prototype-assets/videos/orange-hero.mp4', color: '#8a3f13', desc: 'Terracotta Mediterranean hero' },
-    { id: 'hero_editorial', name: 'Editorial', url: 'https://wedgo.co/editorial-assets/wedding-dance.png', color: '#f2efe9', desc: 'Minimal editorial illustration' },
-    { id: 'hero_excellence', name: 'Excellence', url: 'https://wedgo.co/prototype-assets/excellence-assets/hero-bg.mp4', color: '#3a5542', desc: 'Champagne floral architecture' },
+    { id: 'hero_rosas', name: 'Rosas', url: '/videos/hero/kissing-couple.mp4', color: '#3d0103', desc: 'Burgundy floral hero' },
+    { id: 'hero_atelierindigo', name: 'Atelier Indigo', url: '/images/hero-posters/royal-heritage.webp', color: '#122b45', desc: 'Indigo editorial artwork' },
+    { id: 'hero_orange', name: 'Orange', url: '/videos/hero/sea-view.mp4', color: '#8a3f13', desc: 'Terracotta Mediterranean hero' },
+    { id: 'hero_editorial', name: 'Editorial', url: '/images/hero-posters/kissing-couple.webp', color: '#f2efe9', desc: 'Minimal editorial illustration' },
+    { id: 'hero_excellence', name: 'Excellence', url: '/videos/sage.mp4', color: '#3a5542', desc: 'Champagne floral architecture' },
     { id: 'hero_custom', name: 'Custom Upload', url: 'custom', color: '#888', desc: 'Upload your own hero video' },
   ];
 

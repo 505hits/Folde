@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -11,7 +12,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
     }
 
+    const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+    if (!token) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 });
+    const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    const { data: { user }, error } = await auth.auth.getUser(token);
+    if (error || !user) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.metadata?.userId
+      ? session.metadata.userId !== user.id
+      : (session.customer_email || session.metadata?.email)?.toLowerCase() !== user.email?.toLowerCase()) {
+      return NextResponse.json({ error: 'This payment belongs to another account.' }, { status: 403 });
+    }
 
     return NextResponse.json({
       status: session.payment_status,       // 'paid' | 'unpaid' | 'no_payment_required'

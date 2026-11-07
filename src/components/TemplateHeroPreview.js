@@ -176,11 +176,12 @@ export default function TemplateHeroPreview({
           ) : (
             <video
               ref={envelopeVideoRef}
-              src={preloadEnvelopeFrame ? getFirstFrameVideoSrc(envelopeSrc) : undefined}
+              src={preloadEnvelopeFrame || !envelopePoster ? getFirstFrameVideoSrc(envelopeSrc) : undefined}
               muted
               playsInline
               poster={envelopePoster}
-              preload={preloadEnvelopeFrame ? "auto" : "none"}
+              preload={preloadEnvelopeFrame || !envelopePoster ? "metadata" : "none"}
+              onError={() => setEnvelopeDismissed(true)}
               fetchPriority={preloadEnvelopeFrame ? "high" : "auto"}
               onEnded={handleVideoEnded}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
