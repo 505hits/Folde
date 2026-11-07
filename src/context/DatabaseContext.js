@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { weddingRequest } from "@/lib/wedding-client";
 import { supabase } from "@/lib/supabase";
 
 const DatabaseContext = createContext();
@@ -105,324 +106,73 @@ export function DatabaseProvider({ children }) {
   };
 
   // ============ ORDERS ============
-  const [orders, setOrders] = useState([
-    {
-      id: "ORD-001",
-      couple: "Emma et Lucas",
-      slug: "emma-et-lucas",
-      email: "emma@test.com",
-      plan: "Premium",
-      price: 290,
-      status: "Live",
-      paid: true,
-      date: "2026-07-01",
-      theme: "la-finca"
-    },
-    {
-      id: "ORD-002",
-      couple: "Sophie et Marc",
-      slug: "sophie-et-marc",
-      email: "sophie@test.com",
-      plan: "Standard",
-      price: 49.90,
-      status: "Awaiting Details",
-      paid: true,
-      date: "2026-06-28",
-      theme: "royal"
-    },
-  ]);
-
-  // Fetch orders from Supabase (or fallback to local)
+  const [orders, setOrders] = useState([]);
+  const [eventInfo, setEventInfo] = useState({});
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [databaseError, setDatabaseError] = useState('');
+  const mapOrder = o => ({ ...o, email: o.user_email, createdAt: o.created_at, details: o.details || {} });
   const fetchOrders = useCallback(async () => {
+    if (!currentUser?.supabaseId) { setOrders([]); setEventInfo({}); setGuests({}); return; }
+    setOrdersLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const result = await weddingRequest('/api/wedding');
+      setOrders(result.orders.map(mapOrder));
+      setEventInfo(Object.fromEntries(result.orders.map(o => [o.slug, o.details || {}])));
+      setDatabaseError('');
+    } catch (err) { setDatabaseError(err.message); }
+    finally { setOrdersLoading(false); }
+  }, [currentUser?.supabaseId]);
+  React.useEffect(() => { Promise.resolve().then(fetchOrders); }, [fetchOrders]);
 
-      if (error) {
-        console.warn('Supabase fetchOrders failed:', error.message);
-        return;
-      }
-
-      if (data && data.length > 0) {
-        const mappedOrders = data.map(o => ({
-          id: o.id,
-          couple: o.couple,
-          slug: o.slug,
-          email: o.user_email,
-          plan: o.plan,
-          price: o.price,
-          status: o.status,
-          paid: o.paid,
-          date: o.date,
-          createdAt: o.created_at,
-          theme: o.theme,
-          details: o.details || {}
-        }));
-        setOrders(mappedOrders);
-
-        // Also merge eventInfo from stored order details
-        setEventInfo(prev => {
-          const merged = { ...prev };
-          data.forEach(o => {
-            if (o.slug && o.details && Object.keys(o.details).length > 0) {
-              merged[o.slug] = { ...(prev[o.slug] || {}), ...o.details };
-            }
-          });
-          return merged;
-        });
-      }
-    } catch (err) {
-      console.warn('fetchOrders error:', err);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const createOrder = async (userEmail, name, partnerName, theme, plan, price, details = {}) => {
-    const baseSlug = `${name.toLowerCase()}-et-${partnerName.toLowerCase()}`.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    let slug = baseSlug;
-    let counter = 1;
-
-    // Ensure slug is unique
-    while (orders.find(o => o.slug === slug)) {
-      slug = `${baseSlug}-wedding${counter > 1 ? `-${counter}` : ''}`;
-      counter++;
-    }
-
-    const isStandard = plan === 'Standard' || plan === 'Essential' || plan === 'essential';
-    const orderId = `ORD-${String(orders.length + 1).padStart(3, '0')}`;
-    // Keep checkout names in the order itself. This makes the invitation
-    // independent from any old browser profile or demo data.
-    const orderDetails = {
-      ...details,
-      partner1: details.partner1 || name,
-      partner2: details.partner2 || partnerName,
-    };
-
-    const newOrder = {
-      id: orderId,
-      couple: `${name} et ${partnerName}`,
-      slug,
-      email: userEmail,
-      plan,
-      price,
-      status: isStandard ? "Live" : "In Creation",
-      paid: true,
-      date: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString(),
-      theme,
-      details: orderDetails
-    };
-
-    // 1. Save locally immediately
-    setOrders(prev => [newOrder, ...prev]);
-
-    // 2. Try to insert into Supabase `orders` table
-    try {
-      const { error } = await supabase
-        .from('orders')
-        .insert({
-          id: orderId,
-          user_email: userEmail,
-          couple: `${name} et ${partnerName}`,
-          slug: slug,
-          plan: plan,
-          price: price,
-          status: isStandard ? "Live" : "In Creation",
-          paid: true,
-          date: new Date().toISOString().split('T')[0],
-          theme: theme,
-          details: orderDetails
-        });
-
-      if (error) {
-        console.warn('Supabase createOrder failed (saved locally):', error.message);
-      }
-    } catch (err) {
-      console.warn('Supabase createOrder exception:', err);
-    }
-
-    return newOrder;
-  };
-
-  const updateOrderStatus = async (orderId, newStatus) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-    try {
-      await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
-    } catch (err) {
-      console.warn('updateOrderStatus Supabase error:', err);
-    }
+  const createOrder = async () => { throw new Error('Orders must be confirmed through checkout.'); };
+  const updateOrderStatus = async (orderId, status) => {
+    const result = await weddingRequest('/api/admin/orders', { method: 'PATCH', body: JSON.stringify({ orderId, status }) });
+    setOrders(prev => prev.map(o => o.id === orderId ? mapOrder(result.order) : o));
   };
 
   const saveOrderDetails = async (slug, details) => {
-    setEventInfo(prev => ({ ...prev, [slug]: { ...(prev[slug] || {}), ...details } }));
-    setOrders(prev => prev.map(order => order.slug === slug ? { ...order, details: { ...(order.details || {}), ...details } } : order));
     try {
-      const { error } = await supabase.from('orders').update({ details }).eq('slug', slug);
-      if (error) throw error;
+      const result = await weddingRequest('/api/wedding', { method: 'PATCH', body: JSON.stringify({ slug, action: 'details', details }) });
+      setOrders(prev => prev.map(o => o.slug === slug ? mapOrder(result.order) : o));
+      setEventInfo(prev => ({ ...prev, [slug]: result.order.details }));
+      setDatabaseError('');
       return true;
-    } catch (err) {
-      console.warn('saveOrderDetails Supabase error:', err);
-      return false;
-    }
+    } catch (err) { setDatabaseError(err.message); return false; }
   };
-
-  const publishOrderDetails = async (slug) => {
-    let updatedDetails = null;
-
-    setEventInfo(prev => {
-      const currentDraft = prev[slug] || {};
-      const publishedData = { ...currentDraft };
-      delete publishedData.publishedData; // Ensure no infinite nesting
-      updatedDetails = { ...currentDraft, publishedData };
-
-      return { ...prev, [slug]: updatedDetails };
-    });
-
-    if (updatedDetails) {
-      try {
-        await supabase.from('orders').update({ details: updatedDetails }).eq('slug', slug);
-      } catch (err) {
-        console.warn('publishOrderDetails Supabase error:', err);
-      }
-    }
+  const publishOrderDetails = async slug => {
+    try {
+      const draft = eventInfo[slug];
+      if (draft && !await saveOrderDetails(slug, draft)) return false;
+      const result = await weddingRequest('/api/wedding', { method: 'PATCH', body: JSON.stringify({ slug, action: 'publish' }) });
+      setEventInfo(prev => ({ ...prev, [slug]: result.order.details }));
+      setOrders(prev => prev.map(o => o.slug === slug ? mapOrder(result.order) : o));
+      setDatabaseError('');
+      return true;
+    } catch (err) { setDatabaseError(err.message); return false; }
   };
 
   // ============ GUESTS (Supabase + local fallback) ============
-  const [guests, setGuests] = useState({
-    "emma-et-lucas": [
-      { id: 1, name: 'Alice Dupont', status: 'Attending', meal: 'Beef Wellington', side: 'Bride', hasPlusOne: true, plusOneName: 'Marc Dupont', message: 'We cannot wait to celebrate with you!' },
-      { id: 2, name: 'Jean Martin', status: 'Pending', meal: '-', side: 'Groom' },
-      { id: 3, name: 'Sophie Bernard', status: 'Attending', meal: 'Salmon', side: 'Bride', hasPlusOne: false, message: 'Congratulations on your beautiful celebration!' },
-    ]
-  });
-
-  // Fetch guests from server API (/api/rsvp) with fallback to Supabase / local
-  const fetchGuests = useCallback(async (slug) => {
+  const [guests, setGuests] = useState({});
+  const fetchGuests = useCallback(async slug => {
     if (!slug) return [];
-
-    let localList = [];
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(`guests_${slug}`);
-      if (saved) {
-        try { localList = JSON.parse(saved); } catch (e) { }
-      }
-    }
-
     try {
-      const res = await fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`);
-      const result = await res.json();
-
-      if (result.success && Array.isArray(result.guests)) {
-        const combinedMap = new Map();
-        result.guests.forEach(g => {
-          if (g.name) combinedMap.set(g.name.toLowerCase().trim(), g);
-        });
-        localList.forEach(g => {
-          if (g.name) {
-            const key = g.name.toLowerCase().trim();
-            if (!combinedMap.has(key) || g.status !== 'Pending') {
-              combinedMap.set(key, g);
-            }
-          }
-        });
-        const finalMerged = Array.from(combinedMap.values());
-        setGuests(prev => ({ ...prev, [slug]: finalMerged }));
-        if (typeof window !== 'undefined') {
-          try { localStorage.setItem(`guests_${slug}`, JSON.stringify(finalMerged)); } catch (e) { }
-        }
-        return finalMerged;
-      }
-    } catch (err) {
-      console.warn('fetchGuests API error:', err);
-    }
-
-    // Direct Supabase fallback
-    try {
-      const { data, error } = await supabase
-        .from('guests')
-        .select('*')
-        .eq('slug', slug)
-        .order('created_at', { ascending: false });
-
-      if (!error && Array.isArray(data)) {
-        const mapped = data.map(g => ({
-          id: g.id,
-          name: g.name,
-          email: g.email || '',
-          status: g.status,
-          side: g.side || 'Both',
-          meal: g.meal || '-',
-          hasPlusOne: g.has_plus_one || false,
-          plusOneName: g.plus_one_name || '',
-          accompaniedStatus: g.accompanied_status || 'alone',
-          message: g.message || ''
-        }));
-
-        const combinedMap = new Map();
-        mapped.forEach(g => combinedMap.set(g.name.toLowerCase().trim(), g));
-        localList.forEach(g => {
-          const key = g.name.toLowerCase().trim();
-          if (!combinedMap.has(key) || g.status !== 'Pending') {
-            combinedMap.set(key, g);
-          }
-        });
-        const finalMerged = Array.from(combinedMap.values());
-        setGuests(prev => ({ ...prev, [slug]: finalMerged }));
-        if (typeof window !== 'undefined') {
-          try { localStorage.setItem(`guests_${slug}`, JSON.stringify(finalMerged)); } catch (e) { }
-        }
-        return finalMerged;
-      }
-    } catch (e) { }
-
-    setGuests(prev => ({ ...prev, [slug]: localList }));
-    return localList;
+      const result = await weddingRequest('/api/rsvp?slug=' + encodeURIComponent(slug));
+      setGuests(prev => ({ ...prev, [slug]: result.guests }));
+      setDatabaseError('');
+      return result.guests;
+    } catch (err) { setDatabaseError(err.message); throw err; }
   }, []);
 
   // Add guest: sends to /api/rsvp first and persists locally
   const addGuest = async (slug, newGuest) => {
-    const cleanName = newGuest.name ? newGuest.name.trim() : '';
-    const tempGuest = {
-      id: `guest_${Date.now()}`,
-      name: cleanName,
-      email: newGuest.email || '',
-      status: newGuest.status || 'Attending',
-      side: newGuest.side || 'Both',
-      meal: newGuest.meal || '-',
-      hasPlusOne: newGuest.hasPlusOne || false,
-      plusOneName: newGuest.plusOneName || '',
-      accompaniedStatus: newGuest.accompaniedStatus || 'alone',
-      message: newGuest.message || '',
-      tableId: newGuest.tableId || null
-    };
-
-    setGuests(prev => {
-      const currentList = prev[slug] || [];
-      const existingIdx = currentList.findIndex(g => (g.name || '').toLowerCase().trim() === cleanName.toLowerCase());
-      let updated;
-      if (existingIdx !== -1) {
-        updated = [...currentList];
-        updated[existingIdx] = { ...updated[existingIdx], ...tempGuest };
-      } else {
-        updated = [tempGuest, ...currentList];
-      }
-      if (typeof window !== 'undefined') {
-        try { localStorage.setItem(`guests_${slug}`, JSON.stringify(updated)); } catch (e) { }
-      }
-      return { ...prev, [slug]: updated };
-    });
-
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch('/api/rsvp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(session ? { Authorization: 'Bearer ' + session.access_token } : {}) },
         body: JSON.stringify({
           slug,
+          responseId: newGuest.responseId,
           name: newGuest.name,
           email: newGuest.email,
           status: newGuest.status,
@@ -436,14 +186,11 @@ export function DatabaseProvider({ children }) {
       });
 
       const result = await res.json();
-      if (result.success && result.guest) {
+      if (res.ok && result.success && result.guest?.id) {
         const added = result.guest;
         setGuests(prev => {
           const currentList = prev[slug] || [];
-          const updated = currentList.map(g => (g.name || '').toLowerCase().trim() === cleanName.toLowerCase() ? { ...g, id: added.id } : g);
-          if (typeof window !== 'undefined') {
-            try { localStorage.setItem(`guests_${slug}`, JSON.stringify(updated)); } catch (e) { }
-          }
+          const updated = [added, ...currentList.filter(g => String(g.id) !== String(added.id))];
           return { ...prev, [slug]: updated };
         });
         return { success: true, guest: added };
@@ -452,55 +199,14 @@ export function DatabaseProvider({ children }) {
       console.warn('addGuest API error:', err);
     }
 
-    return { success: true, guest: tempGuest };
+    return { success: false, error: 'Your response could not be saved. Please try again.' };
   };
 
-  // ============ EVENT INFO ============
-  const [eventInfo, setEventInfo] = useState({
-    "emma-et-lucas": {
-      date: '2026-09-15',
-      ceremonyVenue: 'Château de Chantilly',
-      receptionVenue: 'Château de Chantilly',
-      customMessage: 'We are so excited to celebrate with you!'
-    }
-  });
-
-  // ============ LOCAL STORAGE PERSISTENCE ============
-  const [isLoaded, setIsLoaded] = useState(false);
-
+  const isLoaded = true;
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedOrders = localStorage.getItem('orders');
-      if (savedOrders) {
-        try { setOrders(JSON.parse(savedOrders)); } catch (e) { }
-      }
-      const savedEventInfo = localStorage.getItem('eventInfo');
-      if (savedEventInfo) {
-        try { setEventInfo(JSON.parse(savedEventInfo)); } catch (e) { }
-      }
-      setIsLoaded(true);
-    }
+    localStorage.removeItem('orders');
+    localStorage.removeItem('eventInfo');
   }, []);
-
-  React.useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('orders', JSON.stringify(orders));
-      } catch (e) {
-        console.warn('LocalStorage quota limit reached for orders:', e);
-      }
-    }
-  }, [orders, isLoaded]);
-
-  React.useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('eventInfo', JSON.stringify(eventInfo));
-      } catch (e) {
-        console.warn('LocalStorage quota limit reached for eventInfo:', e);
-      }
-    }
-  }, [eventInfo, isLoaded]);
 
   // ============ REVISIONS ============
   const [revisions, setRevisions] = useState({});
@@ -535,17 +241,10 @@ export function DatabaseProvider({ children }) {
   // Delete guest: calls /api/rsvp DELETE and updates local state
   const deleteGuest = async (slug, guestId) => {
     try {
-      await fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}&id=${encodeURIComponent(guestId)}`, {
-        method: 'DELETE'
-      });
-    } catch (err) {
-      console.warn('deleteGuest API error:', err);
-    }
-
-    setGuests(prev => {
-      const currentList = prev[slug] || [];
-      return { ...prev, [slug]: currentList.filter(g => String(g.id) !== String(guestId) && g.name !== guestId) };
-    });
+      await weddingRequest('/api/rsvp?slug=' + encodeURIComponent(slug) + '&id=' + encodeURIComponent(guestId), { method: 'DELETE' });
+      setGuests(prev => ({ ...prev, [slug]: (prev[slug] || []).filter(g => String(g.id) !== String(guestId)) }));
+      return { success: true };
+    } catch (err) { setDatabaseError(err.message); return { success: false }; }
   };
 
   return (
@@ -561,7 +260,7 @@ export function DatabaseProvider({ children }) {
       // Revisions
       revisions, addRevision,
       // Status
-      isLoaded
+      isLoaded, ordersLoading, databaseError
     }}>
       {children}
     </DatabaseContext.Provider>

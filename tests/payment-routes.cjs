@@ -14,6 +14,7 @@ function route(name, { user = null, authError = null, metadata = {}, customerEma
     } }; } },
     NextResponse: { json: (body, options) => ({ body, status: options?.status || 200 }) },
     createClient: () => ({ auth: { getUser: async () => ({ data: { user }, error: authError }) } }),
+    persistPaidOrder: async () => ({ id: 'saved-order', slug: 'saved-wedding' }),
   };
   const source = fs.readFileSync(`${__dirname}/../src/app/api/${name}/route.js`, 'utf8')
     .replace(/^import .*;$/gm, '').replace('export async function POST', 'async function POST');

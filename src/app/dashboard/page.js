@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 import Link from "next/link";
+import SeatingPlanner from "@/components/SeatingPlanner";
 import StyledFileInput from '@/components/StyledFileInput';
 import Hls from 'hls.js';
 import Image from "next/image";
@@ -95,7 +96,7 @@ export default function Dashboard({ locale = "en" }) {
 function DashboardContent({ locale = "en" }) {
   const dashboardRootRef = useRef(null);
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
-  const { currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
+  const { ordersLoading, databaseError, currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
@@ -133,24 +134,11 @@ function DashboardContent({ locale = "en" }) {
   const [revisionError, setRevisionError] = useState('');
 
   // Compute userOrder securely before hooks with case-insensitive email match and safe fallback
-  const fallbackOrder = {
-    id: 'ORD-DEMO',
-    couple: `${currentUser?.name || 'Partner 1'} et ${currentUser?.partnerName || 'Partner 2'}`,
-    slug: currentUser?.name ? `${currentUser.name.toLowerCase()}-et-${(currentUser.partnerName || 'partner').toLowerCase()}` : 'emma-et-lucas',
-    email: currentUser?.email || '',
-    plan: 'Standard',
-    price: 0,
-    status: 'Live',
-    paid: true,
-    date: new Date().toISOString().split('T')[0],
-    theme: 'bordeaux'
-  };
-
   const matchingPaidOrders = currentUser
     ? orders.filter(o => o.email?.toLowerCase() === currentUser.email?.toLowerCase() && o.paid)
     : [];
   const userOrder = matchingPaidOrders
-    .sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0] || fallbackOrder;
+    .sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0] || null;
   const orderCoupleNames = String(userOrder?.couple || '').split(/\s+et\s+/i);
   const orderPartner1 = userOrder?.details?.partner1 || orderCoupleNames[0] || currentUser?.name || 'Partner #1';
   const orderPartner2 = userOrder?.details?.partner2 || orderCoupleNames[1] || currentUser?.partnerName || 'Partner #2';
@@ -159,7 +147,7 @@ function DashboardContent({ locale = "en" }) {
   // Fetch guests from Supabase when dashboard loads
   useEffect(() => {
     if (userOrder?.slug) {
-      fetchGuests(userOrder.slug);
+      fetchGuests(userOrder.slug).catch(() => {});
     }
   }, [userOrder?.slug]);
 
@@ -488,6 +476,8 @@ function DashboardContent({ locale = "en" }) {
 
   // ========== NO ACTIVE ORDER ==========
 
+  if (ordersLoading && !userOrder) return <main style={{ padding: '3rem' }} role="status">Loading your wedding…</main>;
+  if (databaseError && !userOrder) return <main style={{ padding: '3rem' }}><p role="alert">{databaseError}</p><button onClick={fetchOrders}>Retry loading your wedding</button></main>;
   if (!userOrder) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#faf8f5', fontFamily: 'var(--font-body)', padding: '1rem', boxSizing: 'border-box' }}>
@@ -1070,7 +1060,8 @@ function DashboardContent({ locale = "en" }) {
               onClick={async () => {
                 setIsPublishing(true);
                 if (publishOrderDetails && clientSlug) {
-                  await publishOrderDetails(clientSlug);
+                  const saved = await publishOrderDetails(clientSlug);
+                  if (!saved) { setIsPublishing(false); return; }
                 }
                 setTimeout(() => {
                   setIsPublishing(false);
@@ -1089,6 +1080,7 @@ function DashboardContent({ locale = "en" }) {
           </div>
         </header>
 
+        {databaseError && <p role="alert" style={{ color: '#b91c1c', padding: '1rem' }}>{databaseError}</p>}
         <div className="dashboard-content-wrapper" style={{ maxWidth: '980px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 
           <div className="dashboard-tip" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
@@ -1436,6 +1428,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   const handleChange = (field, value) => {
     const updated = { ...local, [field]: value };
     setLocal(updated);
+    setEventInfo(prev => ({ ...prev, [slug]: updated }));
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -2524,9 +2517,9 @@ function GuestListTab({ slug }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchGuests(slug);
+    fetchGuests(slug).catch(() => {});
     const interval = setInterval(() => {
-      fetchGuests(slug);
+      fetchGuests(slug).catch(() => {});
     }, 4000);
     return () => clearInterval(interval);
   }, [slug]);
@@ -2549,7 +2542,12 @@ function GuestListTab({ slug }) {
     e.preventDefault();
     if (!newGuest.name.trim()) return;
     setLoading(true);
-    await addGuest(slug, newGuest);
+    const result = await addGuest(slug, newGuest);
+    if (!result?.success) {
+      setLoading(false);
+      alert('Unable to save this guest. Please try again.');
+      return;
+    }
     setNewGuest({ name: '', email: '', side: 'Bride', status: 'Pending', hasPlusOne: false, plusOneName: '' });
     setShowAddModal(false);
     setLoading(false);
@@ -2765,9 +2763,9 @@ function RsvpsTab({ slug }) {
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    fetchGuests(slug);
+    fetchGuests(slug).catch(() => {});
     const interval = setInterval(() => {
-      fetchGuests(slug);
+      fetchGuests(slug).catch(() => {});
     }, 4000);
     return () => clearInterval(interval);
   }, [slug]);
@@ -2943,212 +2941,7 @@ function RsvpsTab({ slug }) {
   );
 }
 
-function TablesTab({ slug }) {
-  const dbContext = useDatabase();
-  const guestsMap = dbContext?.guests || {};
-  const guestList = guestsMap[slug] || [];
-  const attendingGuests = guestList.filter(g => (g.status || '').toLowerCase() === 'attending');
-  const translateLegacyTableName = (name) => String(name || '')
-    .replace('Famille', 'Family')
-    .replace('Amis', 'Friends')
-    .replace('Honneur', 'Honour')
-    .replace('Collègues', 'Colleagues');
-
-  const [tables, setTables] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(`tables_${slug}`);
-      if (saved) {
-        try { return JSON.parse(saved).map(table => ({ ...table, name: translateLegacyTableName(table.name) })); } catch (e) { }
-      }
-    }
-    return [
-      { id: 't1', name: 'Table 1 - Family', capacity: 10, assignedGuestNames: [] },
-      { id: 't2', name: 'Table 2 - Friends', capacity: 10, assignedGuestNames: [] },
-      { id: 't3', name: 'Table 3 - VIP & Honour', capacity: 8, assignedGuestNames: [] }
-    ];
-  });
-
-  const [showAddTableModal, setShowAddTableModal] = useState(false);
-  const [newTableName, setNewTableName] = useState('');
-  const [newTableCapacity, setNewTableCapacity] = useState(10);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`tables_${slug}`, JSON.stringify(tables));
-    }
-  }, [tables, slug]);
-
-  const handleAddTable = (e) => {
-    e.preventDefault();
-    if (!newTableName.trim()) return;
-    const newTable = {
-      id: `table_${Date.now()}`,
-      name: newTableName.trim(),
-      capacity: parseInt(newTableCapacity) || 10,
-      assignedGuestNames: []
-    };
-    setTables(prev => [...prev, newTable]);
-    setNewTableName('');
-    setNewTableCapacity(10);
-    setShowAddTableModal(false);
-  };
-
-  const handleRemoveTable = (tableId) => {
-    if (confirm('Delete this table?')) {
-      setTables(prev => prev.filter(t => t.id !== tableId));
-    }
-  };
-
-  const handleAssignGuest = (tableId, guestName) => {
-    setTables(prev => prev.map(t => {
-      const cleaned = t.assignedGuestNames.filter(n => n !== guestName);
-      if (t.id === tableId && guestName) {
-        return { ...t, assignedGuestNames: [...cleaned, guestName] };
-      }
-      return { ...t, assignedGuestNames: cleaned };
-    }));
-  };
-
-  const handleUnassignGuest = (guestName) => {
-    setTables(prev => prev.map(t => ({
-      ...t,
-      assignedGuestNames: t.assignedGuestNames.filter(n => n !== guestName)
-    })));
-  };
-
-  const assignedSet = new Set(tables.flatMap(t => t.assignedGuestNames));
-  const unassignedGuests = attendingGuests.filter(g => !assignedSet.has(g.name));
-
-  const cardStyle = {
-    backgroundColor: '#fffdfb',
-    borderRadius: '20px',
-    padding: '1.65rem',
-    border: '1px solid rgba(111,80,57,0.13)',
-    boxShadow: '0 14px 34px rgba(72, 50, 33, 0.06)',
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Header Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
-        <div style={cardStyle}>
-          <div style={{ fontSize: '0.75rem', color: '#7E6B5C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Attending Guests</div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#2C1B10', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{attendingGuests.length}</div>
-        </div>
-        <div style={{ ...cardStyle, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Seated Guests</div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#166534', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{assignedSet.size}</div>
-        </div>
-        <div style={{ ...cardStyle, backgroundColor: '#fffbeb', border: '1px solid #fef3c7' }}>
-          <div style={{ fontSize: '0.75rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unassigned Guests</div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 700, color: '#b45309', marginTop: '0.25rem', fontFamily: 'var(--font-heading)' }}>{unassignedGuests.length}</div>
-        </div>
-      </div>
-
-      {/* Main Seating Plan */}
-      <div style={cardStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.75rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#2C1B10', margin: 0, fontFamily: 'var(--font-heading)' }}>🪑 Table Seating Planner</h2>
-            <p style={{ fontSize: '0.85rem', color: '#7E6B5C', marginTop: '0.25rem' }}>Organize your wedding tables and assign your confirmed guests.</p>
-          </div>
-          <button
-            onClick={() => setShowAddTableModal(true)}
-            style={{ padding: '0.65rem 1.35rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.45rem', boxShadow: '0 4px 12px rgba(92,58,30,0.15)', transition: 'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.opacity = 0.95}
-            onMouseLeave={e => e.currentTarget.style.opacity = 1}
-          >
-            <span>+</span> Add Table
-          </button>
-        </div>
-
-        {/* Unassigned Guests Quick Bar */}
-        {unassignedGuests.length > 0 && (
-          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.88rem', color: '#b45309', fontWeight: 600 }}>Unseated Attending Guests ({unassignedGuests.length})</h4>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {unassignedGuests.map(g => (
-                <div key={g.id || g.name} style={{ backgroundColor: '#fff', border: '1px solid #fcd34d', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 500, color: '#92400e', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>{g.name}</span>
-                  <select
-                    onChange={(e) => handleAssignGuest(e.target.value, g.name)}
-                    defaultValue=""
-                    style={{ fontSize: '0.75rem', padding: '0.1rem 0.3rem', borderRadius: '4px', border: '1px solid #d97706', outline: 'none' }}
-                  >
-                    <option value="" disabled>Assign to table...</option>
-                    {tables.map(t => (
-                      <option key={t.id} value={t.id}>{t.name} ({t.assignedGuestNames.length}/{t.capacity})</option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Table Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-          {tables.map(table => {
-            const currentCount = table.assignedGuestNames.length;
-            const isFull = currentCount >= table.capacity;
-            return (
-              <div key={table.id} style={{ border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1.25rem', backgroundColor: '#faf8f5', position: 'relative' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#1a1a1a' }}>{table.name}</h3>
-                  <button onClick={() => handleRemoveTable(table.id)} style={{ border: 'none', background: 'none', color: '#999', cursor: 'pointer', fontSize: '0.9rem' }} title="Delete table">✕</button>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.78rem', color: isFull ? '#dc2626' : '#555', fontWeight: 600 }}>
-                  <span>{currentCount} / {table.capacity} seats</span>
-                  <span style={{ backgroundColor: isFull ? '#fef2f2' : '#eefcf1', color: isFull ? '#dc2626' : '#2e7d32', padding: '0.15rem 0.5rem', borderRadius: '10px' }}>
-                    {isFull ? 'Full' : 'Available'}
-                  </span>
-                </div>
-
-                {/* Assigned Guests List */}
-                <div style={{ minHeight: '80px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '8px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '0.75rem' }}>
-                  {table.assignedGuestNames.length === 0 ? (
-                    <span style={{ fontSize: '0.78rem', color: '#aaa', fontStyle: 'italic', textAlign: 'center', margin: 'auto' }}>No guests assigned yet</span>
-                  ) : (
-                    table.assignedGuestNames.map((name, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', padding: '0.25rem 0.5rem', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
-                        <span>👤 {name}</span>
-                        <button onClick={() => handleUnassignGuest(name)} style={{ border: 'none', background: 'none', color: '#c0392b', cursor: 'pointer', fontSize: '0.75rem' }}>✕</button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Add Table Modal */}
-      {showAddTableModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '20px', maxWidth: '380px', width: '90%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1a1a', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>Add New Table</h3>
-            <form onSubmit={handleAddTable} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Table Name *</label>
-                <input type="text" required value={newTableName} onChange={e => setNewTableName(e.target.value)} placeholder="e.g. Table 4 - Colleagues" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.3rem' }}>Capacity (Seats)</label>
-                <input type="number" min="1" max="30" value={newTableCapacity} onChange={e => setNewTableCapacity(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e0dcd7', outline: 'none' }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-                <button type="button" onClick={() => setShowAddTableModal(false)} style={{ padding: '0.6rem 1.2rem', backgroundColor: '#f0ede9', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '0.6rem 1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Create Table</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+function TablesTab({ slug }) { return <SeatingPlanner key={slug} slug={slug} />; }
 
 function ShareTab({ slug }) {
   const [copied, setCopied] = useState(false);

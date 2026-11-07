@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
-import { supabase } from '@/lib/supabase';
 import { useDatabase } from '@/context/DatabaseContext';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
@@ -349,7 +348,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
     try {
       if (addGuest && slug) {
-        await addGuest(slug, {
+        const responseKey = 'folde-rsvp-response-' + slug;
+        let responseId = localStorage.getItem(responseKey);
+        if (!responseId) { responseId = crypto.randomUUID(); localStorage.setItem(responseKey, responseId); }
+        const result = await addGuest(slug, {
+          responseId,
           name: fullName,
           email: rsvpEmail.trim() || null,
           status: status,
@@ -359,33 +362,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           accompaniedStatus: accompaniedStatus || 'alone',
           side: 'Both'
         });
+        if (!result?.success) throw new Error('RSVP was not saved');
       } else {
-        // Direct Supabase insert fallback if addGuest is not available
-        let invitationId = null;
-        try {
-          const { data: inv } = await supabase
-            .from('invitations')
-            .select('id')
-            .eq('slug', slug)
-            .single();
-          invitationId = inv?.id || null;
-        } catch (err) { }
-
-        const { error } = await supabase
-          .from('guests')
-          .insert({
-            invitation_id: invitationId,
-            slug: slug,
-            name: fullName,
-            email: rsvpEmail.trim() || null,
-            status: status,
-            meal: rsvpMeal || '-',
-            has_plus_one: hasPlusOne,
-            plus_one_name: rsvpPlusOneName.trim() || null,
-            accompanied_status: accompaniedStatus || 'alone',
-            side: 'Both'
-          });
-        if (error) console.error('Supabase RSVP insert error:', error);
+        throw new Error('RSVP is unavailable');
       }
 
       setRsvpSubmitted(true);

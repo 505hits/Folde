@@ -1,12 +1,13 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { persistPaidOrder } from '@/lib/paid-order';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
   try {
-    const { sessionId } = await request.json();
+    const { sessionId, details } = await request.json();
 
     if (!sessionId) {
       return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
@@ -24,7 +25,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'This payment belongs to another account.' }, { status: 403 });
     }
 
+    const order = session.payment_status === 'paid' ? await persistPaidOrder(session, user, details) : null;
     return NextResponse.json({
+      order,
       status: session.payment_status,       // 'paid' | 'unpaid' | 'no_payment_required'
       customerEmail: session.customer_email,
       metadata: session.metadata,           // { name, partnerName, email, plan, theme }

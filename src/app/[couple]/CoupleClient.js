@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDatabase } from "@/context/DatabaseContext";
+import { weddingRequest } from '@/lib/wedding-client';
 
 export default function ClientSite({ couple }) {
-  const { eventInfo, addGuest, orders } = useDatabase();
+  const { addGuest } = useDatabase();
+  const [invitation, setInvitation] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  useEffect(() => {
+    let active = true;
+    weddingRequest('/api/invitation?slug=' + encodeURIComponent(couple)).then(result => { if (active) setInvitation(result.invitation); }).catch(error => { if (active) setLoadError(error.message); });
+    return () => { active = false; };
+  }, [couple]);
   
   // Find the specific couple's order to get the theme or real name
-  const order = orders.find(o => o.slug === couple);
+  const order = invitation ? { couple: `${invitation.partner1 || ''} et ${invitation.partner2 || ''}`, theme: invitation.themeId } : null;
   // Find their event info (if they filled it in the dashboard)
-  const info = eventInfo[couple];
+  const info = invitation;
 
   const [rsvp, setRsvp] = useState({
     name: '',
@@ -18,6 +26,8 @@ export default function ClientSite({ couple }) {
     meal: 'Beef Wellington'
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  if (!invitation && !loadError) return <main role="status" style={{ padding: '3rem' }}>Loading invitation…</main>;
 
   // If the URL is invalid or client hasn't been set up
   if (!order) {
@@ -33,8 +43,13 @@ export default function ClientSite({ couple }) {
 
   const handleRSVPSubmit = async (e) => {
     e.preventDefault();
-    await addGuest(couple, rsvp);
-    setSubmitted(true);
+    setSubmitError('');
+    const key = 'folde-rsvp-response-' + couple;
+    let responseId = localStorage.getItem(key);
+    if (!responseId) { responseId = crypto.randomUUID(); localStorage.setItem(key, responseId); }
+    const result = await addGuest(couple, { ...rsvp, responseId });
+    if (result?.success) setSubmitted(true);
+    else setSubmitError('Your response could not be saved. Please try again.');
   };
 
   return (
@@ -143,6 +158,7 @@ export default function ClientSite({ couple }) {
                 </>
               )}
 
+              {submitError && <p role="alert">{submitError}</p>}
               <button type="submit" style={{ marginTop: '1rem', padding: '1.2rem', backgroundColor: '#5C3A1E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 600, cursor: 'pointer' }}>
                 Send RSVP
               </button>

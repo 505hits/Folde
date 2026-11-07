@@ -33,7 +33,7 @@ const COPY = {
 function SuccessContent({ locale }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { createOrder } = useDatabase();
+  const { fetchOrders } = useDatabase();
   const copy = COPY[locale] || COPY.en;
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
 
@@ -52,11 +52,13 @@ function SuccessContent({ locale }) {
       try {
         const { data: { session: authSession } } = await supabase.auth.getSession();
         if (!authSession) throw new Error('Please sign in to recover your order.');
-        // 1. Verify the Stripe session
+        let savedPreview = {};
+        try { savedPreview = JSON.parse(localStorage.getItem('pendingOrder') || '{}').previewData || {}; } catch {}
+        // Verify payment and persist the order on the server.
         const res = await fetch('/api/verify-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authSession.access_token}` },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({ sessionId, details: savedPreview }),
         });
 
         const session = await res.json();
@@ -81,22 +83,9 @@ function SuccessContent({ locale }) {
         const plan = pending?.plan || session.metadata?.plan || 'Standard';
         const planId = pending?.planId || plan.toLowerCase();
         const price = session.amountTotal / 100;
-        const invitationDetails = pending?.previewData && typeof pending.previewData === 'object'
-          ? {
-              ...pending.previewData,
-              themeId: theme,
-              partner1: name,
-              partner2: partnerName,
-            }
-          : {
-              themeId: theme,
-              partner1: name,
-              partner2: partnerName,
-            };
-
-        // 4. Create the order
-        const newOrder = await createOrder(email, name, partnerName, theme, plan, price, invitationDetails);
-        const orderSlug = newOrder?.slug || '';
+        if (!res.ok || !session.order?.slug) throw new Error('Order was not saved.');
+        const orderSlug = session.order.slug;
+        await fetchOrders();
 
         // 5. Clean up
         if (typeof window !== 'undefined') {
