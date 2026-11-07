@@ -36,11 +36,11 @@ export function DatabaseProvider({ children }) {
     };
   }, []);
 
-  const register = async (email, password, name, partnerName) => {
+  const register = async (email, password, name, partnerName, emailRedirectTo) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email?.trim() || '', password,
-        options: { data: { name, partner_name: partnerName } }
+        options: { data: { name, partner_name: partnerName }, ...(emailRedirectTo ? { emailRedirectTo } : {}) }
       });
       if (error) return { success: false, error: error.message };
       return { success: true, requiresConfirmation: !data.session };

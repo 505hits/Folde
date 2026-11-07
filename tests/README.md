@@ -12,6 +12,8 @@ STRIPE_SECRET_KEY=sk_test_local_build_only
 
 Run `npm run build`, `npm start -- --port 3100` and, in another terminal, `npm run test:e2e`. `TEST_BASE_URL` can override the local server URL.
 
-The browser test intercepts authentication, database and payment requests. It checks stale local profiles, rejected passwords, confirmation-required signup, successful login, session restoration, checkout token forwarding, paid return/dashboard access, five template previews, direct visits to `/success` and unauthenticated checkout rejection. It sends no emails and charges no payments. Live provider configuration and a real Stripe test-mode transaction remain separate deployment checks.
+The browser test uses a mobile viewport and intercepts preview, authentication and payment requests. It follows the real date → envelope → design → email flow, verifies that the next step asks for a password with the email already filled, tests confirmation-required signup and rejected passwords, and checks both existing-account login and new-account signup. It then follows the packages button directly to a mocked Stripe interface, without another login, including after a reload. A failed preview save cannot proceed. No emails or payments are sent.
+
+Hosted Stripe Checkout uses dynamic payment methods. Link must be enabled in the Stripe account; Apple Pay and Google Pay appear when the customer’s device, browser, wallet setup and account settings are eligible. Rendering these real wallets and completing a Stripe test-mode transaction remain separate provider checks.
 
 The five affected templates now use existing self-hosted media as replacements for unavailable supplier media; their original themes and signature sections are retained. Previously saved supplier URLs resolve to these replacements at rendering time.

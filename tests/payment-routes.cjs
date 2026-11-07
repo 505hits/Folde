@@ -34,6 +34,8 @@ test('checkout uses verified email and user ID, ignoring a supplied email', asyn
   assert.equal((await r.post({ plan: 'essential', email: 'other@example.org', name: 'Emma', partnerName: 'Lucas' }, 'valid')).status, 200);
   assert.equal(r.calls[0].customer_email, 'buyer@example.org');
   assert.equal(r.calls[0].metadata.userId, 'buyer-id');
+  assert.equal(r.calls[0].payment_method_types, undefined, 'Use dynamic methods so enabled express wallets and Link are available');
+  assert.ok(r.calls[0].cancel_url.endsWith('/packages'), 'Cancellation returns to packages without restarting the preview');
 });
 test('payment verification rejects another account and allows the owner', async () => {
   const other = route('verify-session', { user: { id: 'other-id' }, metadata: { userId: 'buyer-id' } });

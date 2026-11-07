@@ -2,9 +2,8 @@
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
-import CheckoutAuth from '@/components/CheckoutAuth';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { useDatabase } from '@/context/DatabaseContext';
 import styles from "./offers.module.css";
 
 const content = {
@@ -119,8 +118,7 @@ function InvitationPhone({ data, compact = false }) {
 }
 
 export default function PackagesPaywall({ locale = "en" }) {
-  const { currentUser } = useDatabase();
-  const [needsAuth, setNeedsAuth] = useState(false);
+  const router = useRouter();
   const copy = content[locale] || content.en;
   const [selectedId, setSelectedId] = useState("standard");
   const [previewData, setPreviewData] = useState({ ...fallbackPreview, language: locale });
@@ -146,13 +144,17 @@ export default function PackagesPaywall({ locale = "en" }) {
   }, []);
 
   useEffect(() => {
-    const savedDraft = window.sessionStorage.getItem("checkoutPreviewDraft");
+    const savedDraft = window.sessionStorage.getItem("checkoutPreviewDraft") || window.localStorage.getItem("checkoutPreviewDraft");
     if (!savedDraft) return;
     let frameId;
     try {
       const draft = JSON.parse(savedDraft);
       if (draft.previewData) {
-        frameId = window.requestAnimationFrame(() => setPreviewData({ ...draft.previewData, language: locale }));
+        frameId = window.requestAnimationFrame(() => {
+          setPreviewData({ ...draft.previewData, language: locale });
+          const savedPlan = sessionStorage.getItem('checkoutSelectedPlan');
+          if (plans.some(plan => plan.id === savedPlan)) setSelectedId(savedPlan);
+        });
       }
     } catch (error) {
       console.warn("Unable to restore the live preview on the packages page.", error);
@@ -189,13 +191,17 @@ export default function PackagesPaywall({ locale = "en" }) {
 
   const startStripeCheckout = async () => {
     if (paymentLoading) return;
-    if (!currentUser) { setNeedsAuth(true); return; }
     setPaymentLoading(true);
     setPaymentError("");
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setNeedsAuth(true); setPaymentLoading(false); return; }
-      const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || "{}");
+      sessionStorage.setItem('checkoutSelectedPlan', selectedId);
+      if (!session) {
+        router.push(`${locale === 'en' ? '' : `/${locale}`}/checkout?account=1`);
+        setPaymentLoading(false);
+        return;
+      }
+      const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || window.localStorage.getItem("checkoutPreviewDraft") || "{}");
       window.localStorage.setItem("pendingOrder", JSON.stringify({
         name: savedDraft.name || previewData.partner1,
         partnerName: savedDraft.partnerName || previewData.partner2,
@@ -223,6 +229,11 @@ export default function PackagesPaywall({ locale = "en" }) {
         }),
       });
       const result = await response.json();
+      if (response.status === 401) {
+        router.push(`${locale === 'en' ? '' : `/${locale}`}/checkout?account=1`);
+        setPaymentLoading(false);
+        return;
+      }
       if (!response.ok || !result.url) throw new Error(result.error || "Unable to open secure checkout.");
       window.location.assign(result.url);
     } catch (error) {
@@ -233,7 +244,6 @@ export default function PackagesPaywall({ locale = "en" }) {
 
   return (
     <div className={styles.page}>
-      {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => setNeedsAuth(false)} />}
       <section className={styles.paywall} aria-labelledby="packages-title">
         <div className={styles.preview}>
           <div className={styles.previewCopy}>

@@ -9,6 +9,8 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
+import CheckoutAuth from '@/components/CheckoutAuth';
+import { pagePath } from '@/lib/routes.mjs';
 import buildingStyles from "./mobile-building.module.css";
 
 
@@ -357,6 +359,7 @@ function CheckoutContent({ locale = "en" }) {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
   const [desktopSaving, setDesktopSaving] = useState(false);
+  const [previewAuthEmail, setPreviewAuthEmail] = useState('');
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
@@ -503,10 +506,11 @@ function CheckoutContent({ locale = "en" }) {
           console.warn('Unable to restore the emailed preview.', error);
         }
       }
-      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
+      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft') || localStorage.getItem('checkoutPreviewDraft');
       if (savedPreviewDraft) {
         try {
           const draft = JSON.parse(savedPreviewDraft);
+          if (params.get('account') === '1' && draft.email) setPreviewAuthEmail(draft.email);
           setAccount(prev => ({
             ...prev,
             name: draft.name || prev.name,
@@ -979,6 +983,7 @@ function CheckoutContent({ locale = "en" }) {
     };
     setAccount(finalAccount);
     sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
+    localStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
     localStorage.setItem('selectedTemplate', selectedTheme);
 
     const bytes = new TextEncoder().encode(JSON.stringify({
@@ -1007,8 +1012,26 @@ function CheckoutContent({ locale = "en" }) {
       throw error;
     }
 
-    router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.email?.toLowerCase() === email.toLowerCase()) {
+      router.push(pagePath(locale, 'packages'));
+    } else {
+      setPreviewAuthEmail(email);
+      setDesktopSaving(false);
+    }
   };
+
+  const previewAccountStep = previewAuthEmail ? (
+    <CheckoutAuth locale={locale} email={previewAuthEmail}
+      onClose={() => setPreviewAuthEmail('')}
+      onReady={async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email?.toLowerCase() !== previewAuthEmail.toLowerCase()) {
+          throw new Error(interfaceText(locale, 'Please sign in again.'));
+        }
+        router.push(pagePath(locale, 'packages'));
+      }} />
+  ) : null;
 
   // ─── STEP 4: Payment processing overlay ───
   if (paymentProcessing) {
@@ -1026,6 +1049,9 @@ function CheckoutContent({ locale = "en" }) {
 
   if (isMobileViewport && step === 1) {
     return (
+      <>
+      {previewAccountStep}
+      <div inert={!!previewAuthEmail} aria-hidden={!!previewAuthEmail}>
       <MobileInvitationFunnel
         locale={locale}
         account={account}
@@ -1040,6 +1066,8 @@ function CheckoutContent({ locale = "en" }) {
         heroOptions={HERO_VIDEO_OPTIONS}
         onComplete={completeMobileFunnel}
       />
+      </div>
+      </>
     );
   }
 
@@ -1058,7 +1086,9 @@ function CheckoutContent({ locale = "en" }) {
       catch { setAuthError('We could not securely save your preview. Please try again.'); setDesktopSaving(false); }
     };
     return (
-      <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '2rem', color: '#3d2b1f', background: 'radial-gradient(circle at 80% 10%, rgba(176,137,104,.18), transparent 32%), #faf7f1' }}>
+      <>
+      {previewAccountStep}
+      <main inert={!!previewAuthEmail} aria-hidden={!!previewAuthEmail} style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '2rem', color: '#3d2b1f', background: 'radial-gradient(circle at 80% 10%, rgba(176,137,104,.18), transparent 32%), #faf7f1' }}>
         {desktopPreviewStage === 'building' ? (
           <div className={buildingStyles.buildingCard} role="status" aria-live="polite" style={{ width: 'min(100%, 520px)' }}>
             <div className={buildingStyles.buildingVisual} aria-hidden="true"><i /><i className={buildingStyles.orbitTwo} /><div className={buildingStyles.miniInvitation}><span>{account.name?.[0] || 'F'}</span><b>&amp;</b><span>{account.partnerName?.[0] || 'W'}</span></div><span className={buildingStyles.sparkOne}>✦</span><span className={buildingStyles.sparkTwo}>✦</span><span className={buildingStyles.sparkThree}>✦</span></div>
@@ -1077,11 +1107,13 @@ function CheckoutContent({ locale = "en" }) {
           </form>
         )}
       </main>
+      </>
     );
   }
 
   return (
     <div style={{ backgroundColor: '#faf8f5', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#1a1a1a', position: 'relative' }}>
+      {previewAccountStep}
       <style>{`
         .checkout-bottom-bar-inner {
           background-color: rgba(250, 248, 245, 0.95);
