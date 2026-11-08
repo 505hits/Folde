@@ -74,8 +74,8 @@ export default function GuestUploadPage({ params }) {
         body.append('caption', caption);
         const response = await fetch('/api/guest-upload', { method: 'POST', body });
         const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.photo?.url) throw new Error(data.error || 'We could not upload this photo.');
-        uploaded.push(data.photo);
+        if (!response.ok || !data.success || !data.photo?.id) throw new Error(data.error || 'We could not upload this photo.');
+        if (data.photo.url) uploaded.push(data.photo);
         setProgress(Math.round(((index + 1) / files.length) * 100));
       }
       setPhotos((previous) => [...uploaded.reverse(), ...previous]);

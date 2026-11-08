@@ -463,6 +463,7 @@ function DashboardContent({ locale = "en" }) {
               </button>
             )}
           </form>
+          <p style={{ textAlign: 'center', marginTop: '1rem' }}><Link href="/forgot-password">Forgot password / Set up password</Link></p>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid #f0ede9' }}>
             <Link href={localizedRoute('/collections')} style={{ color: '#b08968', fontSize: '0.84rem', fontWeight: 600, textDecoration: 'none' }}>
@@ -2281,6 +2282,11 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
 
 
+      <div style={sectionStyle}>
+        <h2>Design-specific wording</h2>
+        <p>These fields apply to the selected invitation language. Personal names and your own text are kept as entered.</p>
+        {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1')}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
+      </div>
       {/* Wedding Details */}
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Basic Details</h2>

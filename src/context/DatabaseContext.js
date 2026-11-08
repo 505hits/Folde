@@ -203,10 +203,7 @@ export function DatabaseProvider({ children }) {
   };
 
   const isLoaded = true;
-  React.useEffect(() => {
-    localStorage.removeItem('orders');
-    localStorage.removeItem('eventInfo');
-  }, []);
+  // Legacy browser drafts may be the only copy of unsynced edits. Preserve them.
 
   // ============ REVISIONS ============
   const [revisions, setRevisions] = useState({});

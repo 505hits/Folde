@@ -92,6 +92,7 @@ export async function GET(request) {
 export async function POST(request) {
   let uploadedPath = '';
   let supabase = null;
+  let persisted = false;
   try {
     supabase = getAdminClient();
     if (!supabase) return response({ error: 'Photo sharing is not configured yet.' }, 503);
@@ -134,18 +135,19 @@ export async function POST(request) {
       })
       .select('id,created_at')
       .single();
-    if (insertError) throw insertError;
+    if (insertError || !photo) throw insertError || new Error('Photo record was not saved');
+    persisted = true;
 
     const { data: signed, error: signingError } = await supabase.storage
       .from(BUCKET)
       .createSignedUrl(uploadedPath, 60 * 60);
-    if (signingError) throw signingError;
+    if (signingError) console.warn('Photo is saved; its preview will be available after refresh.');
 
     return response({
       success: true,
       photo: {
         id: photo.id,
-        url: signed.signedUrl,
+        url: signed?.signedUrl || null,
         guestName,
         caption,
         createdAt: photo.created_at,
@@ -153,7 +155,7 @@ export async function POST(request) {
       galleryUrl: `/guest-gallery/${encodeURIComponent(slug)}`,
     });
   } catch (error) {
-    if (uploadedPath && supabase) {
+    if (uploadedPath && supabase && !persisted) {
       await supabase.storage.from(BUCKET).remove([uploadedPath]).catch(() => {});
     }
     console.error('Guest upload error:', error);

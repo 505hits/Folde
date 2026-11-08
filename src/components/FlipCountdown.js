@@ -1,5 +1,6 @@
 "use client";
 
+import { templateCopy } from '@/lib/template-copy.mjs';
 import React, { useState, useEffect } from 'react';
 
 const FlipCard = ({ value, label, accentColor }) => {
@@ -20,7 +21,7 @@ const FlipCard = ({ value, label, accentColor }) => {
 
   const cardStyle = {
     position: 'relative',
-    width: '56px',
+    width: `${Math.max(56, display.length * 25)}px`,
     height: '70px',
     borderRadius: '8px',
     overflow: 'hidden',
@@ -28,7 +29,7 @@ const FlipCard = ({ value, label, accentColor }) => {
   };
 
   const digitStyle = {
-    fontSize: '2.6rem',
+    fontSize: display.length > 2 ? '2rem' : '2.6rem',
     fontWeight: 700,
     fontFamily: "'Inter', 'SF Mono', monospace",
     color: '#fff',
@@ -109,7 +110,8 @@ const FlipCard = ({ value, label, accentColor }) => {
   );
 };
 
-export default function FlipCountdown({ targetDate = '2026-05-27', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff' }) {
+export default function FlipCountdown({ targetDate = '2026-05-27', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff', language = 'en', eyebrow, title }) {
+  const copy = templateCopy[language] || templateCopy.en;
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isPast, setIsPast] = useState(() => new Date(targetDate + 'T14:00:00').getTime() <= Date.now());
 
@@ -184,7 +186,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '0.8rem',
           fontWeight: 500,
         }}>
-          Counting down to
+          {eyebrow || copy.countdownEyebrow}
         </p>
 
         <h2 style={{
@@ -196,7 +198,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
           marginBottom: '2rem',
           letterSpacing: '1px',
         }}>
-          Our Forever
+          {title || copy.countdownTitle}
         </h2>
 
         <div style={{
@@ -206,25 +208,25 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
             alignItems: 'flex-start',
             color: textColor,
           }}>
-            <FlipCard value={timeLeft.days} label="Days" accentColor={accentColor} />
+            <FlipCard value={timeLeft.days} label={copy.days} accentColor={accentColor} />
             <div style={{
               display: 'flex', alignItems: 'center', height: '70px',
               fontSize: '1.5rem', color: accentColor, fontWeight: 700,
               animation: 'countdownPulse 1s ease-in-out infinite',
             }}>:</div>
-            <FlipCard value={timeLeft.hours} label="Hours" accentColor={accentColor} />
+            <FlipCard value={timeLeft.hours} label={copy.hours} accentColor={accentColor} />
             <div style={{
               display: 'flex', alignItems: 'center', height: '70px',
               fontSize: '1.5rem', color: accentColor, fontWeight: 700,
               animation: 'countdownPulse 1s ease-in-out infinite',
             }}>:</div>
-            <FlipCard value={timeLeft.minutes} label="Min" accentColor={accentColor} />
+            <FlipCard value={timeLeft.minutes} label={copy.minutes} accentColor={accentColor} />
             <div style={{
               display: 'flex', alignItems: 'center', height: '70px',
               fontSize: '1.5rem', color: accentColor, fontWeight: 700,
               animation: 'countdownPulse 1s ease-in-out infinite',
             }}>:</div>
-            <FlipCard value={timeLeft.seconds} label="Sec" accentColor={accentColor} />
+            <FlipCard value={timeLeft.seconds} label={copy.seconds} accentColor={accentColor} />
         </div>
 
         {/* Bottom decorative line */}

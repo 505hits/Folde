@@ -5,6 +5,7 @@ import Hls from 'hls.js';
 import { useDatabase } from '@/context/DatabaseContext';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
+import { localizedSignature, weddingDateLabel } from '@/lib/template-copy.mjs';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
 import { getTranslation } from '@/lib/translations';
@@ -471,10 +472,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   }, [isMuted]);
 
   // Valeurs par défaut si `data` est vide
-  const t = data || {};
+  const t = { ...(data || {}), ...(data?.localizedContent?.[data?.language || 'en'] || {}) };
   const themeId = t.themeId || data?.themeId || "royalbordeaux";
   const theme = themes[themeId] || themes.royalbordeaux;
-  const signature = signatureContent[themeId];
+  const signature = localizedSignature(signatureContent[themeId], data?.language);
 
   const styleVariables = {
     '--color-primary': theme.primary,
@@ -801,7 +802,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   padding: signature.mode === 'editorial' ? '0.4rem 0.75rem' : '0.35rem', marginBottom: '1.15rem',
                   border: signature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none', borderRadius: signature.mode === 'sun' ? '50%' : '0',
                   fontSize: signature.mode === 'editorial' ? '0.62rem' : '1.45rem', letterSpacing: '0.18em', color: signature.mode === 'dark' ? theme.accent : theme.secondary
-                }}>{signature.ornament}</div>
+                }}>{t.storyOrnament || (themeId === 'atelierindigo' ? `${(t.partner1 || '').slice(0,1)} · ${(t.partner2 || '').slice(0,1)}` : signature.ornament)}</div>
                 <p style={{ margin: '0 0 0.9rem', fontSize: '0.66rem', fontWeight: 700, letterSpacing: signature.mode === 'editorial' ? '0.28em' : '0.2em', textTransform: 'uppercase', opacity: 0.78 }}>
                   {t.storyEyebrow || signature.eyebrow}
                 </p>
@@ -812,9 +813,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   {t.storyText || signature.storyText}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginTop: '2.5rem', paddingTop: '1.3rem', borderTop: `1px solid ${signature.mode === 'dark' ? '#ffffff42' : theme.accent}` }}>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Date</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{dateStr}</strong></div>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>With</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Place</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Date</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{weddingDateLabel(dateStr, data?.language)}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{data?.language === 'fr' ? 'Avec' : data?.language === 'es' ? 'Con' : 'With'}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{data?.language === 'fr' ? 'Lieu' : data?.language === 'es' ? 'Lugar' : 'Place'}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
                 </div>
               </div>
             </AnimatedSection>
@@ -835,10 +836,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
         {/* ================= SCRATCH REVEAL DATE ================= */}
         {signature ? (
-          <FlipCountdown targetDate={targetDate} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
+          <FlipCountdown targetDate={targetDate} language={data?.language} eyebrow={t.countdownEyebrow} title={t.countdownTitle} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
         ) : (
           <ScratchReveal
-            dateStr={dateStr}
+            dateStr={weddingDateLabel(dateStr, data?.language)}
             language={data?.language || 'en'}
             accentColor="#c5975b"
             bgColor="#1a1a1a"
@@ -935,7 +936,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         )}
 
         {/* ================= ACCOMMODATIONS SECTION ================= */}
-        {sections.showAccommodations !== false && (
+        {sections.showAccommodations !== false && accommodations.length > 0 && (
           <section style={{ padding: '4rem 2rem', backgroundColor: '#FAF9F6', borderTop: '1px solid rgba(0,0,0,0.03)', textAlign: 'center' }}>
             <AnimatedSection type="fade">
                <h2 className={styles.venueTitle} style={{ marginBottom: '0.5rem' }}>{copy.accommodationsTitle}</h2>
@@ -997,7 +998,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           <section style={{ padding: '4.5rem 2rem', textAlign: 'center', background: signature.mode === 'dark' ? theme.bgColor : '#fff', borderTop: `1px solid ${theme.accent}55`, borderBottom: `1px solid ${theme.accent}55` }}>
             <AnimatedSection type="fade">
               <div style={{ width: '48px', height: '48px', margin: '0 auto 1.25rem', borderRadius: signature.mode === 'editorial' ? '0' : '50%', border: `1px solid ${theme.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primary, fontSize: '1.15rem' }}>✦</div>
-              <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>Gift</p>
+              <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{data?.language === 'fr' ? 'Cadeaux' : data?.language === 'es' ? 'Regalos' : 'Gift'}</p>
               <h2 style={{ margin: '0 auto 1rem', maxWidth: '520px', color: theme.primary, fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.2rem)', lineHeight: 1.05, fontWeight: 400 }}>{t.giftTitle || signature.giftTitle}</h2>
               <p style={{ margin: '0 auto', maxWidth: '500px', color: theme.secondary, fontSize: '1rem', lineHeight: 1.75 }}>{t.giftText || signature.giftText}</p>
               {t.giftLink && (
@@ -1019,7 +1020,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-               <p className={styles.rsvpDate}>{copy.rsvpReplyBy} {t.rsvpDeadline || (data?.language === 'fr' ? "30 mars 2026" : data?.language === 'es' ? "30 de marzo de 2026" : "March 30th, 2026")}</p>
+               {t.rsvpDeadline && <p className={styles.rsvpDate}>{copy.rsvpReplyBy} {t.rsvpDeadline}</p>}
             </AnimatedSection>
 
             {rsvpSubmitted ? (
