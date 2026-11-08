@@ -5,7 +5,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { pagePath } from "@/lib/routes.mjs";
 
-const FULLSCREEN = ["/dashboard", "/checkout", "/es/checkout", "/fr/checkout", "/kissing-couple-wedding-invitation", "/invite",
+const FULLSCREEN = ["/dashboard", "/checkout", "/es/checkout", "/fr/checkout", "/kissing-couple-wedding-invitation", "/invite", "/guest-gallery", "/guest-upload",
   ...["en", "fr", "es"].flatMap((l) => [pagePath(l, "packages"), pagePath(l, "collections")])];
 
 export default function SiteLayout({ children }) {

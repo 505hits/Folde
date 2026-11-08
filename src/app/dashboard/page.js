@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 import Link from "next/link";
+import { getTranslation } from '@/lib/translations';
 import SeatingPlanner from "@/components/SeatingPlanner";
 import StyledFileInput from '@/components/StyledFileInput';
 import Hls from 'hls.js';
@@ -2285,8 +2286,13 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2>Design-specific wording</h2>
         <p>These fields apply to the selected invitation language. Personal names and your own text are kept as entered.</p>
-        {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1')}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
+        {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText','giftButton'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1')}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
       </div>
+      <details style={sectionStyle}>
+        <summary style={{cursor:'pointer',fontWeight:600}}>All section labels and form wording</summary>
+        <p>Customize labels for the selected language. Leave a field empty to use its translation.</p>
+        {Object.entries(getTranslation(local.language || 'en')).map(([key, fallback]) => <label key={key} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{key.replace(/([A-Z])/g,' $1')}<input style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.labels?.[key] || ''} placeholder={fallback} onChange={e => { const lang = local.language || 'en'; const content = local.localizedContent?.[lang] || {}; const labels = {...(content.labels || {})}; if (e.target.value) labels[key] = e.target.value; else delete labels[key]; handleChange('localizedContent',{...(local.localizedContent || {}),[lang]:{...content,labels}}); }} /></label>)}
+      </details>
       {/* Wedding Details */}
       <div style={sectionStyle}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Basic Details</h2>

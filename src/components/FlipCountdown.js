@@ -21,7 +21,7 @@ const FlipCard = ({ value, label, accentColor }) => {
 
   const cardStyle = {
     position: 'relative',
-    width: `${Math.max(56, display.length * 25)}px`,
+    width: `min(${Math.max(56, display.length * 25)}px, 14vw)`,
     height: '70px',
     borderRadius: '8px',
     overflow: 'hidden',
@@ -29,7 +29,7 @@ const FlipCard = ({ value, label, accentColor }) => {
   };
 
   const digitStyle = {
-    fontSize: display.length > 2 ? '2rem' : '2.6rem',
+    fontSize: display.length > 2 ? 'min(2rem, 7vw)' : 'min(2.6rem, 9vw)',
     fontWeight: 700,
     fontFamily: "'Inter', 'SF Mono', monospace",
     color: '#fff',
@@ -110,19 +110,20 @@ const FlipCard = ({ value, label, accentColor }) => {
   );
 };
 
-export default function FlipCountdown({ targetDate = '2026-05-27', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff', language = 'en', eyebrow, title }) {
+export default function FlipCountdown({ targetDate = '2026-05-27', targetTime = '14:00', accentColor = '#c5975b', bgColor = '#0f0f0f', textColor = '#fff', language = 'en', eyebrow, title }) {
   const copy = templateCopy[language] || templateCopy.en;
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [isPast, setIsPast] = useState(() => new Date(targetDate + 'T14:00:00').getTime() <= Date.now());
+  const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
-    const target = new Date(targetDate + 'T14:00:00');
+    const time = /^\d{2}:\d{2}$/.test(targetTime || '') ? targetTime : '14:00';
+    const target = targetDate ? new Date(targetDate + 'T' + time + ':00') : new Date(NaN);
 
     const update = () => {
       const now = new Date();
       const diff = target - now;
 
-      if (diff <= 0) {
+      if (!Number.isFinite(diff) || diff <= 0) {
         setIsPast(true);
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
@@ -140,7 +141,7 @@ export default function FlipCountdown({ targetDate = '2026-05-27', accentColor =
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, targetTime]);
 
   // Once the wedding date has passed, the countdown no longer adds useful
   // information to the invitation. Hide the section instead of replacing it

@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { photoCopy } from '@/lib/guest-photo-copy.mjs';
 import styles from '../../guest-photos.module.css';
 
 const compressPhoto = (file) => new Promise((resolve, reject) => {
@@ -33,6 +34,8 @@ export default function GuestUploadPage({ params }) {
   const [uploading, setUploading] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [wedding, setWedding] = useState(null);
+  const copy = photoCopy(wedding?.language);
+  const direction = wedding?.language === 'ar' ? 'rtl' : 'ltr';
   const [guestName, setGuestName] = useState('');
   const [caption, setCaption] = useState('');
   const [message, setMessage] = useState('');
@@ -75,14 +78,16 @@ export default function GuestUploadPage({ params }) {
         const response = await fetch('/api/guest-upload', { method: 'POST', body });
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.success || !data.photo?.id) throw new Error(data.error || 'We could not upload this photo.');
-        if (data.photo.url) uploaded.push(data.photo);
+        uploaded.push(data.photo);
         setProgress(Math.round(((index + 1) / files.length) * 100));
       }
-      setPhotos((previous) => [...uploaded.reverse(), ...previous]);
-      setMessage(`${uploaded.length} photo${uploaded.length > 1 ? 's are' : ' is'} now in the wedding gallery. Thank you!`);
+      setPhotos((previous) => [...uploaded.filter((photo) => photo.url).reverse(), ...previous]);
+      setMessage(`${copy.saved} ${uploaded.length}`);
       setCaption('');
     } catch (uploadError) {
-      setError(uploadError.message || 'We could not upload this photo. Please try again.');
+      setPhotos((previous) => [...uploaded.filter((photo) => photo.url).reverse(), ...previous]);
+      if (uploaded.length) setMessage(`${copy.saved} ${uploaded.length}`);
+      setError(copy.uploadError);
     } finally {
       setUploading(false);
     }
@@ -94,55 +99,51 @@ export default function GuestUploadPage({ params }) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      setError('Copying is unavailable here. Open the gallery and copy its address from your browser.');
+      setError(copy.copyError);
     }
   };
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} lang={wedding?.language || 'en'} dir={direction}>
       <div className={styles.shell}>
         <Link className={styles.brand} href={`/invite/${slug}`}>
           <strong>FOLDÈ</strong>
-          <span className={styles.privateBadge}>⌁ Private wedding space</span>
+          <span className={styles.privateBadge}>⌁ {copy.space}</span>
         </Link>
 
         <section className={styles.uploadLayout}>
           <div className={styles.intro}>
-            <p className={styles.eyebrow}>{wedding?.couple || 'Wedding memories'}</p>
-            <h1>Share the moments only you captured.</h1>
-            <p className={styles.introLead}>From the dance floor to the quiet in-between moments, add your photos to the couple’s private gallery in a few taps.</p>
-            <ol className={styles.steps}>
-              <li><span>1</span>Choose up to 20 photos at a time</li>
-              <li><span>2</span>We optimise and store them securely</li>
-              <li><span>3</span>They appear in the shared gallery</li>
-            </ol>
+            <p className={styles.eyebrow}>{wedding?.couple || copy.memories}</p>
+            <h1>{copy.uploadTitle}</h1>
+            <p className={styles.introLead}>{copy.uploadLead}</p>
+
           </div>
 
           <div className={styles.formPanel}>
             <div className={styles.field}>
-              <label htmlFor="guest-name">Your name <span aria-hidden="true">·</span> optional</label>
-              <input id="guest-name" value={guestName} onChange={(event) => setGuestName(event.target.value)} maxLength={80} placeholder="So the couple knows who shared them" />
+              <label htmlFor="guest-name">{copy.name}</label>
+              <input id="guest-name" value={guestName} onChange={(event) => setGuestName(event.target.value)} maxLength={80} placeholder={copy.nameHint} />
             </div>
             <div className={styles.field}>
-              <label htmlFor="photo-caption">A note for the couple <span aria-hidden="true">·</span> optional</label>
-              <input id="photo-caption" value={caption} onChange={(event) => setCaption(event.target.value)} maxLength={240} placeholder="A little memory, a place, a moment…" />
+              <label htmlFor="photo-caption">{copy.note}</label>
+              <input id="photo-caption" value={caption} onChange={(event) => setCaption(event.target.value)} maxLength={240} placeholder={copy.noteHint} />
             </div>
-            <label className={`${styles.dropzone} ${uploading ? styles.dropzoneBusy : ''}`}>
+            <label className={`${styles.dropzone} ${uploading ? styles.dropzoneBusy : ''}`} role="button" tabIndex={uploading ? -1 : 0} aria-disabled={uploading} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (!uploading) event.currentTarget.querySelector('input').click(); } }}>
               <span className={styles.camera}>↥</span>
-              <strong>{uploading ? 'Adding your memories…' : 'Choose photos from your phone'}</strong>
-              <small>JPG, PNG, WebP or HEIC · 8 MB maximum per photo · up to 20 at once</small>
+              <strong>{uploading ? copy.adding : copy.choose}</strong>
+              <small>{copy.limits}</small>
               <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple disabled={uploading} onChange={handleUpload} hidden />
             </label>
             {uploading && <div className={styles.progress} aria-label={`Upload ${progress}%`}><i style={{ width: `${progress}%` }} /></div>}
             {message && <p className={`${styles.notice} ${styles.success}`}>{message}</p>}
             {error && <p className={`${styles.notice} ${styles.error}`}>{error}</p>}
-            <p className={styles.privacy}><span>🔒</span><span>These photos are stored privately and are not indexed by search engines. Gallery links are intended for wedding guests only.</span></p>
+            <p className={styles.privacy}><span>🔒</span><span>{copy.privacy}</span></p>
             <div className={styles.actions}>
-              <Link className={styles.primary} href={`/guest-gallery/${slug}`}>View the private gallery</Link>
-              <button className={styles.secondary} type="button" onClick={copyGalleryLink}>{copied ? 'Link copied!' : 'Copy gallery link'}</button>
-              <Link className={styles.secondary} href={`/invite/${slug}`}>Back to invitation</Link>
+              <Link className={styles.primary} href={`/guest-gallery/${slug}`}>{copy.view}</Link>
+              <button className={styles.secondary} type="button" onClick={copyGalleryLink}>{copied ? copy.copied : copy.copy}</button>
+              <Link className={styles.secondary} href={`/invite/${slug}`}>{copy.back}</Link>
             </div>
-            {photos.length > 0 && <div className={styles.miniGrid}>{photos.slice(0, 8).map((photo) => <img key={photo.id} src={photo.url} alt={photo.caption || 'Guest wedding memory'} />)}</div>}
+            {photos.length > 0 && <div className={styles.miniGrid}>{photos.slice(0, 8).map((photo) => <img key={photo.id} src={photo.url} alt={photo.caption || copy.alt} />)}</div>}
           </div>
         </section>
       </div>

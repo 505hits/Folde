@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadRoute, mockDatabase, ok, failure } from './load-route.mjs';
 const session={id:'cs_test_one',payment_status:'paid',amount_total:4990,metadata:{name:'Émilie',partnerName:'Alex',plan:'Standard',theme:'sage'}};
-const user={id:'f2122cc6-5d15-4561-a793-cd600929d708',email:'owner@example.org'};
+const user={id:'11111111-1111-4111-8111-111111111111',email:'owner@example.org'};
 test('payment creates a server-owned order with a stable ID and sanitized preview',async()=>{
  const db=mockDatabase([ok(null),ok({id:'saved',slug:'wedding'})]);const {persistPaidOrder}=await loadRoute('lib/paid-order.js',db);
  await persistPaidOrder(session,user,{partner1:'Forged',_seatingPlan:{bad:true},publishedData:{bad:true}});

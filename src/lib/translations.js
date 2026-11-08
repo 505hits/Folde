@@ -627,6 +627,27 @@ export const TRANSLATIONS = {
     }
 };
 
+const additionalKeys = ['rsvpThankYou','rsvpSubmitted','rsvpFamilyQuestion','rsvpPlusOneShort','rsvpFamilyYes','rsvpFamilyNames','allergiesLabel','allergiesPlaceholder','rsvpError'];
+const additions = {
+ en:['Thank you','Your response has been saved.','Will you be accompanied?','With a guest','With family','Family members’ names','Allergies and dietary needs','Any dietary requirements?','Unable to save your response. Please try again.'],
+ fr:['Merci','Votre réponse a été enregistrée.','Venez-vous accompagné(e) ?','Avec un accompagnant','En famille','Noms des membres de votre famille','Allergies et régimes alimentaires','Des besoins alimentaires particuliers ?','Impossible d’enregistrer votre réponse. Veuillez réessayer.'],
+ es:['Gracias','Tu respuesta se ha guardado.','¿Vendrás acompañado?','Con un acompañante','En familia','Nombres de los familiares','Alergias y necesidades alimentarias','¿Algún requisito alimentario?','No se pudo guardar tu respuesta. Inténtalo de nuevo.'],
+ it:['Grazie','La tua risposta è stata salvata.','Verrai accompagnato?','Con un accompagnatore','In famiglia','Nomi dei familiari','Allergie ed esigenze alimentari','Esigenze alimentari particolari?','Impossibile salvare la risposta. Riprova.'],
+ de:['Vielen Dank','Deine Antwort wurde gespeichert.','Kommst du in Begleitung?','Mit Begleitung','Mit Familie','Namen der Familienmitglieder','Allergien und Ernährungswünsche','Besondere Ernährungswünsche?','Deine Antwort konnte nicht gespeichert werden. Bitte erneut versuchen.'],
+ pt:['Obrigado','A sua resposta foi guardada.','Vem acompanhado?','Com acompanhante','Em família','Nomes dos familiares','Alergias e necessidades alimentares','Alguma necessidade alimentar?','Não foi possível guardar a resposta. Tente novamente.'],
+ nl:['Bedankt','Je antwoord is opgeslagen.','Kom je met gezelschap?','Met een gast','Met familie','Namen van familieleden','Allergieën en dieetwensen','Bijzondere dieetwensen?','Je antwoord kon niet worden opgeslagen. Probeer opnieuw.'],
+ ar:['شكراً','تم حفظ ردك.','هل ستأتي برفقة أحد؟','مع مرافق','مع العائلة','أسماء أفراد العائلة','الحساسية والاحتياجات الغذائية','هل لديك احتياجات غذائية خاصة؟','تعذر حفظ ردك. حاول مجدداً.'],
+ ru:['Спасибо','Ваш ответ сохранён.','Вы придёте с кем-то?','С сопровождающим','С семьёй','Имена членов семьи','Аллергии и особенности питания','Есть ли особые пожелания к питанию?','Не удалось сохранить ответ. Попробуйте снова.']
+};
+for (const [lang, values] of Object.entries(additions)) {
+    Object.assign(TRANSLATIONS[lang], Object.fromEntries(additionalKeys.map((key,i) => [key,values[i]])));
+    TRANSLATIONS[lang].venueShort = TRANSLATIONS[lang].venueTitle;
+    TRANSLATIONS[lang].galleryScan = TRANSLATIONS[lang].qrCodeDesc;
+    TRANSLATIONS[lang].madeWithLove = 'FOLDÈ';
+    // The gallery accepts photos, not video uploads.
+    TRANSLATIONS[lang].addPhotosBtn = TRANSLATIONS[lang].guestGalleryTitle;
+    TRANSLATIONS[lang].guestGallerySubtitle = TRANSLATIONS[lang].qrCodeDesc;
+}
 export function getTranslation(lang = 'en') {
     return TRANSLATIONS[lang] || TRANSLATIONS.en;
 }

@@ -31,13 +31,13 @@ function getAdminClient() {
 
 function cleanSlug(value) {
   const slug = String(value || '').trim();
-  return /^[a-z0-9-]{3,120}$/i.test(slug) ? slug : '';
+  return /^[a-z0-9-]{1,200}$/i.test(slug) ? slug : '';
 }
 
 async function findWedding(supabase, slug) {
   const { data, error } = await supabase
     .from('orders')
-    .select('id,slug,couple,status')
+    .select('id,slug,couple,status,details')
     .eq('slug', slug)
     .maybeSingle();
   if (error) throw error;
@@ -55,15 +55,20 @@ export async function GET(request) {
     const wedding = await findWedding(supabase, slug);
     if (!wedding) return response({ error: 'This wedding gallery was not found.' }, 404);
 
+    const offset = Math.floor(Math.max(0, Math.min(100000, Number(new URL(request.url).searchParams.get('offset')) || 0)));
+    const pageSize = 60;
+
     const { data: rows, error } = await supabase
       .from('guest_photos')
       .select('id,storage_path,guest_name,caption,created_at')
       .eq('order_id', wedding.id)
       .order('created_at', { ascending: false })
-      .limit(300);
+      .order('id', { ascending: false })
+      .range(offset, offset + pageSize);
     if (error) throw error;
 
-    const paths = (rows || []).map((photo) => photo.storage_path);
+    const page = (rows || []).slice(0, pageSize);
+    const paths = page.map((photo) => photo.storage_path);
     let signed = [];
     if (paths.length) {
       const { data, error: signingError } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60);
@@ -71,20 +76,23 @@ export async function GET(request) {
       signed = data || [];
     }
 
-    const photos = (rows || []).flatMap((photo, index) => {
-      const signedUrl = signed[index]?.signedUrl;
-      return signedUrl ? [{
+    const urls = new Map(signed.map((item) => [item.path, item.signedUrl]));
+    const photos = page.map((photo) => {
+      const signedUrl = urls.get(photo.storage_path);
+      if (!signedUrl) throw new Error('A saved photo preview is temporarily unavailable');
+      return {
         id: photo.id,
         url: signedUrl,
         guestName: photo.guest_name || '',
         caption: photo.caption || '',
         createdAt: photo.created_at,
-      }] : [];
+      };
     });
 
-    return response({ success: true, wedding: { slug: wedding.slug, couple: wedding.couple }, photos });
+    const published = wedding.details?.publishedData || wedding.details || {};
+    return response({ success: true, wedding: { slug: wedding.slug, couple: wedding.couple, language: published.language || 'en' }, photos, nextOffset: rows.length > pageSize ? offset + pageSize : null });
   } catch (error) {
-    console.error('Guest gallery load error:', error);
+    console.error('Guest gallery load error:', error?.message || 'Database or storage request failed');
     return response({ error: 'We could not load this private gallery.' }, 500);
   }
 }
@@ -138,10 +146,14 @@ export async function POST(request) {
     if (insertError || !photo) throw insertError || new Error('Photo record was not saved');
     persisted = true;
 
-    const { data: signed, error: signingError } = await supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(uploadedPath, 60 * 60);
-    if (signingError) console.warn('Photo is saved; its preview will be available after refresh.');
+    let signed = null;
+    try {
+      const result = await supabase.storage.from(BUCKET).createSignedUrl(uploadedPath, 60 * 60);
+      if (result.error) throw result.error;
+      signed = result.data;
+    } catch {
+      console.warn('Photo is saved; its preview will be available after refresh.');
+    }
 
     return response({
       success: true,
@@ -158,7 +170,7 @@ export async function POST(request) {
     if (uploadedPath && supabase && !persisted) {
       await supabase.storage.from(BUCKET).remove([uploadedPath]).catch(() => {});
     }
-    console.error('Guest upload error:', error);
+    console.error('Guest upload error:', error?.message || 'Database or storage request failed');
     return response({ error: 'We could not save this photo. Please try again.' }, 500);
   }
 }

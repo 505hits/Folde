@@ -5,7 +5,7 @@ import Hls from 'hls.js';
 import { useDatabase } from '@/context/DatabaseContext';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
-import { localizedSignature, weddingDateLabel } from '@/lib/template-copy.mjs';
+import { localizedSignature, weddingDateLabel, templateCopy, localizedStockLabel } from '@/lib/template-copy.mjs';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
 import { getTranslation } from '@/lib/translations';
@@ -311,7 +311,23 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const HeroHeading = embedded ? 'p' : 'h1';
   const dbContext = useDatabase();
   const addGuest = dbContext?.addGuest;
-  const copy = getTranslation(data?.language || 'en');
+  const copy = { ...getTranslation(data?.language || 'en'), ...(data?.localizedContent?.[data?.language || 'en']?.labels || {}) };
+  const labels = templateCopy[data?.language] || templateCopy.en;
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  useEffect(() => {
+    if (!data?.slug || data.slug === 'wedding') return;
+    let active = true;
+    const load = async () => {
+      try {
+        const response = await fetch('/api/guest-upload?slug=' + encodeURIComponent(data.slug), { cache: 'no-store' });
+        const result = await response.json();
+        if (active && response.ok && result.success) setUploadedPhotos(result.photos || []);
+      } catch { /* Preserve the last successful gallery during network interruptions. */ }
+    };
+    load();
+    const interval = window.setInterval(load, 30000);
+    return () => { active = false; window.clearInterval(interval); };
+  }, [data?.slug]);
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");
 
@@ -371,7 +387,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
       setRsvpSubmitted(true);
     } catch (err) {
       console.error('RSVP submit error:', err);
-      setRsvpError('An error occurred. Please try again.');
+      setRsvpError(copy.rsvpError);
     }
     setRsvpSubmitting(false);
   };
@@ -489,10 +505,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const partner2 = t.partner2 || "Isabelle";
   const showPartner2 = t.showPartner2 !== false;
   const dateStr = t.date || "MAY 27, 2026";
-  // Parse target date for countdown ("MAY 27, 2026" → "2026-05-27")
-  const monthMap = { JAN: '01', FEB: '02', MAR: '03', APR: '04', MAY: '05', JUN: '06', JUL: '07', AUG: '08', SEP: '09', OCT: '10', NOV: '11', DEC: '12' };
-  const dp = dateStr.match(/(\w+)\s+(\d+),?\s+(\d{4})/);
-  const targetDate = dp ? `${dp[3]}-${monthMap[dp[1].toUpperCase()] || '01'}-${dp[2].padStart(2, '0')}` : '2026-05-27';
+  const parsedDate = new Date(dateStr);
+  const targetDate = Number.isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString().slice(0, 10);
   const ceremonyVenue = t.ceremonyVenue || "Ocean front beach House";
   const receptionVenue = t.receptionVenue || "South Dixie Highway, Homestead, Miami-Dade County, Florida, 33030, United States";
 
@@ -535,9 +549,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     "/images/couple_forest_walk_1782995203954.png",
     "/images/couple_cafe_smile_1782995212728.png"
   ];
-  const guestGallery = t.guestGallery && t.guestGallery.length > 0
+  const savedGuestGallery = t.guestGallery && t.guestGallery.length > 0
     ? t.guestGallery
     : (!t.slug || t.slug === 'wedding' ? previewGuestGallery : []);
+  const guestGallery = [...new Set([...uploadedPhotos.map((photo) => photo.url), ...savedGuestGallery])].slice(0, 8);
   const guestPhotoUrls = (() => {
     try {
       const origin = new URL(currentUrl).origin;
@@ -646,7 +661,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   };
 
   return (
-    <div className={styles.main} style={{ ...styleVariables, height: envelopeDismissed ? 'auto' : (heroHeight || '100%'), minHeight: heroHeight || '100%' }}>
+    <div className={styles.main} lang={data?.language || 'en'} dir={data?.language === 'ar' ? 'rtl' : 'ltr'} style={{ ...styleVariables, height: envelopeDismissed ? 'auto' : (heroHeight || '100%'), minHeight: heroHeight || '100%' }}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
       <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (heroHeight || '100%') : undefined, minHeight: !envelopeDismissed ? (heroHeight || '100%') : undefined }}>
@@ -813,9 +828,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   {t.storyText || signature.storyText}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginTop: '2.5rem', paddingTop: '1.3rem', borderTop: `1px solid ${signature.mode === 'dark' ? '#ffffff42' : theme.accent}` }}>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>Date</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{weddingDateLabel(dateStr, data?.language)}</strong></div>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{data?.language === 'fr' ? 'Avec' : data?.language === 'es' ? 'Con' : 'With'}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
-                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{data?.language === 'fr' ? 'Lieu' : data?.language === 'es' ? 'Lugar' : 'Place'}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.date}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{weddingDateLabel(dateStr, data?.language)}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.with}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
+                  <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.place}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
                 </div>
               </div>
             </AnimatedSection>
@@ -836,10 +851,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
 
         {/* ================= SCRATCH REVEAL DATE ================= */}
         {signature ? (
-          <FlipCountdown targetDate={targetDate} language={data?.language} eyebrow={t.countdownEyebrow} title={t.countdownTitle} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
+          <FlipCountdown targetDate={targetDate} targetTime={t.time} language={data?.language} eyebrow={t.countdownEyebrow} title={t.countdownTitle} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
         ) : (
           <ScratchReveal
-            dateStr={weddingDateLabel(dateStr, data?.language)}
+            dateStr={dateStr}
             language={data?.language || 'en'}
             accentColor="#c5975b"
             bgColor="#1a1a1a"
@@ -916,7 +931,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   {timeline.map((item, idx) => (
                     <div key={idx} className={styles.timelineItem}>
                       <div className={styles.timelineLeft}>
-                        <h4 className={styles.timelineEvent}>{item.title}</h4>
+                        <h4 className={styles.timelineEvent}>{localizedStockLabel(item.title, data?.language, 'event')}</h4>
                       </div>
                       <div className={`${styles.timelineDot} ${isVisible ? styles.visible : ''}`} style={{ animationDelay: `${idx * 0.2 + 0.5}s` }}></div>
                       <div className={styles.timelineRight}>
@@ -966,7 +981,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '450px', margin: '0 auto' }}>
                 {menu.map((m, i) => (
                   <div key={i} style={{ backgroundColor: '#FAF9F6', padding: '1.25rem 1.5rem', borderRadius: '12px', border: '1px dashed rgba(0,0,0,0.1)' }}>
-                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--color-accent)', fontWeight: 700, marginBottom: '0.3rem' }}>{m.course}</div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--color-accent)', fontWeight: 700, marginBottom: '0.3rem' }}>{localizedStockLabel(m.course, data?.language, 'course')}</div>
                     <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.15rem', color: 'var(--color-primary)' }}>{m.dish}</div>
                   </div>
                 ))}
@@ -998,11 +1013,11 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           <section style={{ padding: '4.5rem 2rem', textAlign: 'center', background: signature.mode === 'dark' ? theme.bgColor : '#fff', borderTop: `1px solid ${theme.accent}55`, borderBottom: `1px solid ${theme.accent}55` }}>
             <AnimatedSection type="fade">
               <div style={{ width: '48px', height: '48px', margin: '0 auto 1.25rem', borderRadius: signature.mode === 'editorial' ? '0' : '50%', border: `1px solid ${theme.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primary, fontSize: '1.15rem' }}>✦</div>
-              <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{data?.language === 'fr' ? 'Cadeaux' : data?.language === 'es' ? 'Regalos' : 'Gift'}</p>
+              <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{labels.gifts}</p>
               <h2 style={{ margin: '0 auto 1rem', maxWidth: '520px', color: theme.primary, fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.2rem)', lineHeight: 1.05, fontWeight: 400 }}>{t.giftTitle || signature.giftTitle}</h2>
               <p style={{ margin: '0 auto', maxWidth: '500px', color: theme.secondary, fontSize: '1rem', lineHeight: 1.75 }}>{t.giftText || signature.giftText}</p>
               {t.giftLink && (
-                <a href={t.giftLink} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', marginTop: '1.6rem', padding: '0.8rem 1.4rem', borderRadius: '999px', background: theme.primary, color: theme.bgColor, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>View our gift wishes</a>
+                <a href={t.giftLink} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', marginTop: '1.6rem', padding: '0.8rem 1.4rem', borderRadius: '999px', background: theme.primary, color: theme.bgColor, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{t.giftButton || labels.giftButton}</a>
               )}
             </AnimatedSection>
           </section>
@@ -1179,7 +1194,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
         )}
 
         {/* ================= PHOTO UPLOAD CTA (Galerie Photos) ================= */}
-        {sections.showGallery !== false && (
+        {sections.showGuestGallery !== false && (
           <section style={{ width: '100%', maxWidth: '900px', margin: '0 auto', backgroundColor: 'var(--color-background)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-foreground)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '4rem 1.5rem', boxSizing: 'border-box' }}>
             <AnimatedSection type="fade" style={{ width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', width: '100%' }}>
