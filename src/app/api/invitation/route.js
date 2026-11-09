@@ -20,6 +20,7 @@ export async function GET(request) {
     if (!order) return Response.json({ error: 'Invitation not found.' }, { status: 404 });
     const details = { ...(params.get('preview') === 'true' ? order.details : (order.details?.publishedData || order.details)) };
     delete details._seatingPlan;
+    delete details._draftVersion;
     delete details.publishedData;
     return Response.json({ invitation: { ...details, slug, themeId: details.themeId || order.theme } }, { headers: { 'Cache-Control': 'no-store' } });
   } catch { return Response.json({ error: 'Unable to load invitation.' }, { status: 503 }); }

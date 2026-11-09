@@ -5,6 +5,34 @@ import { useLayoutEffect, useRef } from "react";
 // English stays authoritative in the product components. These rows localize the
 // transactional and authenticated surfaces without changing stored wedding data.
 const rows = [
+  ['Uploading images...','Envoi des images…','Subiendo imágenes…'],
+  ['Invitation Design','Modèle d’invitation','Diseño de la invitación'],
+  ['Choose a complete design, then personalize every detail below.','Choisissez un modèle, puis personnalisez chaque détail ci-dessous.','Elige un diseño y personaliza cada detalle a continuación.'],
+  ['Story & Invitation Copy','Histoire et textes de l’invitation','Historia y textos de la invitación'],
+  ['These texts inherit the selected design by default. Add your own wording whenever you want.','Ces textes reprennent le modèle choisi par défaut. Personnalisez-les à votre convenance.','Estos textos usan el diseño elegido por defecto. Personalízalos cuando quieras.'],
+  ['Design-specific wording','Textes propres au modèle','Textos propios del diseño'],
+  ['These fields apply to the selected invitation language. Personal names and your own text are kept as entered.','Ces champs concernent la langue choisie pour l’invitation. Les noms et vos textes restent tels que vous les saisissez.','Estos campos corresponden al idioma elegido para la invitación. Los nombres y tus textos se conservan tal como los escribes.'],
+  ['All section labels and form wording','Libellés des sections et du formulaire','Textos de las secciones y del formulario'],
+  ['Customize labels for the selected language. Leave a field empty to use its translation.','Personnalisez les libellés dans la langue choisie. Laissez un champ vide pour utiliser sa traduction.','Personaliza los textos en el idioma elegido. Deja un campo vacío para usar su traducción.'],
+  ['Use the translated design default','Utiliser le texte traduit du modèle','Usar el texto traducido del diseño'],
+  ['Story ornament','Symbole de l’histoire','Símbolo de la historia'],
+  ['Story eyebrow','Surtitre de l’histoire','Antetítulo de la historia'],
+  ['Story title','Titre de l’histoire','Título de la historia'],
+  ['Story text','Texte de l’histoire','Texto de la historia'],
+  ['Intro title','Titre d’introduction','Título de introducción'],
+  ['Intro text','Texte d’introduction','Texto de introducción'],
+  ['Countdown eyebrow','Surtitre du compte à rebours','Antetítulo de la cuenta atrás'],
+  ['Countdown title','Titre du compte à rebours','Título de la cuenta atrás'],
+  ['Venue title','Titre du lieu','Título del lugar'],
+  ['Schedule title','Titre du programme','Título del programa'],
+  ['Menu title','Titre du menu','Título del menú'],
+  ['Gallery title','Titre de la galerie','Título de la galería'],
+  ['Gift title','Titre des cadeaux','Título de los regalos'],
+  ['Gift text','Texte des cadeaux','Texto de los regalos'],
+  ['Gift button','Bouton des cadeaux','Botón de regalos'],
+  ['Your wedding changed on another device. Reload it before editing; your current form has been kept.','Votre invitation a changé sur un autre appareil. Rechargez avant de modifier ; votre formulaire actuel a été conservé.','Tu invitación ha cambiado en otro dispositivo. Recarga antes de editar; se ha conservado tu formulario actual.'],
+  ['Please choose a JPG, PNG, WebP or GIF image smaller than 3 MB.','Choisissez une image JPG, PNG, WebP ou GIF de moins de 3 Mo.','Elige una imagen JPG, PNG, WebP o GIF de menos de 3 MB.'],
+  ['Your changes could not be saved. Please try again.','Vos modifications n’ont pas pu être enregistrées. Veuillez réessayer.','No se pudieron guardar los cambios. Inténtalo de nuevo.'],
   ["Chosen by 500+ happy couples", "Choisi par plus de 500 couples heureux", "Elegido por más de 500 parejas felices"],
   ["Live Personalization Preview", "Aperçu de personnalisation en direct", "Vista previa de personalización en directo"],
   ["Select your preferred envelope animation, background video, and details to preview your invitation live.", "Choisissez l’animation de l’enveloppe, la vidéo d’arrière-plan et vos informations pour prévisualiser votre faire-part en direct.", "Elige la animación del sobre, el vídeo de fondo y tus datos para previsualizar la invitación en directo."],
@@ -462,10 +490,12 @@ const dictionaries = {
 
 function translateDynamic(locale, value) {
   const replacements = locale === "fr" ? [
+    [/^(\d+) files selected$/, '$1 fichiers sélectionnés'],
     [/^(\d+)\s*\/\s*2 Revisions Used$/, "$1 / 2 modifications utilisées"],
     [/^Requested Modifications \(Revision #(\d+) of 2\)$/, "Modifications demandées (demande n° $1 sur 2)"],
     [/^SUBMIT REVISION #(\d+) →$/, "ENVOYER LA DEMANDE N° $1 →"],
   ] : [
+    [/^(\d+) files selected$/, '$1 archivos seleccionados'],
     [/^(\d+)\s*\/\s*2 Revisions Used$/, "$1 / 2 revisiones utilizadas"],
     [/^Requested Modifications \(Revision #(\d+) of 2\)$/, "Cambios solicitados (revisión n.º $1 de 2)"],
     [/^SUBMIT REVISION #(\d+) →$/, "ENVIAR REVISIÓN N.º $1 →"],
@@ -493,11 +523,13 @@ export default function LocalizedSurface({ locale = "en", children }) {
     if (locale === "en" || !rootRef.current) return undefined;
     const localizeNode = (node) => {
       if (node.nodeType === Node.TEXT_NODE) {
+        if (node.parentElement?.closest('[data-preserve-language]')) return;
         if (!node.nodeValue?.trim() || ["SCRIPT", "STYLE", "TEXTAREA"].includes(node.parentElement?.tagName)) return;
         const next = interfaceText(locale, node.nodeValue);
         if (next !== node.nodeValue) node.nodeValue = next;
         return;
       }
+      if (node.nodeType === Node.ELEMENT_NODE && node.closest('[data-preserve-language]')) return;
       if (node.nodeType !== Node.ELEMENT_NODE || ["SCRIPT", "STYLE", "TEXTAREA"].includes(node.tagName)) return;
       ["placeholder", "title", "aria-label", "alt"].forEach((attribute) => {
         if (!node.hasAttribute(attribute)) return;

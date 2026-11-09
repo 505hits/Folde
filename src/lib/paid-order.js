@@ -25,7 +25,7 @@ export async function persistPaidOrder(session, user, preview = {}) {
   const base = `${name}-et-${partnerName}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').slice(0, 120);
   const safePreview = preview && typeof preview === 'object' && !Array.isArray(preview) && JSON.stringify(preview).length < 500000 ? { ...preview } : {};
   delete safePreview._seatingPlan; delete safePreview.publishedData;
-  const details = { ...safePreview, partner1: name, partner2: partnerName, themeId: metadata.theme || 'bordeaux' };
+  const details = { ...safePreview, dashboardLocale: ['fr','es'].includes(metadata.locale) ? metadata.locale : 'en', language: safePreview.language || (['fr','es'].includes(metadata.locale) ? metadata.locale : 'en'), partner1: name, partner2: partnerName, themeId: metadata.theme || 'bordeaux' };
   const values = { id, user_id: user.id, user_email: user.email, couple: `${name} et ${partnerName}`, slug: `${base}-${suffix}`, plan, price: session.amount_total / 100, status: standard ? 'Live' : 'Awaiting Details', paid: true, date: new Date().toISOString().slice(0, 10), theme: metadata.theme || 'bordeaux', details };
   const saved = await db.from('orders').insert(values).select('*').single();
   if (saved.error?.code === '23505') {

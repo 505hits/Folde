@@ -43,6 +43,6 @@ export function mockDatabase(responses = [], user = { id: 'owner', email: 'owner
 export function request(body, method = 'POST', token = 'valid', query = '') {
   return new Request(`http://localhost/api/test${query}`, { method, ...(body ? { body: JSON.stringify(body) } : {}), headers: token ? { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : {} });
 }
-export const order = { id: 'order-1', slug: 'couple', user_email: 'owner@example.org', paid: true, status: 'Live', details: { partner1: 'Alice', publishedData: { partner1: 'Alice' } } };
+export const order = { id: 'order-1', slug: 'couple', user_email: 'owner@example.org', paid: true, status: 'Live', updated_at:'2026-01-01T00:00:00.123456+00:00', details: { partner1: 'Alice', publishedData: { partner1: 'Alice' } } };
 export const ok = data => ({ data, error: null });
 export const failure = { data: null, error: { message: 'Database refused operation' } };

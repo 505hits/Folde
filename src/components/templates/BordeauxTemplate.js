@@ -777,7 +777,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
               </AnimatedSection>
 
               <AnimatedSection type="fade" style={{ animationDelay: '0.6s' }}>
-                 <p className={styles.heroDate}>{copy.saveTheDate}</p>
+                 <p className={styles.heroDate}>{copy.saveTheDate}<br /><span style={{display:'block',marginTop:'0.5rem'}}>{weddingDateLabel(dateStr, data?.language)}</span></p>
               </AnimatedSection>
             </div>
           </div>

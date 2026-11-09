@@ -24,11 +24,14 @@ export async function ownedOrder(request, slug, db = database()) {
   return { ...access, order };
 }
 
-// Compare the full JSON document so concurrent edits cannot overwrite other fields.
+// Compare a short revision token. Filtering on the full JSON creates oversized
+// request URLs as soon as a wedding contains images or a published snapshot.
 export async function updateDetails(db, order, details) {
-  let query = db.from('orders').update({ details }).eq('id', order.id);
-  query = order.details == null ? query.is('details', null) : query.eq('details', JSON.stringify(order.details));
+  const previousTime = new Date(order.updated_at || 0).getTime();
+  const updated_at = new Date(Math.max(Date.now(), (Number.isFinite(previousTime) ? previousTime : 0) + 1)).toISOString();
+  let query = db.from('orders').update({ details, updated_at }).eq('id', order.id);
+  query = order.updated_at == null ? query.is('updated_at', null) : query.eq('updated_at', order.updated_at);
   const { data, error } = await query.select('*').maybeSingle();
-  if (error) throw new Error('Unable to save your wedding.');
+  if (error) { console.error('Wedding save failed:', error.code || 'database', error.message || 'Write refused'); throw new Error('Unable to save your wedding.'); }
   return data;
 }

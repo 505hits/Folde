@@ -12,6 +12,11 @@ import { useDatabase } from "@/context/DatabaseContext";
 import { supabase } from "@/lib/supabase";
 import InteractiveVideo from "@/components/InteractiveVideo";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
+import { weddingRequest } from '@/lib/wedding-client';
+import { dashboardLocale } from '@/lib/dashboard-locale.mjs';
+import { selectHero } from '@/lib/wedding-media.mjs';
+import MediaThumbnail from '@/components/MediaThumbnail';
+import { templateMedia } from '@/lib/template-catalog.mjs';
 import LocalizedSurface from "@/components/LocalizedSurface";
 
 const HoverVideoThumbnail = ({ url, fallbackColor }) => {
@@ -87,9 +92,12 @@ const HoverVideoThumbnail = ({ url, fallbackColor }) => {
 };
 
 export default function Dashboard({ locale = "en" }) {
+  const {orders,currentUser} = useDatabase();
+  const order = orders.filter(o=>o.paid && o.email?.toLowerCase() === currentUser?.email?.toLowerCase()).sort((a,b)=>new Date(b.createdAt || b.date || 0)-new Date(a.createdAt || a.date || 0))[0];
+  const interfaceLocale = dashboardLocale(locale,order?.details);
   return (
-    <LocalizedSurface locale={locale}>
-      <DashboardContent locale={locale} />
+    <LocalizedSurface locale={interfaceLocale} key={interfaceLocale}>
+      <DashboardContent locale={interfaceLocale} />
     </LocalizedSurface>
   );
 }
@@ -97,7 +105,7 @@ export default function Dashboard({ locale = "en" }) {
 function DashboardContent({ locale = "en" }) {
   const dashboardRootRef = useRef(null);
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
-  const { ordersLoading, databaseError, currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
+  const { ordersLoading, databaseError, mediaUploads, currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
@@ -745,10 +753,6 @@ function DashboardContent({ locale = "en" }) {
   const clientEventInfo = {
     ...defaultEventInfo,
     ...(eventInfo[clientSlug] || {}),
-    // The paid order is authoritative for the couple's names. This prevents
-    // stale local/demo values from appearing after checkout.
-    partner1: orderPartner1,
-    partner2: orderPartner2,
   };
 
   const tabs = [
@@ -1059,21 +1063,20 @@ function DashboardContent({ locale = "en" }) {
               <span>📱</span> Live Preview Website
             </a>
             <button
+              disabled={isPublishing || mediaUploads > 0}
               onClick={async () => {
                 setIsPublishing(true);
                 if (publishOrderDetails && clientSlug) {
                   const saved = await publishOrderDetails(clientSlug);
                   if (!saved) { setIsPublishing(false); return; }
                 }
-                setTimeout(() => {
-                  setIsPublishing(false);
-                  setShowPublishModal(true);
-                }, 1000);
+                setIsPublishing(false);
+                setShowPublishModal(true);
               }}
               className="premium-grad-button"
               style={{ padding: '0.7rem 1.6rem', borderRadius: '30px', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              {isPublishing ? (
+              {mediaUploads > 0 ? <>Uploading images...</> : isPublishing ? (
                 <>⏳ Publishing...</>
               ) : (
                 <>🔒 Publish Invite Site</>
@@ -1136,7 +1139,7 @@ function DashboardContent({ locale = "en" }) {
       </main>
 
       {/* 3. Right Preview Panel */}
-      <aside className="dashboard-preview">
+      <aside className="dashboard-preview" data-preserve-language>
         <div className="preview-container">
 
           {/* Subtle Ambient Background Glow */}
@@ -1272,7 +1275,7 @@ function DashboardContent({ locale = "en" }) {
 }
 
 function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId, triggerReplayEnvelope }) {
-  const { saveOrderDetails } = useDatabase();
+  const { saveOrderDetails, setMediaUploads } = useDatabase();
 
   const defaultTabInfo = {
     date: 'May 27, 2026',
@@ -1317,6 +1320,8 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     ...(eventInfo || {})
   }));
 
+  const localRef = useRef(local);
+
   // Client-side Canvas Image Compression helper to avoid LocalStorage quota & payload limits
   const compressImage = (file, maxWidth = 500, maxHeight = 500, quality = 0.6) => {
     return new Promise((resolve) => {
@@ -1358,29 +1363,23 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     });
   };
 
-  // Upload image to Supabase Storage 'media' bucket, or fallback to ultra-light compression (~12KB)
+  const [uploadError, setUploadError] = useState('');
   const uploadImage = async (file) => {
     if (!file) return null;
+    setUploadError('');
+    setMediaUploads(count=>count+1);
     try {
-      const fileExt = file.name ? file.name.split('.').pop().toLowerCase() : 'jpg';
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-      const filePath = `uploads/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('media')
-        .upload(filePath, file, { cacheControl: '3600', upsert: true });
-
-      if (!error && data) {
-        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(filePath);
-        if (publicUrlData?.publicUrl) {
-          return publicUrlData.publicUrl;
-        }
-      }
-    } catch (err) {
-      console.warn("Supabase Storage bucket upload attempt failed, falling back to compression:", err);
-    }
-
-    return await compressImage(file, 500, 500, 0.6);
+      const compressed = await compressImage(file, 1600, 1600, 0.85);
+      if (!compressed) throw new Error('Please select an image file.');
+      const blob = await (await fetch(compressed)).blob();
+      const body = new FormData();
+      body.set('slug', slug);
+      body.set('file', blob, 'wedding-photo.jpg');
+      const result = await weddingRequest('/api/wedding-media',{method:'POST',body});
+      if (!result.success || !result.url) throw new Error('The image could not be uploaded. Please try again.');
+      return result.url;
+    } catch(error) { setUploadError(error.message); return null; }
+    finally {setMediaUploads(count=>Math.max(0,count-1));}
   };
 
   // Address Autocomplete State (OpenStreetMap Nominatim API - 100% free)
@@ -1413,22 +1412,33 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   // Debounced auto-save timeout ref to prevent network flooding and React re-render crashes while typing
   const saveTimeoutRef = useRef(null);
+  useEffect(() => () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+      saveOrderDetails(slug,localRef.current);
+    }
+    // The latest form lives in localRef, including during a tab change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   const initialSlugRef = useRef(null);
 
   useEffect(() => {
     if (initialSlugRef.current !== slug) {
       initialSlugRef.current = slug;
-      setLocal({
-        ...defaultTabInfo,
-        ...(eventInfo || {})
-      });
+      const initial = {...defaultTabInfo,...(eventInfo || {})};
+      localRef.current = initial;
+      setLocal(initial);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const handleChange = (field, value) => {
-    const updated = { ...local, [field]: value };
+    const updated = field === 'videos' && value.hero !== localRef.current.videos?.hero ? selectHero({...localRef.current, videos:value}, value.hero) : { ...localRef.current, [field]: value };
+    if (field === 'gallery' && value.length) updated.sections = {...(updated.sections || {}), showGallery:true};
+    if (field === 'dressCode' && value.image) updated.sections = {...(updated.sections || {}), showDressCode:true};
+    localRef.current = updated;
     setLocal(updated);
     setEventInfo(prev => ({ ...prev, [slug]: updated }));
 
@@ -1437,10 +1447,12 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      setEventInfo(prev => ({ ...prev, [slug]: updated }));
+      saveTimeoutRef.current = null;
+      const latest = localRef.current;
+      setEventInfo(prev => ({ ...prev, [slug]: latest }));
       if (saveOrderDetails) {
         try {
-          saveOrderDetails(slug, updated);
+          saveOrderDetails(slug, latest);
         } catch (e) {
           console.warn("Auto-save error:", e);
         }
@@ -1452,53 +1464,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     }
   };
 
-  const LazyThumbnail = ({ src }) => {
-    const [inView, setInView] = useState(false);
-    const ref = useRef(null);
-
-    useEffect(() => {
-      const observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      }, { rootMargin: '300px' });
-
-      if (ref.current) observer.observe(ref.current);
-      return () => observer.disconnect();
-    }, []);
-
-    return (
-      <div ref={ref} style={{ width: '100%', height: '100%' }}>
-        {inView ? (
-          <video
-            src={src}
-            preload="metadata"
-            muted
-            playsInline
-            style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
-          />
-        ) : (
-          <div style={{ width: '100%', height: '100%', backgroundColor: '#222' }} />
-        )}
-      </div>
-    );
-  };
-
-  const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E') => {
-    if (!url) {
-      return <div style={{ width: '100%', height: '100%', backgroundColor: defaultColor }} />;
-    }
-    const isImg = url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || url.includes('Vector.png') || url.includes('romantic-moments-bea.png') || url.includes('300592484d1f31590325.png') || url.includes('hero-scratch-cover');
-    if (isImg) {
-      return <img src={url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
-    }
-    if (url.includes('cloudflarestream')) {
-      return <img src={url.replace('manifest/video.m3u8', 'thumbnails/thumbnail.jpg?time=0s')} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
-    }
-    const videoSrc = url.includes('#t=') ? url : `${url}#t=0.001`;
-    return <LazyThumbnail src={videoSrc} />;
-  };
+  const renderMediaStartingFrame = (url, name, defaultColor = '#5C3A1E', kind = 'hero', templateId) => (
+    <MediaThumbnail url={url} name={name} color={defaultColor} kind={kind} templateId={templateId} />
+  );
 
   const handleTimelineChange = (index, field, value) => {
     const current = local.timeline || [
@@ -1734,24 +1702,21 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'sound_custom', name: 'Custom Upload', url: 'custom', desc: 'Upload your own audio file' },
   ];
 
-  const applyTemplate = (template) => {
-    const heroIsImage = template.hero?.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) || template.hero?.includes('/_next/image?');
-    const updated = {
-      ...local,
+  const applyTemplate = (selected) => {
+    const template = {...selected,...(templateMedia[selected.id] || {})};
+    const updated = selectHero({
+      ...localRef.current,
       themeId: template.id,
       videos: {
-        ...(local.videos || {}),
+        ...(localRef.current.videos || {}),
         ...(template.envelope ? { envelope: template.envelope } : {}),
-        ...(template.hero ? { hero: heroIsImage ? null : template.hero } : {})
-      },
-      images: {
-        ...(local.images || {}),
-        ...(template.hero ? { hero: heroIsImage ? template.hero : null } : {})
       }
-    };
+    },template.hero);
 
+    localRef.current = updated;
     setSelectedTheme?.(template.id);
     setLocal(updated);
+    setEventInfo(prev => ({...prev,[slug]:updated}));
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     saveTimeoutRef.current = setTimeout(() => {
       setEventInfo(prev => ({ ...prev, [slug]: updated }));
@@ -1762,7 +1727,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
+      {uploadError && <p role="alert" style={{color:'#b91c1c'}}>{uploadError}</p>}
       <div style={sectionStyle}>
         <div style={{ marginBottom: '1.25rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>Invitation Design</h2>
@@ -1784,7 +1749,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 }}
               >
                 <span style={{ display: 'block', height: '64px', borderRadius: '11px', marginBottom: '0.65rem', background: `linear-gradient(145deg, ${template.color || '#E9DFD4'}, #FFF8F0)`, overflow: 'hidden' }}>
-                  {template.hero && renderMediaStartingFrame(template.hero, template.name, template.color || '#E9DFD4')}
+                  {renderMediaStartingFrame(templateMedia[template.id]?.hero || template.hero, template.name, template.color || '#E9DFD4', 'hero', template.id)}
                 </span>
                 <strong style={{ display: 'block', color: '#3D2B1F', fontSize: '0.82rem', marginBottom: '0.2rem' }}>{template.name}</strong>
                 <span style={{ display: 'block', color: '#75685E', fontSize: '0.68rem', lineHeight: 1.35 }}>{template.desc}</span>
@@ -1884,7 +1849,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                     }}
                   >
                     <div style={{ width: '100%', height: '160px', borderRadius: '10px', overflow: 'hidden', backgroundColor: env.color || '#ccc', position: 'relative' }}>
-                      {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523')}
+                      {renderMediaStartingFrame(env.url, env.name, env.color || '#4a1523', 'envelope')}
                     </div>
                     <div style={{ fontSize: '0.7rem', fontWeight: isSelected ? 700 : 500, marginTop: '0.4rem', color: isSelected ? '#5C3A1E' : '#444', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
                       {env.name.replace(' Envelope', '')}
@@ -1950,7 +1915,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
             <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'thin' }}>
               {AVAILABLE_HERO_VIDEOS.map(hero => {
-                const isSelected = local.videos?.hero === hero.url || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom');
+                const isSelected = (local.videos?.hero === hero.url || local.images?.hero === hero.url) || (local.videos?.hero && !AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos.hero) && hero.id === 'hero_custom') || (local.videos?.hero === 'custom' && hero.id === 'hero_custom');
                 return (
                   <div
                     key={hero.id}
@@ -2138,7 +2103,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               type="text"
               value={local.dressCode?.text || ''}
               onChange={(e) => handleChange('dressCode', { ...local.dressCode, text: e.target.value })}
-              placeholder="Ex: Tenue de soirée, tons pastels..."
+              placeholder="e.g. Formal attire, pastel colors..."
               style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e0dcd7', fontSize: '0.9rem' }}
             />
           </div>
@@ -2157,7 +2122,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                   if (e.target.files[0]) {
                     const imgUrl = await uploadImage(e.target.files[0]);
                     if (imgUrl) {
-                      handleChange('dressCode', { ...local.dressCode, image: imgUrl });
+                      handleChange('dressCode', { ...localRef.current.dressCode, image: imgUrl });
                     }
                   }
                 }}
@@ -2192,7 +2157,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               const uploadedUrls = await Promise.all(files.map(file => uploadImage(file)));
               const validUrls = uploadedUrls.filter(Boolean);
               if (validUrls.length > 0) {
-                const currentGallery = local.gallery || [];
+                const currentGallery = localRef.current.gallery || [];
                 handleChange('gallery', [...currentGallery, ...validUrls]);
               }
             }}
@@ -2228,7 +2193,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               const uploadedUrls = await Promise.all(files.map(file => uploadImage(file)));
               const validUrls = uploadedUrls.filter(Boolean);
               if (validUrls.length > 0) {
-                const currentGuestGallery = local.guestGallery || [];
+                const currentGuestGallery = localRef.current.guestGallery || [];
                 handleChange('guestGallery', [...currentGuestGallery, ...validUrls]);
               }
             }}
@@ -2286,7 +2251,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       <div style={sectionStyle}>
         <h2>Design-specific wording</h2>
         <p>These fields apply to the selected invitation language. Personal names and your own text are kept as entered.</p>
-        {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText','giftButton'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1')}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
+        {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText','giftButton'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1').toLowerCase().replace(/^./,letter=>letter.toUpperCase())}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
       </div>
       <details style={sectionStyle}>
         <summary style={{cursor:'pointer',fontWeight:600}}>All section labels and form wording</summary>

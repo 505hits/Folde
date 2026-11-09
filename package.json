@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test tests/payment-routes.cjs tests/paid-order.test.mjs tests/rsvp.test.mjs tests/seating.test.mjs tests/wedding.test.mjs tests/local-recovery.test.mjs tests/template-copy.test.mjs tests/guest-photos.test.mjs",
+    "test": "node --test tests/payment-routes.cjs tests/paid-order.test.mjs tests/rsvp.test.mjs tests/seating.test.mjs tests/wedding.test.mjs tests/local-recovery.test.mjs tests/template-copy.test.mjs tests/guest-photos.test.mjs tests/dashboard-save.test.mjs",
     "test:e2e": "node tests/checkout-auth.cjs"
   },
   "dependencies": {

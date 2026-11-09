@@ -7,7 +7,7 @@ export default function StyledFileInput({ accept, onChange, label = "Choose a fi
   const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       if (multiple) {
-        setFileName(`${e.target.files.length} fichier(s) sélectionné(s)`);
+        setFileName(`${e.target.files.length} files selected`);
       } else {
         setFileName(e.target.files[0].name);
       }

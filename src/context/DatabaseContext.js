@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useRef } from "react";
+import { createWeddingWriter } from '@/lib/wedding-writer.mjs';
 import { weddingRequest } from "@/lib/wedding-client";
 import { supabase } from "@/lib/supabase";
 
@@ -107,21 +108,32 @@ export function DatabaseProvider({ children }) {
 
   // ============ ORDERS ============
   const [orders, setOrders] = useState([]);
-  const [eventInfo, setEventInfo] = useState({});
+  const [guests, setGuests] = useState({});
+  const [eventInfo, setEventInfoState] = useState({});
+  const eventInfoRef = useRef({});
+  const writerRef = useRef(null);
+  if (writerRef.current == null) writerRef.current = createWeddingWriter(weddingRequest);
+  const setEventInfo = useCallback(update => {
+    const next = typeof update === 'function' ? update(eventInfoRef.current) : update;
+    eventInfoRef.current = next;
+    setEventInfoState(next);
+  }, []);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [databaseError, setDatabaseError] = useState('');
+  const [mediaUploads,setMediaUploads] = useState(0);
   const mapOrder = o => ({ ...o, email: o.user_email, createdAt: o.created_at, details: o.details || {} });
   const fetchOrders = useCallback(async () => {
     if (!currentUser?.supabaseId) { setOrders([]); setEventInfo({}); setGuests({}); return; }
     setOrdersLoading(true);
     try {
       const result = await weddingRequest('/api/wedding');
+      result.orders.forEach(order => writerRef.current.seed(order.slug,order.details?._draftVersion));
       setOrders(result.orders.map(mapOrder));
       setEventInfo(Object.fromEntries(result.orders.map(o => [o.slug, o.details || {}])));
       setDatabaseError('');
     } catch (err) { setDatabaseError(err.message); }
     finally { setOrdersLoading(false); }
-  }, [currentUser?.supabaseId]);
+  }, [currentUser?.supabaseId, setEventInfo]);
   React.useEffect(() => { Promise.resolve().then(fetchOrders); }, [fetchOrders]);
 
   const createOrder = async () => { throw new Error('Orders must be confirmed through checkout.'); };
@@ -130,29 +142,32 @@ export function DatabaseProvider({ children }) {
     setOrders(prev => prev.map(o => o.id === orderId ? mapOrder(result.order) : o));
   };
 
+  const applySavedOrder = (slug, result, submitted) => {
+    setOrders(prev => prev.map(o => o.slug === slug ? mapOrder(result.order) : o));
+    // A completed autosave must not replace newer changes made while it ran.
+    if (eventInfoRef.current[slug] === submitted) {
+      setEventInfo(prev => ({ ...prev, [slug]: result.order.details }));
+    }
+    setDatabaseError('');
+  };
   const saveOrderDetails = async (slug, details) => {
     try {
-      const result = await weddingRequest('/api/wedding', { method: 'PATCH', body: JSON.stringify({ slug, action: 'details', details }) });
-      setOrders(prev => prev.map(o => o.slug === slug ? mapOrder(result.order) : o));
-      setEventInfo(prev => ({ ...prev, [slug]: result.order.details }));
-      setDatabaseError('');
+      const submitted = eventInfoRef.current[slug];
+      const result = await writerRef.current.save(slug, details);
+      applySavedOrder(slug, result, submitted);
       return true;
     } catch (err) { setDatabaseError(err.message); return false; }
   };
   const publishOrderDetails = async slug => {
     try {
-      const draft = eventInfo[slug];
-      if (draft && !await saveOrderDetails(slug, draft)) return false;
-      const result = await weddingRequest('/api/wedding', { method: 'PATCH', body: JSON.stringify({ slug, action: 'publish' }) });
-      setEventInfo(prev => ({ ...prev, [slug]: result.order.details }));
-      setOrders(prev => prev.map(o => o.slug === slug ? mapOrder(result.order) : o));
-      setDatabaseError('');
+      const submitted = eventInfoRef.current[slug];
+      const result = await writerRef.current.publish(slug, submitted);
+      applySavedOrder(slug, result, submitted);
       return true;
     } catch (err) { setDatabaseError(err.message); return false; }
   };
 
-  // ============ GUESTS (Supabase + local fallback) ============
-  const [guests, setGuests] = useState({});
+  // ============ GUESTS ============
   const fetchGuests = useCallback(async slug => {
     if (!slug) return [];
     try {
@@ -249,7 +264,7 @@ export function DatabaseProvider({ children }) {
       // Auth
       currentUser, users, register, login, loginWithGoogle, loginWithMagicLink, logout,
       // Orders
-      orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, publishOrderDetails, fetchOrders,
+      orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, publishOrderDetails, fetchOrders, mediaUploads, setMediaUploads,
       // Guests
       guests, addGuest, fetchGuests, deleteGuest,
       // Event Info

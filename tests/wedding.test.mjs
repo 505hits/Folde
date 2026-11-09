@@ -8,7 +8,8 @@ test('seating saves return the cloud plan and preserve invitation details',async
  const route=await loadRoute(routePath,db);const response=await route.PATCH(request({slug:'couple',action:'seating',version:0,tables:[table]},'PATCH'));
  assert.equal(response.status,200);assert.equal((await response.json()).seatingPlan.version,1);
  assert.equal(db.calls.at(-1).value.details.partner1,'Alice');assert.deepEqual(db.calls.at(-1).value.details.publishedData,{partner1:'Alice'});
- assert.ok(db.calls.at(-1).filters.some(([key,value])=>key==='details'&&value===JSON.stringify(order.details)));
+ assert.ok(db.calls.at(-1).filters.some(([key,value])=>key==='updated_at'&&value===order.updated_at));
+ assert.ok(!db.calls.at(-1).filters.some(([key])=>key==='details'));
 });
 test('seating version conflicts cannot overwrite another device',async()=>{
  const db=mockDatabase([ok({...order,details:{_seatingPlan:{version:2,tables:[]}}})]);const route=await loadRoute(routePath,db);
