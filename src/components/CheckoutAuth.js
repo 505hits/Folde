@@ -9,10 +9,10 @@ const copy = {
   es: { title: 'Vuestra cuenta privada', login: 'Iniciar sesión', signup: 'Crear una cuenta', password: 'Contraseña (mínimo 6 caracteres)', confirm: 'Confirma tu correo con el enlace recibido y después inicia sesión aquí.', ready: 'Sesión iniciada. Continúa al pago.', close: 'Volver a los planes' },
 };
 
-export default function CheckoutAuth({ locale, onClose, onReady }) {
+export default function CheckoutAuth({ locale, onClose, onReady, initialEmail = '', initialMode = 'login' }) {
   const { currentUser, login, register } = useDatabase();
-  const [mode, setMode] = useState('login');
-  const [email, setEmail] = useState('');
+  const [mode, setMode] = useState(initialMode);
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,7 +29,7 @@ export default function CheckoutAuth({ locale, onClose, onReady }) {
         : await register(email, password, draft.name || '', draft.partnerName || '');
       if (!result.success) setMessage(result.error);
       else if (result.requiresConfirmation) { setMessage(t.confirm); setMode('login'); }
-      else onReady();
+      else await onReady();
     } catch { setMessage('Unable to sign in. Please try again.'); }
     finally { setBusy(false); }
   };
@@ -39,7 +39,7 @@ export default function CheckoutAuth({ locale, onClose, onReady }) {
       <section role="dialog" aria-modal="true" aria-labelledby="checkout-auth-title" style={{ background: '#fffaf5', color: '#3d2b1f', padding: 32, borderRadius: 20, width: 'min(100%, 440px)' }}>
         <h2 id="checkout-auth-title">{t.title}</h2>
         {currentUser ? <p>{t.ready}</p> : <form onSubmit={submit} style={{ display: 'grid', gap: 16, margin: '20px 0' }}>
-          <label>Email<input required type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} style={field} /></label>
+          <label style={initialEmail ? {display:'none'} : undefined}>Email<input required type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} style={field} /></label>
           <label>{t.password}<input required minLength={6} type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={password} onChange={e => setPassword(e.target.value)} style={field} /></label>
           {message && <p role="status">{message}</p>}
           <button disabled={busy} style={field}>{busy ? '…' : t[mode]}</button>

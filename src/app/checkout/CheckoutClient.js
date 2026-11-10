@@ -8,6 +8,8 @@ import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
+import CheckoutAuth from '@/components/CheckoutAuth';
+import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
 
@@ -354,6 +356,9 @@ function CheckoutContent({ locale = "en" }) {
   // Flow: 1=Package, 2=Preview+Personalize, 3=Email+Pay → /success
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
+  const [funnelAuth,setFunnelAuth] = useState(false);
+  const [pendingEmail,setPendingEmail] = useState('');
+  useEffect(()=>{let active=true; const check=async()=>{const {data:{session}}=await supabase.auth.getSession();if(session && await hasPaidAccess(session) && active)router.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);};check().catch(()=>{});const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>check().catch(()=>{}),0);});return()=>{active=false;subscription.unsubscribe();};},[locale,router]);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
   const [desktopSaving, setDesktopSaving] = useState(false);
@@ -951,6 +956,10 @@ function CheckoutContent({ locale = "en" }) {
   };
 
   const completeMobileFunnel = async (email) => {
+    const {data:{session}}=await supabase.auth.getSession();
+    if(!session){setPendingEmail(email);setFunnelAuth(true);return;}
+    if(await hasPaidAccess(session)){router.replace(localizedRoute('/dashboard'));return;}
+    email=session.user.email;
     const finalAccount = { ...account, email };
     const draft = {
       name: finalAccount.name,
@@ -1023,6 +1032,8 @@ function CheckoutContent({ locale = "en" }) {
       </div>
     );
   }
+
+  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} initialMode="signup" onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} />;
 
   if (isMobileViewport && step === 1) {
     return (

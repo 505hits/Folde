@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
+import {hasPaidAccess} from '@/lib/purchase-access.mjs';
 import CheckoutAuth from '@/components/CheckoutAuth';
 import { supabase } from '@/lib/supabase';
 import { useDatabase } from '@/context/DatabaseContext';
@@ -121,6 +122,7 @@ function InvitationPhone({ data, compact = false }) {
 export default function PackagesPaywall({ locale = "en" }) {
   const { currentUser } = useDatabase();
   const [needsAuth, setNeedsAuth] = useState(false);
+  useEffect(()=>{let active=true;const check=async()=>{const {data:{session}}=await supabase.auth.getSession();if(session && await hasPaidAccess(session) && active)window.location.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);};check().catch(()=>{});const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>check().catch(()=>{}),0);});return()=>{active=false;subscription.unsubscribe();};},[locale]);
   const copy = content[locale] || content.en;
   const [selectedId, setSelectedId] = useState("standard");
   const [previewData, setPreviewData] = useState({ ...fallbackPreview, language: locale });
@@ -189,12 +191,13 @@ export default function PackagesPaywall({ locale = "en" }) {
 
   const startStripeCheckout = async () => {
     if (paymentLoading) return;
-    if (!currentUser) { setNeedsAuth(true); return; }
+
     setPaymentLoading(true);
     setPaymentError("");
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setNeedsAuth(true); setPaymentLoading(false); return; }
+      if(await hasPaidAccess(session)){window.location.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);return;}
       const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || "{}");
       window.localStorage.setItem("pendingOrder", JSON.stringify({
         name: savedDraft.name || previewData.partner1,
