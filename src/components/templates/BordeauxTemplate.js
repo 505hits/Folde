@@ -492,6 +492,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const themeId = t.themeId || data?.themeId || "royalbordeaux";
   const theme = themes[themeId] || themes.royalbordeaux;
   const signature = localizedSignature(signatureContent[themeId], data?.language);
+  // Custom story and gift content is available on every invitation design.
+  const sectionSignature = signature || { ...(templateCopy[data?.language] || templateCopy.en), ornament: '✦' };
 
   const styleVariables = {
     '--color-primary': theme.primary,
@@ -794,40 +796,40 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </button>
         </section>
 
-        {signature && (
+        {(signature || t.storyTitle || t.storyText) && (
           <section style={{
             position: 'relative', overflow: 'hidden', textAlign: 'center',
-            padding: signature.mode === 'arched' ? '5.5rem 2rem 4.5rem' : '4.5rem 2rem',
-            background: signature.mode === 'dark'
+            padding: sectionSignature.mode === 'arched' ? '5.5rem 2rem 4.5rem' : '4.5rem 2rem',
+            background: sectionSignature.mode === 'dark'
               ? `linear-gradient(145deg, ${theme.primary}, #210001)`
-              : signature.mode === 'sun'
+              : sectionSignature.mode === 'sun'
                 ? `radial-gradient(circle at 86% 12%, ${theme.accent}55 0 90px, transparent 92px), ${theme.bgColor}`
                 : theme.bgColor,
-            color: signature.mode === 'dark' ? '#FFFAF6' : theme.primary,
-            borderTop: signature.mode === 'lined' ? `6px double ${theme.primary}` : 'none',
-            borderBottom: signature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none'
+            color: sectionSignature.mode === 'dark' ? '#FFFAF6' : theme.primary,
+            borderTop: sectionSignature.mode === 'lined' ? `6px double ${theme.primary}` : 'none',
+            borderBottom: sectionSignature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none'
           }}>
-            {signature.mode === 'arched' && (
+            {sectionSignature.mode === 'arched' && (
               <div aria-hidden="true" style={{ position: 'absolute', inset: '1.3rem 1.4rem -5rem', border: `1px solid ${theme.accent}`, borderRadius: '48% 48% 0 0', opacity: 0.58 }} />
             )}
             <AnimatedSection type="fade">
               <div style={{ position: 'relative', maxWidth: '620px', margin: '0 auto' }}>
                 <div style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: signature.mode === 'editorial' ? '84px' : '46px', minHeight: '34px',
-                  padding: signature.mode === 'editorial' ? '0.4rem 0.75rem' : '0.35rem', marginBottom: '1.15rem',
-                  border: signature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none', borderRadius: signature.mode === 'sun' ? '50%' : '0',
-                  fontSize: signature.mode === 'editorial' ? '0.62rem' : '1.45rem', letterSpacing: '0.18em', color: signature.mode === 'dark' ? theme.accent : theme.secondary
-                }}>{t.storyOrnament || (themeId === 'atelierindigo' ? `${(t.partner1 || '').slice(0,1)} · ${(t.partner2 || '').slice(0,1)}` : signature.ornament)}</div>
-                <p style={{ margin: '0 0 0.9rem', fontSize: '0.66rem', fontWeight: 700, letterSpacing: signature.mode === 'editorial' ? '0.28em' : '0.2em', textTransform: 'uppercase', opacity: 0.78 }}>
-                  {t.storyEyebrow || signature.eyebrow}
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: sectionSignature.mode === 'editorial' ? '84px' : '46px', minHeight: '34px',
+                  padding: sectionSignature.mode === 'editorial' ? '0.4rem 0.75rem' : '0.35rem', marginBottom: '1.15rem',
+                  border: sectionSignature.mode === 'editorial' ? `1px solid ${theme.primary}` : 'none', borderRadius: sectionSignature.mode === 'sun' ? '50%' : '0',
+                  fontSize: sectionSignature.mode === 'editorial' ? '0.62rem' : '1.45rem', letterSpacing: '0.18em', color: sectionSignature.mode === 'dark' ? theme.accent : theme.secondary
+                }}>{t.storyOrnament || (themeId === 'atelierindigo' ? `${(t.partner1 || '').slice(0,1)} · ${(t.partner2 || '').slice(0,1)}` : sectionSignature.ornament)}</div>
+                <p style={{ margin: '0 0 0.9rem', fontSize: '0.66rem', fontWeight: 700, letterSpacing: sectionSignature.mode === 'editorial' ? '0.28em' : '0.2em', textTransform: 'uppercase', opacity: 0.78 }}>
+                  {t.storyEyebrow || sectionSignature.eyebrow}
                 </p>
-                <h2 style={{ margin: '0 auto 1.1rem', maxWidth: '540px', fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.35rem)', fontWeight: 400, lineHeight: 1.04, letterSpacing: signature.mode === 'editorial' ? '-0.025em' : 'normal' }}>
-                  {t.storyTitle || signature.storyTitle}
+                <h2 style={{ margin: '0 auto 1.1rem', maxWidth: '540px', fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.35rem)', fontWeight: 400, lineHeight: 1.04, letterSpacing: sectionSignature.mode === 'editorial' ? '-0.025em' : 'normal' }}>
+                  {t.storyTitle || sectionSignature.storyTitle}
                 </h2>
-                <p style={{ margin: '0 auto', maxWidth: '510px', fontSize: 'clamp(0.92rem, 3.5cqw, 1.08rem)', lineHeight: 1.75, opacity: 0.8 }}>
-                  {t.storyText || signature.storyText}
+                <p style={{ margin: '0 auto', maxWidth: '510px', fontSize: 'clamp(0.92rem, 3.5cqw, 1.08rem)', lineHeight: 1.75, opacity: 0.8, whiteSpace: 'pre-line' }}>
+                  {t.storyText || sectionSignature.storyText}
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginTop: '2.5rem', paddingTop: '1.3rem', borderTop: `1px solid ${signature.mode === 'dark' ? '#ffffff42' : theme.accent}` }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginTop: '2.5rem', paddingTop: '1.3rem', borderTop: `1px solid ${sectionSignature.mode === 'dark' ? '#ffffff42' : theme.accent}` }}>
                   <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.date}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{weddingDateLabel(dateStr, data?.language)}</strong></div>
                   <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.with}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{partner1} &amp; {partner2}</strong></div>
                   <div><small style={{ display: 'block', letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.35rem' }}>{labels.place}</small><strong style={{ fontFamily: theme.fontHeading, fontWeight: 500 }}>{ceremonyVenue}</strong></div>
@@ -1009,13 +1011,13 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </section>
         )}
 
-        {signature && sections.showGifts !== false && (
-          <section style={{ padding: '4.5rem 2rem', textAlign: 'center', background: signature.mode === 'dark' ? theme.bgColor : '#fff', borderTop: `1px solid ${theme.accent}55`, borderBottom: `1px solid ${theme.accent}55` }}>
+        {(signature || t.giftTitle || t.giftText || t.giftLink) && sections.showGifts !== false && (
+          <section style={{ padding: '4.5rem 2rem', textAlign: 'center', background: sectionSignature.mode === 'dark' ? theme.bgColor : '#fff', borderTop: `1px solid ${theme.accent}55`, borderBottom: `1px solid ${theme.accent}55` }}>
             <AnimatedSection type="fade">
-              <div style={{ width: '48px', height: '48px', margin: '0 auto 1.25rem', borderRadius: signature.mode === 'editorial' ? '0' : '50%', border: `1px solid ${theme.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primary, fontSize: '1.15rem' }}>✦</div>
+              <div style={{ width: '48px', height: '48px', margin: '0 auto 1.25rem', borderRadius: sectionSignature.mode === 'editorial' ? '0' : '50%', border: `1px solid ${theme.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primary, fontSize: '1.15rem' }}>✦</div>
               <p style={{ margin: '0 0 0.65rem', color: theme.secondary, fontSize: '0.66rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{labels.gifts}</p>
-              <h2 style={{ margin: '0 auto 1rem', maxWidth: '520px', color: theme.primary, fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.2rem)', lineHeight: 1.05, fontWeight: 400 }}>{t.giftTitle || signature.giftTitle}</h2>
-              <p style={{ margin: '0 auto', maxWidth: '500px', color: theme.secondary, fontSize: '1rem', lineHeight: 1.75 }}>{t.giftText || signature.giftText}</p>
+              <h2 style={{ margin: '0 auto 1rem', maxWidth: '520px', color: theme.primary, fontFamily: theme.fontHeading, fontSize: 'clamp(2rem, 8cqw, 3.2rem)', lineHeight: 1.05, fontWeight: 400 }}>{t.giftTitle || sectionSignature.giftTitle}</h2>
+              <p style={{ margin: '0 auto', maxWidth: '500px', color: theme.secondary, fontSize: '1rem', lineHeight: 1.75, whiteSpace: 'pre-line' }}>{t.giftText || sectionSignature.giftText}</p>
               {t.giftLink && (
                 <a href={t.giftLink} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', marginTop: '1.6rem', padding: '0.8rem 1.4rem', borderRadius: '999px', background: theme.primary, color: theme.bgColor, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{t.giftButton || labels.giftButton}</a>
               )}
