@@ -165,7 +165,9 @@ function DashboardContent({ locale = "en" }) {
   // changes automatically without asking them to sign out and back in.
   useEffect(() => {
     if (!currentUser?.email || typeof fetchOrders !== 'function') return;
-    const refreshId = setInterval(() => { fetchOrders(); }, 30000);
+    const refreshId = setInterval(() => {
+      if (document.visibilityState === 'visible') fetchOrders();
+    }, 120000);
     return () => clearInterval(refreshId);
   }, [currentUser?.email, fetchOrders]);
 
@@ -2496,8 +2498,8 @@ function GuestListTab({ slug }) {
   useEffect(() => {
     fetchGuests(slug).catch(() => {});
     const interval = setInterval(() => {
-      fetchGuests(slug).catch(() => {});
-    }, 4000);
+      if (document.visibilityState === 'visible') fetchGuests(slug).catch(() => {});
+    }, 30000);
     return () => clearInterval(interval);
   }, [slug]);
 
@@ -2742,8 +2744,8 @@ function RsvpsTab({ slug }) {
   useEffect(() => {
     fetchGuests(slug).catch(() => {});
     const interval = setInterval(() => {
-      fetchGuests(slug).catch(() => {});
-    }, 4000);
+      if (document.visibilityState === 'visible') fetchGuests(slug).catch(() => {});
+    }, 30000);
     return () => clearInterval(interval);
   }, [slug]);
 
