@@ -42,7 +42,11 @@ export default function GuestGalleryPage({ params }) {
 
   useEffect(() => {
     const initialLoad = window.setTimeout(() => loadGallery(), 0);
-    const interval = window.setInterval(() => loadGallery({ quiet: true }), 15000);
+    // Two-minute refreshes are sufficient for a photo gallery. Background tabs
+    // do not need to keep triggering database reads and signed URL generation.
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') loadGallery({ quiet: true });
+    }, 120000);
     return () => {
       window.clearTimeout(initialLoad);
       window.clearInterval(interval);
