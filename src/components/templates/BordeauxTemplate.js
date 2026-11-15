@@ -317,16 +317,23 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   useEffect(() => {
     if (!data?.slug || data.slug === 'wedding') return;
     let active = true;
+    let pending = false;
     const load = async () => {
+      // Do not poll a hidden invitation tab or overlap requests.
+      if (!active || pending || document.visibilityState === 'hidden') return;
+      pending = true;
       try {
         const response = await fetch('/api/guest-upload?slug=' + encodeURIComponent(data.slug), { cache: 'no-store' });
         const result = await response.json();
         if (active && response.ok && result.success) setUploadedPhotos(result.photos || []);
       } catch { /* Preserve the last successful gallery during network interruptions. */ }
+      finally { pending = false; }
     };
     load();
-    const interval = window.setInterval(load, 30000);
-    return () => { active = false; window.clearInterval(interval); };
+    const interval = window.setInterval(load, 120000);
+    const onVisible = () => { if (document.visibilityState === 'visible') load(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { active = false; window.clearInterval(interval); document.removeEventListener('visibilitychange', onVisible); };
   }, [data?.slug]);
   const [isMuted, setIsMuted] = useState(true);
   const [accompaniedStatus, setAccompaniedStatus] = useState("");

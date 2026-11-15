@@ -10,5 +10,7 @@ export function proxy(request) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Images, videos and other public assets must bypass the proxy. Passing their
+  // bytes through a function can consume Fast Origin Transfer on every load.
+  matcher: ["/((?!api(?:/|$)|_next/|images/|videos/|fonts/|favicon.ico$|.*\\.[^/]+$).*)"],
 };
