@@ -6,6 +6,7 @@ import { weddingRequest } from "@/lib/wedding-client";
 import { supabase } from "@/lib/supabase";
 
 const DatabaseContext = createContext();
+const OAUTH_RETURN_KEY = 'folde-oauth-return';
 
 export function DatabaseProvider({ children }) {
   // ============ AUTH ============
@@ -16,7 +17,16 @@ export function DatabaseProvider({ children }) {
     // Supabase is the sole source of authentication state.
     localStorage.removeItem('currentUser');
     // 3. Listen to active auth state changes (login, logout, OAuth redirect)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // After Google sign-in, return to the page that started it (Supabase may
+      // land on the site URL if that page is not in its redirect allow list).
+      if (event === 'SIGNED_IN' && typeof window !== 'undefined') {
+        let target = '';
+        try { target = sessionStorage.getItem(OAUTH_RETURN_KEY) || ''; sessionStorage.removeItem(OAUTH_RETURN_KEY); } catch {}
+        if (target.startsWith('/') && !target.startsWith('//') && target !== window.location.pathname + window.location.search) {
+          window.location.replace(target);
+        }
+      }
       if (session?.user) {
         const profile = {
           email: session.user.email,
@@ -60,13 +70,16 @@ export function DatabaseProvider({ children }) {
     }
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (returnPath) => {
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const current = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/dashboard';
+      const path = typeof returnPath === 'string' && returnPath.startsWith('/') && !returnPath.startsWith('//') ? returnPath : current;
+      try { sessionStorage.setItem(OAUTH_RETURN_KEY, path); } catch {}
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${origin}/dashboard`
+          redirectTo: `${origin}${path}`
         }
       });
       if (error) {

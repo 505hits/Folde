@@ -135,3 +135,18 @@
   .stickyButton { padding: .65rem 1rem; font-size: .9rem; }
 }
 @media (prefers-reduced-motion: reduce) { .sticky { transition: none; } }
+
+/* Real collection designs */
+.phone > * { position: absolute; inset: 0; }
+.openingButton {
+  min-height: 40px; padding: .45rem 1rem; border: 1px solid rgba(74, 47, 30, .25); border-radius: 999px;
+  background: #fff; color: #4a2f1e; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer;
+}
+.openingButton:hover { background: #fbf7f1; }
+.designStrip { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid rgba(74, 47, 30, .1); }
+.designStrip > p { margin: 0 0 .6rem !important; font-size: .74rem !important; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #a97934 !important; }
+.designStrip > div { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .55rem; }
+.designStrip a { display: grid; gap: .3rem; justify-items: center; color: #4a2f1e !important; font-size: .74rem; font-weight: 600; text-decoration: none !important; }
+.designStrip img { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; border: 1px solid rgba(74, 47, 30, .12); transition: transform .2s ease; }
+.designStrip a:hover img { transform: translateY(-2px); }
+.designStrip a:focus-visible { outline: 2px solid #a97934; outline-offset: 2px; border-radius: 10px; }

@@ -2,6 +2,7 @@ import { protectRequest } from '@/lib/request-security';
 import { matchesImageType } from '@/lib/image-file.mjs';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,9 +100,140 @@ export async function GET(request) {
   }
 }
 
+// Photos go straight from the guest's phone to Supabase Storage with a
+// short-lived signed upload URL, so their bytes never pass through a Vercel
+// Function (Fast Origin Transfer). This route only issues the upload ticket,
+// then checks the stored file and records it.
+const TICKET_TTL = 30 * 60 * 1000;
+
+function ticketSignature(payload) {
+  return createHmac('sha256', process.env.SUPABASE_SERVICE_ROLE_KEY || '').update('guest-upload:' + payload).digest();
+}
+
+function signTicket(data) {
+  const payload = Buffer.from(JSON.stringify({ ...data, expires: Date.now() + TICKET_TTL })).toString('base64url');
+  return payload + '.' + ticketSignature(payload).toString('base64url');
+}
+
+function readTicket(value) {
+  if (typeof value !== 'string' || value.length > 4096 || !/^[\w-]+\.[\w-]+$/.test(value)) return null;
+  try {
+    const [payload, signature] = value.split('.');
+    const supplied = Buffer.from(signature, 'base64url');
+    const expected = ticketSignature(payload);
+    if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return null;
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
+    return data.expires > Date.now() ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+async function readStoredStart(supabase, path) {
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 60);
+  if (error || !data?.signedUrl) return null;
+  const result = await fetch(data.signedUrl, { headers: { Range: 'bytes=0-31' }, cache: 'no-store' });
+  if (!result.ok) return null;
+  return Buffer.from(await result.arrayBuffer()).subarray(0, 32);
+}
+
+async function prepareUpload(supabase, body) {
+  const slug = cleanSlug(body.slug);
+  const type = String(body.type || '');
+  const size = Number(body.size);
+  const guestName = String(body.guestName || '').trim().slice(0, 80);
+  const caption = String(body.caption || '').trim().slice(0, 240);
+  const originalName = String(body.name || '').slice(0, 180);
+  if (!slug) return response({ error: 'Invalid wedding gallery.' }, 400);
+  if (!ALLOWED_TYPES.has(type)) return response({ error: 'Please choose a JPG, PNG, WebP, HEIC or HEIF image.' }, 400);
+  if (!Number.isInteger(size) || size <= 0 || size > MAX_FILE_SIZE) return response({ error: 'Please choose an image smaller than 8 MB.' }, 400);
+
+  const wedding = await findWedding(supabase, slug);
+  if (!wedding) return response({ error: 'This wedding gallery was not found.' }, 404);
+
+  const extension = ALLOWED_TYPES.get(type);
+  const path = `${slug}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUploadUrl(path);
+  if (error || !data?.token) throw error || new Error('Upload URL was not created');
+  return response({
+    success: true,
+    upload: { bucket: BUCKET, path, token: data.token },
+    ticket: signTicket({ path, slug, orderId: wedding.id, type, size, guestName, caption, originalName: originalName || `guest-photo.${extension}` }),
+  });
+}
+
+async function confirmUpload(supabase, body) {
+  const ticket = readTicket(body.ticket);
+  if (!ticket) return response({ error: 'This upload expired. Please choose the photo again.' }, 400);
+  const discard = () => supabase.storage.from(BUCKET).remove([ticket.path]).catch(() => {});
+
+  const { data: existing } = await supabase.from('guest_photos').select('id,created_at').eq('storage_path', ticket.path).maybeSingle();
+  let photo = existing;
+  if (!photo) {
+    const { data: info, error: infoError } = await supabase.storage.from(BUCKET).info(ticket.path);
+    if (infoError || !info) return response({ error: 'We could not find this photo. Please try again.' }, 400);
+    const storedSize = Number(info.size ?? info.metadata?.size);
+    const start = await readStoredStart(supabase, ticket.path);
+    if (!storedSize || storedSize > MAX_FILE_SIZE || !start || !matchesImageType(start, ticket.type)) {
+      await discard();
+      return response({ error: 'The file content must match its image format.' }, 400);
+    }
+    const { data: inserted, error: insertError } = await supabase
+      .from('guest_photos')
+      .insert({
+        order_id: ticket.orderId,
+        storage_path: ticket.path,
+        original_name: ticket.originalName,
+        content_type: ticket.type,
+        file_size: storedSize,
+        guest_name: ticket.guestName || null,
+        caption: ticket.caption || null,
+      })
+      .select('id,created_at')
+      .single();
+    if (insertError || !inserted) {
+      await discard();
+      throw insertError || new Error('Photo record was not saved');
+    }
+    photo = inserted;
+  }
+
+  let signedUrl = null;
+  try {
+    const result = await supabase.storage.from(BUCKET).createSignedUrl(ticket.path, 60 * 60);
+    if (result.error) throw result.error;
+    signedUrl = result.data?.signedUrl || null;
+  } catch {
+    console.warn('Photo is saved; its preview will be available after refresh.');
+  }
+  return response({
+    success: true,
+    photo: { id: photo.id, url: signedUrl, guestName: ticket.guestName, caption: ticket.caption, createdAt: photo.created_at },
+    galleryUrl: `/guest-gallery/${encodeURIComponent(ticket.slug)}`,
+  });
+}
+
 export async function POST(request) {
-  const blocked = await protectRequest(request, {"limit":80,"maxBytes":9437184});
+  const isJson = (request.headers.get('content-type') || '').includes('application/json');
+  const blocked = await protectRequest(request, isJson ? { limit: 120, maxBytes: 16384 } : { limit: 80, maxBytes: 9437184 });
   if (blocked) return blocked;
+  // Older open pages may still send the file itself; keep accepting them.
+  if (!isJson) return legacyUpload(request);
+  try {
+    const supabase = getAdminClient();
+    if (!supabase) return response({ error: 'Photo sharing is not configured yet.' }, 503);
+    const body = await request.json().catch(() => ({}));
+    if (body.step === 'prepare') return await prepareUpload(supabase, body);
+    if (body.step === 'confirm') return await confirmUpload(supabase, body);
+    return response({ error: 'Unknown upload step.' }, 400);
+  } catch (error) {
+    console.error('Guest upload error:', error?.message || 'Database or storage request failed');
+    return response({ error: 'We could not save this photo. Please try again.' }, 500);
+  }
+}
+
+
+async function legacyUpload(request) {
   let uploadedPath = '';
   let supabase = null;
   let persisted = false;

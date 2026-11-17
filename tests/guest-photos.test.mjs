@@ -46,3 +46,37 @@ test('a failed preview cannot silently make a saved gallery look empty',async()=
  const route=await load(db,{createSignedUrls:async()=>ok([{path:'p.jpg',error:'unavailable'}])});
  assert.equal((await route.GET(new Request('https://test/api/guest-upload?slug=test-couple'))).status,500);
 });
+function jsonStep(body) { return new Request('https://test/api/guest-upload',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); }
+async function withRangeFetch(bytes, run) {
+ const original=globalThis.fetch;const ranges=[];
+ globalThis.fetch=async(url,init)=>{ranges.push(init?.headers?.Range);return new Response(new Uint8Array(bytes));};
+ try { return await run(ranges); } finally { globalThis.fetch=original; }
+}
+test('direct upload: the server signs the upload, never receives the file, and records it after checking the stored bytes',async()=>{
+ const removed=[];const inserted=[];
+ const db=mockDatabase([ok(wedding),ok(null),ok({id:'photo-9',created_at:'2026-01-02'})]);
+ const from=db.from.bind(db);db.from=t=>{const q=from(t);const ins=q.insert;q.insert=v=>{inserted.push(v);return ins(v);};return q;};
+ const storage={createSignedUploadUrl:async p=>ok({path:p,token:'upload-token'}),info:async()=>ok({size:2048}),createSignedUrl:async p=>ok({signedUrl:`https://storage.test/${p}`}),remove:async p=>{removed.push(...p);return ok({});}};
+ const route=await load(db,storage);
+ const prepared=await (await route.POST(jsonStep({step:'prepare',slug:'test-couple',type:'image/jpeg',size:2048,guestName:'Ana',caption:'Hi'}))).json();
+ assert.equal(prepared.upload.token,'upload-token');assert.match(prepared.upload.path,/^test-couple\/.+\.jpg$/);
+ await withRangeFetch([255,216,255,224],async ranges=>{
+  const confirmed=await route.POST(jsonStep({step:'confirm',ticket:prepared.ticket}));
+  assert.equal(confirmed.status,200);assert.equal((await confirmed.json()).photo.id,'photo-9');
+  assert.deepEqual(ranges,['bytes=0-31']);
+ });
+ assert.equal(inserted[0].storage_path,prepared.upload.path);assert.equal(inserted[0].order_id,'test-order');assert.equal(inserted[0].guest_name,'Ana');
+ assert.equal(removed.length,0);
+});
+test('direct upload: a file whose bytes are not an image is deleted, and a tampered ticket is refused',async()=>{
+ const removed=[];
+ const storage={createSignedUploadUrl:async p=>ok({path:p,token:'t'}),info:async()=>ok({size:10}),createSignedUrl:async p=>ok({signedUrl:`https://storage.test/${p}`}),remove:async p=>{removed.push(...p);return ok({});}};
+ const route=await load(mockDatabase([ok(wedding),ok(null)]),storage);
+ const prepared=await (await route.POST(jsonStep({step:'prepare',slug:'test-couple',type:'image/jpeg',size:10}))).json();
+ await withRangeFetch([60,104,116,109,108],async()=>{const r=await route.POST(jsonStep({step:"confirm",ticket:prepared.ticket}));assert.equal(r.status,400);});
+ assert.deepEqual(removed,[prepared.upload.path]);
+ const [payload,signature]=prepared.ticket.split('.');
+ const forged=Buffer.from(JSON.stringify({...JSON.parse(Buffer.from(payload,'base64url')),orderId:'someone-else'})).toString('base64url')+'.'+signature;
+ assert.equal((await route.POST(jsonStep({step:'confirm',ticket:forged}))).status,400);
+ assert.equal((await route.POST(jsonStep({step:'prepare',slug:'test-couple',type:'image/jpeg',size:9*1024*1024}))).status,400);
+});

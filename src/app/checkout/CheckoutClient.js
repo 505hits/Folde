@@ -15,6 +15,8 @@ import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
 
 
+const FUNNEL_RESUME_KEY = 'folde-checkout-google-resume';
+
 const themes = [
   { id: 'bordeaux', name: 'Bordeaux' },
   { id: 'champagne', name: 'Champagne' },
@@ -359,6 +361,7 @@ function CheckoutContent({ locale = "en" }) {
   const [step, setStep] = useState(1);
   const [funnelAuth,setFunnelAuth] = useState(false);
   const [pendingEmail,setPendingEmail] = useState('');
+  const [resumeFunnel,setResumeFunnel] = useState(false);
   useEffect(()=>{let active=true; const check=async()=>{const {data:{session}}=await supabase.auth.getSession();if(session && await hasPaidAccess(session) && active)router.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);};check().catch(()=>{});const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>check().catch(()=>{}),0);});return()=>{active=false;subscription.unsubscribe();};},[locale,router]);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
@@ -957,6 +960,26 @@ function CheckoutContent({ locale = "en" }) {
     }));
   };
 
+  // Google sign-in leaves the page: keep the couple's choices and resume the
+  // funnel once they come back signed in.
+  const saveDraftBeforeGoogle = () => {
+    sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify({
+      name: account.name, partnerName: account.partnerName, email: '',
+      selectedTheme, selectedEnvelope, selectedHeroVideo,
+      previewDate, previewVenue, previewStoryTitle, previewStoryText,
+    }));
+    sessionStorage.setItem(FUNNEL_RESUME_KEY, '1');
+  };
+  useEffect(() => {
+    let resume = false;
+    try { resume = sessionStorage.getItem(FUNNEL_RESUME_KEY) === '1'; } catch {}
+    if (!resume) return;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      try { sessionStorage.removeItem(FUNNEL_RESUME_KEY); } catch {}
+      setResumeFunnel(true);
+    }).catch(() => {});
+  }, []);
   const completeMobileFunnel = async (email) => {
     const {data:{session}}=await supabase.auth.getSession();
     if(!session){setPendingEmail(email);setFunnelAuth(true);return;}
@@ -1019,6 +1042,13 @@ function CheckoutContent({ locale = "en" }) {
 
     router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
   };
+  const resumedFunnel = useRef(false);
+  useEffect(() => {
+    if (!resumeFunnel || !account.name || resumedFunnel.current) return;
+    resumedFunnel.current = true;
+    completeMobileFunnel('').catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeFunnel, account.name]);
 
   // ─── STEP 4: Payment processing overlay ───
   if (paymentProcessing) {
@@ -1034,7 +1064,7 @@ function CheckoutContent({ locale = "en" }) {
     );
   }
 
-  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} initialMode="signup" onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} />;
+  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} initialMode="signup" onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} onBeforeGoogle={saveDraftBeforeGoogle} />;
 
   if (isMobileViewport && step === 1) {
     return (

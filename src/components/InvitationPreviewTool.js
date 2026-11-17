@@ -4,23 +4,42 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { trackBlog } from "@/lib/blog-track";
+import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import styles from "./article-tools.module.css";
 
-// Four real FOLDÈ designs. Images are the actual first frames of each design's
-// opening screen and envelope, so the preview never shows a style we don't sell.
+// The first six designs of the /collections page, with the same names, tags
+// and media. The preview renders them with the same component as that page.
 export const TOOL_STYLES = [
-  { id: "rosas", mood: "Romantic", name: "Rosas", hero: "/images/hero-posters/kissing-couple.webp", envelope: "/images/envelope-posters/bordeaux.webp" },
-  { id: "ivory", mood: "Minimal", name: "Pearl", hero: "/images/hero-posters/sea-view.webp", envelope: "/images/envelope-posters/ivory-veil.webp" },
-  { id: "bloom", mood: "Floral", name: "Bloom", hero: "/images/dashboard-posters/df5ba466a21660e4.webp", envelope: "/images/envelope-posters/bloom.webp" },
-  { id: "royalblue", mood: "Modern", name: "Sapphire", hero: "/images/hero-posters/royal-heritage.webp", envelope: "/images/envelope-posters/royal-blue.webp" },
+  { id: "rosas", name: "Rosas", tag: "Romantic", video: "/videos/hero/kissing-couple.mp4", envelope: "/videos/bordeaux.mp4", thumb: "/images/envelope-posters/bordeaux.webp" },
+  { id: "atelierindigo", name: "Atelier Indigo", tag: "Elegant", video: "/images/hero-posters/royal-heritage.webp", isImage: true, envelope: "/videos/ivory.mp4", thumb: "/images/hero-posters/royal-heritage.webp" },
+  { id: "orange", name: "Orange", tag: "Warm", video: "/videos/hero/sea-view.mp4", envelope: "/videos/terracotta.mp4", thumb: "/images/envelope-posters/terracotta.webp" },
+  { id: "editorial", name: "Editorial", tag: "Minimal", video: "/images/hero-posters/kissing-couple.webp", isImage: true, envelope: "/images/envelope-posters/ivory.webp", thumb: "/images/envelope-posters/ivory.webp" },
+  { id: "excellence", name: "Excellence", tag: "Elegant", video: "/videos/sage.mp4", envelope: "/videos/sage.mp4", thumb: "/images/envelope-posters/sage.webp" },
+  { id: "bloom", name: "Bloom", tag: "Natural", video: "https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4", envelope: "https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4", thumb: "/images/envelope-posters/bloom.webp" },
 ];
+
+function DesignStrip({ article, variant }) {
+  return (
+    <div className={styles.designStrip}>
+      <p>Put it in a real FOLDÈ design</p>
+      <div>
+        {TOOL_STYLES.slice(0, 4).map((item) => (
+          <Link key={item.id} href={`/checkout?template=${item.id}`} onClick={() => trackBlog("blog_tool_click", { article, variant, template: item.id })}>
+            <Image src={item.thumb} alt="" width={72} height={96} />
+            <span>{item.name}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const clean = (value) => value.replace(/[<>]/g, "").slice(0, 40);
 
 function formatDate(value) {
   if (!value) return "";
   const date = new Date(`${value}T12:00:00`);
-  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase();
 }
 
 function checkoutHref(style, partner1, partner2) {
@@ -56,26 +75,28 @@ function InvitationVariant({ article, title, subtitle }) {
   const [date, setDate] = useState("");
   const [styleId, setStyleId] = useState(TOOL_STYLES[0].id);
   const style = TOOL_STYLES.find((item) => item.id === styleId) || TOOL_STYLES[0];
+  const [playing, setPlaying] = useState(false);
+  const [opening, setOpening] = useState(false);
   const { ref, interact } = useToolTracking(article, "invitation");
-  const shownDate = formatDate(date) || "Your wedding date";
+  const shownDate = formatDate(date) || "SEP 19, 2026";
 
   return (
     <section id="folde-tool" ref={ref} className={styles.tool} aria-labelledby="folde-tool-title">
       <div className={styles.toolForm}>
         <p className={styles.toolLabel}>TRY IT WITH YOUR NAMES</p>
         <h2 id="folde-tool-title" className={styles.toolTitle}>{title || "What could your invitation look like?"}</h2>
-        <p className={styles.toolSubtitle}>{subtitle || "Type your names and pick a mood. The preview uses the real opening screen of each FOLDÈ design."}</p>
+        <p className={styles.toolSubtitle}>{subtitle || "Type your names and pick a design. These are the same designs as on our collections page, shown exactly as guests see them."}</p>
         <div className={styles.nameRow}>
           <label>First partner<input value={partner1} maxLength={40} placeholder="Emma" onChange={(e) => { interact(); setPartner1(clean(e.target.value)); }} /></label>
           <label>Second partner<input value={partner2} maxLength={40} placeholder="Lucas" onChange={(e) => { interact(); setPartner2(clean(e.target.value)); }} /></label>
         </div>
         <label className={styles.dateField}>Wedding date <span>(optional)</span><input type="date" value={date} onChange={(e) => { interact(); setDate(e.target.value); }} /></label>
         <fieldset className={styles.moods}>
-          <legend>Mood</legend>
+          <legend>Design</legend>
           {TOOL_STYLES.map((item) => (
-            <button type="button" key={item.id} aria-pressed={item.id === styleId} className={item.id === styleId ? styles.moodActive : ""} onClick={() => { interact(); setStyleId(item.id); }}>
-              <span className={styles.moodSwatch}><Image src={item.envelope} alt="" width={44} height={44} /></span>
-              {item.mood}
+            <button type="button" key={item.id} aria-pressed={item.id === styleId} className={item.id === styleId ? styles.moodActive : ""} onClick={() => { interact(); setStyleId(item.id); setOpening(false); setPlaying(true); }}>
+              <span className={styles.moodSwatch}><Image src={item.thumb} alt="" width={44} height={44} /></span>
+              {item.name}
             </button>
           ))}
         </fieldset>
@@ -85,17 +106,25 @@ function InvitationVariant({ article, title, subtitle }) {
         <p className={styles.toolNote}>Free to preview. Your names carry over to the editor; nothing is saved from this page.</p>
       </div>
       <figure className={styles.toolPreview} aria-live="polite">
-        <div className={styles.phone}>
-          <Image key={style.hero} src={style.hero} alt={`${style.name} design opening screen`} fill sizes="240px" className={styles.phoneImage} />
-          <div className={styles.phoneOverlay}>
-            <strong>{partner1.trim() || "Emma"}</strong>
-            <span className={styles.amp}>&amp;</span>
-            <strong>{partner2.trim() || "Lucas"}</strong>
-            <small>SAVE THE DATE</small>
-            <em>{shownDate}</em>
-          </div>
+        <div className={styles.phone} onMouseEnter={() => setPlaying(true)} onClick={() => setPlaying(true)}>
+          <TemplateHeroPreview
+            key={`${style.id}-${opening ? "envelope" : "hero"}`}
+            partner1={partner1.trim() || "Emma"}
+            partner2={partner2.trim() || "Lucas"}
+            date={shownDate}
+            videoSrc={style.video}
+            envelopeSrc={style.envelope}
+            isImage={style.isImage || false}
+            showEnvelope={opening}
+            active={playing}
+            preloadEnvelopeFrame
+            language="en"
+          />
         </div>
-        <figcaption>{style.name} · {style.mood.toLowerCase()} design. Guests first open an animated envelope, then land on this screen.</figcaption>
+        <button type="button" className={styles.openingButton} onClick={() => { interact(); setOpening(true); setPlaying(true); }}>
+          ▶ Watch the envelope opening
+        </button>
+        <figcaption>{style.name} · {style.tag.toLowerCase()} design from the FOLDÈ collection.</figcaption>
       </figure>
     </section>
   );
@@ -151,6 +180,7 @@ function RsvpVariant({ article, title, subtitle }) {
         <p className={styles.dashboardLine}><span className={sent ? styles.dotLive : styles.dot} />{sent ? summary : "No demo response yet"}</p>
         <p className={styles.toolNote}>In a real invitation, each answer lands in the couple&apos;s private dashboard with the guest&apos;s name and email.</p>
         <Link className={styles.toolButton} href="/checkout" onClick={() => trackBlog("blog_tool_click", { article, variant: "rsvp" })}>Create my invitation with RSVP</Link>
+        <DesignStrip article={article} variant="rsvp" />
       </div>
     </section>
   );
@@ -207,6 +237,7 @@ function WordingVariant({ article, event = "wedding", title, subtitle }) {
           <button type="button" className={styles.toolGhostButton} onClick={copy}>{copied ? "Copied" : "Copy text"}</button>
           <Link className={styles.toolButton} href={checkoutHref("rosas", a, b)} onClick={() => trackBlog("blog_tool_click", { article, variant: `wording-${event}` })}>Use it in my invitation</Link>
         </div>
+        <DesignStrip article={article} variant={`wording-${event}`} />
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { photoCopy } from '@/lib/guest-photo-copy.mjs';
+import { uploadGuestPhoto } from '@/lib/guest-photo-upload';
 import styles from '../../guest-photos.module.css';
 
 const compressPhoto = (file) => new Promise((resolve, reject) => {
@@ -70,15 +71,8 @@ export default function GuestUploadPage({ params }) {
         const file = files[index];
         if (!file.type.startsWith('image/')) throw new Error('Please select image files only.');
         const optimized = await compressPhoto(file);
-        const body = new FormData();
-        body.append('slug', slug);
-        body.append('file', optimized, file.name || `${Date.now()}-${index}.jpg`);
-        body.append('guestName', guestName);
-        body.append('caption', caption);
-        const response = await fetch('/api/guest-upload', { method: 'POST', body });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.success || !data.photo?.id) throw new Error(data.error || 'We could not upload this photo.');
-        uploaded.push(data.photo);
+        const photo = await uploadGuestPhoto({ slug, file: optimized, name: file.name || `${Date.now()}-${index}.jpg`, guestName, caption });
+        uploaded.push(photo);
         setProgress(Math.round(((index + 1) / files.length) * 100));
       }
       setPhotos((previous) => [...uploaded.filter((photo) => photo.url).reverse(), ...previous]);
