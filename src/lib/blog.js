@@ -1,3 +1,5 @@
+import { originalPostsEn } from "@/lib/articles-en";
+
 const rawBlogPosts = [
   {
     slug: "wedding-invitations-with-floral-design",
@@ -249,7 +251,7 @@ function planningNote(keyword) {
   return `A useful way to review ${keyword} is to separate the emotional layer from the operational layer. The emotional layer is the welcome: the visual opening, the tone of the wording, the story or image that makes a guest feel included. The operational layer is what lets that guest act: an accurate date, a venue they can find, a simple RSVP and a practical route to support. Neither should be treated as an afterthought. When the emotional layer is beautiful but the operational layer is unclear, guests enjoy the page yet still send questions. When the operational layer is complete but the experience has no warmth, it feels like a logistics portal rather than an invitation. A premium digital invitation holds both ideas at once. It makes the host’s decisions feel calm, and it makes each guest feel anticipated. During your final review, ask a trusted person who is not involved in the planning to open the invitation without explanation. Notice where they pause or ask a question. Those moments are not failures; they are valuable signals about the next refinement. This small test is often more useful than adding another visual effect. It ensures the final link is as dependable as it is memorable. Finally, check the invitation at the exact moment a guest is most likely to use it: while travelling, during a busy week, or from an unfamiliar phone. A page that stays easy in that context will be easy everywhere. Keep the next action visible, use descriptive link labels, and avoid asking people to remember information that the page can show them directly. This final layer of care protects the guest experience while preserving the quiet, editorial quality that makes a wedding invitation feel special.`;
 }
 
-export const blogPosts = rawBlogPosts.map((post, index) => {
+const templatedPosts = rawBlogPosts.map((post, index) => {
   const rotatedImages = [...editorialImages.slice(index), ...editorialImages.slice(0, index)];
   const faqs = post.faqs.length >= 15 ? post.faqs : [...post.faqs, ...extraFaqs(post.keyword)].slice(0, 15);
   return {
@@ -262,6 +264,12 @@ export const blogPosts = rawBlogPosts.map((post, index) => {
     faqs
   };
 });
+
+// Individually written articles first; they bypass the templated filler above.
+export const blogPosts = [
+  ...originalPostsEn.map((post) => ({ ...post, original: true, indexable: true })),
+  ...templatedPosts,
+];
 
 export const currentSources = [
   { label: "The Knot Worldwide — 2025 Global Wedding Report", href: "https://www.theknotww.com/press-releases/the-knot-worldwides-2025-global-wedding-report-reveals-bold-new-era-of-personalization-and-purpose", note: "Published August 14, 2025; research among 33,174 couples across eight countries highlights personalization, authenticity and guest experience." },

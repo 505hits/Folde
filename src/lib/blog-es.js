@@ -156,7 +156,7 @@ function planningNote(keyword) {
 
 // Traducciones de los artículos en inglés. Su cuerpo era una plantilla común a todos,
 // así que se mantienen accesibles pero sin indexar hasta reescribirlas para el mercado español.
-const translatedPostsEs = blogPosts.map((post) => {
+const translatedPostsEs = blogPosts.filter((item) => !item.original).map((post) => {
   const seed = seeds[post.slug];
   if (!seed) return null;
   return {

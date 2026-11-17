@@ -130,7 +130,7 @@ const content = {
 
 
 
-const translatedPostsFr = blogPosts.map((base) => {
+const translatedPostsFr = blogPosts.filter((post) => !post.original).map((base) => {
   const translated = content[base.slug];
   const sections = translated.sections.map(([heading, body]) => ({ heading, body }));
   return {

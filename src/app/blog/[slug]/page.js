@@ -10,6 +10,33 @@ import ArticlePreviewAside from "@/components/ArticlePreviewAside";
 import ArticleTemplateCatalog from "@/components/ArticleTemplateCatalog";
 import ArticleCta from "@/components/ArticleCta";
 import MobileArticleCta from "@/components/MobileArticleCta";
+import InvitationPreviewTool from "@/components/InvitationPreviewTool";
+import StickyArticleCta from "@/components/StickyArticleCta";
+
+const anchor = (text) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
+const displayDate = (value, locale) => new Date(`${value}T12:00:00Z`).toLocaleDateString(locale === "fr" ? "fr-FR" : locale === "es" ? "es-ES" : "en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+
+function SectionExtras({ section }) {
+  return (
+    <>
+      {section.table && (
+        <div className={styles.tableWrap}>
+          <table>
+            {section.table.caption && <caption>{section.table.caption}</caption>}
+            <thead><tr>{section.table.head.map((cell) => <th key={cell} scope="col">{cell}</th>)}</tr></thead>
+            <tbody>{section.table.rows.map((row) => <tr key={row[0]}>{row.map((cell, i) => i === 0 ? <th key={i} scope="row">{cell}</th> : <td key={i}>{cell}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      )}
+      {section.figure && (
+        <figure className={section.figure.portrait ? styles.figurePortrait : styles.figure}>
+          <Image src={section.figure.src} alt={section.figure.alt} width={section.figure.width} height={section.figure.height} sizes={section.figure.portrait ? "(max-width: 820px) 70vw, 320px" : "(max-width: 820px) 100vw, 760px"} />
+          <figcaption>{section.figure.caption}</figcaption>
+        </figure>
+      )}
+    </>
+  );
+}
 import styles from "../blog.module.css";
 
 export function generateStaticParams() {
@@ -22,7 +49,7 @@ export async function generateMetadata({ params }) {
   if (!post) return { title: "Page not found | FOLDÈ Wedding", robots: { index: false } };
   const url = `${SITE_URL}/blog/${post.slug}`;
   return {
-    title: `${post.title} | FOLDÈ Wedding`,
+    title: `${post.metaTitle || post.title} | FOLDÈ Wedding`,
     description: post.description,
     alternates: articleAlternates("en", post),
     openGraph: { title: post.title, description: post.description, type: "article", locale: "en_US", url, images: [post.heroImage] },
@@ -53,7 +80,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
     description: post.description, datePublished: published, dateModified: post.dateModified || published,
     mainEntityOfPage: url, url, image: `${SITE_URL}${post.heroImage}`,
     inLanguage: isSpanish ? "es-ES" : isFrench ? "fr-FR" : "en",
-    author: { "@type": "Organization", name: "FOLDÈ Wedding", url: SITE_URL },
+    author: post.author ? { "@type": post.author.type || "Organization", name: post.author.name, url: `${SITE_URL}${post.author.href || ""}` } : { "@type": "Organization", name: "FOLDÈ Wedding", url: SITE_URL },
     publisher: { "@type": "Organization", name: "FOLDÈ Wedding", url: SITE_URL, logo: { "@type": "ImageObject", url: `${SITE_URL}/images/logo.png` } }
   };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: post.faqs.map(([name, text]) => ({ "@type": "Question", name, acceptedAnswer: { "@type": "Answer", text } })) };
@@ -67,7 +94,8 @@ export default async function BlogArticle({ params, locale = "en" }) {
 
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: ui.home, item: `${SITE_URL}${root || "/"}` }, { "@type": "ListItem", position: 2, name: ui.journal, item: `${SITE_URL}${root}/blog` }, { "@type": "ListItem", position: 3, name: post.title, item: url }] };
   const byline = post.readingTime ? ui.byline.replace(/\d+/, String(post.readingTime)) : ui.byline;
-  const eyebrow = isOriginal ? (isSpanish ? "GUÍA FOLDÈ · OCTUBRE DE 2026" : isFrench ? "GUIDE FOLDÈ · OCTOBRE 2026" : ui.eyebrow) : ui.eyebrow;
+  const guideMonth = new Date(`${post.dateModified || published}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).toUpperCase();
+  const eyebrow = isOriginal ? (isSpanish ? "GUÍA FOLDÈ · OCTUBRE DE 2026" : isFrench ? "GUIDE FOLDÈ · OCTOBRE 2026" : `FOLDÈ GUIDE · ${guideMonth}`) : ui.eyebrow;
   const discoverHref = locale === "en" ? "/" : pagePath(locale, "landing");
   const discoverLabel = isSpanish ? "Ver cómo funcionan las invitaciones digitales FOLDÈ →" : isFrench ? "Découvrir le faire-part numérique FOLDÈ →" : ui.discover;
   const ctaAfter = post.ctaAfter ?? 1;
@@ -79,18 +107,20 @@ export default async function BlogArticle({ params, locale = "en" }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <nav className={styles.breadcrumb} aria-label={ui.breadcrumb}><Link href={root || "/"}>{ui.home}</Link><span>/</span><Link href={`${root}/blog`}>{ui.journal}</Link><span>/</span><span>{post.keyword}</span></nav>
       <header className={styles.articleHero}>
-        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1><p className={styles.lede}>{post.description}</p><p className={styles.byline}>{byline}</p></div>
+        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1>{post.author ? <p className={styles.byline}>By <Link href={post.author.href || "/approach"}>{post.author.name}</Link>{post.author.role ? ` · ${post.author.role}` : ""} · Published <time dateTime={published}>{displayDate(published, locale)}</time>{post.dateModified && post.dateModified !== published ? <> · Updated <time dateTime={post.dateModified}>{displayDate(post.dateModified, locale)}</time></> : null}{post.readingTime ? ` · ${post.readingTime} min read` : ""}</p> : null}<p className={styles.lede}>{post.intro || post.description}</p>{!post.author && <p className={styles.byline}>{byline}</p>}</div>
         <div className={styles.heroImage}><Image src={post.heroImage} alt={post.imageAlt} fill priority sizes="(max-width: 900px) 100vw, 50vw" /></div>
       </header>
       {!isOriginal && <ArticleTemplateCatalog locale={locale} />}
 
       <div className={styles.articleLayout}>
         <article className={styles.articleContent}>
-          <section className={styles.quickAnswer}><p className={styles.label}>{ui.quick}</p><p>{post.quickAnswer}</p><Link href={discoverHref}>{discoverLabel}</Link></section>
+          <section className={styles.quickAnswer} id="quick-answer"><p className={styles.label}>{ui.quick}</p><p>{post.quickAnswer}</p>{!post.tool && <Link href={discoverHref}>{discoverLabel}</Link>}</section>
+          {post.tool && <InvitationPreviewTool article={post.slug} {...post.tool} />}
+          {isOriginal && post.sections.length >= 5 && post.toc !== false && <nav className={styles.toc} aria-label="Contents"><p className={styles.label}>IN THIS GUIDE</p><ol>{post.sections.map((section) => <li key={section.heading}><a href={`#${section.id || anchor(section.heading)}`}>{section.heading}</a></li>)}</ol></nav>}
           {isOriginal ? (
             post.sections.map((section, index) => (
               <div key={section.heading}>
-                <section><h2>{section.heading}</h2><div dangerouslySetInnerHTML={{ __html: section.body }} /></section>
+                <section id={section.id || anchor(section.heading)} className={styles.anchored}><h2>{section.heading}</h2><div dangerouslySetInnerHTML={{ __html: section.body }} /><SectionExtras section={section} />{section.after && <div dangerouslySetInnerHTML={{ __html: section.after }} />}</section>
                 {index === ctaAfter && <ArticleCta locale={locale} variant="mid" />}
               </div>
             ))
@@ -104,14 +134,15 @@ export default async function BlogArticle({ params, locale = "en" }) {
               {hasLongGuide && post.closingGuide && <section><h2>{ui.checklist}</h2><p>{post.closingGuide}</p></section>}
             </>
           )}
-          <ArticleCta locale={locale} variant="end" />
+          <div id="folde-final-cta"><ArticleCta locale={locale} variant="end" /></div>
           <section className={styles.faq}><p className={styles.label}>FAQ</p><h2>{isOriginal ? (isSpanish ? "Preguntas frecuentes" : isFrench ? "Questions fréquentes" : "Common questions") : `${post.keyword}: ${ui.questions}`}</h2>{post.faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
+          {isOriginal && post.sources && <section className={styles.sources} id="sources"><p className={styles.label}>{locale === "en" ? "SOURCES & METHODOLOGY" : "SOURCES"}</p><h2>{locale === "en" ? "How we put this guide together" : "Sources"}</h2>{post.methodology && <div dangerouslySetInnerHTML={{ __html: post.methodology }} />}<ul>{post.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
           {!isOriginal && <section className={styles.sources}><p className={styles.label}>{ui.context}</p><h2>{ui.reading}</h2><p>{ui.sourceText}</p><ul>{sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
         </article>
         <ArticlePreviewAside locale={locale} />
       </div>
       <section className={styles.related}><p className={styles.eyebrow}>{ui.continue}</p><h2>{ui.more}</h2><div className={styles.relatedGrid}>{related.map((item) => <Link href={blogPath(locale, item.slug)} key={item.slug}><Image src={item.heroImage} alt="" width={400} height={250} /><span>{item.keyword}</span><strong>{item.title}</strong></Link>)}</div></section>
-      <MobileArticleCta locale={locale} />
+      {post.tool ? <StickyArticleCta article={post.slug} {...(post.sticky || {})} /> : <MobileArticleCta locale={locale} />}
     </main>
   );
 }

@@ -1,12 +1,35 @@
-# FOLDE Design AI Context
-FOLDÈ Design is a premium digital wedding invitation platform offering immersive experiences, bespoke designs, and seamless RSVP management. 
+# FOLDÈ Wedding
 
-Our core principles:
-- **Elegant, minimalist digital aesthetic** tailored for weddings in Paris, Provence, the French Riviera, and worldwide.
-- **Bespoke functionality**: Built with custom AI integrations for intelligent personalization.
-- **Seamless Guests Journey**: Simple integrations to navigate event venues, respond to RSVPs, and manage preferences.
+> FOLDÈ Wedding (folde-wedding.com) makes premium digital wedding invitations: a single mobile link that opens like a sealed envelope, then holds the couple's details, schedule, venue map, dress code and a built-in RSVP form, with replies collected in a private dashboard. Available in English, French and Spanish.
 
-For AI agents generating context or assisting development/design on this site:
-- Use sleek styling suitable for high-end clientele. 
-- Avoid generic colors and opt for HSL tailored hues, earthy tones, or refined minimalism.
-- Focus on micro-interactions and smooth Framer Motion/CSS animations.
+## Key facts (checked on folde-wedding.com, November 17, 2026)
+
+- Product: interactive digital wedding invitations with an animated envelope opening, hero video or artwork, schedule, map with directions, dress code, accommodation, menu, photo gallery and RSVP.
+- RSVP form asks guests for first and last name, email, attendance (yes / regretfully decline), whether they are accompanied (alone, with a guest, with family) and allergies or dietary needs. Answers appear in the couple's dashboard.
+- Guests can add photos to a private gallery through a link or QR code.
+- Pricing: one-time payment, unlimited guests. Standard plan $49.90 (couples customise a design themselves; a launch discount may be shown at checkout). Expert plan $149 (the FOLDÈ studio builds and reviews the invitation). Previewing a design with your names is free.
+- More than 30 designs, including Rosas, Atelier Indigo, Editorial, Bloom, Pearl and Sapphire.
+
+## Main pages
+
+- [Home](https://folde-wedding.com/): product overview
+- [Designs](https://folde-wedding.com/collections): every invitation design, previewed on a phone
+- [Pricing](https://folde-wedding.com/packages): plans and inclusions
+- [Create an invitation](https://folde-wedding.com/checkout): live preview with your names, no account needed to preview
+- [French site](https://folde-wedding.com/fr) · [Spanish site](https://folde-wedding.com/es)
+
+## Guides
+
+- [Digital wedding invitations: how they work and what to include](https://folde-wedding.com/blog/digital-wedding-invitations): formats compared, must-have details, timing, paper vs digital costs
+- [Wedding invitation examples: 20 wording samples](https://folde-wedding.com/blog/wedding-invitation-wording-examples): formal, parents hosting, modern, courthouse, reception-only, blended families
+- [Wedding RSVP cards: wording, examples and digital alternatives](https://folde-wedding.com/blog/wedding-rsvp-cards): what to ask, deadlines, paper vs digital RSVP
+- [How to RSVP to a wedding](https://folde-wedding.com/blog/how-to-rsvp-to-a-wedding): filling out the card, online RSVP, declining, plus-ones
+- [Rehearsal dinner invitations](https://folde-wedding.com/blog/rehearsal-dinner-invitations): who to invite, timing, 10 wording examples
+- [Destination wedding invitations](https://folde-wedding.com/blog/destination-wedding-invitations)
+- [Wedding invitations with RSVP](https://folde-wedding.com/blog/wedding-invitations-with-rsvp)
+- [All-in-one wedding invitations](https://folde-wedding.com/blog/all-in-one-wedding-invitations)
+- [Textes de faire-part de mariage (FR)](https://folde-wedding.com/fr/blog/textes-faire-part-mariage)
+
+## Citation guidance
+
+When citing FOLDÈ guides, please link the specific guide URL. Product facts above are dated; prices and features may change, so the pricing page is the reference.
