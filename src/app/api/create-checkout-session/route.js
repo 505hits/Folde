@@ -2,6 +2,7 @@ import { protectRequest } from '@/lib/request-security';
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { readRefCookie } from '@/lib/affiliate.mjs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const STANDARD_LAUNCH_PRICE_ID = 'price_1UItNjDepfiMdtp46fHveRN0';
@@ -25,6 +26,8 @@ export async function POST(request) {
     const blocked = await protectRequest(request, { limit: 10, maxBytes: 20000 });
     if (blocked) return blocked;
     const email = user.email;
+    // Affiliate code from the first-party cookie set when a visitor follows an affiliate link.
+    const affiliate = readRefCookie(request.headers.get('cookie'));
 
     const planConfig = Object.hasOwn(PLAN_CONFIG, plan) ? PLAN_CONFIG[plan] : null;
     if (!planConfig) {
@@ -57,6 +60,7 @@ export async function POST(request) {
         locale: ['fr', 'es'].includes(locale) ? locale : 'en',
         launchOffer: validLaunchOffer ? 'true' : 'false',
         userId: user.id,
+        ...(affiliate ? { affiliate } : {}),
       },
       success_url: `${origin}${localePrefix}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${localePrefix}/checkout?template=${encodeURIComponent(selectedTheme)}`,

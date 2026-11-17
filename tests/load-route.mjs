@@ -16,10 +16,14 @@ export async function loadRoute(file, db) {
   const aiAccessUrl = moduleUrl((await readFile(new URL('../src/lib/ai-access.js', import.meta.url), 'utf8')).replace("'./request-security'", JSON.stringify(securityUrl)).replace("'./server-database'", JSON.stringify(dbUrl)));
   const creditsUrl = moduleUrl((await readFile(new URL('../src/lib/ai-credits.js', import.meta.url), 'utf8')).replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)));
   const nextUrl = moduleUrl('export const NextResponse = Response;');
+  const affiliateUrl = moduleUrl(await readFile(new URL('../src/lib/affiliate.mjs', import.meta.url), 'utf8'));
+  const emailUrl = moduleUrl((await readFile(new URL('../src/lib/affiliate-email.js', import.meta.url), 'utf8')).replaceAll("'@/lib/affiliate.mjs'", JSON.stringify(affiliateUrl)));
+  const saleUrl = moduleUrl((await readFile(new URL('../src/lib/affiliate-sale.js', import.meta.url), 'utf8')).replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)).replaceAll("'@/lib/affiliate.mjs'", JSON.stringify(affiliateUrl)).replaceAll("'@/lib/affiliate-email'", JSON.stringify(emailUrl)));
   let source = await readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
   source = source.replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)).replaceAll("'@/lib/seating.mjs'", JSON.stringify(seatingUrl));
   source = source.replaceAll("'@/lib/request-security'", JSON.stringify(securityUrl)).replaceAll("'@/lib/image-file.mjs'", JSON.stringify(imageUrl));
   source = source.replaceAll("'@/lib/ai-access'", JSON.stringify(aiAccessUrl)).replaceAll("'@/lib/ai-credits'", JSON.stringify(creditsUrl)).replaceAll("'next/server'", JSON.stringify(nextUrl));
+  source = source.replaceAll("'@/lib/affiliate-sale'", JSON.stringify(saleUrl)).replaceAll("'@/lib/affiliate-email'", JSON.stringify(emailUrl)).replaceAll("'@/lib/affiliate.mjs'", JSON.stringify(affiliateUrl));
   return import(moduleUrl(`${source}\n// test ${key}`));
 }
 
@@ -27,6 +31,10 @@ export function mockDatabase(responses = [], user = { id: 'owner', email: 'owner
   const calls = [];
   return {
     calls,
+    rpc(name, args) {
+      calls.push({ table: name, operation: 'rpc', value: args });
+      return Promise.resolve(responses.length ? responses.shift() : { data: null, error: { message: `Unexpected rpc ${name}` } });
+    },
     auth: { getUser: async token => ({ data: { user: token === 'valid' ? user : null }, error: token === 'valid' ? null : new Error('Invalid session') }) },
     from(table) {
       const call = { table, operation: 'select', filters: [] }; calls.push(call);
@@ -36,6 +44,7 @@ export function mockDatabase(responses = [], user = { id: 'owner', email: 'owner
         update(value) { call.operation = 'update'; call.value = value; return builder; },
         delete() { call.operation = 'delete'; return builder; },
         eq(key, value) { call.filters.push([key, value]); return builder; },
+        limit() { return builder; },
         is(key, value) { call.filters.push([key, value]); return builder; },
         order() { return builder; }, maybeSingle() { return builder; }, single() { return builder; },
         then(resolve, reject) {

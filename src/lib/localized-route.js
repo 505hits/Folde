@@ -10,10 +10,12 @@ import Checkout from "@/app/checkout/page";
 import Dashboard from "@/app/dashboard/page";
 import Success from "@/app/success/page";
 import LandingPage from "@/components/LandingPage";
+import AffiliateLanding from "@/components/affiliates/AffiliateLanding";
+import AffiliateDashboard from "@/components/affiliates/AffiliateDashboard";
 import { PAGE_SLUGS, absolute, blogPath, pagePath } from "@/lib/routes.mjs";
 import { articleAlternates, pageAlternates } from "@/lib/seo";
 
-const PRIVATE = ["checkout", "dashboard", "success"];
+const PRIVATE = ["checkout", "dashboard", "success", "affiliate-dashboard"];
 const OG_LOCALE = { fr: "fr_FR", es: "es_ES", en: "en_US" };
 
 export function resolveRoute(locale, segments = [], getPost) {
@@ -74,6 +76,8 @@ export function renderLocalized(locale, segments, getPost) {
     case "checkout": return <Checkout locale={locale} />;
     case "dashboard": return <Dashboard locale={locale} />;
     case "success": return <Success locale={locale} />;
+    case "affiliates": return <AffiliateLanding locale={locale} />;
+    case "affiliate-dashboard": return <AffiliateDashboard locale={locale} />;
     default: notFound();
   }
 }

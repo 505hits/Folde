@@ -16,6 +16,7 @@ function route(name, { user = null, authError = null, metadata = {}, customerEma
     NextResponse: { json: (body, options) => ({ body, status: options?.status || 200 }) },
     createClient: () => ({ auth: { getUser: async () => ({ data: { user }, error: authError }) } }),
     persistPaidOrder: async () => ({ id: 'saved-order', slug: 'saved-wedding' }),
+    readRefCookie: header => /(?:^|;\s*)folde_ref=([a-z0-9-]{3,24})(?:;|$)/.exec(header || '')?.[1] || null,
   };
   const source = fs.readFileSync(`${__dirname}/../src/app/api/${name}/route.js`, 'utf8')
     .replace(/^import .*;$/gm, '').replace('export async function POST', 'async function POST');
@@ -42,6 +43,13 @@ test('checkout rejects an inherited plan name and keeps payment redirects on Fol
   assert.equal((await r.post({ plan: 'essential' }, 'valid', { origin: 'https://external.example' })).status, 200);
   assert.equal(new URL(r.calls[0].success_url).origin, 'https://folde-wedding.com');
   assert.equal(new URL(r.calls[0].cancel_url).origin, 'https://folde-wedding.com');
+});
+test('checkout passes the affiliate cookie into the Stripe metadata', async () => {
+  const r = route('create-checkout-session', { user: { id: 'buyer-id', email: 'buyer@example.org' } });
+  await r.post({ plan: 'Custom' }, 'valid', { cookie: 'other=1; folde_ref=anna-weds' });
+  assert.equal(r.calls[0].metadata.affiliate, 'anna-weds');
+  await r.post({ plan: 'Custom' }, 'valid');
+  assert.equal('affiliate' in r.calls[1].metadata, false);
 });
 test('payment verification rejects another account and allows the owner', async () => {
   const other = route('verify-session', { user: { id: 'other-id' }, metadata: { userId: 'buyer-id' } });

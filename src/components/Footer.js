@@ -50,6 +50,7 @@ export default function Footer() {
           <Link href={link("/packages")}>{t.packages}</Link>
           <Link href={link("/story")}>{t.about}</Link>
           <Link href={link("/dashboard")}>{t.dashboard}</Link>
+          <Link href={pagePath(locale, "affiliates")}>{locale === "fr" ? "Affiliation" : locale === "es" ? "Afiliados" : "Affiliates"}</Link>
         </div>
         <div className="footer-links" style={{ marginTop: '1rem' }}>
           <Link href="mailto:folde.wedding@gmail.com">folde.wedding@gmail.com</Link>

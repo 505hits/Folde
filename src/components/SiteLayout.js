@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
+import AffiliateRefTracker from "./AffiliateRefTracker";
 import { pagePath } from "@/lib/routes.mjs";
 
 const FULLSCREEN = ["/dashboard", "/checkout", "/es/checkout", "/fr/checkout", "/kissing-couple-wedding-invitation", "/invite", "/guest-gallery", "/guest-upload",
@@ -17,6 +18,7 @@ export default function SiteLayout({ children }) {
 
   return (
     <>
+      <AffiliateRefTracker />
       {!hideHeaderFooter && <Header />}
       <main className={isBlog ? "blog-shell" : undefined}>{children}</main>
       {!hideHeaderFooter && <Footer />}

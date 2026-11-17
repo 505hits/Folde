@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { database } from '@/lib/server-database';
+import { recordAffiliateSale } from '@/lib/affiliate-sale';
 
 export async function persistPaidOrder(session, user, preview = {}) {
   if (session.payment_status !== 'paid') throw new Error('Payment is not complete.');
@@ -33,5 +34,7 @@ export async function persistPaidOrder(session, user, preview = {}) {
     if (!retry.error && retry.data?.user_email?.toLowerCase() === user.email?.toLowerCase()) return retry.data;
   }
   if (saved.error || !saved.data) throw new Error('Your payment is confirmed, but the order could not be saved. Please retry.');
+  // The Stripe webhook records it too; a failure here must never block the order.
+  await recordAffiliateSale(session, db).catch(() => console.error('Affiliate sale left to the Stripe webhook'));
   return saved.data;
 }

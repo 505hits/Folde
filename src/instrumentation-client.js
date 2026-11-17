@@ -12,5 +12,9 @@ initBotId({
     '/api/send-order',
     '/api/send-revision',
     '/api/create-checkout-session',
-  ].map(path => ({ path, method: 'POST', advancedOptions: { checkLevel: 'basic' } })),
+    '/api/affiliate',
+    '/api/affiliate/click',
+  ].map(path => ({ path, method: 'POST', advancedOptions: { checkLevel: 'basic' } })).concat(
+    { path: '/api/affiliate', method: 'PATCH', advancedOptions: { checkLevel: 'basic' } },
+  ),
 });

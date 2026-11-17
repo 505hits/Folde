@@ -12,6 +12,7 @@ export const PAGE_SLUGS = {
   approach: { en: "approach", fr: "notre-methode", es: "como-trabajamos" },
   story: { en: "story", fr: "notre-histoire", es: "nuestra-historia" },
   blog: { en: "blog", fr: "blog", es: "blog" },
+  affiliates: { en: "affiliates", fr: "affiliation", es: "afiliados" },
   landing: { fr: "faire-part-mariage-numerique", es: "invitaciones-de-boda-digitales" },
 };
 
@@ -64,7 +65,7 @@ export function equivalentPath(pathname = "/", target, extraPosts = {}) {
   }
   const key = Object.keys(PAGE_SLUGS).find((k) => PAGE_SLUGS[k][locale] === first);
   if (key && PAGE_SLUGS[key][target] !== undefined) return pagePath(target, key);
-  if (["checkout", "dashboard"].includes(first)) return `${localeRoot(target)}/${first}`;
+  if (["checkout", "dashboard", "affiliate-dashboard"].includes(first)) return `${localeRoot(target)}/${first}`;
   return pagePath(target, "home");
 }
 

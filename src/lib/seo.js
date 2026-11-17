@@ -45,7 +45,7 @@ export const organizationSchema = {
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.png`,
   email: "folde.wedding@gmail.com",
-  sameAs: ["https://www.instagram.com/foldedesign"],
+  sameAs: ["https://www.instagram.com/folde.design/"],
 };
 
 export const websiteSchema = {

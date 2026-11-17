@@ -13,6 +13,8 @@ const pageMetadata = {
   checkout: { title: "Créer votre faire-part | FOLDÈ", description: "Choisissez votre formule et personnalisez votre faire-part de mariage numérique." },
   dashboard: { title: "Votre tableau de bord | FOLDÈ", description: "Gérez votre faire-part, vos invités et vos RSVP." },
   success: { title: "Paiement confirmé | FOLDÈ", description: "Confirmation de votre commande FOLDÈ." },
+  affiliates: { title: "Programme d’affiliation : 30 % de commission | FOLDÈ", description: "Recommandez les faire-part de mariage numériques FOLDÈ et gagnez 30 % sur chaque vente : lien personnel, cookie de 60 jours, email à chaque vente, paiement mensuel par PayPal ou Wise." },
+  "affiliate-dashboard": { title: "Espace affilié | FOLDÈ", description: "Votre lien d’affiliation, vos clics, vos ventes et vos commissions." },
 };
 
 export async function generateMetadata({ params }) {
