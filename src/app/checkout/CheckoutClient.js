@@ -1018,12 +1018,19 @@ function CheckoutContent({ locale = "en" }) {
       const query = params.toString();
       window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
     }
-    const frame = window.requestAnimationFrame(() => setResuming(true));
+    // Show "Signing you in" only while the session check is pending: if the
+    // visitor came back without signing in (e.g. pressed Back on Google), the
+    // check settles first and the funnel stays visible. A timeout guarantees
+    // the screen can never stay stuck.
+    let settled = false;
+    const frame = window.requestAnimationFrame(() => { if (!settled) setResuming(true); });
+    const fallback = window.setTimeout(() => setResuming(false), 15000);
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setResumeFunnel(true);
-      else setResuming(false);
-    }).catch(() => setResuming(false));
-    return () => window.cancelAnimationFrame(frame);
+      settled = true;
+      if (session) { setResuming(true); setResumeFunnel(true); }
+      else { setResuming(false); window.clearTimeout(fallback); }
+    }).catch(() => { settled = true; setResuming(false); window.clearTimeout(fallback); });
+    return () => { window.cancelAnimationFrame(frame); window.clearTimeout(fallback); };
   }, []);
   const completeMobileFunnel = async (email) => {
     const {data:{session}}=await supabase.auth.getSession();
