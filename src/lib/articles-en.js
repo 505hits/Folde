@@ -17,10 +17,10 @@ export const shot = {
 
 const testMethod = `<p>Product details in this guide come from a hands-on check of folde-wedding.com on <strong>November 17, 2026</strong>, in Chromium (Playwright 1.65) at 1440×900 and at a 390×844 mobile size. We started the creation flow with a test couple (“Emma &amp; Lucas”), opened the Rosas design, tapped the envelope and scrolled through the schedule, map and RSVP form. We did not submit a response on a live wedding, and we only describe features we saw on screen. Prices were read on the packages page the same day. FOLDÈ Wedding publishes this guide and sells digital invitations; independent sources are listed below.</p>`;
 
-const knot = { label: "The Knot Worldwide — 2026 Real Weddings Study (press release, Feb. 18, 2026)", href: "https://www.theknotww.com/press-releases/the-knot-worldwide-unveils-2026-real-weddings-study", note: "10,474 U.S. couples married in 2025: average guest count 117, average spend $292 per guest." };
+export const knot = { label: "The Knot Worldwide — 2026 Real Weddings Study (press release, Feb. 18, 2026)", href: "https://www.theknotww.com/press-releases/the-knot-worldwide-unveils-2026-real-weddings-study", note: "10,474 U.S. couples married in 2025: average guest count 117, average spend $292 per guest." };
 export const knotTiming = { label: "The Knot — When to send wedding invitations", href: "https://www.theknot.com/content/when-to-send-wedding-invitations", note: "Etiquette timeline for save-the-dates, invitations and RSVP deadlines." };
 const zolaTiming = { label: "Zola — When should you send out your wedding invitations?", href: "https://www.zola.com/expert-advice/when-should-you-send-out-your-wedding-invitations", note: "Timing guidance, including a reply-by date about a month before the wedding." };
-const stamps = { label: "FreightWaves — Price of Forever stamp reaches 82 cents", href: "https://www.freightwaves.com/news/price-of-forever-stamp-reaches-82-cents", note: "USPS 1-ounce letter stamp at $0.82 since July 12, 2026 (postcards $0.65)." };
+export const stamps = { label: "FreightWaves — Price of Forever stamp reaches 82 cents", href: "https://www.freightwaves.com/news/price-of-forever-stamp-reaches-82-cents", note: "USPS 1-ounce letter stamp at $0.82 since July 12, 2026 (postcards $0.65)." };
 
 export const originalPostsEn = [
   {

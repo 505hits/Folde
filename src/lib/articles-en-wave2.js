@@ -5,7 +5,7 @@
 
 import { IMG, author, shot, knotTiming } from "@/lib/articles-en";
 
-const live = {
+export const live = {
   atelier: { src: `${IMG}/atelier-indigo-design-opening-mobile.webp`, width: 520, height: 1126, portrait: true },
   editorial: { src: `${IMG}/editorial-design-opening-mobile.webp`, width: 520, height: 1126, portrait: true },
   rosas: { src: `${IMG}/rosas-design-opening-mobile.webp`, width: 520, height: 1126, portrait: true },
@@ -15,15 +15,15 @@ const live = {
   venue: { src: `${IMG}/venue-and-directions-mobile.webp`, width: 520, height: 1126, portrait: true },
 };
 
-const knotShower = { label: "The Knot — Who to invite to a bridal shower & other etiquette questions (updated Aug. 15, 2025)", href: "https://www.theknot.com/content/bridal-shower-invite-etiquette", note: "Send invitations four to six weeks ahead, about two months for out-of-town guests; the host sends them; 30–40 guests is typical; don’t invite anyone who isn’t invited to the wedding." };
+export const knotShower = { label: "The Knot — Who to invite to a bridal shower & other etiquette questions (updated Aug. 15, 2025)", href: "https://www.theknot.com/content/bridal-shower-invite-etiquette", note: "Send invitations four to six weeks ahead, about two months for out-of-town guests; the host sends them; 30–40 guests is typical; don’t invite anyone who isn’t invited to the wedding." };
 const knotEngagement = { label: "The Knot — Who should be invited to an engagement party (updated Jul. 27, 2023)", href: "https://www.theknot.com/content/whos-invited-to-engagement-party", note: "Etiquette experts: anyone invited to the engagement party should be invited to the wedding; invitations can go by mail, email or word of mouth." };
 const paperlessEngagement = { label: "Paperless Post — Engagement party 101", href: "https://www.paperlesspost.com/blog/engagement-party-101/", note: "Parties are usually held within a few months of the proposal; invitations go out four to six weeks before." };
 const weddingwireEngagement = { label: "WeddingWire — The dos and don’ts of engagement party etiquette (Jan. 12, 2021)", href: "https://www.weddingwire.com/wedding-ideas/engagement-party-etiquette", note: "Gifts are not required and shouldn’t be requested; hosting is no longer limited to the bride’s parents." };
 const knotReception = { label: "The Knot — The only guide to reception-only wedding invitations (updated Jun. 19, 2024)", href: "https://www.theknot.com/content/reception-only-invites-invitation-wording", note: "Make clear the ceremony already happened (“a celebration of their marriage”) and give guests a way to RSVP." };
-const knotSaveDates = { label: "The Knot — Save-the-date etiquette (updated Apr. 17, 2025)", href: "https://www.theknot.com/content/save-the-dates-etiquette", note: "Six to eight months ahead, closer to eight for a far-flung location; no later than six months; under four months is too late." };
-const knotTimingDated = { ...knotTiming, label: "The Knot — When to send wedding invitations (updated Jul. 14, 2026)", note: "Destination wedding invitations: eight weeks ahead, after save-the-dates; out-of-town guests: about eight weeks before the RSVP deadline." };
+export const knotSaveDates = { label: "The Knot — Save-the-date etiquette (updated Apr. 17, 2025)", href: "https://www.theknot.com/content/save-the-dates-etiquette", note: "Six to eight months ahead, closer to eight for a far-flung location; no later than six months; under four months is too late." };
+export const knotTimingDated = { ...knotTiming, label: "The Knot — When to send wedding invitations (updated Jul. 14, 2026)", note: "Destination wedding invitations: eight weeks ahead, after save-the-dates; out-of-town guests: about eight weeks before the RSVP deadline." };
 
-const designCheck = `<p>Product details come from a hands-on check of folde-wedding.com on <strong>November 17, 2026</strong>, in Chromium (Playwright 1.65) at a 390×844 phone size. We opened the Atelier Indigo, Editorial, Rosas and Excellence designs from the collections page, tapped the envelope and scrolled every section. The screenshots in this guide were taken during that check. We did not submit an RSVP on a live wedding. FOLDÈ Wedding publishes this guide and sells digital wedding invitations; independent sources are listed below.</p>`;
+export const designCheck = `<p>Product details come from a hands-on check of folde-wedding.com on <strong>November 17, 2026</strong>, in Chromium (Playwright 1.65) at a 390×844 phone size. We opened the Atelier Indigo, Editorial, Rosas and Excellence designs from the collections page, tapped the envelope and scrolled every section. The screenshots in this guide were taken during that check. We did not submit an RSVP on a live wedding. FOLDÈ Wedding publishes this guide and sells digital wedding invitations; independent sources are listed below.</p>`;
 
 export const originalPostsEnWave2 = [
   {
@@ -83,7 +83,7 @@ export const originalPostsEnWave2 = [
 <li><strong>The couple approves the guest list</strong> before anything is sent, unless the shower is a genuine surprise.</li>
 <li><strong>Never invite someone who isn’t invited to the wedding.</strong> Cross-check the two lists. The Knot calls this “a big no-no”.</li>
 <li><strong>30 to 40 guests</strong> is a common size, adjusted to the venue or home.</li>
-<li><strong>Couples or co-ed showers</strong> invite both partners’ friends and family; say “couples shower” or “wedding shower” on the invitation so nobody is surprised.</li>
+<li><strong>Couples or co-ed showers</strong> invite both partners’ friends and family; say “couples shower” or “wedding shower” on the invitation so nobody is surprised. See our <a href="/blog/couples-shower-invitations">couples shower invitation guide</a>.</li>
 </ul>`,
         figure: { ...shot.rsvp, alt: "Digital RSVP form asking for attendance, party size and dietary needs", caption: "However you send it, make replying easy: a short form or a direct contact for the host." },
       },

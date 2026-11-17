@@ -81,6 +81,8 @@ Vague 2 : #6 bridal shower wording · #9 elegant · #8 engagement · #3 receptio
 **État au 17/11/2026** : vagues 1 et 2 publiées (`src/lib/articles-en.js`, `src/lib/articles-en-wave2.js`). La réécriture de `destination-wedding-invitations` remplace l'ancien article anglais sous la même adresse ; les versions FR et ES de cet article restent celles d'avant, en attendant la vague 3. Pour la vague 2, le mini-outil propose des textes de bridal shower, de fiançailles et de réception ; pour la shower et les fiançailles, il renvoie vers les modèles de mariage (FOLDÈ ne vend pas d'invitations pour ces fêtes).
 Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recherche de mots-clés propre à chaque marché, pas de traduction mot à mot).
 
+**État au 17/11/2026 (suite)** : vague 3 publiée (`src/lib/articles-en-wave3.js`) avec les 9 articles anglais encore générés automatiquement, réécrits un par un (RSVP, all-in-one, suite, floral, photo, vintage, traditionnel, hiver, panneaux de bienvenue), plus un nouvel article `couples-shower-invitations` (couples bridal shower invitations 1 000, couples shower invite 590, coed wedding shower invitations 480, couple shower invitations 320 ; KD 24 à 27). Plus aucun article anglais n'utilise le texte générique. Reste : versions FR et ES.
+
 ## 6. Maillage interne
 
 - Pilier #1 ↔ #2, #4, `destination-wedding-invitations`, `all-in-one-wedding-invitations`.
