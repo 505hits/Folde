@@ -13,9 +13,13 @@ export async function loadRoute(file, db) {
   const seatingUrl = moduleUrl(await readFile(new URL('../src/lib/seating.mjs', import.meta.url), 'utf8'));
   const securityUrl = moduleUrl((await readFile(new URL('../src/lib/request-security.js', import.meta.url), 'utf8')).replace("'botid/server'", JSON.stringify(moduleUrl('export const checkBotId = async () => ({isBot:false});'))));
   const imageUrl = moduleUrl(await readFile(new URL('../src/lib/image-file.mjs', import.meta.url), 'utf8'));
+  const aiAccessUrl = moduleUrl((await readFile(new URL('../src/lib/ai-access.js', import.meta.url), 'utf8')).replace("'./request-security'", JSON.stringify(securityUrl)).replace("'./server-database'", JSON.stringify(dbUrl)));
+  const creditsUrl = moduleUrl((await readFile(new URL('../src/lib/ai-credits.js', import.meta.url), 'utf8')).replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)));
+  const nextUrl = moduleUrl('export const NextResponse = Response;');
   let source = await readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
   source = source.replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)).replaceAll("'@/lib/seating.mjs'", JSON.stringify(seatingUrl));
   source = source.replaceAll("'@/lib/request-security'", JSON.stringify(securityUrl)).replaceAll("'@/lib/image-file.mjs'", JSON.stringify(imageUrl));
+  source = source.replaceAll("'@/lib/ai-access'", JSON.stringify(aiAccessUrl)).replaceAll("'@/lib/ai-credits'", JSON.stringify(creditsUrl)).replaceAll("'next/server'", JSON.stringify(nextUrl));
   return import(moduleUrl(`${source}\n// test ${key}`));
 }
 

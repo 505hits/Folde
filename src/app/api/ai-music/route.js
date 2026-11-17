@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { aiAccess, readTask, signTask } from '@/lib/ai-access';
+import { refundAiCredit, reserveAiCredit } from '@/lib/ai-credits';
 
 const KIE_API_KEY = process.env.KIE_API_KEY;
 
@@ -17,6 +18,9 @@ export async function POST(req) {
         if (typeof prompt !== 'string' || !prompt.trim() || prompt.length > 4000) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
         }
+
+        const reservation = await reserveAiCredit(access, body.slug, 'music');
+        if (reservation.error) return NextResponse.json({ error: reservation.error }, { status: reservation.status });
 
         const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://folde-wedding.com';
         const payload = {
@@ -40,23 +44,23 @@ export async function POST(req) {
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
-
-        if (!response.ok || (data.code !== 200 && data.code !== undefined && data.code !== 0)) {
-            console.error('KIE Suno generate error:', data);
-            return NextResponse.json({ error: data.msg || 'Failed to generate AI music task' }, { status: response.status || 500 });
-        }
-
+        const data = await response.json().catch(() => ({}));
         const providerTaskId = data.data?.taskId || data.taskId;
-        if (typeof providerTaskId !== "string" || !providerTaskId) return NextResponse.json({ error: "Missing generation task." }, { status: 502 });
+
+        if (!response.ok || (data.code !== 200 && data.code !== undefined && data.code !== 0) || typeof providerTaskId !== 'string' || !providerTaskId) {
+            console.error('KIE Suno generate error:', data?.code, data?.msg);
+            await refundAiCredit(reservation, 'music');
+            return NextResponse.json({ error: 'Unable to generate the soundtrack. Please try again.' }, { status: 502 });
+        }
         return NextResponse.json({
             success: true,
-            taskId: signTask(providerTaskId, access.user.id, 'music')
+            taskId: signTask(providerTaskId, access.user.id, 'music'),
+            creditsUsed: reservation.used
         });
 
     } catch (err) {
-        console.error('ai-music POST exception:', err);
-        return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
+        console.error('ai-music POST exception:', err?.message);
+        return NextResponse.json({ error: 'Unable to generate the soundtrack. Please try again.' }, { status: 500 });
     }
 }
 
@@ -110,6 +114,6 @@ export async function GET(req) {
 
     } catch (err) {
         console.error('ai-music GET exception:', err);
-        return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

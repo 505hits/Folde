@@ -3100,7 +3100,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
   const [photoCreditsUsed, setPhotoCreditsUsed] = useState(() => {
     if (typeof window !== 'undefined' && slug) {
       const saved = localStorage.getItem(`photo_credits_${slug}`);
-      return saved ? parseInt(saved, 10) : 0;
+      return Math.max(saved ? parseInt(saved, 10) || 0 : 0, Number(eventInfo?._aiCredits?.photo) || 0);
     }
     return 0;
   });
@@ -3108,7 +3108,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
   const [musicCreditsUsed, setMusicCreditsUsed] = useState(() => {
     if (typeof window !== 'undefined' && slug) {
       const saved = localStorage.getItem(`music_credits_${slug}`);
-      return saved ? parseInt(saved, 10) : 0;
+      return Math.max(saved ? parseInt(saved, 10) || 0 : 0, Number(eventInfo?._aiCredits?.music) || 0);
     }
     return 0;
   });
@@ -3496,6 +3496,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          slug,
           prompt: photoPrompt,
           imageUrls: urls.length > 0 ? urls : undefined,
           imageSize: photoRatio
@@ -3535,6 +3536,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          slug,
           prompt: musicPrompt,
           instrumental: isInstrumental,
           model: 'V4'

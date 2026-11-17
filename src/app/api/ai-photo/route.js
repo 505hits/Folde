@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { aiAccess, readTask, signTask } from '@/lib/ai-access';
+import { refundAiCredit, reserveAiCredit } from '@/lib/ai-credits';
 
 const KIE_API_KEY = process.env.KIE_API_KEY;
 
@@ -23,6 +24,9 @@ export async function POST(req) {
         const formattedUrls = Array.isArray(imageUrls) && imageUrls.length > 0
             ? imageUrls.filter(url => url && typeof url === 'string').slice(0, 2)
             : [defaultImage];
+
+        const reservation = await reserveAiCredit(access, body.slug, 'photo');
+        if (reservation.error) return NextResponse.json({ error: reservation.error }, { status: reservation.status });
 
         const hasTwoReferences = formattedUrls.length === 2;
         const payload = hasTwoReferences ? {
@@ -60,23 +64,23 @@ export async function POST(req) {
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
-
-        if (!response.ok || data.code !== 200) {
-            console.error('KIE Qwen createTask error:', data);
-            return NextResponse.json({ error: data.msg || 'Failed to create AI photo task' }, { status: response.status || 500 });
-        }
-
+        const data = await response.json().catch(() => ({}));
         const providerTaskId = data.data?.taskId;
-        if (typeof providerTaskId !== "string" || !providerTaskId) return NextResponse.json({ error: "Missing generation task." }, { status: 502 });
+
+        if (!response.ok || data.code !== 200 || typeof providerTaskId !== 'string' || !providerTaskId) {
+            console.error('KIE Qwen createTask error:', data?.code, data?.msg);
+            await refundAiCredit(reservation, 'photo');
+            return NextResponse.json({ error: 'Unable to create the AI image task. Please try again.' }, { status: 502 });
+        }
         return NextResponse.json({
             success: true,
-            taskId: signTask(providerTaskId, access.user.id, 'photo')
+            taskId: signTask(providerTaskId, access.user.id, 'photo'),
+            creditsUsed: reservation.used
         });
 
     } catch (err) {
-        console.error('ai-photo POST exception:', err);
-        return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
+        console.error('ai-photo POST exception:', err?.message);
+        return NextResponse.json({ error: 'Unable to create the AI image task. Please try again.' }, { status: 500 });
     }
 }
 
@@ -126,6 +130,6 @@ export async function GET(req) {
 
     } catch (err) {
         console.error('ai-photo GET exception:', err);
-        return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

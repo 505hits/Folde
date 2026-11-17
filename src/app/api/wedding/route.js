@@ -1,5 +1,6 @@
 import { authenticated, ownedOrder, updateDetails } from '@/lib/server-database';
 import { validateSeating } from '@/lib/seating.mjs';
+import { SERVER_ONLY_KEYS } from '@/lib/ai-credits';
 
 const reply = (body, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
@@ -39,6 +40,7 @@ export async function PATCH(request) {
       delete patch._seatingPlan;
       delete patch.publishedData;
       delete patch._draftVersion;
+      for (const key of SERVER_ONLY_KEYS) delete patch[key];
       if (JSON.stringify(patch).length > 3000000) return reply({ error: 'These images are too large. Please upload smaller images and retry.' }, 413);
       Object.assign(details, patch);
       }
@@ -48,6 +50,7 @@ export async function PATCH(request) {
       delete published.publishedData;
       delete published._seatingPlan;
       delete published._draftVersion;
+      for (const key of SERVER_ONLY_KEYS) delete published[key];
       details.publishedData = published;
       }
     } else return reply({ error: 'Invalid action.' }, 400);

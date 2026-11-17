@@ -1,4 +1,5 @@
 import { database, ownedOrder } from '@/lib/server-database';
+import { SERVER_ONLY_KEYS } from '@/lib/ai-credits';
 
 export async function GET(request) {
   try {
@@ -22,6 +23,7 @@ export async function GET(request) {
     delete details._seatingPlan;
     delete details._draftVersion;
     delete details.publishedData;
+    for (const key of SERVER_ONLY_KEYS) delete details[key];
     return Response.json({ invitation: { ...details, slug, themeId: details.themeId || order.theme } }, { headers: { 'Cache-Control': 'no-store' } });
   } catch { return Response.json({ error: 'Unable to load invitation.' }, { status: 503 }); }
 }

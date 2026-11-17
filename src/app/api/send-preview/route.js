@@ -37,7 +37,10 @@ export async function POST(request) {
       draft,
       updated_at: new Date().toISOString(),
     }, { onConflict: "email" });
-    if (saveError) return NextResponse.json({ success: false, saved: false, error: saveError.message }, { status: 500 });
+    if (saveError) {
+      console.error("Preview save failed:", saveError.code || "database", saveError.message);
+      return NextResponse.json({ success: false, saved: false, error: "Unable to save preview." }, { status: 500 });
+    }
 
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json({ success: true, saved: true, delivered: false });
@@ -66,10 +69,10 @@ export async function POST(request) {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      return NextResponse.json({ success: true, saved: true, delivered: false, warning: error.message || "Email delivery failed." });
+      return NextResponse.json({ success: true, saved: true, delivered: false, warning: "Email delivery failed." });
     }
     return NextResponse.json({ success: true, saved: true, delivered: true });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message || "Unable to send preview." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to send preview." }, { status: 500 });
   }
 }
