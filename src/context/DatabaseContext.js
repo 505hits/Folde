@@ -91,13 +91,15 @@ export function DatabaseProvider({ children }) {
     }
   };
 
-  const loginWithMagicLink = async (email) => {
+  const loginWithMagicLink = async (email, returnPath, metadata) => {
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const path = typeof returnPath === 'string' && returnPath.startsWith('/') && !returnPath.startsWith('//') ? returnPath : '/dashboard';
       const { data, error } = await supabase.auth.signInWithOtp({
         email: email ? email.trim() : '',
         options: {
-          emailRedirectTo: `${origin}/dashboard`
+          emailRedirectTo: `${origin}${path}`,
+          ...(metadata ? { data: metadata } : {})
         }
       });
       if (error) {

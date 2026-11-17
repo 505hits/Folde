@@ -9,13 +9,18 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
-import CheckoutAuth from '@/components/CheckoutAuth';
+import { GoogleMark } from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
 
 
 const FUNNEL_RESUME_KEY = 'folde-checkout-google-resume';
+const AUTH_COPY = {
+  en: { google: 'Continue with Google', or: 'or with your email', link: 'EMAIL ME A SIGN-IN LINK', sent: 'Check your inbox: we sent a sign-in link to', sentHint: 'Open it to continue. Your choices are saved in the link.', resuming: 'Signing you in…', googleError: 'Google sign-in could not start. Please use your email instead.' },
+  fr: { google: 'Continuer avec Google', or: 'ou avec votre e-mail', link: 'RECEVOIR MON LIEN DE CONNEXION', sent: 'Vérifiez votre boîte mail : nous avons envoyé un lien de connexion à', sentHint: 'Ouvrez-le pour continuer. Vos choix sont enregistrés dans le lien.', resuming: 'Connexion en cours…', googleError: 'La connexion Google n’a pas pu démarrer. Utilisez votre e-mail.' },
+  es: { google: 'Continuar con Google', or: 'o con vuestro correo', link: 'RECIBIR MI ENLACE DE ACCESO', sent: 'Revisad vuestro correo: hemos enviado un enlace de acceso a', sentHint: 'Abridlo para continuar. Vuestras elecciones van guardadas en el enlace.', resuming: 'Iniciando sesión…', googleError: 'No se pudo iniciar sesión con Google. Usad vuestro correo.' },
+};
 
 const themes = [
   { id: 'bordeaux', name: 'Bordeaux' },
@@ -354,14 +359,14 @@ export default function CheckoutClient({ locale = "en" }) {
 
 function CheckoutContent({ locale = "en" }) {
   const router = useRouter();
-  const { currentUser, register, login, createOrder, saveOrderDetails } = useDatabase();
+  const { currentUser, register, login, loginWithGoogle, createOrder, saveOrderDetails } = useDatabase();
 
   // Flow: 1=Package, 2=Preview+Personalize, 3=Email+Pay → /success
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
   const [step, setStep] = useState(1);
-  const [funnelAuth,setFunnelAuth] = useState(false);
-  const [pendingEmail,setPendingEmail] = useState('');
   const [resumeFunnel,setResumeFunnel] = useState(false);
+  const [resuming,setResuming] = useState(false);
+  const [magicLinkSentTo,setMagicLinkSentTo] = useState('');
   useEffect(()=>{let active=true; const check=async()=>{const {data:{session}}=await supabase.auth.getSession();if(session && await hasPaidAccess(session) && active)router.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);};check().catch(()=>{});const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>check().catch(()=>{}),0);});return()=>{active=false;subscription.unsubscribe();};},[locale,router]);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
@@ -960,29 +965,69 @@ function CheckoutContent({ locale = "en" }) {
     }));
   };
 
-  // Google sign-in leaves the page: keep the couple's choices and resume the
-  // funnel once they come back signed in.
-  const saveDraftBeforeGoogle = () => {
+  // Sign-in in the funnel is Google or an emailed link, never a password. Both
+  // come back to /checkout?resume=…&continue=1, which restores the couple's
+  // choices (even in a new tab or on another device) and resumes the funnel.
+  const funnelReturnPath = (email = '') => {
+    const bytes = new TextEncoder().encode(JSON.stringify({
+      name: account.name, partnerName: account.partnerName, email,
+      selectedTheme, selectedEnvelope, selectedHeroVideo, previewDate,
+    }));
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    const token = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    return `${localizedRoute('/checkout')}?resume=${token}&continue=1`;
+  };
+  const saveFunnelDraft = () => {
     sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify({
       name: account.name, partnerName: account.partnerName, email: '',
       selectedTheme, selectedEnvelope, selectedHeroVideo,
       previewDate, previewVenue, previewStoryTitle, previewStoryText,
     }));
-    sessionStorage.setItem(FUNNEL_RESUME_KEY, '1');
+  };
+  const continueWithGoogle = async () => {
+    setAuthError('');
+    saveFunnelDraft();
+    try { sessionStorage.setItem(FUNNEL_RESUME_KEY, '1'); } catch {}
+    const result = await loginWithGoogle(funnelReturnPath());
+    if (!result.success) throw new Error('Google sign-in could not start.');
+  };
+  const sendFunnelLink = async (email) => {
+    saveFunnelDraft();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin + funnelReturnPath(email),
+        data: { name: account.name || '', partner_name: account.partnerName || '' },
+      },
+    });
+    if (error) throw error;
+    setMagicLinkSentTo(email);
   };
   useEffect(() => {
-    let resume = false;
-    try { resume = sessionStorage.getItem(FUNNEL_RESUME_KEY) === '1'; } catch {}
+    const params = new URLSearchParams(window.location.search);
+    let resume = params.get('continue') === '1';
+    try {
+      if (sessionStorage.getItem(FUNNEL_RESUME_KEY) === '1') resume = true;
+      sessionStorage.removeItem(FUNNEL_RESUME_KEY);
+    } catch {}
     if (!resume) return;
+    if (params.has('continue')) {
+      params.delete('continue');
+      params.delete('resume');
+      const query = params.toString();
+      window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
+    }
+    const frame = window.requestAnimationFrame(() => setResuming(true));
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) return;
-      try { sessionStorage.removeItem(FUNNEL_RESUME_KEY); } catch {}
-      setResumeFunnel(true);
-    }).catch(() => {});
+      if (session) setResumeFunnel(true);
+      else setResuming(false);
+    }).catch(() => setResuming(false));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
   const completeMobileFunnel = async (email) => {
     const {data:{session}}=await supabase.auth.getSession();
-    if(!session){setPendingEmail(email);setFunnelAuth(true);return;}
+    if(!session){await sendFunnelLink(email);return;}
     if(await hasPaidAccess(session)){router.replace(localizedRoute('/dashboard'));return;}
     email=session.user.email;
     const finalAccount = { ...account, email };
@@ -1046,9 +1091,25 @@ function CheckoutContent({ locale = "en" }) {
   useEffect(() => {
     if (!resumeFunnel || !account.name || resumedFunnel.current) return;
     resumedFunnel.current = true;
-    completeMobileFunnel('').catch(() => {});
+    completeMobileFunnel('').catch(() => {
+      setResuming(false);
+      setAuthError('We could not securely save your preview. Please try again.');
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeFunnel, account.name]);
+
+  if (resuming) {
+    return (
+      <main role="status" aria-live="polite" style={{ minHeight: '100svh', display: 'grid', placeItems: 'center', padding: '2rem', color: '#3d2b1f', background: '#faf7f1', textAlign: 'center' }}>
+        <div>
+          <div style={{ width: 52, height: 52, margin: '0 auto 1.4rem', borderRadius: '50%', border: '3px solid #eadfd2', borderTopColor: '#5C3A1E', animation: 'folde-spin 1s linear infinite' }} />
+          <style>{`@keyframes folde-spin { to { transform: rotate(360deg); } }`}</style>
+          <h1 style={{ margin: '0 0 .5rem', fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: '1.9rem' }}>{AUTH_COPY[locale]?.resuming || AUTH_COPY.en.resuming}</h1>
+          <p style={{ margin: 0, color: '#8b796b' }}>{account.name && account.partnerName ? `${account.name} & ${account.partnerName}` : ''}</p>
+        </div>
+      </main>
+    );
+  }
 
   // ─── STEP 4: Payment processing overlay ───
   if (paymentProcessing) {
@@ -1063,8 +1124,6 @@ function CheckoutContent({ locale = "en" }) {
       </div>
     );
   }
-
-  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} initialMode="signup" onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} onBeforeGoogle={saveDraftBeforeGoogle} />;
 
   if (isMobileViewport && step === 1) {
     return (
@@ -1081,6 +1140,9 @@ function CheckoutContent({ locale = "en" }) {
         envelopeOptions={ORDERED_ENVELOPE_OPTIONS}
         heroOptions={HERO_VIDEO_OPTIONS}
         onComplete={completeMobileFunnel}
+        onGoogle={continueWithGoogle}
+        signedIn={Boolean(currentUser)}
+        linkSentTo={magicLinkSentTo}
       />
     );
   }
@@ -1097,7 +1159,13 @@ function CheckoutContent({ locale = "en" }) {
       if (!/^\S+@\S+\.\S+$/.test(account.email || '')) return setAuthError('Please enter a valid email address.');
       setDesktopSaving(true);
       try { await completeMobileFunnel(account.email.trim()); }
-      catch { setAuthError('We could not securely save your preview. Please try again.'); setDesktopSaving(false); }
+      catch { setAuthError('We could not send your sign-in link. Please try again.'); }
+      setDesktopSaving(false);
+    };
+    const authCopy = AUTH_COPY[locale] || AUTH_COPY.en;
+    const desktopGoogle = async () => {
+      setDesktopSaving(true);
+      try { await continueWithGoogle(); } catch { setAuthError(authCopy.googleError); setDesktopSaving(false); }
     };
     return (
       <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '2rem', color: '#3d2b1f', background: 'radial-gradient(circle at 80% 10%, rgba(176,137,104,.18), transparent 32%), #faf7f1' }}>
@@ -1112,9 +1180,20 @@ function CheckoutContent({ locale = "en" }) {
             <div style={{ width: 64, height: 64, display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem', borderRadius: '50%', color: '#fff', background: '#6e7b56', boxShadow: '0 0 0 12px #eef1e9', fontSize: '1.6rem' }}>✓</div>
             <h1 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem,5vw,3.4rem)', fontWeight: 400 }}>{emailCopy.title}</h1>
             <p style={{ margin: '0 auto 1.7rem', maxWidth: 430, color: '#806f62', lineHeight: 1.6 }}>{emailCopy.text}</p>
+            {magicLinkSentTo && !currentUser ? (
+              <div role="status" style={{ padding: '1.2rem', borderRadius: 18, background: '#f4efe7', color: '#3d2b1f', lineHeight: 1.55 }}>
+                <strong style={{ display: 'block', marginBottom: '.35rem' }}>✉ {authCopy.sent} {magicLinkSentTo}</strong>
+                <span style={{ color: '#806f62', fontSize: '.9rem' }}>{authCopy.sentHint}</span>
+              </div>
+            ) : (<>
+            {!currentUser && <>
+              <button type="button" onClick={desktopGoogle} disabled={desktopSaving} style={{ width: '100%', minHeight: 58, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, border: '1px solid #d9cbbb', borderRadius: 999, color: '#1a1a1a', background: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}><GoogleMark />{authCopy.google}</button>
+              <p aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1.1rem 0', color: '#8a7867', fontSize: '.8rem' }}><span style={{ flex: 1, height: 1, background: '#e3d6c8' }} />{authCopy.or}<span style={{ flex: 1, height: 1, background: '#e3d6c8' }} /></p>
+            </>}
             <input type="email" autoFocus autoComplete="email" value={account.email || ''} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder="you@example.com" style={{ ...inputStyle, height: 62, marginBottom: '1rem' }} />
             {authError && <p role="alert" style={{ color: '#a33b32', margin: '0 0 .75rem', fontSize: '.84rem' }}>{authError}</p>}
-            <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : emailCopy.button} →</button>
+            <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : currentUser ? emailCopy.button : authCopy.link} →</button>
+            </>)}
             <small style={{ display: 'block', marginTop: '.9rem', color: '#8b796b' }}>Private, secure and editable at any time.</small>
           </form>
         )}

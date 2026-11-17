@@ -5,6 +5,13 @@ import styles from "./mobile-funnel.module.css";
 import phoneStyles from "./mobile-funnel-phone.module.css";
 import buildingStyles from "./mobile-building.module.css";
 import layoutStyles from "./mobile-funnel-layout.module.css";
+import { GoogleMark } from "@/components/CheckoutAuth";
+
+const AUTH = {
+  en: { google: "Continue with Google", or: "or get a sign-in link by email", link: "Email me a sign-in link", sent: "Check your inbox: we sent a sign-in link to", hint: "Open it to continue. Your choices are saved in the link.", googleError: "Google sign-in could not start. Please use your email instead.", linkError: "We could not send the link. Please check your email address and try again." },
+  fr: { google: "Continuer avec Google", or: "ou recevez un lien de connexion par e-mail", link: "Recevoir mon lien de connexion", sent: "Vérifiez votre boîte mail : nous avons envoyé un lien de connexion à", hint: "Ouvrez-le pour continuer. Vos choix sont enregistrés dans le lien.", googleError: "La connexion Google n’a pas pu démarrer. Utilisez votre e-mail.", linkError: "Nous n’avons pas pu envoyer le lien. Vérifiez votre adresse e-mail et réessayez." },
+  es: { google: "Continuar con Google", or: "o recibid un enlace de acceso por correo", link: "Recibir mi enlace de acceso", sent: "Revisad vuestro correo: hemos enviado un enlace de acceso a", hint: "Abridlo para continuar. Vuestras elecciones van guardadas en el enlace.", googleError: "No se pudo iniciar sesión con Google. Usad vuestro correo.", linkError: "No hemos podido enviar el enlace. Revisad el correo e intentadlo de nuevo." },
+};
 
 const COPY = {
   en: {
@@ -123,8 +130,17 @@ export default function MobileInvitationFunnel({
   envelopeOptions,
   heroOptions,
   onComplete,
+  onGoogle,
+  signedIn = false,
+  linkSentTo = "",
 }) {
   const copy = COPY[locale] || COPY.en;
+  const auth = AUTH[locale] || AUTH.en;
+  const google = async () => {
+    setError("");
+    setSubmitting(true);
+    try { await onGoogle(); } catch { setError(auth.googleError); setSubmitting(false); }
+  };
   const [screen, setScreen] = useState(1);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -160,7 +176,7 @@ export default function MobileInvitationFunnel({
         await onComplete(account.email.trim());
       } catch (saveError) {
         console.warn("Preview save failed.", saveError);
-        setError(copy.saveError);
+        setError(signedIn ? copy.saveError : auth.linkError);
       } finally {
         setSubmitting(false);
       }
@@ -271,7 +287,15 @@ export default function MobileInvitationFunnel({
           <div className={styles.emailCard}>
             <div className={styles.readyMark}>✓</div>
             <div><strong>{copy.emailTitle}</strong><span>{copy.emailText}</span></div>
-            <label><span>Email</span><input type="email" autoFocus autoComplete="email" value={account.email} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder={copy.email} /></label>
+            {linkSentTo && !signedIn ? (
+              <p role="status" className={styles.linkSent}><strong>✉ {auth.sent} {linkSentTo}</strong><span>{auth.hint}</span></p>
+            ) : (<>
+              {!signedIn && onGoogle && <>
+                <button type="button" className={styles.googleButton} onClick={google} disabled={submitting}><GoogleMark />{auth.google}</button>
+                <p aria-hidden="true" className={styles.authDivider}><span />{auth.or}<span /></p>
+              </>}
+              <label><span>Email</span><input type="email" autoComplete="email" value={account.email} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder={copy.email} /></label>
+            </>)}
             <small>◇ {copy.private}</small>
           </div>
         )}
@@ -282,7 +306,7 @@ export default function MobileInvitationFunnel({
         <div className={phoneStyles.footerInner}>
           <div className={phoneStyles.socialProof}><strong>★★★★★ 4.9/5</strong><span>{copy.proof}</span></div>
           <button type="button" onClick={validateAndContinue} disabled={submitting}>
-            {submitting ? "…" : screen === 4 ? copy.pricing : copy.continue}<span aria-hidden="true">→</span>
+            {submitting ? "…" : screen === 4 ? (signedIn ? copy.pricing : auth.link) : copy.continue}<span aria-hidden="true">→</span>
           </button>
         </div>
       </footer>}
