@@ -6,11 +6,11 @@ import {templateMedia} from '../src/lib/template-catalog.mjs';
 import {mediaPosters} from '../src/lib/media-posters.mjs';
 import {existsSync} from 'node:fs';
 import {loadRoute,mockDatabase,request,ok,order} from './load-route.mjs';
-test('a large photo draft uses a short revision filter and retains the stored photo',async()=>{
+test('a large photo draft uses a short revision filter and keeps the stored photo, moved to storage',async()=>{
  const image='data:image/jpeg;base64,'+'a'.repeat(600000);const original={...order,details:{...order.details,gallery:[image]}};
- const db=mockDatabase([ok(original),ok(original)]);const route=await loadRoute('app/api/wedding/route.js',db);
+ const db=mockDatabase([ok(original),ok(original)]);db.storage={from:()=>({upload:async path=>ok({path}),getPublicUrl:path=>({data:{publicUrl:`https://test/media/${path}`}})})};const route=await loadRoute('app/api/wedding/route.js',db);
  assert.equal((await route.PATCH(request({slug:'couple',action:'details',details:{partner1:'Updated'},expectedVersion:0},'PATCH'))).status,200);
- const mutation=db.calls.at(-1);assert.ok(JSON.stringify(mutation.filters).length<250);assert.equal(mutation.value.details.gallery[0],image);assert.equal(mutation.value.details._draftVersion,1);
+ const mutation=db.calls.at(-1);assert.ok(JSON.stringify(mutation.filters).length<250);assert.match(mutation.value.details.gallery[0],/^https:\/\/test\/media\/weddings\/order-1\/.+\.jpg$/);assert.equal(mutation.value.details._draftVersion,1);
 });
 test('publish atomically includes the latest names, date, memories and dress photo',async()=>{
  const details={partner1:'New name',date:'2027-09-23',gallery:['https://test/photo.jpg'],dressCode:{image:'https://test/dress.jpg'},_seatingPlan:{tables:['forged']},publishedData:{bad:true},_draftVersion:999};
@@ -58,4 +58,30 @@ test('a couple video is uploaded directly to storage: the server only signs it a
  assert.equal((await post({slug:'couple',type:'video/mp4',size:51*1024*1024})).status,400);
  assert.equal((await post({slug:'couple',type:'application/x-msdownload',size:1000})).status,400);
  assert.equal(signed.length,1);
+});
+test('inline base64 media is moved to storage on save, including what was already stored and published',async()=>{
+ const pixel='data:image/png;base64,'+Buffer.alloc(900,7).toString('base64');
+ const stored={...order,details:{...order.details,images:{venue:pixel},publishedData:{images:{venue:pixel}}}};
+ const db=mockDatabase([ok(stored),ok(stored)]);const uploads=[];
+ db.storage={from:bucket=>({upload:async(path,bytes,options)=>{uploads.push({bucket,path,size:bytes.length,type:options.contentType});return ok({path});},getPublicUrl:path=>({data:{publicUrl:`https://test/media/${path}`}})})};
+ const route=await loadRoute('app/api/wedding/route.js',db);
+ const music='data:audio/mpeg;base64,'+Buffer.alloc(900,3).toString('base64');
+ const res=await route.PATCH(request({slug:'couple',action:'publish',details:{sounds:{bgMusic:music}},expectedVersion:0},'PATCH'));
+ assert.equal(res.status,200);
+ const saved=db.calls.at(-1).value.details;
+ assert.match(saved.sounds.bgMusic,/^https:\/\/test\/media\/weddings\/order-1\/.+\.mp3$/);
+ assert.match(saved.images.venue,/^https:\/\/test\/media\/weddings\/order-1\/.+\.png$/);
+ assert.equal(saved.publishedData.images.venue,saved.images.venue,'the same file is uploaded once and reused');
+ assert.ok(!JSON.stringify(saved).includes(';base64,'));
+ assert.equal(uploads.length,2);assert.equal(uploads[0].bucket,'media');
+});
+test('viewing an invitation moves its inline media to storage once, then serves the light version',async()=>{
+ const video='data:video/mp4;base64,'+Buffer.alloc(2000,1).toString('base64');
+ const stored={...order,details:{partner1:'Alice',videos:{envelope:video},publishedData:{partner1:'Alice',videos:{envelope:video}}}};
+ const db=mockDatabase([ok(stored),ok({...stored,details:{partner1:'Alice',videos:{envelope:'https://test/media/x.mp4'},publishedData:{partner1:'Alice',videos:{envelope:'https://test/media/x.mp4'}}}})]);let uploads=0;
+ db.storage={from:()=>({upload:async path=>{uploads++;return ok({path});},getPublicUrl:path=>({data:{publicUrl:`https://test/media/${path}`}})})};
+ const route=await loadRoute('app/api/invitation/route.js',db);
+ const res=await route.GET(new Request('http://localhost/api/invitation?slug=couple'));assert.equal(res.status,200);
+ const body=await res.json();assert.match(body.invitation.videos.envelope,/^https:\/\/test\/media\//);assert.equal(uploads,1);
+ assert.equal(db.calls.at(-1).operation,'update');assert.ok(!JSON.stringify(db.calls.at(-1).value.details).includes(';base64,'));
 });

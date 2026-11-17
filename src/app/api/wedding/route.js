@@ -1,4 +1,4 @@
-import { authenticated, ownedOrder, updateDetails } from '@/lib/server-database';
+import { authenticated, ownedOrder, updateDetails, extractInlineMedia, mediaUploader } from '@/lib/server-database';
 import { validateSeating } from '@/lib/seating.mjs';
 import { SERVER_ONLY_KEYS } from '@/lib/ai-credits';
 
@@ -21,7 +21,9 @@ export async function PATCH(request) {
     const access = await ownedOrder(request, body.slug);
     if (access.error) return reply({ error: access.error }, access.status);
     const { db, order } = access;
-    const details = { ...(order.details || {}) };
+    let details = { ...(order.details || {}) };
+    const mediaCache = new Map();
+    const uploadMedia = mediaUploader(db, order.id);
     if (body.action === 'seating') {
       const current = details._seatingPlan || { version: 0, tables: [] };
       if (body.version !== current.version) return reply({ error: 'This plan changed on another device. Reload it before editing.', conflict: true }, 409);
@@ -36,7 +38,7 @@ export async function PATCH(request) {
       if (body.expectedVersion != null && body.expectedVersion !== draftVersion) return reply({error:'Your wedding changed on another device. Reload it before editing; your current form has been kept.',conflict:true},409);
       if (body.action === 'details' || body.details != null) {
       if (!body.details || typeof body.details !== 'object' || Array.isArray(body.details)) return reply({ error: 'Invalid wedding details.' }, 400);
-      const patch = { ...body.details };
+      const patch = await extractInlineMedia({ ...body.details }, uploadMedia, mediaCache);
       delete patch._seatingPlan;
       delete patch.publishedData;
       delete patch._draftVersion;
@@ -44,6 +46,7 @@ export async function PATCH(request) {
       if (JSON.stringify(patch).length > 3000000) return reply({ error: 'These images are too large. Please upload smaller images and retry.' }, 413);
       Object.assign(details, patch);
       }
+      details = await extractInlineMedia(details, uploadMedia, mediaCache);
       details._draftVersion = draftVersion + 1;
       if (body.action === 'publish') {
       const published = { ...details };

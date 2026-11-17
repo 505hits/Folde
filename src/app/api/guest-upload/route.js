@@ -40,7 +40,7 @@ function cleanSlug(value) {
 async function findWedding(supabase, slug) {
   const { data, error } = await supabase
     .from('orders')
-    .select('id,slug,couple,status,details,paid')
+    .select('id,slug,couple,status,paid,publishedLanguage:details->publishedData->>language,draftLanguage:details->>language')
     .eq('slug', slug)
     .maybeSingle();
   if (error) throw error;
@@ -92,8 +92,8 @@ export async function GET(request) {
       };
     });
 
-    const published = wedding.details?.publishedData || wedding.details || {};
-    return response({ success: true, wedding: { slug: wedding.slug, couple: wedding.couple, language: published.language || 'en' }, photos, nextOffset: rows.length > pageSize ? offset + pageSize : null });
+    const language = wedding.publishedLanguage || wedding.draftLanguage || 'en';
+    return response({ success: true, wedding: { slug: wedding.slug, couple: wedding.couple, language }, photos, nextOffset: rows.length > pageSize ? offset + pageSize : null });
   } catch (error) {
     console.error('Guest gallery load error:', error?.message || 'Database or storage request failed');
     return response({ error: 'We could not load this private gallery.' }, 500);

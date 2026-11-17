@@ -1,4 +1,4 @@
-import { database, ownedOrder } from '@/lib/server-database';
+import { database, ownedOrder, migrateInlineMedia } from '@/lib/server-database';
 import { SERVER_ONLY_KEYS } from '@/lib/ai-credits';
 
 export async function GET(request) {
@@ -13,12 +13,13 @@ export async function GET(request) {
       if (access.error) return Response.json({ error: access.error }, { status: access.status });
       order = access.order;
     } else {
-      const result = await db.from('orders').select('slug,details,paid,status,plan,theme,couple').eq('slug', slug).maybeSingle();
+      const result = await db.from('orders').select('id,updated_at,slug,details,paid,status,plan,theme,couple').eq('slug', slug).maybeSingle();
       if (result.error) return Response.json({ error: 'Unable to load invitation.' }, { status: 503 });
       order = result.data;
       if (!order?.paid || order.status !== 'Live') return Response.json({ error: 'Invitation is not available.' }, { status: 404 });
     }
     if (!order) return Response.json({ error: 'Invitation not found.' }, { status: 404 });
+    order = await migrateInlineMedia(db, order);
     const details = { ...(params.get('preview') === 'true' ? order.details : (order.details?.publishedData || order.details)) };
     delete details._seatingPlan;
     delete details._draftVersion;

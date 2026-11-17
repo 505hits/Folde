@@ -16,7 +16,7 @@ async function load(db, storage) {
  source=source.replace("'@/lib/request-security'",JSON.stringify(securityUrl)).replace("'@/lib/image-file.mjs'",JSON.stringify(imageUrl));
  return import(moduleUrl(source));
 }
-const wedding={paid:true,status:'Live',id:'test-order',slug:'test-couple',couple:'Test couple',details:{language:'fr',publishedData:{language:'es'}}};
+const wedding={paid:true,status:'Live',id:'test-order',slug:'test-couple',couple:'Test couple',publishedLanguage:'es',draftLanguage:'fr'};
 function upload() { const form=new FormData();form.set('slug','test-couple');form.set('file',new File([new Uint8Array([255,216,255,224])],'test.jpg',{type:'image/jpeg'}));return new Request('https://test/api/guest-upload',{method:'POST',body:form}); }
 test('a saved photo survives both a signing error and an unexpected signing exception',async()=>{
  for(const throws of [false,true]) {
