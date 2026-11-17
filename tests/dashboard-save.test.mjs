@@ -49,3 +49,13 @@ test('media upload requires ownership and returns the durable stored URL',async(
  const response=await route.POST(new Request('http://localhost/api/wedding-media',{method:'POST',headers:{authorization:'Bearer valid'},body:form}));assert.equal(response.status,200);assert.match((await response.json()).url,/^https:\/\/test\/media\/weddings\/order-1\//);assert.equal(calls[0].options.upsert,false);
  const anonymous=new FormData();anonymous.set('slug','couple');assert.equal((await route.POST(new Request('http://localhost/api/wedding-media',{method:'POST',body:anonymous}))).status,401);assert.equal(calls.length,1);
 });
+test('a couple video is uploaded directly to storage: the server only signs it and checks type and size',async()=>{
+ const db=mockDatabase([ok(order),ok(order),ok(order)]);const signed=[];db.storage={from:bucket=>({createSignedUploadUrl:async path=>{signed.push({bucket,path});return ok({path,token:'signed-token'});},getPublicUrl:path=>({data:{publicUrl:`https://test/media/${path}`}})})};
+ const route=await loadRoute('app/api/wedding-media/route.js',db);
+ const post=body=>route.POST(new Request('http://localhost/api/wedding-media',{method:'POST',headers:{authorization:'Bearer valid','content-type':'application/json'},body:JSON.stringify(body)}));
+ const ok1=await post({slug:'couple',type:'video/mp4',size:20*1024*1024});assert.equal(ok1.status,200);
+ const result=await ok1.json();assert.equal(result.upload.token,'signed-token');assert.match(result.upload.path,/^weddings\/order-1\/.+\.mp4$/);assert.equal(result.url,`https://test/media/${result.upload.path}`);
+ assert.equal((await post({slug:'couple',type:'video/mp4',size:51*1024*1024})).status,400);
+ assert.equal((await post({slug:'couple',type:'application/x-msdownload',size:1000})).status,400);
+ assert.equal(signed.length,1);
+});

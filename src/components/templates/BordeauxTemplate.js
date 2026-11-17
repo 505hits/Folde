@@ -548,6 +548,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     showGallery: true
   };
 
+  const dateDisplay = ['countdown', 'reveal', 'none'].includes(sections.dateDisplay) ? sections.dateDisplay : (signature ? 'countdown' : 'reveal');
+
   const images = t.images || {};
   const videos = t.videos || {};
   const sounds = t.sounds || {};
@@ -858,8 +860,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </section>
         )}
 
-        {/* ================= SCRATCH REVEAL DATE ================= */}
-        {signature ? (
+        {/* ================= DATE: COUNTDOWN OR SCRATCH REVEAL ================= */}
+        {/* Couples choose in the dashboard; designs keep their original default. */}
+        {dateDisplay === 'none' ? null : dateDisplay === 'countdown' ? (
           <FlipCountdown targetDate={targetDate} targetTime={t.time} language={data?.language} eyebrow={t.countdownEyebrow} title={t.countdownTitle} accentColor={theme.accent} bgColor={theme.primary} textColor="#fff" />
         ) : (
           <ScratchReveal
@@ -1270,5 +1273,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     </div>
   );
 }
+
+// Signature designs open on a countdown; the others on the scratch-to-reveal date.
+export const defaultDateDisplay = (themeId) => (signatureContent[themeId] ? 'countdown' : 'reveal');
 
 export default React.memo(BordeauxTemplate);

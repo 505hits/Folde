@@ -11,7 +11,7 @@ import Image from "next/image";
 import { useDatabase } from "@/context/DatabaseContext";
 import { supabase } from "@/lib/supabase";
 import InteractiveVideo from "@/components/InteractiveVideo";
-import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
+import BordeauxTemplate, { defaultDateDisplay } from "@/components/templates/BordeauxTemplate";
 import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
 import { dashboardLocale } from '@/lib/dashboard-locale.mjs';
 import { selectHero } from '@/lib/wedding-media.mjs';
@@ -1366,6 +1366,19 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   };
 
   const [uploadError, setUploadError] = useState('');
+  // Videos and music go straight to storage; only their address is saved.
+  const uploadMediaFile = async (file) => {
+    if (!file) return null;
+    setUploadError('');
+    setMediaUploads(count=>count+1);
+    try {
+      const prepared = await weddingRequest('/api/wedding-media', { method: 'POST', body: JSON.stringify({ slug, type: file.type, size: file.size }) });
+      const { error } = await supabase.storage.from(prepared.upload.bucket).uploadToSignedUrl(prepared.upload.path, prepared.upload.token, file, { contentType: file.type, upsert: false });
+      if (error) throw new Error('The file could not be uploaded. Please try again.');
+      return prepared.url;
+    } catch(error) { setUploadError(error.message || 'The file could not be uploaded. Please try again.'); return null; }
+    finally {setMediaUploads(count=>Math.max(0,count-1));}
+  };
   const uploadImage = async (file) => {
     if (!file) return null;
     setUploadError('');
@@ -1815,6 +1828,35 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             );
           })}
         </div>
+        {(() => {
+          const designDefault = defaultDateDisplay(local.themeId || selectedTheme);
+          const current = ['countdown', 'reveal', 'none'].includes(local.sections?.dateDisplay) ? local.sections.dateDisplay : designDefault;
+          const options = [
+            { value: 'countdown', label: 'Countdown clock', hint: 'Days, hours and minutes until the wedding' },
+            { value: 'reveal', label: 'Scratch to reveal the date', hint: 'Guests scratch three circles to discover the date' },
+            { value: 'none', label: 'Hide this section', hint: 'No date section on the invitation' },
+          ];
+          return (
+            <fieldset style={{ margin: '1.5rem 0 0', padding: 0, border: 0 }}>
+              <legend style={{ fontSize: '0.95rem', fontWeight: 700, color: '#5C3A1E', marginBottom: '0.35rem' }}>Date section</legend>
+              <p style={{ fontSize: '0.8rem', color: '#666', margin: '0 0 0.75rem' }}>Choose how the wedding date appears after the introduction. The countdown uses the date and time set above; its eyebrow and title can be edited in the text fields.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
+                {options.map(option => {
+                  const active = current === option.value;
+                  return (
+                    <label key={option.value} style={{ display: 'flex', gap: '0.7rem', alignItems: 'flex-start', padding: '0.8rem 1rem', borderRadius: '12px', backgroundColor: active ? '#f4f7f4' : '#fafafa', border: active ? '1px solid #7b906f' : '1px solid #e0e0e0', cursor: 'pointer' }}>
+                      <input type="radio" name="dateDisplay" value={option.value} checked={active} onChange={() => handleChange('sections', { ...(local.sections || {}), dateDisplay: option.value })} style={{ marginTop: '0.2rem', accentColor: '#7b906f' }} />
+                      <span>
+                        <span style={{ display: 'block', fontSize: '0.88rem', fontWeight: 600, color: active ? '#2e5b32' : '#555' }}>{option.label}{option.value === designDefault ? ' · design default' : ''}</span>
+                        <span style={{ display: 'block', fontSize: '0.76rem', color: '#888', marginTop: '0.15rem' }}>{option.hint}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          );
+        })()}
       </div>
 
       {/* Media & Videos */}
@@ -1863,16 +1905,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             {
               local.videos?.envelope === 'custom' || (!AVAILABLE_ENVELOPE_VIDEOS.find(v => v.url === local.videos?.envelope) && local.videos?.envelope && local.videos?.envelope !== 'custom') ? (
                 <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <StyledFileInput accept="video/*" label="Upload Envelope Video" onChange={e => {
-                    if (e.target.files[0]) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        const newState = { ...(local.videos || {}) };
-                        newState.envelope = reader.result;
-                        handleChange('videos', newState);
-                      };
-                      reader.readAsDataURL(e.target.files[0]);
-                    }
+                  <StyledFileInput accept="video/mp4,video/quicktime,video/webm" label="Upload Envelope Video" onChange={async e => {
+                    const url = await uploadMediaFile(e.target.files[0]);
+                    if (url) handleChange('videos', { ...(local.videos || {}), envelope: url });
                   }} />
                 </div>
               ) : null
@@ -1950,16 +1985,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </div>
             {local.videos?.hero === 'custom' || (!AVAILABLE_HERO_VIDEOS.find(v => v.url === local.videos?.hero) && local.videos?.hero && local.videos?.hero !== 'custom') ? (
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <StyledFileInput accept="video/*" label="Upload Hero Video" onChange={e => {
-                  if (e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      const newState = { ...(local.videos || {}) };
-                      newState.hero = reader.result;
-                      handleChange('videos', newState);
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                  }
+                <StyledFileInput accept="video/mp4,video/quicktime,video/webm" label="Upload Hero Video" onChange={async e => {
+                  const url = await uploadMediaFile(e.target.files[0]);
+                  if (url) handleChange('videos', { ...(local.videos || {}), hero: url });
                 }} />
               </div>
             ) : null}
@@ -2036,16 +2064,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
             </div>
             {local.sounds?.bgMusic === 'custom' || (!AVAILABLE_SOUNDS.find(v => v.url === local.sounds?.bgMusic) && local.sounds?.bgMusic && local.sounds?.bgMusic !== 'custom') ? (
               <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <StyledFileInput accept="audio/*" label="Upload Audio Track" onChange={e => {
-                  if (e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      const newState = { ...(local.sounds || {}) };
-                      newState.bgMusic = reader.result;
-                      handleChange('sounds', newState);
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                  }
+                <StyledFileInput accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/x-wav,audio/ogg" label="Upload Audio Track" onChange={async e => {
+                  const url = await uploadMediaFile(e.target.files[0]);
+                  if (url) handleChange('sounds', { ...(local.sounds || {}), bgMusic: url });
                 }} />
               </div>
             ) : null}
@@ -2068,13 +2089,9 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      const newState = { ...(local.images || {}) };
-                      newState.venue = reader.result;
-                      handleChange('images', newState);
-                    };
-                    reader.readAsDataURL(file);
+                    uploadImage(file).then(url => {
+                      if (url) handleChange('images', { ...(local.images || {}), venue: url });
+                    });
                   }
                 }}
               />
