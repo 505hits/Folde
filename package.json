@@ -7,22 +7,23 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test tests/payment-routes.cjs tests/paid-order.test.mjs tests/rsvp.test.mjs tests/seating.test.mjs tests/wedding.test.mjs tests/local-recovery.test.mjs tests/template-copy.test.mjs tests/guest-photos.test.mjs tests/dashboard-save.test.mjs",
+    "test": "node --test tests/payment-routes.cjs tests/paid-order.test.mjs tests/rsvp.test.mjs tests/seating.test.mjs tests/wedding.test.mjs tests/local-recovery.test.mjs tests/template-copy.test.mjs tests/guest-photos.test.mjs tests/dashboard-save.test.mjs tests/request-security.test.mjs",
     "test:e2e": "node tests/checkout-auth.cjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.12.0",
     "@supabase/supabase-js": "^2.110.8",
+    "botid": "1.5.13",
     "hls.js": "^1.6.16",
-    "next": "16.2.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-player": "^3.4.0",
     "stripe": "^22.3.2"
   },
   "devDependencies": {
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "16.4.6",
     "ffmpeg-static": "^5.3.0",
     "playwright": "1.65.0"
   }

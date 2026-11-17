@@ -45,7 +45,7 @@ test('all 36 dashboard designs have an actual media source and a bundled static 
 });
 test('media upload requires ownership and returns the durable stored URL',async()=>{
  const db=mockDatabase([ok(order)]);const calls=[];db.storage={from:bucket=>({upload:async(path,bytes,options)=>{calls.push({bucket,path,size:bytes.length,options});return ok({path});},getPublicUrl:path=>({data:{publicUrl:`https://test/media/${path}`}})})};
- const route=await loadRoute('app/api/wedding-media/route.js',db);const form=new FormData();form.set('slug','couple');form.set('file',new File(['test image'],'dress.jpg',{type:'image/jpeg'}));
+ const route=await loadRoute('app/api/wedding-media/route.js',db);const form=new FormData();form.set('slug','couple');form.set('file',new File([new Uint8Array([255,216,255,224])],'dress.jpg',{type:'image/jpeg'}));
  const response=await route.POST(new Request('http://localhost/api/wedding-media',{method:'POST',headers:{authorization:'Bearer valid'},body:form}));assert.equal(response.status,200);assert.match((await response.json()).url,/^https:\/\/test\/media\/weddings\/order-1\//);assert.equal(calls[0].options.upsert,false);
  const anonymous=new FormData();anonymous.set('slug','couple');assert.equal((await route.POST(new Request('http://localhost/api/wedding-media',{method:'POST',body:anonymous}))).status,401);assert.equal(calls.length,1);
 });

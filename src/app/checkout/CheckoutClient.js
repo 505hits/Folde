@@ -8,6 +8,7 @@ import { useDatabase } from "@/context/DatabaseContext";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
+import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
 import CheckoutAuth from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
@@ -897,10 +898,11 @@ function CheckoutContent({ locale = "en" }) {
       // ── 2. Notify the Foldè studio. A mail issue must never lose the brief. ──
       let deliveryWarning = '';
       try {
-        const emailRes = await fetch('/api/send-order', {
+        const emailRes = await authenticatedFetch('/api/send-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            slug,
             packageName: selectedPackage.name,
             price: total,
             name: account.name || currentUser?.name || 'Client',
@@ -1004,13 +1006,12 @@ function CheckoutContent({ locale = "en" }) {
     const resumeToken = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 
     try {
-      const response = await fetch('/api/send-preview', {
+      const result = await weddingRequest('/api/send-preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, locale, name: draft.name, partnerName: draft.partnerName, resumeToken, draft }),
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || !result.saved) throw new Error(result.error || 'Unable to save preview.');
+      if (!result.saved) throw new Error(result.error || 'Unable to save preview.');
     } catch (error) {
       console.warn('Preview could not be saved.', error);
       throw error;

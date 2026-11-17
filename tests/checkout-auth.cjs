@@ -10,7 +10,9 @@ const base = process.env.TEST_BASE_URL || 'http://localhost:3100';
     const context = await browser.newContext();
     const page = await context.newPage();
     page.on('pageerror', error => console.error('Browser error:', error.message));
-    let authMode = 'invalid', payments = [];
+    let authMode = 'invalid', payments = [], paidOrder = null;
+    await context.route('**/api/wedding', route => route.fulfill({json:{orders: paidOrder ? [paidOrder] : []}}));
+    await context.route('**/api/rsvp?**', route => route.fulfill({json:{guests:[]}}));
     const user = { id: '11111111-1111-4111-8111-111111111111', email: 'buyer@example.org', user_metadata: { name: 'Emma', partner_name: 'Lucas' }, aud: 'authenticated', role: 'authenticated' };
     const token = `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(JSON.stringify({ sub: user.id, exp: Math.floor(Date.now()/1000)+3600 })).toString('base64url')}.signature`;
     await context.route('https://local-test.supabase.co/**', async route => {
@@ -59,7 +61,9 @@ const base = process.env.TEST_BASE_URL || 'http://localhost:3100';
     assert.equal(payments.length, 2, 'The genuine Supabase session survives a page reload');
     console.log('PASS session restored after reload');
 
+    paidOrder = {id:'test-order',slug:'emma-lucas-test',user_id:user.id,user_email:user.email,couple:'Emma & Lucas',paid:true,plan:'Standard',status:'Live',details:{partner1:'Emma',partner2:'Lucas',date:'2027-05-23'}};
     await context.route('**/api/verify-session', route => route.fulfill({ json: {
+      order: paidOrder,
       status: 'paid', customerEmail: user.email, amountTotal: 4990,
       metadata: { email: user.email, name: 'Emma', partnerName: 'Lucas', theme: 'rosas', plan: 'essential' },
     } }));

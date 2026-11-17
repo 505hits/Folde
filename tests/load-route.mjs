@@ -11,8 +11,11 @@ export async function loadRoute(file, db) {
   const databaseSource = (await readFile(new URL('../src/lib/server-database.js', import.meta.url), 'utf8')).replace("'@supabase/supabase-js'", JSON.stringify(client));
   const dbUrl = moduleUrl(databaseSource);
   const seatingUrl = moduleUrl(await readFile(new URL('../src/lib/seating.mjs', import.meta.url), 'utf8'));
+  const securityUrl = moduleUrl((await readFile(new URL('../src/lib/request-security.js', import.meta.url), 'utf8')).replace("'botid/server'", JSON.stringify(moduleUrl('export const checkBotId = async () => ({isBot:false});'))));
+  const imageUrl = moduleUrl(await readFile(new URL('../src/lib/image-file.mjs', import.meta.url), 'utf8'));
   let source = await readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
   source = source.replaceAll("'@/lib/server-database'", JSON.stringify(dbUrl)).replaceAll("'@/lib/seating.mjs'", JSON.stringify(seatingUrl));
+  source = source.replaceAll("'@/lib/request-security'", JSON.stringify(securityUrl)).replaceAll("'@/lib/image-file.mjs'", JSON.stringify(imageUrl));
   return import(moduleUrl(`${source}\n// test ${key}`));
 }
 

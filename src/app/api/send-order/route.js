@@ -1,4 +1,7 @@
+import { protectRequest } from '@/lib/request-security';
 import { NextResponse } from 'next/server';
+
+import { ownedOrder } from '@/lib/server-database';
 
 const escapeHtml = (value = '') => String(value)
   .replace(/&/g, '&amp;')
@@ -25,13 +28,19 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
+    if (typeof data.slug !== 'string') return NextResponse.json({error:'Wedding is required.'},{status:400});
+    const access = await ownedOrder(request, data.slug);
+    if (access.error) return NextResponse.json({error:access.error},{status:access.status});
+    if (!access.order.paid || !['custom','expert'].includes(String(access.order.plan).toLowerCase())) return NextResponse.json({error:'An Expert order is required.'},{status:403});
+    const blocked = await protectRequest(request, { limit: 5, maxBytes: 3145728 });
+    if (blocked) return blocked;
+    const email = access.user.email;
 
     const {
       packageName,
       price,
       name,
       partnerName,
-      email,
       phone,
       weddingDate,
       weddingVenue,
@@ -56,7 +65,7 @@ export async function POST(request) {
       : 'Not specified';
 
     const attachmentSummary = attachments && attachments.length > 0
-      ? attachments.map(a => `<li>📄 ${a.filename}</li>`).join('')
+      ? attachments.map(a => `<li>📄 ${escapeHtml(a.filename)}</li>`).join('')
       : 'No attached files';
 
     const emailBody = `
@@ -87,45 +96,45 @@ export async function POST(request) {
     <div class="container">
       <div class="header">
         <h1>✨ New Order</h1>
-        <p>${name} & ${partnerName}</p>
-        <div class="badge">${packageName} — ${price}$</div>
+        <p>${escapeHtml(name)} & ${escapeHtml(partnerName)}</p>
+        <div class="badge">${escapeHtml(packageName)} — ${escapeHtml(price)}$</div>
       </div>
       
       <div class="content">
         <div class="section">
           <div class="section-title">👤 Client Information</div>
-          <div class="row"><span class="label">Name</span><span class="value">${name}</span></div>
-          <div class="row"><span class="label">Partner</span><span class="value">${partnerName}</span></div>
-          <div class="row"><span class="label">Email</span><span class="value">${email}</span></div>
-          <div class="row"><span class="label">Phone</span><span class="value">${phone || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Name</span><span class="value">${escapeHtml(name)}</span></div>
+          <div class="row"><span class="label">Partner</span><span class="value">${escapeHtml(partnerName)}</span></div>
+          <div class="row"><span class="label">Email</span><span class="value">${escapeHtml(email)}</span></div>
+          <div class="row"><span class="label">Phone</span><span class="value">${escapeHtml(phone || 'Not provided')}</span></div>
         </div>
 
         <div class="section">
           <div class="section-title">💒 Wedding Details</div>
-          <div class="row"><span class="label">Date</span><span class="value">${weddingDate || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Venue</span><span class="value">${weddingVenue || 'Not provided'}</span></div>
-          <div class="row"><span class="label">City</span><span class="value">${weddingCity || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Guest Count</span><span class="value">${guestCount || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Languages</span><span class="value">${languages || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Date</span><span class="value">${escapeHtml(weddingDate || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Venue</span><span class="value">${escapeHtml(weddingVenue || 'Not provided')}</span></div>
+          <div class="row"><span class="label">City</span><span class="value">${escapeHtml(weddingCity || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Guest Count</span><span class="value">${escapeHtml(guestCount || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Languages</span><span class="value">${escapeHtml(languages || 'Not provided')}</span></div>
         </div>
 
         <div class="section">
           <div class="section-title">🎨 Design Preferences</div>
-          <div class="row"><span class="label">Selected Theme</span><span class="value">${selectedTheme || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Envelope</span><span class="value">${envelopeChoice || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Hero Video</span><span class="value">${heroVideoChoice || 'Not provided'}</span></div>
-          <div class="row"><span class="label">Colors</span><span class="value">${colorPreferences || 'Not provided'}</span></div>
+          <div class="row"><span class="label">Selected Theme</span><span class="value">${escapeHtml(selectedTheme || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Envelope</span><span class="value">${escapeHtml(envelopeChoice || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Hero Video</span><span class="value">${escapeHtml(heroVideoChoice || 'Not provided')}</span></div>
+          <div class="row"><span class="label">Colors</span><span class="value">${escapeHtml(colorPreferences || 'Not provided')}</span></div>
         </div>
 
         <div class="section">
           <div class="section-title">📋 Requested Sections</div>
-          <div class="note-box">${sectionsText}</div>
+          <div class="note-box">${escapeHtml(sectionsText)}</div>
         </div>
 
         ${menuDetails ? `
         <div class="section">
           <div class="section-title">🍽️ Menu / Reception Details</div>
-          <div class="note-box">${menuDetails}</div>
+          <div class="note-box">${escapeHtml(menuDetails)}</div>
         </div>
         ` : ''}
 
@@ -137,14 +146,14 @@ export async function POST(request) {
         ${inspirationLinks ? `
         <div class="section">
           <div class="section-title">🔗 Inspiration Links</div>
-          <div class="note-box">${inspirationLinks}</div>
+          <div class="note-box">${escapeHtml(inspirationLinks)}</div>
         </div>
         ` : ''}
 
         ${specialRequests ? `
         <div class="section">
           <div class="section-title">💬 Special Requests / Additional Details</div>
-          <div class="note-box">${specialRequests}</div>
+          <div class="note-box">${escapeHtml(specialRequests)}</div>
         </div>
         ` : ''}
 

@@ -1,5 +1,6 @@
+import { protectRequest } from '@/lib/request-security';
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { authenticated } from "@/lib/server-database";
 
 const escapeHtml = (value = "") => String(value)
   .replace(/&/g, "&amp;")
@@ -16,16 +17,17 @@ const getFromAddress = () => {
 
 export async function POST(request) {
   try {
-    const { email, locale = "en", name = "", partnerName = "", resumeToken = "", draft = {} } = await request.json();
-    if (!/^\S+@\S+\.\S+$/.test(email || "") || !resumeToken) {
+    const access = await authenticated(request);
+    if (access.error) return NextResponse.json({ error: access.error }, { status: access.status });
+    const blocked = await protectRequest(request, { limit: 5, maxBytes: 600000 });
+    if (blocked) return blocked;
+    const email = access.user.email;
+    const { locale = "en", name = "", partnerName = "", resumeToken = "", draft = {} } = await request.json();
+    if (!/^\S+@\S+\.\S+$/.test(email || "") || typeof resumeToken !== "string" || !/^[\w-]{1,4096}$/.test(resumeToken) || JSON.stringify(draft).length > 500000) {
       return NextResponse.json({ success: false, error: "Invalid preview request." }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceKey) return NextResponse.json({ success: false, saved: false, error: "Preview storage is not configured." }, { status: 503 });
-    const supabase = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { error: saveError } = await supabase.from("preview_drafts").upsert({
+    const { error: saveError } = await access.db.from("preview_drafts").upsert({
       email: String(email).trim().toLowerCase(), name, partner_name: partnerName, locale,
       selected_theme: draft.selectedTheme || null,
       selected_envelope: draft.selectedEnvelope || null,
@@ -41,7 +43,7 @@ export async function POST(request) {
       return NextResponse.json({ success: true, saved: true, delivered: false });
     }
 
-    const origin = request.headers.get("origin") || "https://folde-wedding.com";
+    const origin = "https://folde-wedding.com";
     const localePrefix = ["fr", "es"].includes(locale) ? `/${locale}` : "";
     const previewUrl = `${origin}${localePrefix}/checkout?resume=${encodeURIComponent(resumeToken)}`;
     const safeNames = `${escapeHtml(name)} &amp; ${escapeHtml(partnerName)}`;

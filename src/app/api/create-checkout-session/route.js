@@ -1,3 +1,4 @@
+import { protectRequest } from '@/lib/request-security';
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -21,15 +22,16 @@ export async function POST(request) {
     const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     const { data: { user }, error: authError } = await auth.auth.getUser(token);
     if (authError || !user?.email) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
+    const blocked = await protectRequest(request, { limit: 10, maxBytes: 20000 });
+    if (blocked) return blocked;
     const email = user.email;
 
-    const planConfig = PLAN_CONFIG[plan];
+    const planConfig = Object.hasOwn(PLAN_CONFIG, plan) ? PLAN_CONFIG[plan] : null;
     if (!planConfig) {
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
     }
 
-    // Déterminer l'URL de base
-    const origin = request.headers.get('origin') || 'https://folde-wedding.com';
+    const origin = new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://folde-wedding.com').origin;
     const localePrefix = ['fr', 'es'].includes(locale) ? `/${locale}` : '';
     const selectedTheme = theme || 'bordeaux';
 

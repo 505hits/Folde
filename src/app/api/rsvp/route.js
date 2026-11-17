@@ -1,3 +1,4 @@
+import { protectRequest } from '@/lib/request-security';
 import { randomUUID } from 'node:crypto';
 import { database, ownedOrder } from '@/lib/server-database';
 
@@ -17,6 +18,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const blocked = await protectRequest(request, {"limit":120,"maxBytes":20000});
+  if (blocked) return blocked;
   try {
     const body = await request.json();
     const { slug, name } = body;

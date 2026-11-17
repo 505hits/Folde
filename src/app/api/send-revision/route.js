@@ -1,16 +1,29 @@
+import { protectRequest } from '@/lib/request-security';
 import { NextResponse } from 'next/server';
+
+import { ownedOrder } from '@/lib/server-database';
+
+const escapeHtml = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 
 export async function POST(request) {
   try {
     const data = await request.json();
-    const { userEmail, coupleName, slug, revisionNumber, comment, origin } = data;
+    const { slug, revisionNumber, comment } = data;
+    if (typeof slug !== 'string' || ![1, 2].includes(revisionNumber)) return NextResponse.json({error:'Invalid revision.'},{status:400});
+    const access = await ownedOrder(request, slug);
+    if (access.error) return NextResponse.json({error:access.error},{status:access.status});
+    if (!access.order.paid) return NextResponse.json({error:'An active order is required.'},{status:403});
+    const blocked = await protectRequest(request, { limit: 5, maxBytes: 20000 });
+    if (blocked) return blocked;
+    const userEmail = access.user.email;
+    const coupleName = access.order.couple;
 
-    if (!comment || !comment.trim()) {
+    if (typeof comment !== 'string' || !comment.trim() || comment.length > 5000) {
       return NextResponse.json({ error: 'Comment is required' }, { status: 400 });
     }
 
     const resendKey = process.env.RESEND_API_KEY;
-    const siteLink = `${origin || 'https://folde-wedding.com'}/invite/${slug}`;
+    const siteLink = `https://folde-wedding.com/invite/${encodeURIComponent(slug)}`;
     const subject = `[REVISION REQUEST ${revisionNumber}/2] — ${coupleName} (${userEmail})`;
 
     const emailHtml = `
@@ -44,14 +57,14 @@ export async function POST(request) {
     </div>
     <div class="content">
       <div class="info-box">
-        <div class="info-row"><span class="info-label">Couple:</span><span class="info-value">${coupleName}</span></div>
-        <div class="info-row"><span class="info-label">Client Email:</span><span class="info-value">${userEmail}</span></div>
-        <div class="info-row"><span class="info-label">Slug:</span><span class="info-value">${slug}</span></div>
+        <div class="info-row"><span class="info-label">Couple:</span><span class="info-value">${escapeHtml(coupleName)}</span></div>
+        <div class="info-row"><span class="info-label">Client Email:</span><span class="info-value">${escapeHtml(userEmail)}</span></div>
+        <div class="info-row"><span class="info-label">Slug:</span><span class="info-value">${escapeHtml(slug)}</span></div>
         <div class="info-row"><span class="info-label">Revision #:</span><span class="info-value">${revisionNumber} / 2</span></div>
       </div>
 
       <div class="comment-title">📝 Requested Changes / Comments</div>
-      <div class="comment-box">${comment.trim()}</div>
+      <div class="comment-box">${escapeHtml(comment.trim())}</div>
 
       <div style="text-align: center;">
         <a href="${siteLink}" class="link-btn" target="_blank">View Client Website →</a>
@@ -89,12 +102,7 @@ export async function POST(request) {
       }
     }
 
-    console.log(`=== REVISION REQUEST RECEIVED (${subject}) ===`);
-    console.log(comment);
-    console.log(`Link: ${siteLink}`);
-    console.log('============================================');
-
-    return NextResponse.json({ success: true, method: 'logged' });
+    return NextResponse.json({ error: 'Unable to send the revision request.' }, { status: 503 });
 
   } catch (error) {
     console.error('Error processing revision request:', error);

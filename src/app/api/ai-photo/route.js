@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 
+import { aiAccess, readTask, signTask } from '@/lib/ai-access';
+
 const KIE_API_KEY = process.env.KIE_API_KEY;
 
 export async function POST(req) {
     try {
+        const access = await aiAccess(req);
+        if (access.error) return NextResponse.json({ error: access.error }, { status: access.status });
         const body = await req.json();
         const { prompt, imageUrls, imageSize = '1:1', outputFormat = 'png' } = body;
 
-        if (!prompt) {
+        if (typeof prompt !== 'string' || !prompt.trim() || prompt.length > 4000) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
         }
 
@@ -63,9 +67,11 @@ export async function POST(req) {
             return NextResponse.json({ error: data.msg || 'Failed to create AI photo task' }, { status: response.status || 500 });
         }
 
+        const providerTaskId = data.data?.taskId;
+        if (typeof providerTaskId !== "string" || !providerTaskId) return NextResponse.json({ error: "Missing generation task." }, { status: 502 });
         return NextResponse.json({
             success: true,
-            taskId: data.data?.taskId
+            taskId: signTask(providerTaskId, access.user.id, 'photo')
         });
 
     } catch (err) {
@@ -76,8 +82,10 @@ export async function POST(req) {
 
 export async function GET(req) {
     try {
+        const access = await aiAccess(req);
+        if (access.error) return NextResponse.json({ error: access.error }, { status: access.status });
         const { searchParams } = new URL(req.url);
-        const taskId = searchParams.get('taskId');
+        const taskId = readTask(searchParams.get('taskId'), access.user.id, 'photo');
 
         if (!taskId) {
             return NextResponse.json({ error: 'taskId parameter is required' }, { status: 400 });

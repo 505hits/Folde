@@ -12,7 +12,7 @@ import { useDatabase } from "@/context/DatabaseContext";
 import { supabase } from "@/lib/supabase";
 import InteractiveVideo from "@/components/InteractiveVideo";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
-import { weddingRequest } from '@/lib/wedding-client';
+import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
 import { dashboardLocale } from '@/lib/dashboard-locale.mjs';
 import { selectHero } from '@/lib/wedding-media.mjs';
 import MediaThumbnail from '@/components/MediaThumbnail';
@@ -192,7 +192,7 @@ function DashboardContent({ locale = "en" }) {
     const nextNumber = currentRevisions.length + 1;
 
     try {
-      const res = await fetch('/api/send-revision', {
+      const res = await authenticatedFetch('/api/send-revision', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -3183,10 +3183,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
         fetch('/api/ai-reference-upload', {
           method: 'POST', body,
           headers: {
-            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
-            // The checkout has a deliberate local-only test-account path.
-            // Send its address so the server can allow this narrow test flow.
-            ...(currentUser?.email ? { 'X-Folde-Test-Email': currentUser.email } : {})
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
           }
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 20000))
@@ -3385,7 +3382,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
     let attempts = 0;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/ai-photo?taskId=${encodeURIComponent(photoTaskId)}`);
+        const res = await authenticatedFetch(`/api/ai-photo?taskId=${encodeURIComponent(photoTaskId)}`);
         const data = await res.json();
         if (data.state === 'success') {
           setPhotoGenerating(false);
@@ -3432,7 +3429,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
     let attempts = 0;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/ai-music?taskId=${encodeURIComponent(musicTaskId)}`);
+        const res = await authenticatedFetch(`/api/ai-music?taskId=${encodeURIComponent(musicTaskId)}`);
         const data = await res.json();
         if (data.state === 'success') {
           setMusicGenerating(false);
@@ -3495,7 +3492,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
     setPhotoStatus('Preparing your AI illustration...');
     try {
       const urls = [couplePhoto1, couplePhoto2].filter(u => u && u.trim());
-      const res = await fetch('/api/ai-photo', {
+      const res = await authenticatedFetch('/api/ai-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -3534,7 +3531,7 @@ function AiStudioTab({ eventInfo, slug, currentUser, setEventInfo, saveOrderDeta
     setMusicGenerating(true);
     setMusicStatus('Preparing your AI soundtrack...');
     try {
-      const res = await fetch('/api/ai-music', {
+      const res = await authenticatedFetch('/api/ai-music', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,3 +1,5 @@
+import { protectRequest } from '@/lib/request-security';
+import { matchesImageType } from '@/lib/image-file.mjs';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -37,11 +39,11 @@ function cleanSlug(value) {
 async function findWedding(supabase, slug) {
   const { data, error } = await supabase
     .from('orders')
-    .select('id,slug,couple,status,details')
+    .select('id,slug,couple,status,details,paid')
     .eq('slug', slug)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  return data?.paid && data.status !== 'Cancelled' ? data : null;
 }
 
 export async function GET(request) {
@@ -98,6 +100,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const blocked = await protectRequest(request, {"limit":80,"maxBytes":9437184});
+  if (blocked) return blocked;
   let uploadedPath = '';
   let supabase = null;
   let persisted = false;
@@ -125,6 +129,7 @@ export async function POST(request) {
     const extension = ALLOWED_TYPES.get(file.type);
     uploadedPath = `${slug}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
     const bytes = Buffer.from(await file.arrayBuffer());
+    if (!matchesImageType(bytes, file.type)) return response({ error: 'The file content must match its image format.' }, 400);
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(uploadedPath, bytes, { cacheControl: '3600', upsert: false, contentType: file.type });

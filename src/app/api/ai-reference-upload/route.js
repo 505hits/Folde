@@ -1,43 +1,30 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { aiAccess } from '@/lib/ai-access';
+import { matchesImageType } from '@/lib/image-file.mjs';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export async function POST(request) {
   try {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !anonKey || !serviceKey) {
-      return NextResponse.json({ error: 'Image uploads are not configured yet.' }, { status: 503 });
-    }
-
-    const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
-    const testEmail = request.headers.get('x-folde-test-email') || '';
-    const isCheckoutTestAccount = /test|bypass/i.test(testEmail);
-    if (!token && !isCheckoutTestAccount) {
-      return NextResponse.json({ error: 'Please sign in to upload an AI reference image.' }, { status: 401 });
-    }
-    if (token) {
-      const authClient = createClient(url, anonKey, { auth: { persistSession: false } });
-      const { data: { user }, error: authError } = await authClient.auth.getUser(token);
-      if (authError || !user) return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
-    }
+    const access = await aiAccess(request);
+    if (access.error) return NextResponse.json({ error: access.error }, { status: access.status });
 
     const formData = await request.formData();
     const file = formData.get('file');
-    if (!file || typeof file.arrayBuffer !== 'function' || !String(file.type || '').startsWith('image/')) {
+    if (!file || typeof file.arrayBuffer !== 'function' || file.type !== 'image/jpeg') {
       return NextResponse.json({ error: 'Please select a JPG, PNG, or WebP image.' }, { status: 400 });
     }
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ error: 'Please choose an image smaller than 5 MB.' }, { status: 400 });
     }
 
-    const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+    const supabase = access.db;
+    const bytes = Buffer.from(await file.arrayBuffer());
+    if (!matchesImageType(bytes, file.type)) return NextResponse.json({ error: 'Please choose a valid JPEG image.' }, { status: 400 });
     const path = `ai-references/${Date.now()}-${crypto.randomUUID()}.jpg`;
     const { error: uploadError } = await supabase.storage
       .from('media')
-      .upload(path, await file.arrayBuffer(), { cacheControl: '3600', contentType: 'image/jpeg', upsert: false });
+      .upload(path, bytes, { cacheControl: '3600', contentType: 'image/jpeg', upsert: false });
     if (uploadError) {
       console.error('AI reference upload error:', uploadError.message);
       return NextResponse.json({ error: 'We could not save this image. Please try again.' }, { status: 502 });
