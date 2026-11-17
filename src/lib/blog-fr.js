@@ -1,4 +1,4 @@
-import { blogPosts } from "@/lib/blog";
+import { templatedPostsEn } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsFr } from "@/lib/articles-fr";
 
@@ -130,7 +130,7 @@ const content = {
 
 
 
-const translatedPostsFr = blogPosts.filter((post) => !post.original).map((base) => {
+const translatedPostsFr = templatedPostsEn.map((base) => {
   const translated = content[base.slug];
   const sections = translated.sections.map(([heading, body]) => ({ heading, body }));
   return {

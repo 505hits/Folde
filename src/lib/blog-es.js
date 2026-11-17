@@ -1,4 +1,4 @@
-import { blogPosts } from "@/lib/blog";
+import { templatedPostsEn } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsEs } from "@/lib/articles-es";
 
@@ -156,7 +156,7 @@ function planningNote(keyword) {
 
 // Traducciones de los artículos en inglés. Su cuerpo era una plantilla común a todos,
 // así que se mantienen accesibles pero sin indexar hasta reescribirlas para el mercado español.
-const translatedPostsEs = blogPosts.filter((item) => !item.original).map((post) => {
+const translatedPostsEs = templatedPostsEn.map((post) => {
   const seed = seeds[post.slug];
   if (!seed) return null;
   return {

@@ -2,10 +2,10 @@
 // docs/seo/blog-plan-2026-11.md). Each one is written individually: no shared
 // filler, every product claim checked against folde-wedding.com on 2026-11-17.
 
-const IMG = "/images/blog/folde-2026-11";
-const author = { name: "FOLDÈ Editorial Team", role: "Invitation design & guest experience", href: "/approach", type: "Organization" };
+export const IMG = "/images/blog/folde-2026-11";
+export const author = { name: "FOLDÈ Editorial Team", role: "Invitation design & guest experience", href: "/approach", type: "Organization" };
 
-const shot = {
+export const shot = {
   editor: { src: `${IMG}/folde-live-preview-editor.webp`, width: 1200, height: 750 },
   collection: { src: `${IMG}/folde-invitation-template-collection.webp`, width: 1200, height: 750 },
   namesMobile: { src: `${IMG}/folde-creation-flow-names-mobile.webp`, width: 520, height: 1126, portrait: true },
@@ -18,7 +18,7 @@ const shot = {
 const testMethod = `<p>Product details in this guide come from a hands-on check of folde-wedding.com on <strong>November 17, 2026</strong>, in Chromium (Playwright 1.65) at 1440×900 and at a 390×844 mobile size. We started the creation flow with a test couple (“Emma &amp; Lucas”), opened the Rosas design, tapped the envelope and scrolled through the schedule, map and RSVP form. We did not submit a response on a live wedding, and we only describe features we saw on screen. Prices were read on the packages page the same day. FOLDÈ Wedding publishes this guide and sells digital invitations; independent sources are listed below.</p>`;
 
 const knot = { label: "The Knot Worldwide — 2026 Real Weddings Study (press release, Feb. 18, 2026)", href: "https://www.theknotww.com/press-releases/the-knot-worldwide-unveils-2026-real-weddings-study", note: "10,474 U.S. couples married in 2025: average guest count 117, average spend $292 per guest." };
-const knotTiming = { label: "The Knot — When to send wedding invitations", href: "https://www.theknot.com/content/when-to-send-wedding-invitations", note: "Etiquette timeline for save-the-dates, invitations and RSVP deadlines." };
+export const knotTiming = { label: "The Knot — When to send wedding invitations", href: "https://www.theknot.com/content/when-to-send-wedding-invitations", note: "Etiquette timeline for save-the-dates, invitations and RSVP deadlines." };
 const zolaTiming = { label: "Zola — When should you send out your wedding invitations?", href: "https://www.zola.com/expert-advice/when-should-you-send-out-your-wedding-invitations", note: "Timing guidance, including a reply-by date about a month before the wedding." };
 const stamps = { label: "FreightWaves — Price of Forever stamp reaches 82 cents", href: "https://www.freightwaves.com/news/price-of-forever-stamp-reaches-82-cents", note: "USPS 1-ounce letter stamp at $0.82 since July 12, 2026 (postcards $0.65)." };
 

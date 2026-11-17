@@ -4,7 +4,7 @@
 
 ## Key facts (checked on folde-wedding.com, November 17, 2026)
 
-- Product: interactive digital wedding invitations with an animated envelope opening, hero video or artwork, schedule, map with directions, dress code, accommodation, menu, photo gallery and RSVP.
+- Product: interactive digital wedding invitations with an animated envelope opening, hero video or artwork, schedule, map with directions, dress code, accommodation, menu, photo gallery and RSVP. Couples choose whether the date appears as a countdown clock or a scratch-to-reveal section.
 - RSVP form asks guests for first and last name, email, attendance (yes / regretfully decline), whether they are accompanied (alone, with a guest, with family) and allergies or dietary needs. Answers appear in the couple's dashboard.
 - Guests can add photos to a private gallery through a link or QR code.
 - Pricing: one-time payment, unlimited guests. Standard plan $49.90 (couples customise a design themselves; a launch discount may be shown at checkout). Expert plan $149 (the FOLDÈ studio builds and reviews the invitation). Previewing a design with your names is free.
@@ -25,7 +25,11 @@
 - [Wedding RSVP cards: wording, examples and digital alternatives](https://folde-wedding.com/blog/wedding-rsvp-cards): what to ask, deadlines, paper vs digital RSVP
 - [How to RSVP to a wedding](https://folde-wedding.com/blog/how-to-rsvp-to-a-wedding): filling out the card, online RSVP, declining, plus-ones
 - [Rehearsal dinner invitations](https://folde-wedding.com/blog/rehearsal-dinner-invitations): who to invite, timing, 10 wording examples
-- [Destination wedding invitations](https://folde-wedding.com/blog/destination-wedding-invitations)
+- [Destination wedding invitations: timeline, wording and travel details](https://folde-wedding.com/blog/destination-wedding-invitations): save-the-date and invitation timing, what travel details to include, 12 wording examples
+- [Wedding reception invitation wording](https://folde-wedding.com/blog/wedding-reception-invitation-wording): reception cards, reception-only invitations after a private ceremony or elopement, 18 examples
+- [Elegant wedding invitations](https://folde-wedding.com/blog/elegant-wedding-invitations): nine design rules (typography, palette, white space) shown on real digital invitation designs
+- [Bridal shower invitation wording](https://folde-wedding.com/blog/bridal-shower-invitation-wording): timing, guest-list and registry etiquette, 24 wording examples
+- [Engagement party invitations](https://folde-wedding.com/blog/engagement-party-invitations): the guest-list rule, timing, hosting, gifts and 20 wording examples
 - [Wedding invitations with RSVP](https://folde-wedding.com/blog/wedding-invitations-with-rsvp)
 - [All-in-one wedding invitations](https://folde-wedding.com/blog/all-in-one-wedding-invitations)
 - [Textes de faire-part de mariage (FR)](https://folde-wedding.com/fr/blog/textes-faire-part-mariage)

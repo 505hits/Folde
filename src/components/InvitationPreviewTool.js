@@ -18,10 +18,10 @@ export const TOOL_STYLES = [
   { id: "bloom", name: "Bloom", tag: "Natural", video: "https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4", envelope: "https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4", thumb: "/images/envelope-posters/bloom.webp" },
 ];
 
-function DesignStrip({ article, variant }) {
+function DesignStrip({ article, variant, label = "Put it in a real FOLDÈ design" }) {
   return (
     <div className={styles.designStrip}>
-      <p>Put it in a real FOLDÈ design</p>
+      <p>{label}</p>
       <div>
         {TOOL_STYLES.slice(0, 4).map((item) => (
           <Link key={item.id} href={`/checkout?template=${item.id}`} onClick={() => trackBlog("blog_tool_click", { article, variant, template: item.id })}>
@@ -197,7 +197,36 @@ const WORDING = {
     modern: (a, b, d) => `The night before the big day\nRehearsal dinner for ${a} & ${b}\n${d}\nDrinks, dinner and a few stories.`,
     relaxed: (a, b, d) => `Before the "I do"s, let's eat!\nRehearsal dinner for ${a} & ${b}\n${d}\nLet us know if you can make it.`,
   },
+  // Shower: a = guest of honor, b = host.
+  shower: {
+    formal: (a, b, d) => `Please join us for a bridal shower\nhonoring ${a}\n${d}\nHosted by ${b}\nKindly reply to ${b} by the date below.`,
+    modern: (a, b, d) => `Love is brewing!\nCelebrate ${a} at a bridal shower\n${d}\nHosted by ${b} · Registry details inside.`,
+    relaxed: (a, b, d) => `Brunch, bubbly and the bride-to-be!\nJoin us to shower ${a} with love\n${d}\nText ${b} to let us know you're coming.`,
+  },
+  engagement: {
+    formal: (a, b, d) => `Please join us\nin celebrating the engagement of\n${a} and ${b}\n${d}\nKindly reply by the date below.`,
+    modern: (a, b, d) => `It's official!\nCome celebrate ${a} & ${b}\n${d}\nDrinks, toasts and good company.`,
+    relaxed: (a, b, d) => `We're engaged!\nJoin ${a} & ${b} for a casual celebration\n${d}\nNo gifts, just your company.`,
+  },
+  reception: {
+    formal: (a, b, d) => `${a} and ${b}\nrequest the pleasure of your company\nat a reception celebrating their marriage\n${d}\nDinner and dancing to follow.`,
+    modern: (a, b, d) => `We eloped!\nNow let's celebrate with everyone we love.\nJoin ${a} & ${b}\n${d}`,
+    relaxed: (a, b, d) => `We said "I do" with just our families.\nNow it's party time!\nCelebrate with ${a} & ${b}\n${d}`,
+  },
 };
+
+const WORDING_FIELDS = {
+  shower: { first: "Guest of honor", second: "Hosted by", firstPlaceholder: "Emma", secondPlaceholder: "Aunt Claire", fallbackSecond: "Aunt Claire", date: "Sunday, the ninth of August" },
+  rehearsal: { date: "Friday, the eleventh of September" },
+  engagement: { date: "Saturday, the sixth of June" },
+  reception: { date: "Saturday, the third of October" },
+};
+
+function formatLongDate(value) {
+  if (!value) return "";
+  const date = new Date(`${value}T12:00:00`);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+}
 
 function WordingVariant({ article, event = "wedding", title, subtitle }) {
   const [a, setA] = useState("");
@@ -206,8 +235,9 @@ function WordingVariant({ article, event = "wedding", title, subtitle }) {
   const [tone, setTone] = useState("formal");
   const [copied, setCopied] = useState(false);
   const { ref, interact } = useToolTracking(article, `wording-${event}`);
-  const fallbackDate = event === "rehearsal" ? "Friday, the eleventh of September" : "Saturday, the twelfth of September";
-  const text = (WORDING[event] || WORDING.wedding)[tone](a.trim() || "Emma", b.trim() || "Lucas", formatDate(date) || fallbackDate);
+  const fields = WORDING_FIELDS[event] || {};
+  const fallbackDate = fields.date || "Saturday, the twelfth of September";
+  const text = (WORDING[event] || WORDING.wedding)[tone](a.trim() || "Emma", b.trim() || fields.fallbackSecond || "Lucas", formatLongDate(date) || fallbackDate);
   const copy = async () => {
     interact();
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { setCopied(false); }
@@ -220,8 +250,8 @@ function WordingVariant({ article, event = "wedding", title, subtitle }) {
         <h2 id="folde-tool-title" className={styles.toolTitle}>{title || "Draft your wording with your names"}</h2>
         <p className={styles.toolSubtitle}>{subtitle || "Pick a tone, add your names, then copy the text or use it in your invitation."}</p>
         <div className={styles.nameRow}>
-          <label>First partner<input value={a} maxLength={40} placeholder="Emma" onChange={(e) => { interact(); setA(clean(e.target.value)); }} /></label>
-          <label>Second partner<input value={b} maxLength={40} placeholder="Lucas" onChange={(e) => { interact(); setB(clean(e.target.value)); }} /></label>
+          <label>{fields.first || "First partner"}<input value={a} maxLength={40} placeholder={fields.firstPlaceholder || "Emma"} onChange={(e) => { interact(); setA(clean(e.target.value)); }} /></label>
+          <label>{fields.second || "Second partner"}<input value={b} maxLength={40} placeholder={fields.secondPlaceholder || "Lucas"} onChange={(e) => { interact(); setB(clean(e.target.value)); }} /></label>
         </div>
         <label className={styles.dateField}>Date <span>(optional)</span><input type="date" value={date} onChange={(e) => { interact(); setDate(e.target.value); }} /></label>
         <fieldset className={styles.moods}>
@@ -235,9 +265,12 @@ function WordingVariant({ article, event = "wedding", title, subtitle }) {
         <pre aria-live="polite">{text}</pre>
         <div className={styles.wordingActions}>
           <button type="button" className={styles.toolGhostButton} onClick={copy}>{copied ? "Copied" : "Copy text"}</button>
-          <Link className={styles.toolButton} href={checkoutHref("rosas", a, b)} onClick={() => trackBlog("blog_tool_click", { article, variant: `wording-${event}` })}>Use it in my invitation</Link>
+          {/* FOLDÈ designs are wedding invitations: for pre-wedding parties, point to them honestly. */}
+          {event === "shower" || event === "engagement"
+            ? <Link className={styles.toolButton} href="/collections" onClick={() => trackBlog("blog_tool_click", { article, variant: `wording-${event}` })}>See our wedding invitation designs</Link>
+            : <Link className={styles.toolButton} href={checkoutHref("rosas", a, b)} onClick={() => trackBlog("blog_tool_click", { article, variant: `wording-${event}` })}>Use it in my invitation</Link>}
         </div>
-        <DesignStrip article={article} variant={`wording-${event}`} />
+        <DesignStrip article={article} variant={`wording-${event}`} label={event === "shower" || event === "engagement" ? "FOLDÈ wedding invitation designs" : undefined} />
       </div>
     </section>
   );

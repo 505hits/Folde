@@ -77,6 +77,8 @@ Pas de nouveau mot-clé fort dans l'export. Les articles du cluster 1 traitent l
 
 Vague 1 (ce lot) : #1 digital wedding invitations · #2 wedding invitation examples · #4 wedding RSVP cards · #5 how to RSVP · #7 rehearsal dinner invitations.
 Vague 2 : #6 bridal shower wording · #9 elegant · #8 engagement · #3 reception · réécriture de `destination-wedding-invitations`.
+
+**État au 17/11/2026** : vagues 1 et 2 publiées (`src/lib/articles-en.js`, `src/lib/articles-en-wave2.js`). La réécriture de `destination-wedding-invitations` remplace l'ancien article anglais sous la même adresse ; les versions FR et ES de cet article restent celles d'avant, en attendant la vague 3. Pour la vague 2, le mini-outil propose des textes de bridal shower, de fiançailles et de réception ; pour la shower et les fiançailles, il renvoie vers les modèles de mariage (FOLDÈ ne vend pas d'invitations pour ces fêtes).
 Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recherche de mots-clés propre à chaque marché, pas de traduction mot à mot).
 
 ## 6. Maillage interne
@@ -91,10 +93,10 @@ Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recher
 - Mini-outil `InvitationPreviewTool` : prénoms du couple + choix parmi 4 styles du catalogue réel (Bordeaux, Ivory, Sage, Royal Blue) → aperçu avec l'image réelle de l'enveloppe du modèle → `/checkout?template=…&partner1=…&partner2=…` (paramètres déjà gérés par le tunnel). Variante RSVP : démonstration d'un formulaire de réponse identique aux champs réels (présence, accompagnant, repas, message), clairement présentée comme une démonstration.
 - Aucune donnée saisie n'est stockée ni envoyée hors du lien vers le tunnel.
 - Sticky CTA : apparaît quand le mini-outil sort de l'écran, disparaît quand le CTA final est visible, peut être fermé (mémorisé pour la session), respecte la safe area iPhone.
-- Mesure : événements `blog_tool_view`, `blog_tool_interact`, `blog_tool_click`, `blog_sticky_view`, `blog_sticky_click`, `blog_sticky_close`, `blog_cta_click` envoyés via `window.dataLayer` s'il existe (aucun outil d'analyse n'est installé aujourd'hui : à brancher).
+- Mesure : événements `blog_tool_view`, `blog_tool_interact`, `blog_tool_click`, `blog_sticky_view`, `blog_sticky_click`, `blog_sticky_close`, `blog_cta_click` envoyés à Google Analytics 4 (balise `G-G5CB9NQHZL`, déjà chargée par le layout du site) via `gtag("event", …)`. Pour les exploiter, les déclarer comme événements clés dans GA4.
 
 ## 8. Points à fournir par l'équipe
 
 1. **Nom réel de l'auteur ou du relecteur**, avec une courte biographie (exigence E-E-A-T du cahier des charges). En attendant, les articles sont signés « FOLDÈ Editorial Team ».
-2. Branchement d'un outil d'analyse respectueux du consentement, pour exploiter les événements du §7.
+2. Déclarer les événements du §7 comme événements clés dans GA4, et vérifier le recueil du consentement (bannière cookies) pour les visiteurs européens.
 3. Tests GEO manuels (ChatGPT, Perplexity, Google AI Mode) 2 à 4 semaines après publication, avec observations datées.
