@@ -96,6 +96,14 @@ Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recher
 
 Restent dans l'export, mais exclus par le §2 : cartes de vœux de shower (bridal shower card 2 900, KD 19 ; bridal shower cards 2 400 ; greeting cards for bridal shower 1 600, KD 15), bachelorette / stagette / spinster (environ 3 500 cumulés), lingerie shower (480, KD 15), cluster indien, imprimables et templates gratuits. Pour aller plus loin : lever une exclusion (décision à prendre) ou fournir un nouvel export.
 
+**Exclusion levée par l'utilisateur (18/11/2026)** : « Cartes de bridal shower ». Les mots-clés de cartes de vœux de shower ne sont plus exclus. Un seul guide couvre le cluster, car « what to write », messages drôles et messages de la famille relèvent de la même intention (The Knot et Hallmark les traitent aussi dans un seul article) : pas de pages quasi-dupliquées.
+
+| Article (slug) | Mot-clé principal | Vol. | KD | Secondaires regroupés (vol.) |
+|---|---|---|---|---|
+| `bridal-shower-card-messages` | bridal shower card | 2 900 | 19 | bridal shower cards (2 400, KD 25), greeting cards for bridal shower (1 600, KD 15) |
+
+L'article dit clairement que FOLDÈ ne vend pas de cartes de vœux et renvoie vers les guides d'invitation de shower. Exclusions toujours en vigueur : bachelorette / stagette / spinster, lingerie shower, cluster indien, imprimables et templates gratuits.
+
 ## 6. Maillage interne
 
 - Pilier #1 ↔ #2, #4, `destination-wedding-invitations`, `all-in-one-wedding-invitations`.
@@ -148,3 +156,4 @@ Mis à jour le 17/11/2026. Règle : le mot-clé principal ouvre le H1 et le meta
 | `civil-wedding-invitations` | Civil Wedding Invitations: 14 Wording Examples for Courthouse Ceremonies and Later Celebrations | Civil Wedding Invitations: 14 Courthouse Wording Examples |
 | `wedding-invitation-background` | Wedding Invitation Background: 6 Types, Real Examples and the Contrast Rule | Wedding Invitation Background: 6 Types + Real Examples |
 | `rustic-wedding-invitations` | Rustic Wedding Invitations: 5 Styles, 11 Wording Examples and How to Keep Them Elegant | Rustic Wedding Invitations: 5 Styles + 11 Wording Examples |
+| `bridal-shower-card-messages` | Bridal Shower Card Messages: What to Write, With 60 Wishes for Every Relationship | Bridal Shower Card: What to Write + 60 Message Ideas |

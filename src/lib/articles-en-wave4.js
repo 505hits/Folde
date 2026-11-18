@@ -28,6 +28,8 @@ const knotTea = { label: "The Knot — 22 Bridgerton-themed bridal shower ideas 
 const knotCivil = { label: "The Knot — What invitation wording should we use for a civil ceremony?", href: "https://www.theknot.com/content/invitation-wording-for-civil-ceremony", note: "When the civil ceremony happened months earlier, say so (“We’re married!”) and invite guests to the later celebration." };
 const knotReception = { label: "The Knot — The only guide to reception-only wedding invitations (updated Jun. 19, 2024)", href: "https://www.theknot.com/content/reception-only-invites-invitation-wording", note: "Make clear the ceremony already happened (“a celebration of their marriage”) and give guests a way to RSVP." };
 const knotRustic = { label: "The Knot — 32 rustic wedding invitations for your country-chic affair (updated Jun. 22, 2021)", href: "https://www.theknot.com/content/rustic-wedding-invitations", note: "Rustic stationery weaves in organic elements like wood textures and nature-inspired hues; examples include woodgrain, greenery, chalkboard and watercolor countryside designs." };
+const knotCard = { label: "The Knot — What to write in a bridal shower card (updated Mar. 12, 2025)", href: "https://www.theknot.com/content/what-to-write-in-a-bridal-shower-card", note: "Be sincere, supportive and celebratory; sign with the names of those invited to the shower; address a couples shower card to both partners." };
+const hallmarkCard = { label: "Hallmark Ideas — Bridal shower wishes: what to write in a bridal shower card (Keely Chace, Jul. 1, 2019)", href: "https://ideas.hallmark.com/articles/wedding-ideas/bridal-shower-wishes-what-to-write-in-a-bridal-shower-card/", note: "Shower cards are often read aloud, so keep humor gentle; etiquette traditionally reserves “congratulations” for the wedding." };
 const wcag = { label: "W3C — Understanding WCAG 2.2, Success Criterion 1.4.3 Contrast (Minimum)", href: "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html", note: "Text needs a contrast ratio of at least 4.5:1 with its background, or 3:1 for large text." };
 
 export const originalPostsEnWave4 = [
@@ -628,5 +630,200 @@ Shower in the garden, Saturday at noon</blockquote>
     ],
     methodology: `<p>The definition of rustic stationery follows The Knot’s roundup of rustic wedding invitations (updated June 22, 2021); timing follows The Knot’s guide to sending wedding invitations (updated July 14, 2026). Styles, refinements and wording are FOLDÈ’s editorial advice; names and venues are fictional.</p>${check("Amber, Olive Grove, The Venue and Le Jardin")}`,
     sources: [knotRustic, knotTimingDated],
+  },
+  // Bridal shower card cluster: the plan excluded greeting-card keywords until the
+  // user lifted that exclusion on 2026-11-18. One guide covers the cluster, since
+  // "what to write", funny and family messages share one search intent.
+  {
+    slug: "bridal-shower-card-messages",
+    keyword: "bridal shower card",
+    title: "Bridal Shower Card Messages: What to Write, With 60 Wishes for Every Relationship",
+    metaTitle: "Bridal Shower Card: What to Write + 60 Message Ideas",
+    description: "What to write in a bridal shower card: a four-part formula, 60 original messages by tone and relationship, and how to sign and deliver the card.",
+    excerpt: "A four-part formula, 60 messages by relationship and tone, and how to sign and deliver the card.",
+    intro: "A bridal shower card is usually written in the car on the way to the party, which is why so many say only “Congrats! Love, Sarah.” A few personal lines make it the part of the gift the bride keeps. This guide gives a simple four-part formula, 60 original messages sorted by tone and relationship, from a one-liner to a note from the mother of the bride, and the etiquette for signing, gifts and showers you can’t attend.",
+    heroImage: "/images/blog/pexels/36617804.jpg",
+    imageAlt: "Card with blue accents on a table, ready for a handwritten message",
+    datePublished: "2026-11-18",
+    readingTime: 9,
+    author,
+    quickAnswer: "In a bridal shower card, greet the bride by name, wish her well for the shower and the marriage, add one personal line about your relationship or the gift, and sign with the names of everyone invited. Keep jokes gentle, since cards are often read aloud. Short is fine: two or three sincere sentences beat a long quote.",
+    tool: { variant: "wording", event: "shower", title: "Planning the shower too?", subtitle: "Draft the invitation: add the bride and the host, pick a tone and copy the text." },
+    ctaAfter: 3,
+    sections: [
+      {
+        heading: "A four-part formula for any shower card",
+        body: `<p>The Knot sums up the goal: something sincere, supportive and celebratory that reflects your relationship with the bride. In practice, four parts are enough.</p>`,
+        table: {
+          caption: "Bridal shower card message formula",
+          head: ["Part", "What to write", "Example"],
+          rows: [
+            ["1. Greeting", "Her name, or both names for a couples shower", "Dear Emma,"],
+            ["2. Wish", "For the shower day and the marriage ahead", "I’m so happy to celebrate you today."],
+            ["3. Personal line", "A memory, a compliment or a word about the gift", "You were the first person I called after every bad date; I love that you found your person."],
+            ["4. Sign-off", "A warm closing and the names of everyone invited", "With love, Sarah & Tom"],
+          ],
+        },
+      },
+      {
+        heading: "Short bridal shower wishes (1–8)",
+        body: `<ol>
+<li>Wishing you a day full of love and a lifetime of it after.</li>
+<li>So happy to shower you with love today!</li>
+<li>Here’s to the bride-to-be and everything ahead.</li>
+<li>Happy shower day, Emma. You deserve every bit of this.</li>
+<li>Cheers to love, laughter and a very full kitchen.</li>
+<li>One step closer to “I do”!</li>
+<li>Sending you all my love as you get ready for the big day.</li>
+<li>What a joy to celebrate you.</li>
+</ol>`,
+      },
+      {
+        heading: "Funny bridal shower card messages (9–16)",
+        body: `<p>Hallmark’s writers give a useful warning: shower cards are often read aloud or passed around, so keep jokes to what you’d say in front of the bride’s grandmother.</p>
+<ol start="9">
+<li>Congratulations on finding someone who will share their fries. That’s love.</li>
+<li>I promise this gift is more useful than my dating advice ever was.</li>
+<li>Officially retiring from wing-woman duty. It was an honor.</li>
+<li>May your towels always match and your arguments always be about the thermostat.</li>
+<li>You registered for a stand mixer. I’m expecting cookies.</li>
+<li>Marriage tip: two remotes. Trust me.</li>
+<li>Thanks for finally giving us a reason to wear the fancy hats.</li>
+<li>Here’s to a love as strong as your Wi-Fi password.</li>
+</ol>`,
+        figure: { src: "/images/blog/pexels/29821867.jpg", width: 1600, height: 2000, alt: "Wedding stationery laid on white fabric", caption: "Shower cards are often opened in front of guests: write with that audience in mind." },
+      },
+      {
+        heading: "Heartfelt messages (17–22)",
+        body: `<ol start="17">
+<li>Watching you fall in love has been one of the happiest things I’ve seen.</li>
+<li>You make everyone around you feel at home. Lucas is lucky to build one with you.</li>
+<li>I hope your marriage is as kind and generous as you are.</li>
+<li>Today we celebrate you; soon we’ll celebrate the two of you. I can’t wait.</li>
+<li>May your home always be full of friends, food and laughter.</li>
+<li>Love looks good on you. It always has.</li>
+</ol>`,
+      },
+      {
+        heading: "Messages from family (23–35)",
+        body: `<p><strong>From a mother or father</strong></p>
+<ol start="23">
+<li>I’ve loved you every day of your life. Watching you start this new chapter fills my heart.</li>
+<li>You were my little girl, and now you’re a wonderful woman about to marry someone wonderful. I couldn’t be prouder.</li>
+<li>Our door is always open, to both of you now.</li>
+</ol>
+<p><strong>From a sister or brother</strong></p>
+<ol start="26">
+<li>From sharing a bedroom to sharing this day: I’m so happy for you, sis.</li>
+<li>You took all my clothes growing up. You can keep this gift.</li>
+<li>I’m gaining a brother and you’re gaining a husband. Not a bad trade.</li>
+</ol>
+<p><strong>From a future mother- or sister-in-law</strong></p>
+<ol start="29">
+<li>We are so happy you’re joining our family. Welcome, officially soon.</li>
+<li>Lucas has never smiled like this. Thank you for that.</li>
+<li>I’ve always wanted a sister. I’m glad it’s you.</li>
+</ol>
+<p><strong>From a grandparent</strong></p>
+<ol start="32">
+<li>I held you on the day you were born. Now I get to see you become a bride. My heart is full.</li>
+<li>The secret to a long marriage? Keep laughing together. Grandpa and I still do.</li>
+</ol>
+<p><strong>From an aunt or uncle</strong></p>
+<ol start="34">
+<li>You’ve always been our favorite niece. Don’t tell your cousins.</li>
+<li>Watching you grow up has been a joy. Watching you marry will be the best part.</li>
+</ol>`,
+      },
+      {
+        heading: "Messages for a friend or coworker (36–44)",
+        body: `<p><strong>For a friend</strong></p>
+<ol start="36">
+<li>From late-night talks to your shower day: I’ve loved every chapter with you.</li>
+<li>You’ve been there for all my big moments. I’m so glad to be here for yours.</li>
+<li>Best friends make the best brides. Love you!</li>
+<li>Thank you for letting me be part of this. I wouldn’t miss it for anything.</li>
+<li>I knew he was the one when you stopped checking your phone at brunch.</li>
+</ol>
+<p><strong>For a coworker</strong></p>
+<ol start="41">
+<li>Wishing you a wonderful shower and a very happy marriage, from all of us at the office.</li>
+<li>Congratulations on your best project yet!</li>
+<li>Enjoy every moment of this season. The spreadsheets can wait.</li>
+<li>We’ll miss you during the honeymoon, but not as much as you’ll enjoy it.</li>
+</ol>`,
+        figure: { src: "/images/blog/pexels/11503508.jpg", width: 1600, height: 2000, alt: "Old paper envelope with a floral design", caption: "On the envelope, write only the guest of honor’s name if you bring the card in person." },
+      },
+      {
+        heading: "Religious blessings (45–48)",
+        body: `<ol start="45">
+<li>May God bless your marriage and fill your home with His peace.</li>
+<li>Praying that your love grows deeper with every year.</li>
+<li>“Love is patient, love is kind” (1 Corinthians 13:4). Wishing you both, always.</li>
+<li>May the Lord guide you both as you prepare to become one.</li>
+</ol>`,
+      },
+      {
+        heading: "Couples shower card messages (49–52)",
+        body: `<p>The Knot’s advice for a couples shower: address both partners and avoid lines that only fit one of them.</p>
+<ol start="49">
+<li>To Emma and Lucas: here’s to the two of you and the home you’re building.</li>
+<li>Two hearts, one registry, endless happiness.</li>
+<li>So happy to celebrate you both before the big day.</li>
+<li>May your kitchen be full and your arguments few.</li>
+</ol>
+<p>More on the event itself in our <a href="/blog/couples-shower-invitations">couples shower invitations guide</a>.</p>`,
+      },
+      {
+        heading: "With a gift, or when you can’t attend (53–60)",
+        body: `<p><strong>About the gift</strong></p>
+<ol start="53">
+<li>Straight from your registry, because you know best what your home needs.</li>
+<li>A little something for your honeymoon fund. Enjoy every minute.</li>
+<li>This was my grandmother’s favorite recipe. I hope it becomes one of yours.</li>
+<li>I made this for your new home. It’s not perfect, but it’s made with love.</li>
+<li>From all of us at the office: may this set see many happy dinners.</li>
+</ol>
+<p><strong>If you can’t attend</strong></p>
+<ol start="58">
+<li>I’m so sorry to miss your shower. I’ll be thinking of you all day.</li>
+<li>Wish I could be there to celebrate you. Save me a piece of cake!</li>
+<li>Sending love from far away, and counting the days to the wedding.</li>
+</ol>`,
+      },
+      {
+        heading: "Card etiquette: signing, gifts and delivery",
+        body: `<p>Hallmark’s writers note that traditional etiquette saves “congratulations” for the wedding and offers “best wishes” at the shower, though they add that sincerity matters more than the rule.</p>`,
+        table: {
+          caption: "Bridal shower card etiquette",
+          head: ["Question", "Answer"],
+          rows: [
+            ["Who signs?", "Everyone invited to the shower; leave off people who weren’t (The Knot)."],
+            ["What goes on the envelope?", "The guest of honor’s name; add the mailing address only if you mail it (The Knot)."],
+            ["Group gift?", "One card, with every giver’s name."],
+            ["Where does the card go?", "Attached to the gift, so the bride knows who gave what for her thank-you notes."],
+            ["Can’t attend?", "Mail the card with the gift, or send it before the shower."],
+            ["Sign-offs", "With love · Best wishes · All my love · Cheers · Warmly"],
+          ],
+        },
+      },
+      {
+        heading: "Store-bought, handmade or digital card?",
+        body: `<p>Any of them works. A store-bought card with a handwritten note is the classic; a handmade card suits close friends; a digital card is fine if you can’t attend. What matters is the handwritten or personal part, not the card itself.</p>
+<p>FOLDÈ, which publishes this guide, doesn’t make greeting cards: it makes digital <strong>wedding</strong> invitations. If you’re hosting rather than attending, see our <a href="/blog/bridal-shower-invitation-wording">bridal shower invitation wording</a>, <a href="/blog/tea-party-bridal-shower-invitations">tea party invitations</a> and <a href="/blog/bridal-shower-invitations-online">how to send shower invitations online</a>.</p>`,
+        figure: { ...w4.blushRibbon, alt: "Pastel digital wedding invitation with a satin bow on a phone", caption: "After the shower comes the wedding invitation: Blush Ribbon, a FOLDÈ wedding design (Nov. 18, 2026)." },
+      },
+    ],
+    faqs: [
+      ["What do you write in a bridal shower card?", "A greeting with her name, a wish for the day and the marriage, one personal line, and a sign-off with the names of everyone invited."],
+      ["Should you say congratulations in a bridal shower card?", "Traditionally “best wishes” is used at the shower and “congratulations” saved for the wedding, but either is fine if it’s sincere (Hallmark)."],
+      ["How long should a bridal shower card message be?", "Two to four sentences is plenty. A short personal line is better than a long quote."],
+      ["Do you need a card with a bridal shower gift?", "Yes. It tells the bride who gave the gift, which she needs for her thank-you notes."],
+      ["Can a card be funny?", "Yes, if you know the bride well. Keep it gentle: shower cards are often read aloud in front of family."],
+      ["What do you write if you can’t attend the shower?", "Say you’re sorry to miss it, send your love and wishes, and mention the wedding if you’ll be there."],
+      ["Do you need a separate card for the wedding?", "Yes, if you bring a wedding gift too. The shower card is for the shower; save the wedding wishes for the wedding card."],
+    ],
+    methodology: `<p>Advice on tone, signing, envelopes and couples shower cards follows The Knot’s guide to bridal shower card messages (updated March 12, 2025); the read-aloud caution and the “best wishes” convention follow Hallmark’s guide by Keely Chace (July 1, 2019). All 60 messages are original to FOLDÈ, written for this guide; names are fictional. The scripture reference is 1 Corinthians 13:4. FOLDÈ Wedding publishes this guide and sells digital wedding invitations, not greeting cards.</p>`,
+    sources: [knotCard, hallmarkCard],
   },
 ];
