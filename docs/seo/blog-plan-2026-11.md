@@ -83,6 +83,19 @@ Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recher
 
 **État au 17/11/2026 (suite)** : vague 3 publiée (`src/lib/articles-en-wave3.js`) avec les 9 articles anglais encore générés automatiquement, réécrits un par un (RSVP, all-in-one, suite, floral, photo, vintage, traditionnel, hiver, panneaux de bienvenue), plus un nouvel article `couples-shower-invitations` (couples bridal shower invitations 1 000, couples shower invite 590, coed wedding shower invitations 480, couple shower invitations 320 ; KD 24 à 27). Plus aucun article anglais n'utilise le texte générique. Reste : versions FR et ES.
 
+**Vague 4 (18/11/2026)** : `src/lib/articles-en-wave4.js`. L'export Semrush (269 mots-clés, re-analysé le 18/11) ne contenait plus que 6 sujets nouveaux compatibles avec les règles du §2 ; ils sont publiés :
+
+| Article (slug) | Mot-clé principal | Vol. | KD | Secondaires regroupés (vol.) |
+|---|---|---|---|---|
+| `tea-party-bridal-shower-invitations` | tea party invitations | 1 900 | 25 | tea party bridal shower invitations (320), tea with the bride to be invitations (140, KD 12), bridal shower tea party invitations (110), tea bridal shower invitations (70) |
+| `bridal-shower-invitations-online` | bridal shower invitations online | 720 | 25 | electronic bridal shower invitations free (90), online wedding shower invitations free (90) |
+| `how-to-make-a-wedding-invitation-online` | how to make wedding card | 210 | 30 | online wedding card maker (90), how to create online marriage invitation card (70), wedding card invitation online maker (70), make wedding invitation online (50, KD 19) |
+| `civil-wedding-invitations` | civil wedding invitation | 110 | 24 | marriage ceremony invitation letter (90), wedding invitation for civil wedding (70, KD 11) |
+| `wedding-invitation-background` | marriage invitation background | 210 | 27 | invitation floral background (110), marriage card image (110), wedding invite images (70) |
+| `rustic-wedding-invitations` | rustic wedding invitations (templates) | 70 | 18 | rustic wedding shower invitations (110), rustic couples shower invitations (70), rustic bridal shower invites (50 + 40), rustic invitation template (50) |
+
+Restent dans l'export, mais exclus par le §2 : cartes de vœux de shower (bridal shower card 2 900, KD 19 ; bridal shower cards 2 400 ; greeting cards for bridal shower 1 600, KD 15), bachelorette / stagette / spinster (environ 3 500 cumulés), lingerie shower (480, KD 15), cluster indien, imprimables et templates gratuits. Pour aller plus loin : lever une exclusion (décision à prendre) ou fournir un nouvel export.
+
 ## 6. Maillage interne
 
 - Pilier #1 ↔ #2, #4, `destination-wedding-invitations`, `all-in-one-wedding-invitations`.
@@ -129,3 +142,9 @@ Mis à jour le 17/11/2026. Règle : le mot-clé principal ouvre le H1 et le meta
 | `winter-wedding-invitations` | Winter Wedding Invitations: Send Dates for December to February, Palettes and Wording | Winter Wedding Invitations: Send Dates, Colors & Wording |
 | `wedding-welcome-signs` | Wedding Welcome Signs: 15 Wording Ideas, Sizes and Where to Place Them | Wedding Welcome Signs: 15 Wording Ideas, Sizes & Placement |
 | `couples-shower-invitations` | Couples Shower Invitations: 16 Wording Examples and How They Differ From a Bridal Shower | Couples Shower Invitations: 16 Wording Examples |
+| `tea-party-bridal-shower-invitations` | Tea Party Invitations for a Bridal Shower: 18 Wording Examples and What to Include | Tea Party Bridal Shower Invitations: 18 Wording Examples |
+| `bridal-shower-invitations-online` | Bridal Shower Invitations Online: 4 Ways to Send Them and How to Track Replies | Bridal Shower Invitations Online: 4 Ways to Send Them |
+| `how-to-make-a-wedding-invitation-online` | How to Make a Wedding Invitation Online: 7 Steps, From Design to RSVP | How to Make a Wedding Invitation Online in 7 Steps |
+| `civil-wedding-invitations` | Civil Wedding Invitations: 14 Wording Examples for Courthouse Ceremonies and Later Celebrations | Civil Wedding Invitations: 14 Courthouse Wording Examples |
+| `wedding-invitation-background` | Wedding Invitation Background: 6 Types, Real Examples and the Contrast Rule | Wedding Invitation Background: 6 Types + Real Examples |
+| `rustic-wedding-invitations` | Rustic Wedding Invitations: 5 Styles, 11 Wording Examples and How to Keep Them Elegant | Rustic Wedding Invitations: 5 Styles + 11 Wording Examples |

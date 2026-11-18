@@ -85,6 +85,7 @@ export const originalPostsEn = [
 <li><strong>Fill in the practical sections</strong>: venue, schedule, dress code, RSVP questions.</li>
 <li><strong>Test it like a guest</strong>: open the link on your own phone, tap the envelope, check the map and send yourself a test reply before sharing.</li>
 </ol>
+<p>The full walkthrough, from the details to gather first to the final test, is in our guide on <a href="/blog/how-to-make-a-wedding-invitation-online">how to make a wedding invitation online</a>.</p>
 <p>Previewing is free; you pay once when you publish. On November 17, 2026 the packages page listed the Standard plan at $49.90 (a launch discount was displayed at checkout) and the Expert plan, where the studio builds the invitation for you, at $149.</p>`,
         figure: { ...shot.editor, alt: "FOLDÈ live personalization editor with a phone preview of a wax-seal envelope and a list of envelope animations", caption: "The desktop editor: the phone on the left updates as you switch envelope animations and hero videos on the right." },
       },
@@ -258,7 +259,8 @@ followed by lunch at The Lake House</blockquote>
 <blockquote>We said “I do” in a small ceremony this spring.
 Now we’d love to celebrate with you!
 Emma & Lucas
-Saturday, September 12, 2026</blockquote>`,
+Saturday, September 12, 2026</blockquote>
+<p>More courthouse and city hall wording, including “We’re married!” celebrations, is in our <a href="/blog/civil-wedding-invitations">civil wedding invitations guide</a>.</p>`,
       },
       {
         heading: "Reception-only and after-party samples",

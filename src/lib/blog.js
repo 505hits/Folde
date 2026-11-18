@@ -1,6 +1,7 @@
 import { originalPostsEn } from "@/lib/articles-en";
 import { originalPostsEnWave2 } from "@/lib/articles-en-wave2";
 import { originalPostsEnWave3 } from "@/lib/articles-en-wave3";
+import { originalPostsEnWave4 } from "@/lib/articles-en-wave4";
 
 const rawBlogPosts = [
   {
@@ -270,7 +271,7 @@ const templatedPosts = rawBlogPosts.map((post, index) => {
 // Individually written articles first; they bypass the templated filler above.
 // A rewritten article replaces its templated English version under the same slug;
 // the French and Spanish versions still come from `templatedPostsEn`.
-const originalPosts = [...originalPostsEn, ...originalPostsEnWave2, ...originalPostsEnWave3];
+const originalPosts = [...originalPostsEn, ...originalPostsEnWave2, ...originalPostsEnWave3, ...originalPostsEnWave4];
 const rewrittenSlugs = new Set(originalPosts.map((post) => post.slug));
 export const templatedPostsEn = templatedPosts;
 export const blogPosts = [
