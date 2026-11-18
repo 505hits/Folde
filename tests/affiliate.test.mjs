@@ -36,7 +36,12 @@ test('a paid session records the referral once and emails amounts only', async (
   const db = mockDatabase([ok({ inserted: true, email: 'anna@example.org', locale: 'fr', code: 'anna-weds', sales_count: 3, total_commission_cents: 9000 })]);
   const { recordAffiliateSale } = await loadRoute('lib/affiliate-sale.js', db);
   const sent = [];
-  await recordAffiliateSale(session, db, async (to, details) => sent.push({ to, details }));
+  const team = [];
+  await recordAffiliateSale(session, db, async (to, details) => sent.push({ to, details }), async (details) => team.push(details));
+  assert.equal(team.length, 1);
+  assert.equal(team[0].code, 'anna-weds');
+  assert.equal(team[0].commissionCents, 4470);
+  assert.doesNotMatch(JSON.stringify(team[0]), /buyer@example|Emma|Lucas/);
   const call = db.calls[0];
   assert.equal(call.table, 'record_affiliate_sale');
   assert.deepEqual(call.value, { p_code: 'anna-weds', p_session_id: 'cs_test_aff', p_payment_intent: 'pi_123', p_buyer_user_id: buyer, p_amount_cents: 14900, p_commission_cents: 4470, p_currency: 'usd', p_plan: 'Custom' });
@@ -46,7 +51,7 @@ test('a paid session records the referral once and emails amounts only', async (
 
   const again = mockDatabase([ok({ inserted: false, reason: 'duplicate' })]);
   const repeat = [];
-  await recordAffiliateSale(session, again, async () => repeat.push(1));
+  await recordAffiliateSale(session, again, async () => repeat.push(1), async () => repeat.push(2));
   assert.equal(repeat.length, 0);
 });
 
@@ -106,4 +111,13 @@ test('a taken code is refused without exposing its owner', async () => {
   const { POST } = await loadRoute('app/api/affiliate/route.js', db);
   const response = await POST(request({ name: 'Anna', code: 'taken', payoutMethod: 'wise', payoutEmail: 'a@b.co', acceptTerms: true }));
   assert.equal(response.status, 409);
+});
+
+test('the team copy names the affiliate and links to the payout list', async () => {
+  const { teamSaleEmail, TEAM_EMAIL } = await loadRoute('lib/affiliate-email.js', mockDatabase());
+  const email = teamSaleEmail({ name: 'Anna', code: 'anna-weds', affiliateEmail: 'anna@example.org', amountCents: 4990, commissionCents: 1497, totalCommissionCents: 5967, salesCount: 2, plan: 'Standard' });
+  assert.equal(TEAM_EMAIL, 'folde.wedding@gmail.com');
+  assert.match(email.subject, /anna-weds.*\$14\.97/);
+  assert.match(email.html, /anna@example\.org/);
+  assert.match(email.html, /\/admin\/affiliates/);
 });

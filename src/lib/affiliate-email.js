@@ -64,6 +64,30 @@ export function welcomeEmail({ locale = 'en', code }) {
   return { subject: copy.subject, html: emailLayout({ ...copy, href: dashboardUrl(locale) }) };
 }
 
+// The FOLDÈ team's copy of each sale, to follow what will be owed at month end.
+export const TEAM_EMAIL = 'folde.wedding@gmail.com';
+
+export function teamSaleEmail({ name, code, affiliateEmail, amountCents, commissionCents, totalCommissionCents, salesCount, plan, currency = 'usd' }) {
+  const money = (cents) => formatMoney(cents, 'en', currency);
+  return {
+    subject: `Affiliate sale: ${code} earned ${money(commissionCents)}`,
+    html: emailLayout({
+      eyebrow: 'Affiliate program',
+      title: 'New affiliate sale',
+      text: `${name} (${affiliateEmail}) brought a ${/custom|expert/i.test(plan || '') ? 'Expert' : 'Standard'} order. The commission becomes payable after the 30-day refund window.`,
+      rows: [['Affiliate code', code], ['Sale amount', money(amountCents)], ['Commission (30%)', money(commissionCents)], ['Affiliate total earned', money(totalCommissionCents)], ['Affiliate sales', String(salesCount)]],
+      button: 'OPEN AFFILIATE PAYOUTS',
+      href: `${SITE}/admin/affiliates`,
+      footer: 'FOLDÈ Wedding · internal notification',
+    }),
+  };
+}
+
+export async function sendTeamSaleEmail(details) {
+  const { subject, html } = teamSaleEmail(details);
+  return send(process.env.AFFILIATE_TEAM_EMAIL || TEAM_EMAIL, subject, html);
+}
+
 export async function sendAffiliateSaleEmail(to, details) {
   const { subject, html } = saleEmail(details);
   return send(to, subject, html);
