@@ -30,12 +30,20 @@ export function localizedSignature(signature, language) {
  const locale = templateCopy[language] ? language : 'en';
  return {...signature,...(locale === 'en' ? {eyebrow:signature.eyebrow === 'Atelier de mariage' ? 'Wedding atelier' : signature.eyebrow} : templateCopy[locale]),...(signature.ornament === 'ISSUE 01' && locale !== 'en' ? {ornament:({fr:'NUMÉRO',es:'EDICIÓN',it:'EDIZIONE',de:'AUSGABE',pt:'EDIÇÃO',nl:'EDITIE',ar:'العدد',ru:'ВЫПУСК'}[locale] || '') + ' 01'} : {})};
 }
-export function weddingDateLabel(value,language='en') {
+// The couple's calendar day, whatever the viewer's time zone. "May 27, 2026" is
+// parsed as local midnight, which is May 26 in UTC east of Greenwich.
+export function calendarDate(value) {
+ const iso=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(value ?? ''));
+ if (iso) return new Date(Date.UTC(+iso[1], +iso[2] - 1, +iso[3]));
  const date=new Date(value);
+ return Number.isNaN(date.getTime()) ? date : new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+}
+export function weddingDateLabel(value,language='en') {
+ const date=calendarDate(value);
  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(language || 'en',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);
 }
 export function weddingDateParts(value, language = 'en') {
- const date = new Date(value);
+ const date = calendarDate(value);
  if (Number.isNaN(date.getTime())) return {month:'—',day:'—',year:'—'};
  const format = (options) => new Intl.DateTimeFormat(language, {...options,timeZone:'UTC'}).format(date);
  return {month:format({month:'short'}),day:format({day:'numeric'}),year:format({year:'numeric'})};

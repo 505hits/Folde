@@ -27,3 +27,15 @@ test('dates accept ISO values and stock translations never change custom text',(
  assert.equal(localizedStockLabel('Our beach ceremony','fr','event'),'Our beach ceremony');
  assert.equal(localizedStockLabel('Starter','es','course'),'Entrante');
 });
+
+test('a written wedding date keeps its day in every time zone',()=>{
+ const zone=process.env.TZ;
+ try{
+  for(const tz of ['Europe/Paris','Asia/Tokyo','America/Los_Angeles','UTC']){
+   process.env.TZ=tz;
+   assert.equal(weddingDateLabel('May 27, 2026','en'),'May 27, 2026',tz);
+   assert.equal(weddingDateLabel('2026-05-27','en'),'May 27, 2026',tz);
+   assert.equal(weddingDateParts('May 27, 2026','en').day,'27',tz);
+  }
+ } finally { if(zone===undefined) delete process.env.TZ; else process.env.TZ=zone; }
+});
