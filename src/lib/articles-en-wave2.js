@@ -29,7 +29,7 @@ export const originalPostsEnWave2 = [
   {
     slug: "bridal-shower-invitation-wording",
     keyword: "bridal shower invitation wording",
-    title: "Bridal Shower Invitation Wording: 24 Examples and the Etiquette Rules",
+    title: "Bridal Shower Invitation Wording: 24 Examples, From Brunch to Surprise Showers",
     metaTitle: "Bridal Shower Invitation Wording: 24 Examples + Etiquette",
     description: "What to write on a bridal or couples shower invitation, when to send it, who to invite and how to mention the registry, with 24 original wording examples.",
     excerpt: "Twenty-four wording examples, from classic to brunch and couples showers, plus the timing and guest-list rules.",
@@ -181,8 +181,8 @@ if you wish to bring something, Emma’s registry is linked below.</blockquote>`
   {
     slug: "engagement-party-invitations",
     keyword: "engagement party invitations",
-    title: "Engagement Party Invitations: Wording, Timing and Guest List Rules",
-    metaTitle: "Engagement Party Invitations: Wording, Timing & Etiquette",
+    title: "Engagement Party Invitations: 20 Wording Examples and the Guest-List Rule",
+    metaTitle: "Engagement Party Invitations: 20 Wording Examples + Etiquette",
     description: "When to send engagement party invitations, who to invite, who hosts, whether to mention gifts, and 20 wording examples, plus what to write in an engagement card.",
     excerpt: "The one guest-list rule that matters, timing, hosting and 20 wording examples for every kind of engagement party.",
     intro: "An engagement party is the first official celebration of the wedding, and its invitation quietly sets expectations: who is part of this wedding, how formal it will be, and whether gifts are expected. This guide covers the guest-list rule every etiquette expert agrees on, when to send the invitations, who hosts, and 20 wording examples, from a formal dinner hosted by parents to a casual backyard party. It ends with what to write if you’re the one sending an engagement card.",
@@ -314,7 +314,7 @@ Engagement toast for Emma & Lucas · Link after RSVP</blockquote>
   {
     slug: "wedding-reception-invitation-wording",
     keyword: "wedding reception invitation wording",
-    title: "Wedding Reception Invitation Wording: Reception-Only and Card Examples",
+    title: "Wedding Reception Invitation Wording: 18 Examples for Cards and Reception-Only Parties",
     metaTitle: "Wedding Reception Invitation Wording: 18 Examples",
     description: "How to word a reception card, a reception-only invitation after a private ceremony or elopement, and a delayed celebration, with 18 examples and etiquette.",
     excerpt: "Reception cards, reception-only invitations and delayed celebrations: what to write so nobody is confused.",
@@ -557,8 +557,8 @@ September 12, 2026 · A château in Burgundy, France</blockquote>
   {
     slug: "destination-wedding-invitations",
     keyword: "destination wedding invitations",
-    title: "Destination Wedding Invitations: Timeline, Wording and Travel Details",
-    metaTitle: "Destination Wedding Invitations: Timeline, Wording & Tips",
+    title: "Destination Wedding Invitations: 12 Wording Examples, the Send Timeline and Travel Details",
+    metaTitle: "Destination Wedding Invitations: Timeline + 12 Wordings",
     description: "When to send save-the-dates and invitations for a destination wedding, what travel details to include, 12 wording examples and how to keep guests updated.",
     excerpt: "The timeline, the travel details guests need, and 12 wording examples for weddings away from home.",
     intro: "A destination wedding invitation is a travel document as much as an invitation. Guests have to book flights, hotels and time off, sometimes renew a passport, and they will make those decisions from what you send them. This guide gives the timeline for save-the-dates and invitations, the travel details every destination invitation needs, 12 wording examples, and how to keep everyone updated without sending a new message each time something changes.",

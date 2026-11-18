@@ -102,3 +102,30 @@ Vague 3 : réécritures photo / vintage / floral, puis versions FR et ES (recher
 1. **Nom réel de l'auteur ou du relecteur**, avec une courte biographie (exigence E-E-A-T du cahier des charges). En attendant, les articles sont signés « FOLDÈ Editorial Team ».
 2. Déclarer les événements du §7 comme événements clés dans GA4, et vérifier le recueil du consentement (bannière cookies) pour les visiteurs européens.
 3. Tests GEO manuels (ChatGPT, Perplexity, Google AI Mode) 2 à 4 semaines après publication, avec observations datées.
+
+## Titres des articles anglais
+
+Mis à jour le 17/11/2026. Règle : le mot-clé principal ouvre le H1 et le meta title ; chaque chiffre ou promesse du titre existe dans l'article (exemples, lignes de tableau, listes comptés avant d'écrire le titre) ; pas de « ultimate », pas d'urgence artificielle ; meta title d'environ 60 caractères maximum (le site ajoute « | FOLDÈ Wedding »).
+
+| Slug | H1 | Meta title |
+|---|---|---|
+| `digital-wedding-invitations` | Digital Wedding Invitations: What to Include, When to Send and the Real Cost vs Paper | Digital Wedding Invitations: What to Include + Cost vs Paper |
+| `wedding-invitation-wording-examples` | Wedding Invitation Examples: 20 Wording Samples, From Formal to Courthouse | Wedding Invitation Examples: 20 Wording Samples to Copy |
+| `wedding-rsvp-cards` | Wedding RSVP Cards: 7 Wording Examples, What to Ask and When to Set the Deadline | Wedding RSVP Cards: 7 Wording Examples + Deadline Rules |
+| `how-to-rsvp-to-a-wedding` | How to RSVP to a Wedding: 8 Example Replies, From Yes to a Polite No | How to RSVP to a Wedding: 8 Examples to Accept or Decline |
+| `rehearsal-dinner-invitations` | Rehearsal Dinner Invitations: 10 Wording Examples, Timing and Who to Invite | Rehearsal Dinner Invitations: 10 Wording Examples + Etiquette |
+| `bridal-shower-invitation-wording` | Bridal Shower Invitation Wording: 24 Examples, From Brunch to Surprise Showers | Bridal Shower Invitation Wording: 24 Examples + Etiquette |
+| `engagement-party-invitations` | Engagement Party Invitations: 20 Wording Examples and the Guest-List Rule | Engagement Party Invitations: 20 Wording Examples + Etiquette |
+| `wedding-reception-invitation-wording` | Wedding Reception Invitation Wording: 18 Examples for Cards and Reception-Only Parties | Wedding Reception Invitation Wording: 18 Examples |
+| `elegant-wedding-invitations` | Elegant Wedding Invitations: 9 Design Rules and Real Examples | Elegant Wedding Invitations: 9 Design Rules + Examples |
+| `destination-wedding-invitations` | Destination Wedding Invitations: 12 Wording Examples, the Send Timeline and Travel Details | Destination Wedding Invitations: Timeline + 12 Wordings |
+| `wedding-invitations-with-rsvp` | Wedding Invitations With RSVP: 3 Setups Compared, What to Ask and When to Remind | Wedding Invitations With RSVP: 3 Setups Compared |
+| `all-in-one-wedding-invitations` | All-in-One Wedding Invitations: One Link Instead of Five Cards | All-in-One Wedding Invitations: 7 Sections to Include |
+| `wedding-invitation-suite` | Wedding Invitation Suite: All 8 Pieces Explained and the 4 You Can Skip | Wedding Invitation Suite: 8 Pieces + the 4 You Can Skip |
+| `wedding-invitations-with-floral-design` | Floral Wedding Invitations: 5 Styles and How to Match Them to Your Flowers | Floral Wedding Invitations: 5 Styles, Palettes & Examples |
+| `photo-wedding-invitations` | Photo Wedding Invitations: How to Pick the Photo, Place the Names and Protect Privacy | Photo Wedding Invitations: Choosing the Photo & Placing Text |
+| `vintage-wedding-invitations` | Vintage Wedding Invitations: 5 Eras From Victorian to the 1970s, Without Looking Dated | Vintage Wedding Invitations: 5 Era Styles + Wording Tips |
+| `traditional-wedding-invitations` | Traditional Wedding Invitations: The 9-Part Order, Wording Rules and 4 Classic Examples | Traditional Wedding Invitations: Wording Rules + 4 Examples |
+| `winter-wedding-invitations` | Winter Wedding Invitations: Send Dates for December to February, Palettes and Wording | Winter Wedding Invitations: Send Dates, Colors & Wording |
+| `wedding-welcome-signs` | Wedding Welcome Signs: 15 Wording Ideas, Sizes and Where to Place Them | Wedding Welcome Signs: 15 Wording Ideas, Sizes & Placement |
+| `couples-shower-invitations` | Couples Shower Invitations: 16 Wording Examples and How They Differ From a Bridal Shower | Couples Shower Invitations: 16 Wording Examples |
