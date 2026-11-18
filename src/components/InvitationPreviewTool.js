@@ -135,13 +135,24 @@ function RsvpVariant({ article, title, subtitle }) {
   const [company, setCompany] = useState("");
   const [diet, setDiet] = useState("");
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
   const { ref, interact } = useToolTracking(article, "rsvp");
   const summary = useMemo(() => {
-    if (!attend) return "Waiting for an answer";
+    if (!attend) return "No demo response yet";
     if (attend === "no") return "Declined · the couple sees it instantly";
     const party = { alone: "1 guest", guest: "2 guests (with a guest)", family: "Family (names listed)" }[company] || "Party size not chosen yet";
     return `Attending · ${party}${diet ? ` · Dietary note: ${diet}` : ""}`;
   }, [attend, company, diet]);
+  // Every change shows up on the couple's side right away; sending confirms it.
+  const update = (setter) => (e) => { interact(); setter(e.target.value); setSent(false); setError(""); };
+  const submit = (e) => {
+    e.preventDefault();
+    interact();
+    if (!attend) return setError("Choose whether you will attend first.");
+    if (attend === "yes" && !company) return setError("Tell the couple who is coming with you.");
+    setError("");
+    setSent(true);
+  };
 
   return (
     <section id="folde-tool" ref={ref} className={styles.tool} aria-labelledby="folde-tool-title">
@@ -149,9 +160,9 @@ function RsvpVariant({ article, title, subtitle }) {
         <p className={styles.toolLabel}>DEMO · WHAT YOUR GUESTS FILL IN</p>
         <h2 id="folde-tool-title" className={styles.toolTitle}>{title || "Try a digital RSVP in 20 seconds"}</h2>
         <p className={styles.toolSubtitle}>{subtitle || "These are the same questions a FOLDÈ invitation asks. This demo sends nothing."}</p>
-        <form className={styles.rsvpForm} onSubmit={(e) => { e.preventDefault(); interact(); setSent(true); }}>
+        <form className={styles.rsvpForm} onSubmit={submit} noValidate>
           <label>Will you attend?
-            <select value={attend} onChange={(e) => { interact(); setAttend(e.target.value); setSent(false); }} required>
+            <select value={attend} onChange={update(setAttend)} aria-invalid={error && !attend ? "true" : undefined}>
               <option value="">Please select</option>
               <option value="yes">Yes, with pleasure!</option>
               <option value="no">Regretfully decline</option>
@@ -159,7 +170,7 @@ function RsvpVariant({ article, title, subtitle }) {
           </label>
           {attend === "yes" && (
             <label>Will you be accompanied?
-              <select value={company} onChange={(e) => { interact(); setCompany(e.target.value); setSent(false); }} required>
+              <select value={company} onChange={update(setCompany)} aria-invalid={error && !company ? "true" : undefined}>
                 <option value="">Please select</option>
                 <option value="alone">I&apos;m coming alone</option>
                 <option value="guest">With a guest</option>
@@ -169,15 +180,17 @@ function RsvpVariant({ article, title, subtitle }) {
           )}
           {attend === "yes" && (
             <label>Allergies and dietary needs
-              <input value={diet} maxLength={60} placeholder="e.g. vegetarian" onChange={(e) => { interact(); setDiet(clean(e.target.value)); setSent(false); }} />
+              <input value={diet} maxLength={60} placeholder="e.g. vegetarian" onChange={(e) => { interact(); setDiet(clean(e.target.value)); setSent(false); setError(""); }} />
             </label>
           )}
-          <button type="submit" className={styles.toolGhostButton}>Submit demo RSVP</button>
+          {error && <p className={styles.rsvpError} role="alert">{error}</p>}
+          <button type="submit" className={styles.toolGhostButton}>{sent ? "✓ Sent · see the couple's view" : "Submit demo RSVP"}</button>
         </form>
       </div>
       <div className={styles.dashboardCard} aria-live="polite">
         <p className={styles.toolLabel}>WHAT THE COUPLE SEES</p>
-        <p className={styles.dashboardLine}><span className={sent ? styles.dotLive : styles.dot} />{sent ? summary : "No demo response yet"}</p>
+        <p className={styles.dashboardLine}><span className={sent ? styles.dotLive : styles.dot} />{summary}</p>
+        <p className={styles.rsvpStatus}>{sent ? "✓ Answer received just now (demo)" : attend ? "Preview · not sent yet" : "Answer on the left to see it here"}</p>
         <p className={styles.toolNote}>In a real invitation, each answer lands in the couple&apos;s private dashboard with the guest&apos;s name and email.</p>
         <Link className={styles.toolButton} href="/checkout" onClick={() => trackBlog("blog_tool_click", { article, variant: "rsvp" })}>Create my invitation with RSVP</Link>
         <DesignStrip article={article} variant="rsvp" />

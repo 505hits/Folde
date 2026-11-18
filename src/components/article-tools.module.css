@@ -150,3 +150,8 @@
 .designStrip img { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; border: 1px solid rgba(74, 47, 30, .12); transition: transform .2s ease; }
 .designStrip a:hover img { transform: translateY(-2px); }
 .designStrip a:focus-visible { outline: 2px solid #a97934; outline-offset: 2px; border-radius: 10px; }
+
+/* RSVP demo feedback */
+.rsvpError { margin: 0 !important; padding: .6rem .8rem; border-radius: 10px; background: #fff2f2; color: #b42318 !important; font-size: .85rem !important; font-weight: 600; }
+.rsvpForm select[aria-invalid="true"] { border-color: #d92d20 !important; box-shadow: 0 0 0 3px rgba(217, 45, 32, .12); }
+.rsvpStatus { margin: .2rem 0 0 !important; font-size: .78rem !important; font-weight: 600; letter-spacing: .02em; color: rgba(45, 35, 27, .55) !important; }
