@@ -8,7 +8,7 @@ const pageMetadata = {
   collections: { title: "Plantillas de invitaciones de boda digitales | FOLDÈ", description: "Explorad nuestras plantillas de invitaciones de boda digitales: sobre animado, tipografías cuidadas y personalización completa." },
   packages: { title: "Precios de las invitaciones de boda digitales | FOLDÈ", description: "Planes Estándar y Expert: pago único, invitados ilimitados y confirmación de asistencia integrada. Comparad qué incluye cada uno." },
   approach: { title: "Cómo trabajamos: de la idea a la invitación online | FOLDÈ", description: "Los cuatro pasos con los que creamos vuestra invitación de boda digital, desde la primera conversación hasta el envío." },
-  story: { title: "Nuestra historia | FOLDÈ Wedding", description: "La filosofía de FOLDÈ: diseño de papelería, tecnología útil y una experiencia memorable para los invitados." },
+  story: { title: "Nuestro estudio | FOLDÈ Wedding", description: "FOLDÈ es un pequeño estudio de diseño: cada sobre, escena en acuarela y monograma lo diseña a mano nuestro equipo y luego cobra vida como invitación digital." },
   blog: { title: "Blog de bodas: invitaciones, textos e ideas | FOLDÈ", description: "Textos para invitaciones, ideas originales y consejos para preparar y enviar las invitaciones de vuestra boda." },
   checkout: { title: "Crear vuestra invitación | FOLDÈ", description: "Elegid vuestro plan y personalizad la invitación de boda digital." },
   dashboard: { title: "Vuestro panel | FOLDÈ", description: "Gestionad la invitación, los invitados y las confirmaciones." },

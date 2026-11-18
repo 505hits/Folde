@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
-import { equivalentPath, localizeHref } from "@/lib/routes.mjs";
+import { equivalentPath, localizeHref, pagePath } from "@/lib/routes.mjs";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,15 +14,15 @@ export default function Header() {
   const localePath = (target) => equivalentPath(pathname || '/', target);
   const copy = {
     es: {
-    home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
+    home: 'Inicio', collections: 'Colecciones', process: 'Nuestro proceso', affiliates: 'Afiliados', packages: 'Planes', journal: 'Revista', about: 'Nosotros',
     dashboard: 'Mi panel', signIn: 'Iniciar sesión / Registrarse', order: 'Crear invitación', logout: 'Cerrar sesión', menu: 'Abrir o cerrar el menú'
     },
     fr: {
-      home: 'Accueil', collections: 'Collections', process: 'Notre méthode', packages: 'Formules', journal: 'Journal', about: 'À propos',
+      home: 'Accueil', collections: 'Collections', process: 'Notre méthode', affiliates: 'Affiliation', packages: 'Formules', journal: 'Journal', about: 'À propos',
       dashboard: 'Mon tableau de bord', signIn: 'Se connecter / S’inscrire', order: 'Créer mon invitation', logout: 'Se déconnecter', menu: 'Ouvrir ou fermer le menu'
     },
     en: {
-    home: 'Home', collections: 'Collections', process: 'Our Process', packages: 'Packages', journal: 'Journal', about: 'About',
+    home: 'Home', collections: 'Collections', process: 'Our Process', affiliates: 'Affiliates', packages: 'Packages', journal: 'Journal', about: 'About',
     dashboard: 'My Dashboard', signIn: 'Sign In / Register', order: 'Order Now', logout: 'Log Out', menu: 'Toggle menu'
     }
   };
@@ -48,7 +48,7 @@ export default function Header() {
         <nav className="header-nav">
           <Link href={link('/')}>{t.home}</Link>
           <Link href={link('/collections')}>{t.collections}</Link>
-          <Link href={link('/approach')}>{t.process}</Link>
+          <Link href={pagePath(locale, 'affiliates')}>{t.affiliates}</Link>
           <Link href={link('/packages')}>{t.packages}</Link>
           <Link href={link('/blog')}>{t.journal}</Link>
           <Link href={link('/story')}>{t.about}</Link>
@@ -100,7 +100,7 @@ export default function Header() {
           <nav className="mobile-nav-links">
             <Link href={link('/')} onClick={closeMenu}>{t.home}</Link>
             <Link href={link('/collections')} onClick={closeMenu}>{t.collections}</Link>
-            <Link href={link('/approach')} onClick={closeMenu}>{t.process}</Link>
+            <Link href={pagePath(locale, 'affiliates')} onClick={closeMenu}>{t.affiliates}</Link>
             <Link href={link('/packages')} onClick={closeMenu}>{t.packages}</Link>
             <Link href={link('/blog')} onClick={closeMenu}>{t.journal}</Link>
             <Link href={link('/story')} onClick={closeMenu}>{t.about}</Link>

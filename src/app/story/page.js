@@ -2,187 +2,146 @@ import { pageAlternates } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./vision.module.css";
-import { translateFr } from "@/lib/fr-ui";
+import { localizeHref } from "@/lib/routes.mjs";
 
 export const metadata = {
-  title: "Our Vision | FOLDÈ Design — Redefining the Digital Wedding Invitation",
-  description: "Discover the philosophy behind FOLDÈ Design. We believe your wedding invitation deserves to be as meaningful and memorable as the day itself.",
+  title: "Our Studio | FOLDÈ Design — Wedding Invitations Designed by Hand",
+  description: "FOLDÈ is a small design studio. Every envelope, watercolor scene and monogram is designed by hand by our team, then brought to life as a digital wedding invitation.",
   alternates: pageAlternates("en", "story"),
 };
 
-export default function Vision({ locale = 'en' }) {
-  const t = (english, spanish) => locale === 'fr' ? translateFr(english) : locale === 'es' ? spanish : english;
-  const checkoutPath = locale === 'en' ? '/checkout' : `/${locale}/checkout`;
+const PHOTOS = {
+  chateau: { src: "/images/story/studio-chateau.webp", alt: ["Designing a watercolor château save-the-date in the FOLDÈ studio", "Création d’un save-the-date aquarelle avec un château dans l’atelier FOLDÈ", "Creación de un save the date en acuarela con un castillo en el estudio FOLDÈ"] },
+  envelope: { src: "/images/story/studio-envelope.webp", alt: ["An ivory envelope with an embossed C & N monogram being designed", "Création d’une enveloppe ivoire avec un monogramme C & N en relief", "Diseño de un sobre marfil con un monograma C & N en relieve"] },
+  villa: { src: "/images/story/studio-lake-villa.webp", alt: ["A lake villa watercolor framed with roses, designed for a save-the-date", "Une villa au bord d’un lac encadrée de roses, dessinée pour un save-the-date", "Una villa junto a un lago enmarcada con rosas, diseñada para un save the date"] },
+};
+
+export default function Vision({ locale = "en" }) {
+  const i = locale === "fr" ? 1 : locale === "es" ? 2 : 0;
+  const t = (...versions) => versions[i];
+  const link = (path) => localizeHref(locale, path);
+
+  const steps = [
+    { title: t("The idea", "L’idée", "La idea"), text: t("We start from your story: a place that matters, your colors, the mood of the day. A few references are enough.", "Tout part de votre histoire : un lieu qui compte, vos couleurs, l’ambiance de la journée. Quelques références suffisent.", "Partimos de vuestra historia: un lugar especial, vuestros colores, el ambiente del día. Bastan unas pocas referencias.") },
+    { title: t("The design", "Le dessin", "El diseño"), text: t("Our designers compose each element: the watercolor scene, the envelope, the monogram, the typography. Nothing comes out of an automatic generator.", "Nos designers composent chaque élément : la scène à l’aquarelle, l’enveloppe, le monogramme, la typographie. Rien ne sort d’un générateur automatique.", "Nuestro equipo de diseño compone cada elemento: la escena en acuarela, el sobre, el monograma, la tipografía. Nada sale de un generador automático.") },
+    { title: t("The invitation comes to life", "L’invitation prend vie", "La invitación cobra vida"), text: t("We animate the design so your guests open the envelope on their phone, then find the schedule, the map and the RSVP.", "Nous animons le dessin : vos invités ouvrent l’enveloppe sur leur téléphone, puis découvrent le programme, le plan et le RSVP.", "Animamos el diseño: vuestros invitados abren el sobre en el móvil y descubren el programa, el mapa y la confirmación.") },
+  ];
+
+  const values = [
+    { title: t("Made by people", "Fait par des personnes", "Hecho por personas"), text: t("Every design you see on FOLDÈ was drawn and assembled by our team, one piece at a time.", "Chaque modèle que vous voyez sur FOLDÈ a été dessiné et assemblé par notre équipe, pièce par pièce.", "Cada diseño que veis en FOLDÈ lo ha dibujado y montado nuestro equipo, pieza a pieza.") },
+    { title: t("Paper details, on screen", "Le détail du papier, à l’écran", "El detalle del papel, en pantalla"), text: t("Embossed monograms, wax seals, textured envelopes: we keep the finesse of fine stationery in a digital invitation.", "Monogrammes en relief, sceaux de cire, enveloppes texturées : nous gardons la finesse de la belle papeterie dans une invitation numérique.", "Monogramas en relieve, sellos de lacre, sobres con textura: mantenemos la delicadeza de la buena papelería en una invitación digital.") },
+    { title: t("Changes until it feels like you", "Ajusté jusqu’à ce qu’il vous ressemble", "Ajustado hasta que os represente"), text: t("Names, colors, wording, music: we adjust your invitation with you until it feels right.", "Prénoms, couleurs, textes, musique : nous ajustons votre invitation avec vous jusqu’à ce qu’elle soit juste.", "Nombres, colores, textos, música: ajustamos vuestra invitación con vosotros hasta que quede perfecta.") },
+  ];
+
+  const promises = [
+    { title: t("Transparent pricing", "Tarifs transparents", "Precios transparentes"), text: t("One price, paid once. You know what you pay for and what you receive from the start.", "Un prix, payé une fois. Vous savez dès le départ ce que vous payez et ce que vous recevez.", "Un precio, pagado una vez. Desde el principio sabéis qué pagáis y qué recibís.") },
+    { title: t("Lasting access", "Accès durable", "Acceso duradero"), text: t("Your invitation link stays online after the wedding and becomes a keepsake.", "Le lien de votre invitation reste en ligne après le mariage et devient un souvenir.", "El enlace de vuestra invitación sigue en línea después de la boda y se convierte en un recuerdo.") },
+    { title: t("A real team to talk to", "Une vraie équipe à qui parler", "Un equipo real con quien hablar"), text: t("Questions or changes? Write to folde.wedding@gmail.com and a designer answers.", "Une question, une modification ? Écrivez à folde.wedding@gmail.com : notre équipe vous répond.", "¿Dudas o cambios? Escribid a folde.wedding@gmail.com y os responde nuestro equipo.") },
+  ];
+
   return (
     <div className={styles.page}>
-
-      {/* Hero */}
       <section className={styles.hero}>
         <div className="container">
-          <span className="label animate-fade-in-up">{t('Our Vision', 'Nuestra visión')}</span>
+          <span className="label animate-fade-in-up">{t("Our studio", "Notre atelier", "Nuestro estudio")}</span>
           <h1 className="heading-xl animate-fade-in-up delay-1">
-            {t('Your Invitation Should Be as Memorable as Your Day', 'Vuestra invitación debe ser tan memorable como el gran día')}
+            {t("Every design is made by hand, by our team", "Chaque modèle est dessiné à la main par notre équipe", "Cada diseño está hecho a mano por nuestro equipo")}
           </h1>
-          <p className="text-lg animate-fade-in-up delay-2" style={{ maxWidth: '650px' }}>
+          <p className="text-lg animate-fade-in-up delay-2" style={{ maxWidth: "660px" }}>
             {t(
-              'We founded FOLDÈ Design with a simple conviction: a wedding invitation is more than logistics — it is the very first chapter of your celebration. It deserves beauty, intention, and soul.',
-              'Fundamos FOLDÈ Design con una convicción sencilla: una invitación de boda es mucho más que información práctica; es el primer capítulo de vuestra celebración. Merece belleza, intención y alma.'
+              "FOLDÈ is a small design studio. We do not generate invitations from a template engine: each envelope, each watercolor scene, each monogram is composed by our designers, then brought to life for your guests.",
+              "FOLDÈ est un petit atelier de design. Nous ne générons pas les invitations avec un moteur de modèles : chaque enveloppe, chaque scène à l’aquarelle, chaque monogramme est composé par nos designers, puis prend vie pour vos invités.",
+              "FOLDÈ es un pequeño estudio de diseño. No generamos invitaciones con un motor de plantillas: cada sobre, cada escena en acuarela y cada monograma lo compone nuestro equipo de diseño y luego cobra vida para vuestros invitados."
             )}
           </p>
         </div>
       </section>
 
-      {/* Story */}
-      <section className={styles.storySection}>
+      <section className={styles.studioSection}>
         <div className="container">
-          <div className={styles.storyGrid}>
-            <div className={styles.storyImageWrapper}>
-              <Image
-                src="/images/champagne.png"
-                alt={t('Elegant champagne wedding invitation', 'Invitación de boda elegante en tonos champán')}
-                width={500}
-                height={600}
-                className={styles.storyImage}
-              />
-            </div>
-            <div className={styles.storyText}>
-              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>{t('Why We Exist', 'Por qué existimos')}</span>
-              <h2 className="heading-lg">{t('Born from a Desire to Elevate', 'Nacimos para elevar cada detalle')}</h2>
-              <p className="text-lg" style={{ marginTop: '1.5rem' }}>
-                {t(
-                  'Traditional paper invitations are beautiful — but they often get lost, arrive late, or lack the interactive depth that modern celebrations demand. Mass-produced digital alternatives, meanwhile, feel impersonal and disposable.',
-                  'Las invitaciones tradicionales de papel son bonitas, pero pueden perderse, llegar tarde o no ofrecer la profundidad interactiva que requieren las celebraciones actuales. Las alternativas digitales producidas en serie, por su parte, suelen resultar impersonales y efímeras.'
-                )}
-              </p>
-              <p className="text-lg" style={{ marginTop: '1rem' }}>
-                {t(
-                  'FOLDÈ was born in the space between these two worlds. We combine the timeless elegance of classic stationery with the power and convenience of digital technology — creating immersive, interactive experiences that your guests will remember long after the last dance.',
-                  'FOLDÈ nació entre esos dos mundos. Unimos la elegancia atemporal de la papelería clásica con la comodidad y las posibilidades de la tecnología digital para crear experiencias inmersivas que vuestros invitados recordarán mucho después del último baile.'
-                )}
-              </p>
-            </div>
+          <div className={styles.studioGrid}>
+            <figure className={`${styles.studioPhoto} ${styles.studioMain}`}>
+              <Image src={PHOTOS.chateau.src} alt={PHOTOS.chateau.alt[i]} width={1200} height={900} sizes="(max-width: 800px) 100vw, 60vw" priority />
+              <figcaption>{t("A château scene, with the couple painted into the watercolor.", "Une scène de château, avec le couple peint dans l’aquarelle.", "Una escena de castillo, con la pareja pintada en la acuarela.")}</figcaption>
+            </figure>
+            <figure className={styles.studioPhoto}>
+              <Image src={PHOTOS.envelope.src} alt={PHOTOS.envelope.alt[i]} width={1200} height={900} sizes="(max-width: 800px) 100vw, 40vw" />
+              <figcaption>{t("An ivory envelope and its embossed C & N monogram.", "Une enveloppe ivoire et son monogramme C & N en relief.", "Un sobre marfil y su monograma C & N en relieve.")}</figcaption>
+            </figure>
+            <figure className={styles.studioPhoto}>
+              <Image src={PHOTOS.villa.src} alt={PHOTOS.villa.alt[i]} width={1200} height={900} sizes="(max-width: 800px) 100vw, 40vw" />
+              <figcaption>{t("A lake villa framed with roses, for a spring save-the-date.", "Une villa au bord d’un lac encadrée de roses, pour un save-the-date de printemps.", "Una villa junto a un lago enmarcada con rosas, para un save the date de primavera.")}</figcaption>
+            </figure>
           </div>
         </div>
       </section>
 
-      {/* Values */}
       <section className={styles.valuesSection}>
         <div className="container">
           <div className="section-header">
-            <span className="label">{t('Our Values', 'Nuestros valores')}</span>
-            <h2 className="heading-lg">{t('The Principles That Guide Every Creation', 'Los principios que guían cada creación')}</h2>
+            <span className="label">{t("How a design is born", "Comment naît un modèle", "Cómo nace un diseño")}</span>
+            <h2 className="heading-lg">{t("From a sketch to the invitation your guests open", "De l’esquisse à l’invitation que vos invités ouvrent", "Del boceto a la invitación que abren vuestros invitados")}</h2>
           </div>
-          <div className={styles.valuesGrid}>
-            <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>✦</div>
-              <h3 className="heading-sm">{t('Elegance Above All', 'La elegancia ante todo')}</h3>
-              <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                {t('Every visual element, every animation, every typographic choice is deliberate. We believe that true luxury lies in the details — and we obsess over each one.', 'Cada elemento visual, cada animación y cada elección tipográfica responde a una intención. Creemos que el verdadero lujo reside en los detalles y cuidamos cada uno de ellos.')}
-              </p>
-            </div>
-            <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>🤲</div>
-              <h3 className="heading-sm">{t('Personal, Not Automated', 'Personal, no automatizado')}</h3>
-              <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                {t('Your invitation is not generated by a template engine. It is crafted by our team, in dialogue with you. Every project is unique because every couple is unique.', 'Vuestra invitación no sale de un generador automático. Nuestro equipo la crea en diálogo con vosotros. Cada proyecto es único porque cada pareja también lo es.')}
-              </p>
-            </div>
-            <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>🌿</div>
-              <h3 className="heading-sm">{t('Sustainable by Nature', 'Sostenible por naturaleza')}</h3>
-              <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                {t('A fully digital invitation means zero paper waste, no printing, and no shipping emissions. Elegance and responsibility are not mutually exclusive — they enhance each other.', 'Una invitación completamente digital evita residuos de papel, impresión y emisiones de transporte. La elegancia y la responsabilidad no se excluyen: se refuerzan mutuamente.')}
-              </p>
-            </div>
-            <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>💡</div>
-              <h3 className="heading-sm">{t('Innovation with Soul', 'Innovación con alma')}</h3>
-              <p className="text-sm" style={{ marginTop: '0.75rem' }}>
-                {t('We harness cutting-edge web technologies — immersive animations, interactive RSVP, real-time dashboards — but always in service of emotion, never for spectacle alone.', 'Utilizamos tecnología web de vanguardia —animaciones inmersivas, confirmación interactiva y paneles en tiempo real— siempre al servicio de la emoción, nunca como mero espectáculo.')}
-              </p>
-            </div>
-          </div>
+          <ol className={styles.steps}>
+            {steps.map((step, index) => (
+              <li key={step.title} className={styles.valueCard}>
+                <span className={styles.stepNumber}>{String(index + 1).padStart(2, "0")}</span>
+                <h3 className="heading-sm">{step.title}</h3>
+                <p className="text-sm" style={{ marginTop: "0.75rem" }}>{step.text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* Difference */}
       <section className={styles.differenceSection}>
         <div className="container">
-          <div className={styles.differenceInner}>
-            <div className={styles.differenceText}>
-              <span className="label" style={{ display: 'block', marginBottom: '1rem' }}>{t('What Sets Us Apart', 'Lo que nos diferencia')}</span>
-              <h2 className="heading-lg">{t('More Than a Link — An Experience', 'Más que un enlace: una experiencia')}</h2>
-              <p className="text-lg" style={{ marginTop: '1rem' }}>
-                {t('When your guests tap that link, they do not just see information. They experience an immersive unveiling — an elegant opening animation, curated music, and a journey through every detail of your celebration. From the ceremony schedule to accommodation suggestions, from the photo gallery to the RSVP — everything unfolds with intention.', 'Cuando vuestros invitados abren el enlace, no solo consultan información. Descubren una experiencia inmersiva: una elegante animación de apertura, música seleccionada y un recorrido por cada detalle de la celebración. Desde el horario de la ceremonia y las sugerencias de alojamiento hasta la galería de fotos y la confirmación de asistencia, todo se presenta con intención.')}
-              </p>
-              <p className="text-lg" style={{ marginTop: '1rem' }}>
-                {t('This is what makes a FOLDÈ invitation different. It is not a webpage. It is a moment.', 'Eso es lo que distingue a una invitación FOLDÈ. No es una página web: es un momento.')}
-              </p>
-            </div>
-            <div className={styles.differenceStats}>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>500+</span>
-                <span className={styles.statLabel}>{t('Couples Served', 'Parejas acompañadas')}</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>{t('12,000+', '12.000+')}</span>
-                <span className={styles.statLabel}>{t('Guests Invited', 'Personas invitadas')}</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>98%</span>
-                <span className={styles.statLabel}>{t('Satisfaction Rate', 'Índice de satisfacción')}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Commitment */}
-      <section className={styles.commitmentSection}>
-        <div className="container">
           <div className="section-header">
-            <span className="label">{t('Our Commitment', 'Nuestro compromiso')}</span>
-            <h2 className="heading-lg">{t('The FOLDÈ Promise', 'La promesa FOLDÈ')}</h2>
+            <span className="label">{t("What we care about", "Ce qui compte pour nous", "Lo que nos importa")}</span>
+            <h2 className="heading-lg">{t("Handmade design, digital delivery", "Un dessin fait main, une invitation numérique", "Diseño hecho a mano, entrega digital")}</h2>
           </div>
           <div className={styles.commitGrid}>
-            {(locale === 'es' ? [
-              { title: 'Precios transparentes', desc: 'Sin costes ocultos ni sorpresas. Desde la primera conversación sabréis exactamente qué pagáis y qué recibiréis.' },
-              { title: 'Revisiones ilimitadas', desc: 'Afinamos y ajustamos cada detalle hasta que el resultado os encante, sin límite de cambios ni cargos adicionales.' },
-              { title: 'Acceso duradero', desc: 'El enlace de vuestra invitación seguirá activo mientras lo necesitéis y, después de la boda, podrá convertirse en un precioso recuerdo digital.' },
-            ] : locale === 'fr' ? [
-              { title: 'Tarifs transparents', desc: 'Aucuns frais cachés ni mauvaise surprise. Dès le premier échange, vous savez exactement ce que vous payez et ce que vous recevrez.' },
-              { title: 'Révisions illimitées', desc: 'Nous affinons chaque détail jusqu’à votre entière satisfaction, sans limite d’itérations ni supplément pour les modifications.' },
-              { title: 'Accès durable', desc: 'Le lien de votre invitation reste actif aussi longtemps que nécessaire et peut devenir un précieux souvenir numérique après le mariage.' },
-            ] : [
-              { title: 'Transparent Pricing', desc: 'No hidden fees, no surprises. You know exactly what you pay for and what you receive — from the very first call.' },
-              { title: 'Unlimited Revisions', desc: 'We refine and adjust until you are truly delighted. There is no cap on iterations and no extra charge for changes.' },
-              { title: 'Lasting Access', desc: 'Your invitation link remains active as long as you need it. Even after the wedding, it becomes a beautiful digital keepsake.' },
-            ]).map((item, i) => (
-              <div key={i} className={styles.commitCard}>
-                <h4 className="heading-sm">{item.title}</h4>
-                <p className="text-sm" style={{ marginTop: '0.75rem' }}>{item.desc}</p>
+            {values.map((item) => (
+              <div key={item.title} className={styles.commitCard}>
+                <h3 className="heading-sm">{item.title}</h3>
+                <p className="text-sm" style={{ marginTop: "0.75rem" }}>{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className={styles.ctaSection}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <h2 className="heading-lg">{t("Let's Create Something Beautiful Together", 'Creemos juntos algo extraordinario')}</h2>
-          <p className="text-lg" style={{ marginTop: '0.75rem' }}>{t('Your story deserves an invitation worthy of it.', 'Vuestra historia merece una invitación a su altura.')}</p>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href={checkoutPath} className="btn-primary" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)', borderColor: 'var(--color-background)' }}>
-              {t('Order Now', 'Crear invitación')}
-            </Link>
-            <Link href={locale === 'en' ? "/collections" : `/${locale}/collections`} className="btn-secondary" style={{ borderColor: 'rgba(250,249,246,0.3)', color: 'var(--color-background)' }}>
-              {t('Explore Gallery', 'Explorar colecciones')}
-            </Link>
+      <section className={styles.commitmentSection}>
+        <div className="container">
+          <div className="section-header">
+            <span className="label">{t("Our commitment", "Notre engagement", "Nuestro compromiso")}</span>
+            <h2 className="heading-lg">{t("The FOLDÈ promise", "La promesse FOLDÈ", "La promesa FOLDÈ")}</h2>
+          </div>
+          <div className={styles.commitGrid}>
+            {promises.map((item) => (
+              <div key={item.title} className={styles.commitCard}>
+                <h3 className="heading-sm">{item.title}</h3>
+                <p className="text-sm" style={{ marginTop: "0.75rem" }}>{item.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
+      <section className={styles.ctaSection}>
+        <div className="container" style={{ textAlign: "center" }}>
+          <h2 className="heading-lg">{t("Let’s design your invitation together", "Dessinons votre invitation ensemble", "Diseñemos juntos vuestra invitación")}</h2>
+          <p className="text-lg" style={{ marginTop: "0.75rem" }}>{t("Choose a design and we will make it yours.", "Choisissez un modèle, nous en ferons le vôtre.", "Elegid un diseño y lo haremos vuestro.")}</p>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href={link("/checkout")} className="btn-primary" style={{ backgroundColor: "var(--color-background)", color: "var(--color-foreground)", borderColor: "var(--color-background)" }}>
+              {t("Order Now", "Créer mon invitation", "Crear invitación")}
+            </Link>
+            <Link href={link("/collections")} className="btn-secondary" style={{ borderColor: "rgba(250,249,246,0.3)", color: "var(--color-background)" }}>
+              {t("Explore the designs", "Voir les modèles", "Ver los diseños")}
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
