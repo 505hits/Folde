@@ -52,9 +52,9 @@ export async function POST(request) {
       },
       ...(embedded
         ? {
-            ui_mode: 'embedded',
+            ui_mode: 'embedded_page',
             return_url: origin + localePrefix + '/success?session_id={CHECKOUT_SESSION_ID}',
-            redirect_on_completion: 'if_required',
+            redirect_on_completion: 'always',
           }
         : {
             success_url: origin + localePrefix + '/success?session_id={CHECKOUT_SESSION_ID}',
