@@ -5,7 +5,7 @@ const vm = require('node:vm');
 
 function route(name, { user = null, authError = null, metadata = {}, customerEmail = '' } = {}) {
   const calls = [];
-  const checkout = { id: 'cs_mock', url: 'https://checkout.stripe.com/mock', payment_status: 'paid', customer_email: customerEmail, metadata, amount_total: 4990 };
+  const checkout = { id: 'cs_mock', url: 'https://checkout.stripe.com/mock', client_secret: 'cs_mock_secret', payment_status: 'paid', customer_email: customerEmail, metadata, amount_total: 4990 };
   const context = {
     protectRequest: async () => null,
     process: { env: {} }, console, URL,
@@ -64,4 +64,27 @@ test('saved template media resolve locally and custom uploads stay intact', asyn
   assert.equal(url, '/videos/bordeaux.mp4');
   assert.ok(fs.existsSync(__dirname + '/../public' + url));
   assert.equal(resolveTemplateMedia('https://example.org/custom.mp4'), 'https://example.org/custom.mp4');
+});
+
+test('embedded checkout returns a client secret, preserves ownership and uses stable pricing', async () => {
+  const r = route('create-checkout-session', { user: { id: 'buyer-id', email: 'buyer@example.org' } });
+  const result = await r.post({ plan: 'essential', embedded: true, offerExpires: 0 }, 'valid');
+  assert.equal(result.status, 200);
+  assert.equal(result.body.clientSecret, 'cs_mock_secret');
+  assert.equal(result.body.sessionId, 'cs_mock');
+  assert.equal(r.calls[0].ui_mode, 'embedded_page');
+  assert.equal(r.calls[0].redirect_on_completion, 'always');
+  assert.ok(r.calls[0].return_url.includes('{CHECKOUT_SESSION_ID}'));
+  assert.equal(r.calls[0].metadata.userId, 'buyer-id');
+  assert.equal(r.calls[0].line_items[0].price_data.unit_amount, 2990);
+  assert.equal(r.calls[0].line_items[0].price_data.currency, 'usd');
+  assert.equal(r.calls[0].success_url, undefined);
+});
+
+test('hosted checkout remains available as a fallback', async () => {
+  const r = route('create-checkout-session', { user: { id: 'buyer-id', email: 'buyer@example.org' } });
+  const result = await r.post({ plan: 'essential' }, 'valid');
+  assert.equal(result.body.url, 'https://checkout.stripe.com/mock');
+  assert.equal(r.calls[0].ui_mode, undefined);
+  assert.ok(r.calls[0].success_url.includes('{CHECKOUT_SESSION_ID}'));
 });

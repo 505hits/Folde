@@ -11,6 +11,7 @@ import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
 import { GoogleMark } from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
+import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
 
@@ -411,6 +412,7 @@ function CheckoutContent({ locale = "en" }) {
   // Preview step state
   const [previewDate, setPreviewDate] = useState('');
   const [previewVenue, setPreviewVenue] = useState('');
+  const [invitationDetails, setInvitationDetails] = useState({time:'', rsvpDeadline:''});
   const [previewStoryTitle, setPreviewStoryTitle] = useState('');
   const [previewStoryText, setPreviewStoryText] = useState('');
   const [selectedEnvelope, setSelectedEnvelope] = useState(ORDERED_ENVELOPE_OPTIONS[0].id);
@@ -512,12 +514,14 @@ function CheckoutContent({ locale = "en" }) {
             if (ORDERED_ENVELOPE_OPTIONS.some(option => option.id === resumed.selectedEnvelope)) setSelectedEnvelope(resumed.selectedEnvelope);
             if (HERO_VIDEO_OPTIONS.some(option => option.id === resumed.selectedHeroVideo)) setSelectedHeroVideo(resumed.selectedHeroVideo);
             if (resumed.previewDate) setPreviewDate(resumed.previewDate);
+            if (resumed.previewVenue) setPreviewVenue(resumed.previewVenue);
+            if (resumed.invitationDetails) setInvitationDetails(resumed.invitationDetails);
           });
         } catch (error) {
           console.warn('Unable to restore the emailed preview.', error);
         }
       }
-      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
+      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft') || localStorage.getItem('checkoutPreviewDraft');
       if (savedPreviewDraft) {
         try {
           const draft = JSON.parse(savedPreviewDraft);
@@ -532,6 +536,7 @@ function CheckoutContent({ locale = "en" }) {
           if (HERO_VIDEO_OPTIONS.some(option => option.id === draft.selectedHeroVideo)) setSelectedHeroVideo(draft.selectedHeroVideo);
           if (draft.previewDate) setPreviewDate(draft.previewDate);
           if (draft.previewVenue) setPreviewVenue(draft.previewVenue);
+          if (draft.invitationDetails) setInvitationDetails(draft.invitationDetails);
           if (draft.previewStoryTitle) setPreviewStoryTitle(draft.previewStoryTitle);
           if (draft.previewStoryText) setPreviewStoryText(draft.previewStoryText);
         } catch (error) {
@@ -633,7 +638,8 @@ function CheckoutContent({ locale = "en" }) {
     partner1: debouncedAccount.name || interfaceText(locale, 'Your Name'),
     partner2: debouncedAccount.partnerName || interfaceText(locale, "Partner's Name"),
     date: formatPreviewDate(debouncedPreviewDate),
-    time: '16:00',
+    time: invitationDetails.time || '16:00',
+    rsvpDeadline: invitationDetails.rsvpDeadline,
     ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
     receptionVenue: debouncedPreviewVenue || '',
     storyTitle: debouncedPreviewStoryTitle,
@@ -677,7 +683,7 @@ function CheckoutContent({ locale = "en" }) {
       "/images/couple_beach_sunset_1782995185709.png",
     ],
     images: {},
-  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, debouncedPreviewStoryTitle, debouncedPreviewStoryText, selectedTheme, selectedEnvelope, selectedHeroVideo]);
+  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, debouncedPreviewStoryTitle, debouncedPreviewStoryText, invitationDetails, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
   const handleNextStep = async () => {
     setAuthError('');
@@ -847,7 +853,8 @@ function CheckoutContent({ locale = "en" }) {
           partner1: account.name || currentUser?.name || '',
           partner2: account.partnerName || currentUser?.partnerName || '',
           date: formattedDate || 'TBD',
-          time: '16:00',
+          time: invitationDetails.time || '16:00',
+    rsvpDeadline: invitationDetails.rsvpDeadline,
           ceremonyVenue: premiumForm.weddingVenue || '',
           receptionVenue: premiumForm.weddingCity || '',
           themeId: selectedTheme,
@@ -971,7 +978,7 @@ function CheckoutContent({ locale = "en" }) {
   const funnelReturnPath = (email = '') => {
     const bytes = new TextEncoder().encode(JSON.stringify({
       name: account.name, partnerName: account.partnerName, email,
-      selectedTheme, selectedEnvelope, selectedHeroVideo, previewDate,
+      selectedTheme, selectedEnvelope, selectedHeroVideo, previewDate, previewVenue, invitationDetails,
     }));
     let binary = '';
     bytes.forEach(byte => { binary += String.fromCharCode(byte); });
@@ -979,11 +986,14 @@ function CheckoutContent({ locale = "en" }) {
     return `${localizedRoute('/checkout')}?resume=${token}&continue=1`;
   };
   const saveFunnelDraft = () => {
-    sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify({
+    const localDraft = {
       name: account.name, partnerName: account.partnerName, email: '',
       selectedTheme, selectedEnvelope, selectedHeroVideo,
-      previewDate, previewVenue, previewStoryTitle, previewStoryText,
-    }));
+      previewDate, previewVenue, invitationDetails, previewStoryTitle, previewStoryText,
+      previewData: { ...previewData, partner1: account.name, partner2: account.partnerName, ceremonyVenue: previewVenue, time: invitationDetails.time || previewData.time, rsvpDeadline: invitationDetails.rsvpDeadline },
+    };
+    sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify(localDraft));
+    localStorage.setItem('checkoutPreviewDraft', JSON.stringify(localDraft));
   };
   const continueWithGoogle = async () => {
     setAuthError('');
@@ -1047,6 +1057,7 @@ function CheckoutContent({ locale = "en" }) {
       selectedHeroVideo,
       previewDate,
       previewVenue,
+      invitationDetails,
       previewStoryTitle,
       previewStoryText,
       previewData: {
@@ -1065,6 +1076,7 @@ function CheckoutContent({ locale = "en" }) {
     };
     setAccount(finalAccount);
     sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
+    localStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
     localStorage.setItem('selectedTemplate', selectedTheme);
 
     const bytes = new TextEncoder().encode(JSON.stringify({
@@ -1140,6 +1152,10 @@ function CheckoutContent({ locale = "en" }) {
         setAccount={setAccount}
         previewDate={previewDate}
         setPreviewDate={setPreviewDate}
+        previewVenue={previewVenue}
+        setPreviewVenue={setPreviewVenue}
+        invitationDetails={invitationDetails}
+        setInvitationDetails={setInvitationDetails}
         selectedEnvelope={selectedEnvelope}
         setSelectedEnvelope={setSelectedEnvelope}
         selectedHeroVideo={selectedHeroVideo}
@@ -1187,6 +1203,7 @@ function CheckoutContent({ locale = "en" }) {
             <div style={{ width: 64, height: 64, display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem', borderRadius: '50%', color: '#fff', background: '#6e7b56', boxShadow: '0 0 0 12px #eef1e9', fontSize: '1.6rem' }}>✓</div>
             <h1 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem,5vw,3.4rem)', fontWeight: 400 }}>{emailCopy.title}</h1>
             <p style={{ margin: '0 auto 1.7rem', maxWidth: 430, color: '#806f62', lineHeight: 1.6 }}>{emailCopy.text}</p>
+            <InvitationDetails locale={locale} venue={previewVenue} setVenue={setPreviewVenue} details={invitationDetails} setDetails={setInvitationDetails} weddingDate={previewDate} />
             {magicLinkSentTo && !currentUser ? (
               <div role="status" style={{ padding: '1.2rem', borderRadius: 18, background: '#f4efe7', color: '#3d2b1f', lineHeight: 1.55 }}>
                 <strong style={{ display: 'block', marginBottom: '.35rem' }}>✉ {authCopy.sent} {magicLinkSentTo}</strong>
