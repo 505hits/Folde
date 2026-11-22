@@ -18,7 +18,7 @@ const content = {
     previewTitle: "Your invitation is ready to explore.",
     seePreview: "See your invitation preview",
     previewHint: "Tap the envelope, then scroll inside the phone",
-    popular: "Most popular", selected: "Selected", payment: "One-time payment", buy: "Choose", launch: "One-time launch price", countdown: "EXCLUSIVE OFFER · 40% OFF ENDS IN", expired: "Exclusive offer ended",
+    popular: "Most popular", selected: "Selected", payment: "One-time payment", buy: "Choose", launch: "One-time price",
     secure: "Secure checkout · No subscription · No hidden fees",
     afterEyebrow: "YOUR INVITATION PREVIEW",
     afterTitle: "See your invitation come to life.",
@@ -39,7 +39,7 @@ const content = {
     previewTitle: "Vuestra invitación está lista para explorarla.",
     seePreview: "Ver la vista previa de vuestra invitación",
     previewHint: "Tocad el sobre y desplazaos dentro del teléfono",
-    popular: "Más elegido", selected: "Seleccionado", payment: "Pago único", buy: "Elegir", launch: "Precio de lanzamiento · pago único", countdown: "OFERTA EXCLUSIVA · 40% DTO. TERMINA EN", expired: "La oferta exclusiva ha terminado",
+    popular: "Más elegido", selected: "Seleccionado", payment: "Pago único", buy: "Elegir", launch: "Pago único",
     secure: "Pago seguro · Sin suscripción · Sin costes ocultos",
     afterEyebrow: "VISTA PREVIA DE VUESTRA INVITACIÓN",
     afterTitle: "Descubrid vuestra invitación antes de comprar.",
@@ -60,7 +60,7 @@ const content = {
     previewTitle: "Votre invitation est prête à être découverte.",
     seePreview: "Voir l’aperçu de votre invitation",
     previewHint: "Touchez l’enveloppe puis faites défiler le téléphone",
-    popular: "Le plus choisi", selected: "Sélectionnée", payment: "Paiement unique", buy: "Choisir", launch: "Prix de lancement · paiement unique", countdown: "OFFRE EXCLUSIVE · -40 % SE TERMINE DANS", expired: "L’offre exclusive est terminée",
+    popular: "Le plus choisi", selected: "Sélectionnée", payment: "Paiement unique", buy: "Choisir", launch: "Paiement unique",
     secure: "Paiement sécurisé · Sans abonnement · Sans frais cachés",
     afterEyebrow: "APERÇU DE VOTRE INVITATION",
     afterTitle: "Découvrez votre invitation avant de payer.",
@@ -134,6 +134,13 @@ export default function PackagesPaywall({ locale = "en" }) {
   const selected = plans.find((plan) => plan.id === selectedId) || plans[0];
   const selectedCopy = copy.plans[selected.id];
 
+  useEffect(() => {
+    const saved = window.localStorage.getItem('checkoutSelectedPlan');
+    if (!plans.some(plan => plan.id === saved)) return;
+    const frame = window.requestAnimationFrame(() => setSelectedId(saved));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
@@ -149,7 +156,7 @@ export default function PackagesPaywall({ locale = "en" }) {
   }, []);
 
   useEffect(() => {
-    const savedDraft = window.sessionStorage.getItem("checkoutPreviewDraft");
+    const savedDraft = window.sessionStorage.getItem("checkoutPreviewDraft") || window.localStorage.getItem("checkoutPreviewDraft");
     if (!savedDraft) return;
     let frameId;
     try {
@@ -170,7 +177,7 @@ export default function PackagesPaywall({ locale = "en" }) {
   const createCheckoutSession = async (embedded) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Please sign in to continue.");
-    const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || "{}");
+    const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || window.localStorage.getItem("checkoutPreviewDraft") || "{}");
     window.localStorage.setItem("pendingOrder", JSON.stringify({
       name: savedDraft.name || previewData.partner1,
       partnerName: savedDraft.partnerName || previewData.partner2,
@@ -221,7 +228,6 @@ export default function PackagesPaywall({ locale = "en" }) {
       setEmbeddedCheckout(result);
     } catch (error) {
       setPaymentError(error.message || "Unable to open secure checkout.");
-      setShowPaymentSheet(false);
     } finally {
       setPaymentLoading(false);
     }
@@ -237,7 +243,6 @@ export default function PackagesPaywall({ locale = "en" }) {
       window.location.assign(result.url);
     } catch (error) {
       setPaymentError(error.message || "Unable to open Stripe Checkout.");
-      setShowPaymentSheet(false);
       setPaymentLoading(false);
     }
   };
@@ -245,7 +250,7 @@ export default function PackagesPaywall({ locale = "en" }) {
   return (
     <div className={styles.page}>
       {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => { setNeedsAuth(false); return startStripeCheckout(); }} />}
-      {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} />}
+      {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} paymentError={paymentError} invitationNames={`${previewData.partner1} & ${previewData.partner2}`} />}
       <section className={styles.paywall} aria-labelledby="packages-title">
         <div className={styles.preview}>
           <div className={styles.previewCopy}>
@@ -286,7 +291,7 @@ export default function PackagesPaywall({ locale = "en" }) {
               const planCopy = copy.plans[plan.id];
               const active = selectedId === plan.id;
               return (
-                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => setSelectedId(plan.id)}>
+                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => { setSelectedId(plan.id); window.localStorage.setItem('checkoutSelectedPlan', plan.id); }}>
                   {plan.popular && <span className={styles.badge}>{copy.popular}</span>}
                   <span className={styles.radio} aria-hidden="true"><i /></span>
                   <span className={styles.planTop}>
@@ -313,7 +318,7 @@ export default function PackagesPaywall({ locale = "en" }) {
         <button type="button" onClick={startStripeCheckout} disabled={paymentLoading} className={styles.purchaseButton}>
           {paymentLoading ? "Secure checkout…" : `${copy.buy} ${selectedCopy.name}`}<span aria-hidden="true">→</span>
         </button>
-        {paymentError && <span className={styles.paymentError}>{paymentError}</span>}
+        {paymentError && !showPaymentSheet && <span className={styles.paymentError}>{paymentError}</span>}
         <small>{copy.secure}</small>
       </div>
     </div>
