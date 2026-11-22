@@ -81,12 +81,11 @@ export default function StripeCheckoutSheet({
         const stripe = await stripePromise;
         if (!stripe) throw new Error("Stripe publishable key is missing.");
         if (!alive) return;
-        embeddedCheckout = await stripe.initEmbeddedCheckout({
-          clientSecret,
-          onComplete: () => {
-            const prefix = locale === "en" ? "" : "/" + locale;
-            window.location.assign(prefix + "/success?session_id=" + encodeURIComponent(sessionId));
-          },
+        const createEmbedded = stripe.createEmbeddedCheckoutPage?.bind(stripe)
+          || stripe.initEmbeddedCheckout?.bind(stripe);
+        if (!createEmbedded) throw new Error("Embedded Stripe Checkout is unavailable.");
+        embeddedCheckout = await createEmbedded({
+          fetchClientSecret: async () => clientSecret,
         });
         if (!alive) {
           embeddedCheckout.destroy();
