@@ -49,25 +49,37 @@ export default function StripeCheckoutSheet({
   sessionId,
   onClose,
   onFallback,
+  paymentError = '',
+  invitationNames = '',
 }) {
   const t = translations[locale] || translations.en;
   const closeRef = useRef(null);
   const mountRef = useRef(null);
+  const dialogRef = useRef(null);
   const onCloseRef = useRef(onClose);
   const [error, setError] = useState("");
-  onCloseRef.current = onClose;
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   useEffect(() => {
     const priorOverflow = document.body.style.overflow;
+    const priorFocus = document.activeElement;
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
     const onKeyDown = (event) => {
       if (event.key === "Escape") onCloseRef.current?.();
+      if (event.key === 'Tab') {
+        const items = dialogRef.current?.querySelectorAll('button:not(:disabled), a[href], iframe, input:not(:disabled)');
+        if (!items?.length) return;
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = priorOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      priorFocus?.focus?.();
     };
   }, []);
 
@@ -113,6 +125,7 @@ export default function StripeCheckoutSheet({
       }}
     >
       <section
+        ref={dialogRef}
         className={styles.sheet}
         role="dialog"
         aria-modal="true"
@@ -122,7 +135,6 @@ export default function StripeCheckoutSheet({
         <header className={styles.header}>
           <div>
             <h2 id="stripe-sheet-title">{t.title}</h2>
-            <p>{t.benefit}</p>
           </div>
           <button
             type="button"
@@ -135,23 +147,23 @@ export default function StripeCheckoutSheet({
           </button>
         </header>
 
+        <div className={styles.benefit}><span aria-hidden="true">✓</span><div><strong>{t.benefit}</strong>{invitationNames && <small>{invitationNames}</small>}</div></div>
+
         <div className={styles.summary}>
           <span>{planName} · {t.oneTime}</span>
-          <strong>{"$" + Number(amount).toFixed(2) + " USD"}</strong>
+          <strong>{new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(Number(amount))}</strong>
         </div>
 
-        {!clientSecret && !error && (
+        {!clientSecret && !error && !paymentError && (
           <p role="status" className={styles.loading}>{t.loading}</p>
         )}
-        {error && (
+        {(error || paymentError) && (
           <div role="alert" className={styles.error}>
-            <p>{error}</p>
-            <button type="button" className={styles.fallback} onClick={onFallback}>
-              {t.fallback} →
-            </button>
+            <p>{paymentError || error}</p>
           </div>
         )}
         <div ref={mountRef} className={styles.checkoutMount} />
+        <button type="button" className={styles.fallback} onClick={onFallback}>{t.fallback} →</button>
         <p className={styles.footer}>{t.footer}</p>
       </section>
     </div>

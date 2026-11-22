@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test tests/payment-routes.cjs tests/paid-order.test.mjs tests/rsvp.test.mjs tests/seating.test.mjs tests/wedding.test.mjs tests/local-recovery.test.mjs tests/template-copy.test.mjs tests/guest-photos.test.mjs tests/dashboard-save.test.mjs",
-    "test:e2e": "node tests/checkout-auth.cjs"
+    "test:e2e": "node tests/checkout-funnel.cjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.12.0",

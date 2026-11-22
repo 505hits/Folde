@@ -10,6 +10,7 @@ import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import CheckoutAuth from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
+import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
 
@@ -402,6 +403,7 @@ function CheckoutContent({ locale = "en" }) {
   // Preview step state
   const [previewDate, setPreviewDate] = useState('');
   const [previewVenue, setPreviewVenue] = useState('');
+  const [invitationDetails, setInvitationDetails] = useState({ time: '', rsvpDeadline: '' });
   const [previewStoryTitle, setPreviewStoryTitle] = useState('');
   const [previewStoryText, setPreviewStoryText] = useState('');
   const [selectedEnvelope, setSelectedEnvelope] = useState(ORDERED_ENVELOPE_OPTIONS[0].id);
@@ -508,7 +510,7 @@ function CheckoutContent({ locale = "en" }) {
           console.warn('Unable to restore the emailed preview.', error);
         }
       }
-      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft');
+      const savedPreviewDraft = sessionStorage.getItem('checkoutPreviewDraft') || localStorage.getItem('checkoutPreviewDraft');
       if (savedPreviewDraft) {
         try {
           const draft = JSON.parse(savedPreviewDraft);
@@ -523,6 +525,7 @@ function CheckoutContent({ locale = "en" }) {
           if (HERO_VIDEO_OPTIONS.some(option => option.id === draft.selectedHeroVideo)) setSelectedHeroVideo(draft.selectedHeroVideo);
           if (draft.previewDate) setPreviewDate(draft.previewDate);
           if (draft.previewVenue) setPreviewVenue(draft.previewVenue);
+          if (draft.invitationDetails) setInvitationDetails(draft.invitationDetails);
           if (draft.previewStoryTitle) setPreviewStoryTitle(draft.previewStoryTitle);
           if (draft.previewStoryText) setPreviewStoryText(draft.previewStoryText);
         } catch (error) {
@@ -624,7 +627,8 @@ function CheckoutContent({ locale = "en" }) {
     partner1: debouncedAccount.name || interfaceText(locale, 'Your Name'),
     partner2: debouncedAccount.partnerName || interfaceText(locale, "Partner's Name"),
     date: formatPreviewDate(debouncedPreviewDate),
-    time: '16:00',
+    time: invitationDetails.time || '16:00',
+    rsvpDeadline: invitationDetails.rsvpDeadline,
     ceremonyVenue: debouncedPreviewVenue || 'Your Dream Venue',
     receptionVenue: debouncedPreviewVenue || '',
     storyTitle: debouncedPreviewStoryTitle,
@@ -668,7 +672,7 @@ function CheckoutContent({ locale = "en" }) {
       "/images/couple_beach_sunset_1782995185709.png",
     ],
     images: {},
-  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, debouncedPreviewStoryTitle, debouncedPreviewStoryText, selectedTheme, selectedEnvelope, selectedHeroVideo]);
+  }), [locale, debouncedAccount.name, debouncedAccount.partnerName, debouncedPreviewDate, debouncedPreviewVenue, debouncedPreviewStoryTitle, debouncedPreviewStoryText, invitationDetails, selectedTheme, selectedEnvelope, selectedHeroVideo]);
 
   const handleNextStep = async () => {
     setAuthError('');
@@ -735,6 +739,8 @@ function CheckoutContent({ locale = "en" }) {
           partner1: account.name,
           partner2: account.partnerName,
           date: formatPreviewDate(previewDate),
+          time: invitationDetails.time || previewData.time,
+          rsvpDeadline: invitationDetails.rsvpDeadline,
           ceremonyVenue: previewVenue || 'Your Dream Venue',
           receptionVenue: previewVenue || '',
           storyTitle: previewStoryTitle,
@@ -838,7 +844,8 @@ function CheckoutContent({ locale = "en" }) {
           partner1: account.name || currentUser?.name || '',
           partner2: account.partnerName || currentUser?.partnerName || '',
           date: formattedDate || 'TBD',
-          time: '16:00',
+          time: invitationDetails.time || '16:00',
+          rsvpDeadline: invitationDetails.rsvpDeadline,
           ceremonyVenue: premiumForm.weddingVenue || '',
           receptionVenue: premiumForm.weddingCity || '',
           themeId: selectedTheme,
@@ -957,9 +964,8 @@ function CheckoutContent({ locale = "en" }) {
 
   const completeMobileFunnel = async (email) => {
     const {data:{session}}=await supabase.auth.getSession();
-    if(!session){setPendingEmail(email);setFunnelAuth(true);return;}
-    if(await hasPaidAccess(session)){router.replace(localizedRoute('/dashboard'));return;}
-    email=session.user.email;
+    if(session && await hasPaidAccess(session)){router.replace(localizedRoute('/dashboard'));return;}
+    email=session?.user.email || email;
     const finalAccount = { ...account, email };
     const draft = {
       name: finalAccount.name,
@@ -970,6 +976,7 @@ function CheckoutContent({ locale = "en" }) {
       selectedHeroVideo,
       previewDate,
       previewVenue,
+      invitationDetails,
       previewStoryTitle,
       previewStoryText,
       previewData: {
@@ -980,6 +987,8 @@ function CheckoutContent({ locale = "en" }) {
         partner1: finalAccount.name,
         partner2: finalAccount.partnerName,
         date: formatPreviewDate(previewDate),
+        time: invitationDetails.time || previewData.time,
+        rsvpDeadline: invitationDetails.rsvpDeadline,
         ceremonyVenue: previewVenue || 'Your Dream Venue',
         receptionVenue: previewVenue || '',
         storyTitle: previewStoryTitle,
@@ -988,6 +997,8 @@ function CheckoutContent({ locale = "en" }) {
     };
     setAccount(finalAccount);
     sessionStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
+    localStorage.setItem('checkoutPreviewDraft', JSON.stringify(draft));
+    if (!session) { setPendingEmail(email); setFunnelAuth(true); return; }
     localStorage.setItem('selectedTemplate', selectedTheme);
 
     const bytes = new TextEncoder().encode(JSON.stringify({
@@ -1033,7 +1044,7 @@ function CheckoutContent({ locale = "en" }) {
     );
   }
 
-  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} initialMode="signup" onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} />;
+  if(funnelAuth) return <CheckoutAuth locale={locale} initialEmail={pendingEmail} onClose={()=>setFunnelAuth(false)} onReady={async()=>{await completeMobileFunnel(pendingEmail);setFunnelAuth(false);}} />;
 
   if (isMobileViewport && step === 1) {
     return (
@@ -1043,6 +1054,10 @@ function CheckoutContent({ locale = "en" }) {
         setAccount={setAccount}
         previewDate={previewDate}
         setPreviewDate={setPreviewDate}
+        previewVenue={previewVenue}
+        setPreviewVenue={setPreviewVenue}
+        invitationDetails={invitationDetails}
+        setInvitationDetails={setInvitationDetails}
         selectedEnvelope={selectedEnvelope}
         setSelectedEnvelope={setSelectedEnvelope}
         selectedHeroVideo={selectedHeroVideo}
@@ -1082,6 +1097,7 @@ function CheckoutContent({ locale = "en" }) {
             <h1 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem,5vw,3.4rem)', fontWeight: 400 }}>{emailCopy.title}</h1>
             <p style={{ margin: '0 auto 1.7rem', maxWidth: 430, color: '#806f62', lineHeight: 1.6 }}>{emailCopy.text}</p>
             <input type="email" autoFocus autoComplete="email" value={account.email || ''} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder="you@example.com" style={{ ...inputStyle, height: 62, marginBottom: '1rem' }} />
+            <InvitationDetails locale={locale} venue={previewVenue} setVenue={setPreviewVenue} details={invitationDetails} setDetails={setInvitationDetails} weddingDate={previewDate} />
             {authError && <p role="alert" style={{ color: '#a33b32', margin: '0 0 .75rem', fontSize: '.84rem' }}>{authError}</p>}
             <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : emailCopy.button} →</button>
             <small style={{ display: 'block', marginTop: '.9rem', color: '#8b796b' }}>Private, secure and editable at any time.</small>

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const STANDARD_PRICE_ID = 'price_1UItNjDepfiMdtp46fHveRN0';
+
 
 const PLAN_CONFIG = {
   essential: { name: 'FOLDÈ Standard', unitAmount: 2990 },
@@ -31,9 +31,7 @@ export async function POST(request) {
     const localePrefix = ['fr', 'es'].includes(locale) ? '/' + locale : '';
     const selectedTheme = theme || 'bordeaux';
     const isStandard = plan === 'essential' || plan === 'Standard';
-    const lineItem = isStandard
-      ? { price: STANDARD_PRICE_ID, quantity: 1 }
-      : { price_data: { currency: 'usd', unit_amount: planConfig.unitAmount, product_data: { name: planConfig.name } }, quantity: 1 };
+    const lineItem = { price_data: { currency: 'usd', unit_amount: planConfig.unitAmount, product_data: { name: planConfig.name } }, quantity: 1 };
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

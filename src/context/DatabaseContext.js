@@ -60,13 +60,13 @@ export function DatabaseProvider({ children }) {
     }
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (returnPath = '/dashboard') => {
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${origin}/dashboard`
+          redirectTo: `${origin}${returnPath.startsWith('/') && !returnPath.startsWith('//') ? returnPath : '/dashboard'}`
         }
       });
       if (error) {
@@ -78,13 +78,13 @@ export function DatabaseProvider({ children }) {
     }
   };
 
-  const loginWithMagicLink = async (email) => {
+  const loginWithMagicLink = async (email, returnPath = '/dashboard') => {
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const { data, error } = await supabase.auth.signInWithOtp({
         email: email ? email.trim() : '',
         options: {
-          emailRedirectTo: `${origin}/dashboard`
+          emailRedirectTo: `${origin}${returnPath.startsWith('/') && !returnPath.startsWith('//') ? returnPath : '/dashboard'}`
         }
       });
       if (error) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import InvitationDetails from '@/components/InvitationDetails';
 import styles from "./mobile-funnel.module.css";
 import phoneStyles from "./mobile-funnel-phone.module.css";
 import buildingStyles from "./mobile-building.module.css";
@@ -116,6 +117,7 @@ export default function MobileInvitationFunnel({
   setAccount,
   previewDate,
   setPreviewDate,
+  previewVenue, setPreviewVenue, invitationDetails, setInvitationDetails,
   selectedEnvelope,
   setSelectedEnvelope,
   selectedHeroVideo,
@@ -153,7 +155,7 @@ export default function MobileInvitationFunnel({
   const validateAndContinue = async () => {
     setError("");
     if (screen === 1 && !previewDate) return setError(copy.errorDate);
-    if (screen === 4) {
+    if (screen === 5) {
       if (!/^\S+@\S+\.\S+$/.test(account.email || "")) return setError(copy.errorEmail);
       setSubmitting(true);
       try {
@@ -174,12 +176,12 @@ export default function MobileInvitationFunnel({
       });
       return;
     }
-    if (screen === 3) {
+    if (screen === 4) {
       setBuilding(true);
-      setScreen(4);
+      setScreen(5);
       return;
     }
-    setScreen((current) => Math.min(4, current + 1));
+    setScreen((current) => Math.min(5, current + 1));
   };
 
   const selectAndCenter = (id, setter, railRef) => {
@@ -198,15 +200,15 @@ export default function MobileInvitationFunnel({
       <header className={styles.header}>
         <button type="button" onClick={() => screen === 1 ? history.back() : setScreen((current) => current - 1)} aria-label="Back">←</button>
         <a href={locale === "en" ? "/" : `/${locale}`} className={styles.logo}>FOLDÈ</a>
-        <span>{screen}/4</span>
+        <span>{screen}/5</span>
       </header>
 
-      <div className={styles.progress} style={{ gridTemplateColumns: "repeat(4, 1fr)" }} aria-label={`Step ${screen} of 4`}>
-        {copy.steps.map((label, index) => <i key={label} className={index < screen ? styles.done : ""} />)}
+      <div className={styles.progress} style={{ gridTemplateColumns: "repeat(5, 1fr)" }} aria-label={`Step ${screen} of 5`}>
+        {[...copy.steps.slice(0, 3), 'Details', copy.steps[3]].map((label, index) => <i key={label} className={index < screen ? styles.done : ""} />)}
       </div>
 
       <section ref={stageRef} className={`${styles.stage} ${(screen === 2 || screen === 3) ? `${styles.stageGallery} ${layoutStyles.galleryStage}` : ""}`}>
-        {screen !== 4 && (
+        {screen < 4 && (
           <div className={styles.copy}>
             <p>{copy.kicker}</p>
             <h1>{screen === 1 ? copy.dateTitle : screen === 2 ? copy.envelopeTitle : copy.heroTitle}</h1>
@@ -255,7 +257,9 @@ export default function MobileInvitationFunnel({
           </>
         )}
 
-        {screen === 4 && building && (
+        {screen === 4 && <div className={styles.emailCard}><InvitationDetails locale={locale} venue={previewVenue} setVenue={setPreviewVenue} details={invitationDetails} setDetails={setInvitationDetails} weddingDate={previewDate} /></div>}
+
+        {screen === 5 && building && (
           <div className={buildingStyles.buildingCard} role="status" aria-live="polite">
             <div className={buildingStyles.buildingVisual} aria-hidden="true">
               <i /><i className={buildingStyles.orbitTwo} />
@@ -267,7 +271,7 @@ export default function MobileInvitationFunnel({
           </div>
         )}
 
-        {screen === 4 && !building && (
+        {screen === 5 && !building && (
           <div className={styles.emailCard}>
             <div className={styles.readyMark}>✓</div>
             <div><strong>{copy.emailTitle}</strong><span>{copy.emailText}</span></div>
@@ -282,7 +286,7 @@ export default function MobileInvitationFunnel({
         <div className={phoneStyles.footerInner}>
           <div className={phoneStyles.socialProof}><strong>★★★★★ 4.9/5</strong><span>{copy.proof}</span></div>
           <button type="button" onClick={validateAndContinue} disabled={submitting}>
-            {submitting ? "…" : screen === 4 ? copy.pricing : copy.continue}<span aria-hidden="true">→</span>
+            {submitting ? "…" : screen === 5 ? copy.pricing : copy.continue}<span aria-hidden="true">→</span>
           </button>
         </div>
       </footer>}

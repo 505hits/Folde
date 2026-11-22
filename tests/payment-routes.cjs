@@ -60,7 +60,8 @@ test('embedded checkout returns a client secret, preserves ownership and uses st
   assert.equal(r.calls[0].redirect_on_completion, 'always');
   assert.ok(r.calls[0].return_url.includes('{CHECKOUT_SESSION_ID}'));
   assert.equal(r.calls[0].metadata.userId, 'buyer-id');
-  assert.equal(r.calls[0].line_items[0].price, 'price_1UItNjDepfiMdtp46fHveRN0');
+  assert.equal(r.calls[0].line_items[0].price_data.unit_amount, 2990);
+  assert.equal(r.calls[0].line_items[0].price_data.currency, 'usd');
   assert.equal(r.calls[0].success_url, undefined);
 });
 
