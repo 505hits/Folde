@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import {hasPaidAccess} from '@/lib/purchase-access.mjs';
 import CheckoutAuth from '@/components/CheckoutAuth';
+import StripeCheckoutSheet from "@/components/StripeCheckoutSheet";
 import { supabase } from '@/lib/supabase';
 import { useDatabase } from '@/context/DatabaseContext';
 import styles from "./offers.module.css";
@@ -14,16 +15,16 @@ const content = {
     title: "Choose the experience that fits your celebration",
     intro: "Every package includes a beautiful mobile invitation, unlimited guests and live RSVP management.",
     preview: "YOUR LIVE DESIGN IS SAVED",
-    previewTitle: "Continue personalising your invitation after payment.",
+    previewTitle: "Your invitation is ready to explore.",
     seePreview: "See your invitation preview",
     previewHint: "Tap the envelope, then scroll inside the phone",
-    popular: "Most popular", selected: "Selected", payment: "One-time payment", buy: "Choose", launch: "Launch price · 40% off", countdown: "EXCLUSIVE OFFER · 40% OFF ENDS IN", expired: "Exclusive offer ended",
+    popular: "Most popular", selected: "Selected", payment: "One-time payment", buy: "Choose", launch: "One-time launch price", countdown: "EXCLUSIVE OFFER · 40% OFF ENDS IN", expired: "Exclusive offer ended",
     secure: "Secure checkout · No subscription · No hidden fees",
-    afterEyebrow: "YOUR INVITATION AFTER PAYMENT",
-    afterTitle: "Keep personalising every detail from your private studio.",
+    afterEyebrow: "YOUR INVITATION PREVIEW",
+    afterTitle: "See your invitation come to life.",
     afterText: "Payment unlocks the complete invitation and your private dashboard. Continue with your photos, wording, schedule, music, RSVP questions and guest tables before publishing.",
     afterPoints: ["Finish the design at your own pace", "Preview every update live", "Publish only when everything feels right"],
-    phoneHint: "Example of the mobile invitation your guests will receive",
+    phoneHint: "Tap the envelope to open your invitation",
     plans: {
       standard: { name: "Standard", summary: "Everything you need to publish beautifully.", features: ["Unlock every invitation design", "Complete creative customisation", "RSVP tools & unlimited guests"] },
       premium: { name: "Premium", summary: "More creative freedom and AI tools.", features: ["Everything in Standard", "AI images & music", "Priority support"] },
@@ -35,16 +36,16 @@ const content = {
     title: "Elegid la experiencia ideal para vuestra celebración",
     intro: "Todos los planes incluyen una invitación móvil elegante, invitados ilimitados y gestión de confirmaciones en tiempo real.",
     preview: "VUESTRO DISEÑO EN DIRECTO ESTÁ GUARDADO",
-    previewTitle: "Seguid personalizando vuestra invitación después del pago.",
+    previewTitle: "Vuestra invitación está lista para explorarla.",
     seePreview: "Ver la vista previa de vuestra invitación",
     previewHint: "Tocad el sobre y desplazaos dentro del teléfono",
-    popular: "Más elegido", selected: "Seleccionado", payment: "Pago único", buy: "Elegir", launch: "Precio de lanzamiento · 40% dto.", countdown: "OFERTA EXCLUSIVA · 40% DTO. TERMINA EN", expired: "La oferta exclusiva ha terminado",
+    popular: "Más elegido", selected: "Seleccionado", payment: "Pago único", buy: "Elegir", launch: "Precio de lanzamiento · pago único", countdown: "OFERTA EXCLUSIVA · 40% DTO. TERMINA EN", expired: "La oferta exclusiva ha terminado",
     secure: "Pago seguro · Sin suscripción · Sin costes ocultos",
-    afterEyebrow: "VUESTRA INVITACIÓN DESPUÉS DEL PAGO",
-    afterTitle: "Seguid personalizando cada detalle desde vuestro estudio privado.",
+    afterEyebrow: "VISTA PREVIA DE VUESTRA INVITACIÓN",
+    afterTitle: "Descubrid vuestra invitación antes de comprar.",
     afterText: "El pago desbloquea la invitación completa y vuestro panel privado. Podréis completar las fotos, textos, horarios, música, preguntas de confirmación y mesas antes de publicarla.",
     afterPoints: ["Termináis el diseño a vuestro ritmo", "Previsualizáis cada cambio en directo", "Publicáis únicamente cuando todo esté listo"],
-    phoneHint: "Ejemplo de la invitación móvil que recibirán vuestros invitados",
+    phoneHint: "Tocad el sobre para abrir vuestra invitación",
     plans: {
       standard: { name: "Estándar", summary: "Todo lo necesario para publicar con elegancia.", features: ["Todos los diseños desbloqueados", "Personalización creativa completa", "Confirmaciones e invitados ilimitados"] },
       premium: { name: "Premium", summary: "Más libertad creativa y herramientas de IA.", features: ["Todo Estándar", "Imágenes y música con IA", "Soporte prioritario"] },
@@ -56,16 +57,16 @@ const content = {
     title: "Choisissez l’expérience adaptée à votre célébration",
     intro: "Chaque formule inclut un faire-part mobile élégant, des invités illimités et la gestion RSVP en temps réel.",
     preview: "VOTRE DESIGN EST BIEN ENREGISTRÉ",
-    previewTitle: "Continuez à personnaliser votre invitation après le paiement.",
+    previewTitle: "Votre invitation est prête à être découverte.",
     seePreview: "Voir l’aperçu de votre invitation",
     previewHint: "Touchez l’enveloppe puis faites défiler le téléphone",
-    popular: "Le plus choisi", selected: "Sélectionnée", payment: "Paiement unique", buy: "Choisir", launch: "Prix de lancement · -40 %", countdown: "OFFRE EXCLUSIVE · -40 % SE TERMINE DANS", expired: "L’offre exclusive est terminée",
+    popular: "Le plus choisi", selected: "Sélectionnée", payment: "Paiement unique", buy: "Choisir", launch: "Prix de lancement · paiement unique", countdown: "OFFRE EXCLUSIVE · -40 % SE TERMINE DANS", expired: "L’offre exclusive est terminée",
     secure: "Paiement sécurisé · Sans abonnement · Sans frais cachés",
-    afterEyebrow: "VOTRE INVITATION APRÈS LE PAIEMENT",
-    afterTitle: "Finalisez chaque détail depuis votre studio privé.",
+    afterEyebrow: "APERÇU DE VOTRE INVITATION",
+    afterTitle: "Découvrez votre invitation avant de payer.",
     afterText: "Le paiement débloque l’invitation complète et votre tableau de bord privé. Vous pourrez encore personnaliser les photos, les textes, le programme, la musique, le RSVP et les tables avant la publication.",
     afterPoints: ["Terminez le design à votre rythme", "Prévisualisez chaque modification en direct", "Publiez uniquement lorsque tout est prêt"],
-    phoneHint: "Exemple de l’invitation mobile que recevront vos invités",
+    phoneHint: "Touchez l’enveloppe pour ouvrir votre invitation",
     plans: {
       standard: { name: "Standard", summary: "Tout le nécessaire pour publier avec élégance.", features: ["Tous les designs débloqués", "Personnalisation créative complète", "RSVP et invités illimités"] },
       premium: { name: "Premium", summary: "Plus de liberté créative et des outils IA.", features: ["Tout Standard", "Images et musique IA", "Assistance prioritaire"] },
@@ -75,7 +76,7 @@ const content = {
 };
 
 const plans = [
-  { id: "standard", checkoutId: "essential", regularPrice: 49.90, offerPrice: 29.90 },
+  { id: "standard", checkoutId: "essential", regularPrice: 29.90 },
   { id: "expert", checkoutId: "Custom", regularPrice: 149 },
 ];
 
@@ -126,8 +127,8 @@ export default function PackagesPaywall({ locale = "en" }) {
   const copy = content[locale] || content.en;
   const [selectedId, setSelectedId] = useState("standard");
   const [previewData, setPreviewData] = useState({ ...fallbackPreview, language: locale });
-  const [offerExpires, setOfferExpires] = useState(0);
-  const [now, setNow] = useState(0);
+  const [showPaymentSheet, setShowPaymentSheet] = useState(false);
+  const [embeddedCheckout, setEmbeddedCheckout] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const selected = plans.find((plan) => plan.id === selectedId) || plans[0];
@@ -164,79 +165,87 @@ export default function PackagesPaywall({ locale = "en" }) {
     };
   }, [locale]);
 
-  useEffect(() => {
-    const expiryKey = "foldeStandardOfferExpires";
-    const startedKey = "foldeStandardOfferStarted";
-    let expiry = Number(window.sessionStorage.getItem(expiryKey));
-    if (!window.sessionStorage.getItem(startedKey)) {
-      expiry = Date.now() + 5 * 60 * 1000;
-      window.sessionStorage.setItem(startedKey, "1");
-      window.sessionStorage.setItem(expiryKey, String(expiry));
-    }
-    const frameId = window.requestAnimationFrame(() => {
-      setOfferExpires(expiry || 0);
-      setNow(Date.now());
-    });
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.clearInterval(timer);
-    };
-  }, []);
+  const selectedPrice = selected.regularPrice;
 
-  const offerActive = offerExpires > now;
-  const secondsLeft = Math.max(0, Math.ceil((offerExpires - now) / 1000));
-  const countdown = `${String(Math.floor(secondsLeft / 60)).padStart(2, "0")}:${String(secondsLeft % 60).padStart(2, "0")}`;
-  const selectedPrice = selected.id === "standard" && offerActive ? selected.offerPrice : selected.regularPrice;
+  const createCheckoutSession = async (embedded) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Please sign in to continue.");
+    const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || "{}");
+    window.localStorage.setItem("pendingOrder", JSON.stringify({
+      name: savedDraft.name || previewData.partner1,
+      partnerName: savedDraft.partnerName || previewData.partner2,
+      email: session.user.email,
+      theme: savedDraft.selectedTheme || previewData.themeId,
+      previewData: { ...previewData, themeId: savedDraft.selectedTheme || previewData.themeId, selectedEnvelope: savedDraft.selectedEnvelope, selectedHeroVideo: savedDraft.selectedHeroVideo },
+      selectedEnvelope: savedDraft.selectedEnvelope,
+      selectedHeroVideo: savedDraft.selectedHeroVideo,
+      plan: selectedCopy.name,
+      planId: selected.checkoutId,
+      price: selectedPrice,
+    }));
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + session.access_token },
+      body: JSON.stringify({
+        plan: selected.checkoutId,
+        name: savedDraft.name || previewData.partner1,
+        partnerName: savedDraft.partnerName || previewData.partner2,
+        theme: savedDraft.selectedTheme || previewData.themeId,
+        locale,
+        embedded,
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Unable to open secure checkout.");
+    return result;
+  };
 
   const startStripeCheckout = async () => {
     if (paymentLoading) return;
-
     setPaymentLoading(true);
     setPaymentError("");
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setNeedsAuth(true); setPaymentLoading(false); return; }
-      if(await hasPaidAccess(session)){window.location.replace(locale==='en'?'/dashboard':`/${locale}/dashboard`);return;}
-      const savedDraft = JSON.parse(window.sessionStorage.getItem("checkoutPreviewDraft") || "{}");
-      window.localStorage.setItem("pendingOrder", JSON.stringify({
-        name: savedDraft.name || previewData.partner1,
-        partnerName: savedDraft.partnerName || previewData.partner2,
-        email: session.user.email,
-        theme: savedDraft.selectedTheme || previewData.themeId,
-        previewData: { ...previewData, themeId: savedDraft.selectedTheme || previewData.themeId, selectedEnvelope: savedDraft.selectedEnvelope, selectedHeroVideo: savedDraft.selectedHeroVideo },
-        selectedEnvelope: savedDraft.selectedEnvelope,
-        selectedHeroVideo: savedDraft.selectedHeroVideo,
-        plan: selectedCopy.name,
-        planId: selected.checkoutId,
-        price: selectedPrice,
-      }));
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({
-          plan: selected.checkoutId,
-          name: savedDraft.name || previewData.partner1,
-          partnerName: savedDraft.partnerName || previewData.partner2,
-          email: session.user.email,
-          theme: savedDraft.selectedTheme || previewData.themeId,
-          locale,
-          launchOffer: selected.id === "standard" && offerActive,
-          offerExpires,
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.url) throw new Error(result.error || "Unable to open secure checkout.");
-      window.location.assign(result.url);
+      if (!session) {
+        setNeedsAuth(true);
+        return;
+      }
+      if (await hasPaidAccess(session)) {
+        window.location.replace(locale === "en" ? "/dashboard" : "/" + locale + "/dashboard");
+        return;
+      }
+      setEmbeddedCheckout(null);
+      setShowPaymentSheet(true);
+      const result = await createCheckoutSession(true);
+      if (!result.clientSecret || !result.sessionId) throw new Error("Secure payment is temporarily unavailable.");
+      setEmbeddedCheckout(result);
     } catch (error) {
       setPaymentError(error.message || "Unable to open secure checkout.");
+      setShowPaymentSheet(false);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const startHostedCheckout = async () => {
+    if (paymentLoading) return;
+    setPaymentLoading(true);
+    setPaymentError("");
+    try {
+      const result = await createCheckoutSession(false);
+      if (!result.url) throw new Error("Unable to open Stripe Checkout.");
+      window.location.assign(result.url);
+    } catch (error) {
+      setPaymentError(error.message || "Unable to open Stripe Checkout.");
+      setShowPaymentSheet(false);
       setPaymentLoading(false);
     }
   };
 
   return (
     <div className={styles.page}>
-      {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => setNeedsAuth(false)} />}
+      {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => { setNeedsAuth(false); }} />}
+      {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} />}
       <section className={styles.paywall} aria-labelledby="packages-title">
         <div className={styles.preview}>
           <div className={styles.previewCopy}>
@@ -251,40 +260,6 @@ export default function PackagesPaywall({ locale = "en" }) {
         </div>
 
         <div className={styles.content}>
-          <header className={styles.heading}>
-            <p>{copy.eyebrow}</p>
-            <h1 id="packages-title">{copy.title}</h1>
-            <span>{copy.intro}</span>
-            <div className={`${styles.offerTimer} ${!offerActive ? styles.offerTimerExpired : ""}`}>
-              <span>{offerActive ? copy.countdown : copy.expired}</span>
-              {offerActive && <strong>{countdown}</strong>}
-            </div>
-          </header>
-
-          <div className={styles.planGrid} role="radiogroup" aria-label={copy.title}>
-            {plans.map((plan) => {
-              const planCopy = copy.plans[plan.id];
-              const active = selectedId === plan.id;
-              return (
-                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => setSelectedId(plan.id)}>
-                  {plan.popular && <span className={styles.badge}>{copy.popular}</span>}
-                  <span className={styles.radio} aria-hidden="true"><i /></span>
-                  <span className={styles.planTop}>
-                    <span><strong>{planCopy.name}</strong><small>{planCopy.summary}</small></span>
-                    <span className={styles.price}>
-                      {plan.id === "standard" && offerActive && <span className={styles.priceLine}><del>$49.90</del><em>-40%</em></span>}
-                      <strong>${(plan.id === "standard" && offerActive ? plan.offerPrice : plan.regularPrice).toFixed(2)}</strong>
-                      <small>{copy.payment}</small>
-                    </span>
-                  </span>
-                  <span className={styles.features}>{planCopy.features.map((feature) => <span key={feature}><i>✓</i>{feature}</span>)}</span>
-                  {active && <span className={styles.selectedLabel}>{copy.selected}</span>}
-                  {plan.id === "standard" && offerActive && <span className={styles.launchLabel}>{copy.launch}</span>}
-                </button>
-              );
-            })}
-          </div>
-
           <section id="invitation-preview" className={styles.afterPayment} aria-labelledby="after-payment-title">
             <div className={styles.afterCopy}>
               <p>{copy.afterEyebrow}</p>
@@ -299,6 +274,37 @@ export default function PackagesPaywall({ locale = "en" }) {
               <small>{copy.phoneHint}</small>
             </div>
           </section>
+          <header className={styles.heading}>
+            <p>{copy.eyebrow}</p>
+            <h1 id="packages-title">{copy.title}</h1>
+            <span>{copy.intro}</span>
+            <p className={styles.launchPriceNote}>{copy.launch}</p>
+          </header>
+
+          <div className={styles.planGrid} role="radiogroup" aria-label={copy.title}>
+            {plans.map((plan) => {
+              const planCopy = copy.plans[plan.id];
+              const active = selectedId === plan.id;
+              return (
+                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => setSelectedId(plan.id)}>
+                  {plan.popular && <span className={styles.badge}>{copy.popular}</span>}
+                  <span className={styles.radio} aria-hidden="true"><i /></span>
+                  <span className={styles.planTop}>
+                    <span><strong>{planCopy.name}</strong><small>{planCopy.summary}</small></span>
+                    <span className={styles.price}>
+                      <strong>${plan.regularPrice.toFixed(2)}</strong>
+                      <small>{copy.payment}</small>
+                    </span>
+                  </span>
+                  <span className={styles.features}>{planCopy.features.map((feature) => <span key={feature}><i>✓</i>{feature}</span>)}</span>
+                  {active && <span className={styles.selectedLabel}>{copy.selected}</span>}
+                  {plan.id === "standard" && <span className={styles.launchLabel}>{copy.launch}</span>}
+                </button>
+              );
+            })}
+          </div>
+
+
         </div>
       </section>
 
