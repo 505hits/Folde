@@ -244,7 +244,7 @@ export default function PackagesPaywall({ locale = "en" }) {
 
   return (
     <div className={styles.page}>
-      {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => { setNeedsAuth(false); }} />}
+      {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => { setNeedsAuth(false); return startStripeCheckout(); }} />}
       {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} />}
       <section className={styles.paywall} aria-labelledby="packages-title">
         <div className={styles.preview}>
