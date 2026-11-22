@@ -28,9 +28,13 @@ const token = `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(JSON.stringify({ sub: user.id,
   await page.goto(base+'/checkout?partner1=Emma&partner2=Lucas');
   await page.locator('input[type=date]').fill('2027-06-12');
   for(let i=0;i<3;i++)await page.getByRole('button',{name:/Continue/}).click();
-  await page.getByLabel('Ceremony venue').fill('Château des Fleurs');
-  await page.getByLabel('Ceremony time').fill('15:30');
-  await page.getByLabel('RSVP deadline').fill('2027-05-01');
+  await page.getByLabel('Wedding location').fill('Château des Fleurs, Paris');
+  assert.equal(await page.locator('input[type=time]').count(),0);
+  assert.equal(await page.locator('input[type=date]').count(),0);
+  const map=page.locator('iframe[title="Map of your wedding location"]');
+  await map.waitFor();
+  assert.equal(new URL(await map.getAttribute('src')).searchParams.get('q'),'Château des Fleurs, Paris');
+  await page.screenshot({path:'../../outputs/folde-location-mobile.png'});
   await page.getByRole('button',{name:/Continue/}).click();
   await page.getByPlaceholder('you@example.com').fill(user.email);
   await page.getByRole('button',{name:'Continue with Google'}).waitFor();
@@ -42,10 +46,9 @@ const token = `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(JSON.stringify({ sub: user.id,
   const returnUrl=new URL(otp[0].url).searchParams.get('redirect_to');
   assert.ok(returnUrl.includes('/checkout?resume='));
   const resumed=JSON.parse(Buffer.from(new URL(returnUrl).searchParams.get('resume'),'base64url').toString());
-  assert.equal(resumed.invitationDetails.time,'15:30');
+  assert.equal(resumed.previewVenue,'Château des Fleurs, Paris');
   const draft=await page.evaluate(()=>JSON.parse(localStorage.getItem('checkoutPreviewDraft')));
-  assert.equal(draft.previewData.ceremonyVenue,'Château des Fleurs');
-  assert.equal(draft.previewData.time,'15:30');assert.equal(draft.previewData.rsvpDeadline,'2027-05-01');
+  assert.equal(draft.previewData.ceremonyVenue,'Château des Fleurs, Paris');
   console.log('PASS mobile personalisation, passwordless auth, draft saved before redirect, no unauthenticated checkout');
   // Magic links commonly open in another tab: sessionStorage is deliberately absent.
   const returned=await context.newPage();
@@ -60,7 +63,7 @@ const token = `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(JSON.stringify({ sub: user.id,
   assert.equal(payments.length,1); assert.equal(payments[0].authorization,'Bearer '+token);
   assert.equal(payments[0].body.embedded,true);
   const pending=await returned.evaluate(()=>JSON.parse(localStorage.getItem('pendingOrder')));
-  assert.equal(pending.previewData.ceremonyVenue,'Château des Fleurs');assert.equal(pending.previewData.time,'15:30');assert.equal(pending.price,29.9);
+  assert.equal(pending.previewData.ceremonyVenue,'Château des Fleurs, Paris');assert.equal(pending.price,29.9);
   assert.equal(await returned.getByRole('dialog').getByRole('button',{name:/Continue on Stripe/}).count(),1);
   await Promise.all([
     returned.waitForResponse(r=>r.url().includes('/api/create-checkout-session')),

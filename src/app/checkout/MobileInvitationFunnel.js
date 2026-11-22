@@ -273,7 +273,7 @@ export default function MobileInvitationFunnel({
           </>
         )}
 
-        {screen === 4 && <div className={styles.emailCard}><InvitationDetails locale={locale} venue={previewVenue} setVenue={setPreviewVenue} details={invitationDetails} setDetails={setInvitationDetails} weddingDate={previewDate} /></div>}
+        {screen === 4 && <div className={styles.locationStep}><InvitationDetails locale={locale} venue={previewVenue} setVenue={setPreviewVenue} /></div>}
 
         {screen === 5 && building && (
           <div className={buildingStyles.buildingCard} role="status" aria-live="polite">
