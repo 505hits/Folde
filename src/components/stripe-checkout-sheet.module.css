@@ -1,0 +1,20 @@
+.backdrop{position:fixed;inset:0;z-index:2000;display:flex;justify-content:center;align-items:flex-end;background:rgba(23,18,16,.6);backdrop-filter:blur(3px);animation:shadeIn .24s ease-out}
+.sheet{width:min(100%,640px);max-height:min(94dvh,920px);overflow-y:auto;overscroll-behavior:contain;padding:0 clamp(18px,4vw,32px) max(16px,env(safe-area-inset-bottom));border-radius:26px 26px 0 0;background:#fffdfb;color:#32261f;box-shadow:0 -18px 70px rgba(20,14,10,.26);animation:sheetUp .34s cubic-bezier(.2,.8,.2,1);scrollbar-width:thin}
+.grabber{height:5px;width:40px;margin:12px auto 20px;border-radius:99px;background:#d9d0c8}
+.header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:0 0 18px}
+.header h2{margin:0 0 6px;font-family:var(--font-heading),Georgia,serif;font-size:clamp(23px,4vw,30px);font-weight:500;line-height:1.15}
+.header p{margin:0;color:#766c63;font-size:13px;line-height:1.5}
+.close{flex:0 0 40px;width:40px;height:40px;border:0;border-radius:50%;color:#493628;background:#f4efea;font-size:29px;line-height:1;cursor:pointer}
+.summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;padding:17px 18px;border:1px solid #e5d9c9;border-radius:16px;background:#faf5ed}
+.summary span{font-size:13px;color:#654b37}
+.summary strong{font-size:23px;font-weight:750;white-space:nowrap}
+.checkoutMount{min-height:180px}
+.loading{padding:42px 10px;text-align:center;color:#78695c}
+.error{padding:18px;border-radius:14px;background:#fff2ef;color:#8f3028}
+.error p{margin:0 0 14px}
+.fallback{width:100%;padding:14px;border:0;border-radius:12px;background:#4b2d1c;color:white;font:inherit;font-weight:700;cursor:pointer}
+.footer{margin:18px 0 8px;text-align:center;font-size:11px;color:#8b8074}
+@keyframes shadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(max-width:480px){.sheet{max-height:96dvh;padding-left:16px;padding-right:16px}.summary{padding:14px}.summary span{max-width:52%}.summary strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.backdrop,.sheet{animation:none}}
