@@ -9,7 +9,7 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
-import { GoogleMark } from '@/components/CheckoutAuth';
+import CheckoutAuth, { GoogleMark } from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
@@ -705,6 +705,7 @@ function CheckoutContent({ locale = "en" }) {
       return;
     }
     if (step === 2) {
+      saveFunnelDraft();
       setStep(3);
       window.scrollTo(0, 0);
       return;
@@ -1915,45 +1916,8 @@ function CheckoutContent({ locale = "en" }) {
           </div>
         )}
 
-        {/* ═══ STEP 3: CONFIRM & PAY ═══ */}
-        {step === 3 && (
-          <div className="checkout-box" style={{ backgroundColor: '#fff', borderRadius: '24px', padding: '3rem 2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <h1 style={{ fontSize: '1.8rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#5C3A1E' }}>Almost there!</h1>
-              <p style={{ color: '#888', fontSize: '0.95rem', marginTop: '0.5rem' }}>Enter your email to create your private dashboard and complete your order.</p>
-            </div>
-
-            {/* Couple summary badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem', backgroundColor: '#faf8f5', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #5C3A1E, #8b6e5a)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.98rem', fontWeight: 600, color: '#1a1a1a' }}>{account.name} & {account.partnerName}</div>
-                <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.1rem' }}>
-                  {previewDate ? formatPreviewDate(previewDate) : ''}
-                  {previewDate && previewVenue ? ' · ' : ''}
-                  {previewVenue || ''}
-                  {!previewDate && !previewVenue ? themeName : ''}
-                </div>
-              </div>
-              <button onClick={() => {
-                router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
-              }} style={{ background: 'none', border: 'none', color: '#5C3A1E', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Edit</button>
-            </div>
-
-            <div style={{ marginBottom: '0.25rem' }}>
-              <label style={{ ...labelStyle, marginBottom: '0.4rem' }}>Email address</label>
-              <input type="email" placeholder="your@email.com" value={account.email || ''} onChange={e => setAccount({ ...account, email: e.target.value })} style={inputStyle} />
-            </div>
-            {authError && <div style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center' }}>{authError}</div>}
-            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
-              Already have an account? <Link href={localizedRoute('/dashboard')} style={{ color: '#5C3A1E', fontWeight: 600, textDecoration: 'underline' }}>Log in to your dashboard</Link>
-            </div>
-          </div>
-        )}
-
-
+        {/* Every checkout entry uses the same passwordless account screen. */}
+        {step === 3 && <CheckoutAuth locale={locale} initialEmail={account.email || ''} onClose={handleBack} onReady={() => completeMobileFunnel(account.email || '')} />}
 
         {/* ═══ STEP 4: WEDDING FORM (after payment, Premium/Custom only) ═══ */}
         {step === 4 && (
