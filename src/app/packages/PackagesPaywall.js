@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import {hasPaidAccess} from '@/lib/purchase-access.mjs';
 import CheckoutAuth from '@/components/CheckoutAuth';
@@ -11,6 +11,8 @@ import styles from "./offers.module.css";
 
 const content = {
   en: {
+    previewBadge: 'Interactive preview',
+    previewEditable: 'This is a preview. After payment, personalise your photos, text, venue, music and RSVP before publishing.',
     eyebrow: "ONE PAYMENT · YOUR INVITATION, YOURS FOREVER",
     title: "Choose the experience that fits your celebration",
     intro: "Every package includes a beautiful mobile invitation, unlimited guests and live RSVP management.",
@@ -32,6 +34,8 @@ const content = {
     },
   },
   es: {
+    previewBadge: 'Vista previa interactiva',
+    previewEditable: 'Es una vista previa. Tras el pago, podréis personalizar fotos, textos, lugar, música y confirmaciones antes de publicar.',
     eyebrow: "UN ÚNICO PAGO · VUESTRA INVITACIÓN PARA SIEMPRE",
     title: "Elegid la experiencia ideal para vuestra celebración",
     intro: "Todos los planes incluyen una invitación móvil elegante, invitados ilimitados y gestión de confirmaciones en tiempo real.",
@@ -53,6 +57,8 @@ const content = {
     },
   },
   fr: {
+    previewBadge: 'Aperçu interactif',
+    previewEditable: 'Ceci est un aperçu. Après paiement, personnalisez vos photos, textes, lieu, musique et RSVP avant de publier.',
     eyebrow: "UN PAIEMENT · VOTRE FAIRE-PART POUR TOUJOURS",
     title: "Choisissez l’expérience adaptée à votre célébration",
     intro: "Chaque formule inclut un faire-part mobile élégant, des invités illimités et la gestion RSVP en temps réel.",
@@ -107,13 +113,28 @@ const fallbackPreview = {
 };
 
 function InvitationPhone({ data, compact = false }) {
+  const screenRef = useRef(null);
+  const [nativeHeight, setNativeHeight] = useState(850);
+  useEffect(() => {
+    const screen = screenRef.current;
+    if (!screen) return;
+    const observer = new ResizeObserver(() => {
+      if (!screen.clientWidth) return;
+      const scale = screen.clientWidth / 450;
+      screen.style.setProperty('--preview-scale', String(scale));
+      const next = Math.round(screen.clientHeight / scale);
+      setNativeHeight(previous => previous === next ? previous : next);
+    });
+    observer.observe(screen);
+    return () => observer.disconnect();
+  }, []);
   const previewKey = `${data.themeId}-${data.videos?.envelope}-${data.videos?.hero}`;
   return (
     <div className={compact ? styles.phone : styles.finalPhone}>
       <div className={compact ? styles.notch : styles.finalNotch} />
-      <div className={styles.phoneScreen}>
+      <div ref={screenRef} className={styles.phoneScreen} tabIndex={0} role="region" aria-label={data.language === 'fr' ? 'Aperçu interactif de votre invitation' : data.language === 'es' ? 'Vista previa interactiva de vuestra invitación' : 'Interactive invitation preview'}>
         <div className={styles.phoneTemplate}>
-          <BordeauxTemplate embedded key={previewKey} data={data} editMode={false} autoPlaySimulation={false} heroHeight="970px" />
+          <BordeauxTemplate embedded key={previewKey} data={{ ...data, previewMode: true }} editMode={false} autoPlaySimulation={false} heroHeight={`${nativeHeight}px`} />
         </div>
       </div>
     </div>
@@ -200,6 +221,7 @@ export default function PackagesPaywall({ locale = "en" }) {
         theme: savedDraft.selectedTheme || previewData.themeId,
         locale,
         embedded,
+        elements: embedded,
       }),
     });
     const result = await response.json();
@@ -250,17 +272,13 @@ export default function PackagesPaywall({ locale = "en" }) {
   return (
     <div className={styles.page}>
       {needsAuth && <CheckoutAuth locale={locale} onClose={() => setNeedsAuth(false)} onReady={() => { setNeedsAuth(false); return startStripeCheckout(); }} />}
-      {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} paymentError={paymentError} invitationNames={`${previewData.partner1} & ${previewData.partner2}`} />}
+      {showPaymentSheet && <StripeCheckoutSheet locale={locale} planName={selectedCopy.name} amount={selectedPrice} clientSecret={embeddedCheckout?.clientSecret} sessionId={embeddedCheckout?.sessionId} returnUrl={embeddedCheckout?.returnUrl} onClose={() => setShowPaymentSheet(false)} onFallback={startHostedCheckout} paymentError={paymentError} invitationNames={`${previewData.partner1} & ${previewData.partner2}`} />}
       <section className={styles.paywall} aria-labelledby="packages-title">
         <div className={styles.preview}>
           <div className={styles.previewCopy}>
             <span>{copy.preview}</span>
             <strong>{copy.previewTitle}</strong>
             <a href="#invitation-preview" className={styles.previewLink}>{copy.seePreview}<span aria-hidden="true">↓</span></a>
-          </div>
-          <div className={styles.previewPhoneWrap}>
-            <InvitationPhone data={previewData} compact />
-            <small>{copy.previewHint}</small>
           </div>
         </div>
 
@@ -275,6 +293,7 @@ export default function PackagesPaywall({ locale = "en" }) {
               </ul>
             </div>
             <div className={styles.finalPreview}>
+              <div className={styles.previewNotice}><strong>{copy.previewBadge}</strong><span>{copy.previewEditable}</span></div>
               <InvitationPhone data={previewData} />
               <small>{copy.phoneHint}</small>
             </div>

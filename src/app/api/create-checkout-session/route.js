@@ -19,6 +19,7 @@ export async function POST(request) {
     const body = await request.json();
     const { plan, name, partnerName, theme, locale } = body;
     const embedded = body.embedded === true;
+    const elements = embedded && body.elements === true;
     const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
     if (!token) return NextResponse.json({ error: 'Please sign in before paying.' }, { status: 401 });
 
@@ -56,9 +57,9 @@ export async function POST(request) {
       },
       ...(embedded
         ? {
-            ui_mode: 'embedded_page',
+            ui_mode: elements ? 'elements' : 'embedded_page',
             return_url: origin + localePrefix + '/success?session_id={CHECKOUT_SESSION_ID}',
-            redirect_on_completion: 'always',
+            ...(!elements ? { redirect_on_completion: 'always' } : {}),
           }
         : {
             success_url: origin + localePrefix + '/success?session_id={CHECKOUT_SESSION_ID}',
@@ -67,7 +68,7 @@ export async function POST(request) {
     });
 
     if (embedded) {
-      return NextResponse.json({ clientSecret: session.client_secret, sessionId: session.id });
+      return NextResponse.json({ clientSecret: session.client_secret, sessionId: session.id, returnUrl: origin + localePrefix + '/success?session_id=' + session.id });
     }
     return NextResponse.json({ url: session.url });
   } catch (error) {

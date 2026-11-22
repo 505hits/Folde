@@ -88,3 +88,15 @@ test('hosted checkout remains available as a fallback', async () => {
   assert.equal(r.calls[0].ui_mode, undefined);
   assert.ok(r.calls[0].success_url.includes('{CHECKOUT_SESSION_ID}'));
 });
+
+test('wallet buttons and card fields share an owned Elements session with a trusted return URL', async () => {
+  const r = route('create-checkout-session', { user: { id: 'buyer-id', email: 'buyer@example.org' } });
+  const result = await r.post({ plan: 'essential', embedded: true, elements: true, locale: 'fr', returnUrl: 'https://external.example' }, 'valid');
+  assert.equal(result.status, 200);
+  assert.equal(r.calls[0].ui_mode, 'elements');
+  assert.equal(r.calls[0].redirect_on_completion, undefined);
+  assert.equal(result.body.returnUrl, 'https://folde-wedding.com/fr/success?session_id=cs_mock');
+  assert.equal(r.calls[0].customer_email, 'buyer@example.org');
+  assert.equal(r.calls[0].metadata.userId, 'buyer-id');
+  assert.equal(r.calls[0].line_items[0].price_data.unit_amount, 2990);
+});

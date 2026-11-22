@@ -1,0 +1,53 @@
+// Production-build browser checks. Stripe, Supabase and BotID are mocked: no charges.
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:3101';
+const draft = {name:'Alexandra',partnerName:'Jean-Baptiste',selectedTheme:'bordeaux',previewVenue:'Château de Chantilly, France',previewData:{language:'fr',partner1:'Alexandra',partner2:'Jean-Baptiste',date:'2027-06-12',ceremonyVenue:'Château de Chantilly, France',receptionVenue:'7 Rue du Connétable, 60500 Chantilly, France',themeId:'bordeaux',videos:{envelope:'/images/blog/destination-wedding.webp',hero:'/images/blog/destination-wedding.webp'},sections:{showVenue:true,showSchedule:true,showRSVP:true},gallery:[],images:{}}};
+const stripeMock = `window.Stripe=function(){return {initCheckoutElementsSdk(options){window.stripeFixture={options,paymentOptions:null,expressOptions:null,confirms:[],destroyed:0};const f=window.stripeFixture;const element=(kind,opts)=>{const events={};let host;return {on(name,fn){events[name]=fn;return this;},mount(el){host=el;if(kind==='payment'){f.paymentOptions=opts;el.innerHTML='<div data-fixture-card>Card form (SDK fixture)</div>';queueMicrotask(()=>events.ready?.({}));}else{f.expressOptions=opts;el.innerHTML='<button type="button">Apple Pay fixture</button><button type="button">Link fixture</button>';el.querySelectorAll('button').forEach((b,i)=>b.onclick=()=>events.confirm?.({paymentType:i?'link':'apple_pay'}));queueMicrotask(()=>events.ready?.({availablePaymentMethods:{applePay:true,link:true}}));}},destroy(){f.destroyed++;if(host)host.innerHTML='';}};};return {createPaymentElement:o=>element('payment',o),createExpressCheckoutElement:o=>element('express',o),loadActions:async()=>({type:'success',actions:{confirm:async args=>{f.confirms.push(args);return {type:'error',error:{message:'Fixture decline: choose another method'}};}}})};}}};`;
+(async()=>{const browser=await chromium.launch();try{
+ const context=await browser.newContext();
+ await context.addInitScript(d=>localStorage.setItem('checkoutPreviewDraft',JSON.stringify(d)),draft);
+ await context.route('**/a-4-a/c.js?**',r=>r.fulfill({contentType:'application/javascript',body:'(window.V_C=window.V_C||[]).push({b:1});'}));
+ await context.route('https://js.stripe.com/**',r=>r.fulfill({contentType:'application/javascript',body:stripeMock}));
+ await context.route('https://local-test.supabase.co/**',r=>r.fulfill({json:{id:'buyer',email:'buyer@example.org',user_metadata:{}}}));
+ await context.route('**/api/wedding',r=>r.fulfill({json:{orders:[]}}));
+ let requestBody;
+ await context.route('**/api/create-checkout-session',r=>{requestBody=r.request().postDataJSON();return r.fulfill({json:{clientSecret:'fixture_secret',sessionId:'cs_fixture',returnUrl:base+'/success?session_id=cs_fixture'}});});
+ const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ for(const width of [320,360,390,430,768,1440]){
+  await page.setViewportSize({width,height:width>760?1000:844});
+  await page.goto(base+'/fr/packages',{waitUntil:'domcontentloaded'});
+  await page.locator('[class*=previewNotice]').getByText(/Après paiement/).waitFor();
+  const phone=page.locator('[class*=finalPhone]'),screen=phone.locator('[class*=phoneScreen]');
+  await page.waitForFunction(()=>{const s=document.querySelector('[class*=finalPhone] [class*=phoneScreen]');return s&&s.style.getPropertyValue('--preview-scale');});
+  const size=await screen.evaluate(s=>{const t=s.querySelector('[class*=phoneTemplate]');return {screen:s.clientWidth,template:t.getBoundingClientRect().width,overflow:s.scrollWidth-s.clientWidth,hero:s.querySelector('[class*=hero]').getBoundingClientRect().height,screenHeight:s.clientHeight};});
+  assert.ok(Math.abs(size.screen-size.template)<=1,JSON.stringify({width,size}));
+  assert.ok(size.overflow<=1,`Preview clips horizontally at ${width}: ${size.overflow}`);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`Page overflows at ${width}`);
+  const overlay=phone.locator('[class*=envelopeOverlay]');await overlay.click();await overlay.waitFor({state:'detached'});
+  const map=phone.locator('iframe[title]');await map.waitFor({state:'attached'});
+  assert.equal(new URL(await map.getAttribute('src')).searchParams.get('q'),draft.previewData.receptionVenue);
+  await map.scrollIntoViewIfNeeded();
+  const dims=await map.evaluate(el=>{const screen=el.closest('[class*=phoneScreen]');const a=el.getBoundingClientRect(),b=screen.getBoundingClientRect();return {left:a.left-b.left,right:a.right-b.right,width:a.width,height:a.height};});
+  assert.ok(dims.left>=-1 && dims.right<=1 && dims.width>100 && dims.height>80,JSON.stringify({width,dims}));
+  await screen.evaluate(s=>s.scrollTop=0);await phone.scrollIntoViewIfNeeded();
+  if(width===390||width===1440)await page.screenshot({path:'../../outputs/folde-paywall-verified-'+width+'.png',fullPage:true});
+  console.log('PASS preview and map geometry at '+width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
+ const token='eyJhbGciOiJIUzI1NiJ9.'+Buffer.from(JSON.stringify({sub:'buyer',exp:Math.floor(Date.now()/1000)+3600})).toString('base64url')+'.fixture';
+ await page.evaluate(t=>localStorage.setItem('sb-local-test-auth-token',JSON.stringify({access_token:t,refresh_token:'fixture',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,token_type:'bearer',user:{id:'buyer',email:'buyer@example.org',user_metadata:{}}})),token);
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>JSON.parse(localStorage.getItem('currentUser')||'null')?.email==='buyer@example.org');
+ await page.getByRole('button',{name:/Choisir Standard/}).click();
+ const dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Confirmer le paiement'}).waitFor({state:'visible'});
+ await page.waitForFunction(()=>window.stripeFixture?.paymentOptions);
+ assert.equal(requestBody.elements,true);
+ const initial=await page.evaluate(()=>window.stripeFixture);
+ assert.equal(initial.confirms.length,0);assert.equal(initial.paymentOptions.wallets.link,'never');assert.equal(initial.expressOptions.paymentMethods.link,'auto');
+ await dialog.getByRole('button',{name:'Confirmer le paiement'}).click();await dialog.getByText('Fixture decline: choose another method',{exact:true}).waitFor();
+ await dialog.getByRole('button',{name:'Link fixture'}).click();
+ await page.waitForFunction(()=>window.stripeFixture.confirms.length===2);
+ const attempts=await page.evaluate(()=>window.stripeFixture.confirms);assert.equal(attempts[1].expressCheckoutConfirmEvent.paymentType,'link');
+ await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});assert.equal(await page.evaluate(()=>window.stripeFixture.destroyed),2);
+ assert.deepEqual(errors,[]);console.log('PASS explicit wallet selection, card form available immediately, error retry, cleanup; no automatic Link confirmation');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

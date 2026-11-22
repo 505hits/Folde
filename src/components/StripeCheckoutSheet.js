@@ -11,6 +11,7 @@ const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const translations = {
   en: {
     title: "Secure payment",
+    orCard: "Or pay by card", confirm: "Confirm payment", processing: "Processing…", paymentFailed: "Payment could not be completed. Please try again or choose another method.",
     benefit: "Unlock your invitation and private wedding studio",
     oneTime: "One-time payment",
     loading: "Preparing secure payment…",
@@ -21,6 +22,7 @@ const translations = {
   },
   fr: {
     title: "Paiement sécurisé",
+    orCard: "Ou payer par carte", confirm: "Confirmer le paiement", processing: "Paiement en cours…", paymentFailed: "Le paiement n’a pas abouti. Réessayez ou choisissez un autre moyen de paiement.",
     benefit: "Débloquez votre faire-part et votre studio privé",
     oneTime: "Paiement unique",
     loading: "Préparation du paiement sécurisé…",
@@ -31,6 +33,7 @@ const translations = {
   },
   es: {
     title: "Pago seguro",
+    orCard: "O pagar con tarjeta", confirm: "Confirmar el pago", processing: "Procesando…", paymentFailed: "No se ha podido completar el pago. Intentadlo de nuevo o elegid otro método.",
     benefit: "Desbloquead vuestra invitación y estudio privado",
     oneTime: "Pago único",
     loading: "Preparando el pago seguro…",
@@ -47,6 +50,7 @@ export default function StripeCheckoutSheet({
   amount,
   clientSecret,
   sessionId,
+  returnUrl,
   onClose,
   onFallback,
   paymentError = '',
@@ -55,6 +59,13 @@ export default function StripeCheckoutSheet({
   const t = translations[locale] || translations.en;
   const closeRef = useRef(null);
   const mountRef = useRef(null);
+  const expressRef = useRef(null);
+  const confirmRef = useRef(null);
+  const busyRef = useRef(false);
+  const [ready, setReady] = useState(false);
+  const [paymentReady, setPaymentReady] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [walletsAvailable, setWalletsAvailable] = useState(null);
   const dialogRef = useRef(null);
   const onCloseRef = useRef(onClose);
   const [error, setError] = useState("");
@@ -84,38 +95,57 @@ export default function StripeCheckoutSheet({
   }, []);
 
   useEffect(() => {
-    if (!clientSecret || !sessionId) return;
+    if (!clientSecret || !sessionId || !returnUrl) return;
     let alive = true;
-    let embeddedCheckout;
-
-    const mountCheckout = async () => {
+    let paymentElement, expressElement;
+    const mount = async () => {
       try {
         const stripe = await stripePromise;
-        if (!stripe) throw new Error("Stripe publishable key is missing.");
         if (!alive) return;
-        const createEmbedded = stripe.createEmbeddedCheckoutPage?.bind(stripe)
-          || stripe.initEmbeddedCheckout?.bind(stripe);
-        if (!createEmbedded) throw new Error("Embedded Stripe Checkout is unavailable.");
-        embeddedCheckout = await createEmbedded({
-          fetchClientSecret: async () => clientSecret,
+        if (!stripe?.initCheckoutElementsSdk) throw new Error('Stripe Elements is unavailable.');
+        const checkout = stripe.initCheckoutElementsSdk({ clientSecret, elementsOptions: {
+          appearance: { theme: 'stripe', variables: { fontFamily: 'system-ui, sans-serif', fontSizeBase: '16px', colorPrimary: '#4b2d1c', colorText: '#182230', borderRadius: '12px', spacingUnit: '4px' } },
+          savedPaymentMethod: { enableSave: 'never', enableRedisplay: 'never' },
+        } });
+        const actionsReady = checkout.loadActions();
+        paymentElement = checkout.createPaymentElement({ layout: 'tabs', paymentMethodOrder: ['card'], wallets: { applePay: 'never', googlePay: 'never', link: 'never' } });
+        expressElement = checkout.createExpressCheckoutElement({
+          buttonHeight: 52,
+          buttonTheme: { applePay: 'black', googlePay: 'black' },
+          paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
+          paymentMethods: { applePay: 'always', googlePay: 'always', link: 'auto' },
+          layout: { maxColumns: 2, maxRows: 2, overflow: 'never' },
         });
-        if (!alive) {
-          embeddedCheckout.destroy();
-          return;
-        }
-        embeddedCheckout.mount(mountRef.current);
+        paymentElement.on('ready', () => { if (alive) setPaymentReady(true); });
+        paymentElement.on('loaderror', () => { if (alive) setError(t.stripeError); });
+        expressElement.on('ready', event => { if (alive) setWalletsAvailable(Boolean(event.availablePaymentMethods && Object.values(event.availablePaymentMethods).some(Boolean))); });
+        expressElement.on('cancel', () => { busyRef.current = false; if (alive) setBusy(false); });
+        expressElement.on('confirm', async event => { await actionsReady; if (alive) confirmRef.current?.(event); });
+        paymentElement.mount(mountRef.current);
+        expressElement.mount(expressRef.current);
+        const result = await actionsReady;
+        if (!alive) return;
+        if (result.type !== 'success') throw new Error(result.error?.message || t.stripeError);
+        confirmRef.current = async expressCheckoutConfirmEvent => {
+          if (busyRef.current) return;
+          busyRef.current = true; setBusy(true); setError('');
+          try {
+            const confirmation = await result.actions.confirm({ returnUrl, redirect: 'always', ...(expressCheckoutConfirmEvent ? { expressCheckoutConfirmEvent } : {}) });
+            if (!alive) return;
+            if (confirmation.type === 'error') setError(confirmation.error.message || t.paymentFailed);
+            else window.location.assign(returnUrl);
+          } catch { if (alive) setError(t.paymentFailed); }
+          finally { busyRef.current = false; if (alive) setBusy(false); }
+        };
+        setReady(true);
       } catch (cause) {
-        console.error("Unable to mount embedded Stripe Checkout", cause);
+        console.error('Unable to mount Stripe payment elements', cause);
         if (alive) setError(t.stripeError);
       }
     };
-
-    mountCheckout();
-    return () => {
-      alive = false;
-      if (embeddedCheckout) embeddedCheckout.destroy();
-    };
-  }, [clientSecret, sessionId, locale, t.stripeError]);
+    mount();
+    return () => { alive = false; confirmRef.current = null; paymentElement?.destroy(); expressElement?.destroy(); };
+  }, [clientSecret, sessionId, returnUrl, t.stripeError, t.paymentFailed]);
 
   return (
     <div
@@ -162,7 +192,12 @@ export default function StripeCheckoutSheet({
             <p>{paymentError || error}</p>
           </div>
         )}
+        <div className={styles.expressGroup} style={walletsAvailable === false ? { display: 'none' } : undefined}>
+          <div ref={expressRef} />
+          <p className={styles.separator}>{t.orCard}</p>
+        </div>
         <div ref={mountRef} className={styles.checkoutMount} />
+        {clientSecret && <button type="button" className={styles.confirmPayment} disabled={!ready || !paymentReady || busy} onClick={() => confirmRef.current?.()}>{busy ? t.processing : t.confirm}</button>}
         <button type="button" className={styles.fallback} onClick={onFallback}>{t.fallback} →</button>
         <p className={styles.footer}>{t.footer}</p>
       </section>

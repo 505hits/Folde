@@ -517,7 +517,8 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const parsedDate = new Date(dateStr);
   const targetDate = Number.isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString().slice(0, 10);
   const ceremonyVenue = t.ceremonyVenue || "Ocean front beach House";
-  const receptionVenue = t.receptionVenue || "South Dixie Highway, Homestead, Miami-Dade County, Florida, 33030, United States";
+  const receptionVenue = t.receptionVenue || t.ceremonyVenue || (t.previewMode ? '' : "South Dixie Highway, Homestead, Miami-Dade County, Florida, 33030, United States");
+  const venueMapQuery = t.receptionVenue || (t.ceremonyVenue && t.ceremonyVenue !== 'Your Dream Venue' ? t.ceremonyVenue : '');
 
   // Default structure for complex fields
   const timeline = t.timeline || [
@@ -896,21 +897,22 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             </AnimatedSection>
 
             <AnimatedSection type="fade">
-              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(receptionVenue)}`} target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
+              {(!t.previewMode || venueMapQuery) && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueMapQuery || receptionVenue)}`} target="_blank" rel="noopener noreferrer" className={styles.btnDirections} style={{ marginBottom: '2rem' }}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                  {copy.getDirections}
-              </a>
+              </a>}
             </AnimatedSection>
 
             <AnimatedSection type="zoom" className={styles.mapContainer}>
-              <iframe
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(receptionVenue)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+              {(!t.previewMode || venueMapQuery) ? <iframe
+                title={copy.venueShort || 'Wedding location'}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(venueMapQuery || receptionVenue)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                 width="100%"
                 height="250"
                 style={{ border: 0, display: 'block' }}
                 allowFullScreen=""
                 loading="lazy">
-              </iframe>
+              </iframe> : <p style={{ padding: '3rem 1rem', margin: 0, textAlign: 'center', background: '#f1eee7', color: '#806b58' }}>{t.language === 'fr' ? 'Votre lieu et sa carte seront personnalisables après paiement.' : t.language === 'es' ? 'Podréis personalizar el lugar y su mapa después del pago.' : 'Personalise your venue and map after payment.'}</p>}
             </AnimatedSection>
           </section>
         )}
@@ -1188,10 +1190,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
                   <button
                     type="submit"
                     className={styles.btnSubmit}
-                    disabled={rsvpSubmitting}
+                    disabled={rsvpSubmitting || Boolean(t.previewMode)}
                     style={{ opacity: rsvpSubmitting ? 0.6 : 1, cursor: rsvpSubmitting ? 'wait' : 'pointer' }}
                   >
-                     {rsvpSubmitting ? copy.rsvpSubmitting : copy.rsvpSubmitBtn}
+                     {t.previewMode ? (t.language === 'fr' ? 'RSVP disponible après publication' : t.language === 'es' ? 'Confirmaciones disponibles al publicar' : 'RSVP available after publishing') : rsvpSubmitting ? copy.rsvpSubmitting : copy.rsvpSubmitBtn}
                   </button>
                 </AnimatedSection>
               </form>

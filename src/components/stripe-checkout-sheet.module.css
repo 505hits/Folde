@@ -20,3 +20,4 @@
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @media(max-width:480px){.sheet{max-height:96dvh;padding-left:16px;padding-right:16px}.summary{padding:14px}.summary span{max-width:52%}.summary strong{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.backdrop,.sheet{animation:none}}
+.expressGroup{margin:18px 0}.separator{display:flex;align-items:center;gap:12px;margin:20px 0;color:#87909b;font-size:12px}.separator::before,.separator::after{content:'';height:1px;background:#e2e6eb;flex:1}.confirmPayment{width:100%;min-height:54px;margin-top:20px;padding:14px 18px;border:0;border-radius:14px;background:#182230;color:white;font:inherit;font-weight:750;cursor:pointer}.confirmPayment:disabled{opacity:.55;cursor:wait}.confirmPayment:focus-visible{outline:3px solid #b08968;outline-offset:3px}.checkoutMount{min-height:100px}.sheet{scroll-padding-block:16px}
