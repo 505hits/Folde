@@ -8,6 +8,7 @@ import buildingStyles from "./mobile-building.module.css";
 import layoutStyles from "./mobile-funnel-layout.module.css";
 import { GoogleMark, passwordCopy, isEmail, MIN_PASSWORD_LENGTH } from "@/components/CheckoutAuth";
 import { track } from "@/lib/analytics";
+import { InstagramIcon, TikTokIcon } from "@/components/SocialVideos";
 
 const AUTH = {
   en: { google: "Continue with Google", or: "or get a sign-in link by email", link: "Email me a sign-in link", sent: "Check your inbox: we sent a sign-in link to", hint: "Open it to continue. Your choices are saved in the link.", googleError: "Google sign-in could not start. Please use your email instead.", linkError: "We could not send the link. Please check your email address and try again." },
@@ -37,7 +38,7 @@ const COPY = {
     choose: "Use this design",
     pricing: "Save my preview & see packages",
     selected: "Selected",
-    proof: "500+ happy couples",
+    proof: "As seen on TikTok & Instagram",
     private: "Private, secure and editable at any time.",
     buildingTitle: "Creating your invitation",
     buildingText: "Bringing your names, date and chosen design together…",
@@ -67,7 +68,7 @@ const COPY = {
     choose: "Choisir ce design",
     pricing: "Enregistrer et voir les formules",
     selected: "Sélectionné",
-    proof: "500+ couples heureux",
+    proof: "Vu sur TikTok et Instagram",
     private: "Privé, sécurisé et modifiable à tout moment.",
     buildingTitle: "Création de votre invitation",
     buildingText: "Nous assemblons vos prénoms, votre date et le design choisi…",
@@ -97,7 +98,7 @@ const COPY = {
     choose: "Elegir este diseño",
     pricing: "Guardar y ver los planes",
     selected: "Seleccionado",
-    proof: "500+ parejas felices",
+    proof: "Visto en TikTok e Instagram",
     private: "Privado, seguro y editable en cualquier momento.",
     buildingTitle: "Creando vuestra invitación",
     buildingText: "Estamos reuniendo vuestros nombres, la fecha y el diseño elegido…",
@@ -334,7 +335,7 @@ export default function MobileInvitationFunnel({
       {!building && <footer className={`${styles.footer} ${(screen === 2 || screen === 3) ? layoutStyles.galleryFooter : ""}`}>
         {error && <p role="alert">{error}</p>}
         <div className={phoneStyles.footerInner}>
-          <div className={phoneStyles.socialProof}><strong>★★★★★ 4.9/5</strong><span>{copy.proof}</span></div>
+          <div className={phoneStyles.socialProof}><strong aria-hidden="true"><TikTokIcon /><InstagramIcon /></strong><span>{copy.proof}</span></div>
           <button type="button" onClick={validateAndContinue} disabled={submitting}>
             {submitting ? "…" : screen === 5 ? (signedIn || passwordStep ? copy.pricing : copy.continue) : copy.continue}<span aria-hidden="true">→</span>
           </button>

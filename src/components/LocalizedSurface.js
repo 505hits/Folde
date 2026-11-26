@@ -78,7 +78,7 @@ const rows = [
   ['Your wedding changed on another device. Reload it before editing; your current form has been kept.','Votre invitation a changé sur un autre appareil. Rechargez avant de modifier ; votre formulaire actuel a été conservé.','Tu invitación ha cambiado en otro dispositivo. Recarga antes de editar; se ha conservado tu formulario actual.'],
   ['Please choose a JPG, PNG, WebP or GIF image smaller than 3 MB.','Choisissez une image JPG, PNG, WebP ou GIF de moins de 3 Mo.','Elige una imagen JPG, PNG, WebP o GIF de menos de 3 MB.'],
   ['Your changes could not be saved. Please try again.','Vos modifications n’ont pas pu être enregistrées. Veuillez réessayer.','No se pudieron guardar los cambios. Inténtalo de nuevo.'],
-  ["Chosen by 500+ happy couples", "Choisi par plus de 500 couples heureux", "Elegido por más de 500 parejas felices"],
+  ["As seen on TikTok & Instagram", "Vu sur TikTok et Instagram", "Visto en TikTok e Instagram"],
   ["Live Personalization Preview", "Aperçu de personnalisation en direct", "Vista previa de personalización en directo"],
   ["Select your preferred envelope animation, background video, and details to preview your invitation live.", "Choisissez l’animation de l’enveloppe, la vidéo d’arrière-plan et vos informations pour prévisualiser votre faire-part en direct.", "Elige la animación del sobre, el vídeo de fondo y tus datos para previsualizar la invitación en directo."],
   ["“Our guests were captivated from the moment they opened it!”", "« Nos invités ont été émerveillés dès l’ouverture ! »", "«¡Nuestros invitados quedaron fascinados desde el momento en que la abrieron!»"],

@@ -14,6 +14,7 @@ import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import { track } from "@/lib/analytics";
+import { InstagramIcon, TikTokIcon } from "@/components/SocialVideos";
 import buildingStyles from "./mobile-building.module.css";
 import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from "@/lib/signature-catalog.mjs";
 
@@ -1613,38 +1614,12 @@ function CheckoutContent({ locale = "en" }) {
                     boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
                     marginBottom: '1rem'
                   }}>
-                    {/* Overlapping Avatars */}
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <img
-                        src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100"
-                        alt="Couple 1"
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover' }}
-                      />
-                      <img
-                        src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100"
-                        alt="Couple 2"
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                      />
-                      <img
-                        src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100"
-                        alt="Couple 3"
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                      />
-                      <img
-                        src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100"
-                        alt="Couple 4"
-                        style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', objectFit: 'cover', marginLeft: '-10px' }}
-                      />
+                    {/* As seen on TikTok & Instagram */}
+                    <div style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">
+                      <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', background: '#2c1b10', color: '#f3e2c7' }}><TikTokIcon /></span>
+                      <span style={{ marginLeft: '-8px', display: 'flex' }}><span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #fff', background: 'linear-gradient(135deg,#b98a4c,#7a4a26)', color: '#f3e2c7' }}><InstagramIcon /></span></span>
                     </div>
-
-                    {/* Social Proof Text */}
-                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <span style={{ color: '#b08968', fontSize: '0.75rem', letterSpacing: '1px' }}>★★★★★</span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#333' }}>4.9/5</span>
-                      </div>
-                      <span style={{ fontSize: '0.72rem', color: '#666', fontWeight: 500 }}>Chosen by 500+ happy couples</span>
-                    </div>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '.04em', color: '#4a3324' }}>As seen on TikTok &amp; Instagram</span>
                   </div>
 
                   <h1 style={{ fontSize: '2rem', fontWeight: 400, fontFamily: 'var(--font-heading)', color: '#1a1a1a', marginBottom: '0.4rem' }}>Live Personalization Preview</h1>

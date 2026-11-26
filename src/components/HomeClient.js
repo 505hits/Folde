@@ -9,7 +9,7 @@ import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import { translateFr } from "@/lib/fr-ui";
 import { localizeHref, pagePath } from "@/lib/routes.mjs";
 import { track } from "@/lib/analytics";
-import SocialVideos from "@/components/SocialVideos";
+import SocialVideos, { InstagramIcon, TikTokIcon } from "@/components/SocialVideos";
 
 const carouselItems = [
   { name: 'Luxe Gold', desc: 'Opulent and golden.', video: '/videos/hero/palm-zoom.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026' },
@@ -130,7 +130,7 @@ const frenchFaqs = [
 
 const homeCopy = {
   en: {
-    ratingAria: 'Rated 4.9 out of 5 by more than 500 happy couples', rating: 'Chosen by 500+ happy couples',
+    seenOn: 'As seen on TikTok & Instagram',
     heroTitle: 'Premium Digital Wedding Invitations & Live Guest Tracking', heroText: 'FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.',
     design: 'Start Your Invitation', starterTitle: 'Start your invitation', firstName: 'Your first name', partnerName: "Your partner’s first name", explore: 'Explore Collections', from: 'From $29.90', tracking: 'Smart RSVP Tracking', unlimited: 'Unlimited Guests', concierge: 'Personal Concierge',
     collections: 'Collections', universes: 'Explore Our Exclusive Design Universes', universesText: 'Each collection is a distinct aesthetic universe — crafted to tell your unique love story.', viewAll: 'View All Collections',
@@ -139,7 +139,7 @@ const homeCopy = {
     packages: 'Packages', packagesTitle: 'Select the Perfect Package for Your Wedding', packagesText: 'Tailored packages designed to elevate your wedding invitation experience.',
   },
   es: {
-    ratingAria: 'Valoración de 4,9 sobre 5 por más de 500 parejas satisfechas', rating: 'Elegida por más de 500 parejas felices',
+    seenOn: 'Visto en TikTok e Instagram',
     heroTitle: 'Invitaciones digitales de boda premium y gestión de invitados en tiempo real', heroText: 'FOLDÈ crea invitaciones digitales de boda a medida con confirmación de asistencia, galerías de fotos y gestión de invitados en tiempo real.',
     design: 'Empezar vuestra invitación', starterTitle: 'Empezad vuestra invitación', firstName: 'Tu nombre', partnerName: 'El nombre de tu pareja', explore: 'Explorar colecciones', from: 'Desde 29,90 $', tracking: 'Confirmaciones inteligentes', unlimited: 'Invitados ilimitados', concierge: 'Atención personalizada',
     collections: 'Colecciones', universes: 'Explorad nuestros universos de diseño exclusivos', universesText: 'Cada colección propone un universo estético propio, creado para contar vuestra historia de amor.', viewAll: 'Ver todas las colecciones',
@@ -148,7 +148,7 @@ const homeCopy = {
     packages: 'Planes', packagesTitle: 'Elegid el plan perfecto para vuestra boda', packagesText: 'Planes pensados para elevar la experiencia de vuestra invitación de boda.',
   },
   fr: {
-    ratingAria: 'Note de 4,9 sur 5 attribuée par plus de 500 couples', rating: 'Choisi par plus de 500 couples heureux',
+    seenOn: 'Vu sur TikTok et Instagram',
     heroTitle: 'Faire-part de mariage numériques haut de gamme et suivi des invités en direct', heroText: 'FOLDÈ crée des faire-part de mariage numériques sur mesure avec RSVP intégré, galerie photo et gestion des invités en temps réel.',
     design: 'Commencer votre invitation', starterTitle: 'Commencez votre invitation', firstName: 'Votre prénom', partnerName: 'Prénom de votre partenaire', explore: 'Explorer les collections', from: 'À partir de 29,90 $', tracking: 'Suivi RSVP intelligent', unlimited: 'Invités illimités', concierge: 'Conciergerie personnelle',
     collections: 'Collections', universes: 'Explorez nos univers graphiques exclusifs', universesText: 'Chaque collection propose un univers esthétique singulier, conçu pour raconter votre histoire d’amour.', viewAll: 'Voir toutes les collections',
@@ -196,15 +196,10 @@ export default function Home({ locale = 'en' }) {
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroText}>
-            <div className={`${styles.heroRating} animate-fade-in-up`} aria-label={copy.ratingAria}>
-              <div className={styles.ratingAvatars} aria-hidden="true">
-                <img src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
-                <img src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
-                <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
-                <img src="https://images.pexels.com/photos/3352398/pexels-photo-3352398.jpeg?auto=compress&cs=tinysrgb&w=100" alt="" />
-              </div>
-              <div className={styles.ratingCopy}><div><span>★★★★★</span><strong>4.9/5</strong></div><small>{copy.rating}</small></div>
-            </div>
+            <a href="#as-seen-on" className={`${styles.heroRating} ${styles.seenOn} animate-fade-in-up`}>
+              <span className={styles.seenIcons} aria-hidden="true"><i><TikTokIcon /></i><i><InstagramIcon /></i></span>
+              <span className={styles.seenText}>{copy.seenOn}</span>
+            </a>
             <h1 className="heading-xl animate-fade-in-up delay-1">
               {copy.heroTitle}
             </h1>
@@ -219,7 +214,7 @@ export default function Home({ locale = 'en' }) {
                 <label><span>{copy.partnerName}</span><input name="partner2" autoComplete="given-name" required placeholder="Tom" /></label>
               </div>
               <button type="submit">{copy.design}<span className={styles.ctaFinger} aria-hidden="true">👇</span></button>
-              <small>★★★★★ 4.9/5 · {copy.rating}</small>
+              <small className={styles.seenSmall}><TikTokIcon /><InstagramIcon /> {copy.seenOn}</small>
             </form>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
               <Link href={link('/checkout')} onClick={() => track('start_invitation', { location: 'home_hero' })} className="btn-primary">{copy.design}<span className={styles.ctaFinger} aria-hidden="true">👇</span></Link>

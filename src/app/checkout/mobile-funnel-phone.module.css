@@ -62,6 +62,8 @@
 }
 
 .socialProof strong {
+  display: flex;
+  gap: 0.3rem;
   color: #a77336;
   font-size: 0.62rem;
   white-space: nowrap;
