@@ -1,6 +1,7 @@
 import { templatedPostsEn } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsFr } from "@/lib/articles-fr";
+import { originalPostsFrWave2 } from "@/lib/articles-fr-wave2";
 
 // Traductions de sujets pensés pour le marché anglophone : conservées, mais non indexées
 // tant qu’elles n’ont pas été réécrites pour des recherches françaises.
@@ -149,9 +150,13 @@ const translatedPostsFr = templatedPostsEn.map((base) => {
   };
 });
 
+const allOriginalsFr = [...originalPostsFrWave2, ...originalPostsFr];
+const originalSlugsFr = new Set(allOriginalsFr.map((post) => post.slug));
+
 export const blogPostsFr = [
-  ...originalPostsFr.map((post) => ({ ...post, original: true, indexable: true })),
-  ...translatedPostsFr,
+  ...allOriginalsFr.map((post) => ({ ...post, original: true, indexable: true })),
+  // A French original written for the same topic replaces its translation.
+  ...translatedPostsFr.filter((post) => !originalSlugsFr.has(post.slug)),
 ];
 
 export const currentSourcesFr = [

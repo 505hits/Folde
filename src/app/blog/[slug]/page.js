@@ -95,7 +95,9 @@ export default async function BlogArticle({ params, locale = "en" }) {
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: ui.home, item: `${SITE_URL}${root || "/"}` }, { "@type": "ListItem", position: 2, name: ui.journal, item: `${SITE_URL}${root}/blog` }, { "@type": "ListItem", position: 3, name: post.title, item: url }] };
   const byline = post.readingTime ? ui.byline.replace(/\d+/, String(post.readingTime)) : ui.byline;
   const guideMonth = new Date(`${post.dateModified || published}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).toUpperCase();
-  const eyebrow = isOriginal ? (isSpanish ? "GUÍA FOLDÈ · OCTUBRE DE 2026" : isFrench ? "GUIDE FOLDÈ · OCTOBRE 2026" : `FOLDÈ GUIDE · ${guideMonth}`) : ui.eyebrow;
+  const localMonth = new Date(`${post.dateModified || published}T12:00:00Z`).toLocaleDateString(isSpanish ? "es-ES" : "fr-FR", { month: "long", year: "numeric", timeZone: "UTC" }).toUpperCase();
+  const eyebrow = isOriginal ? (isSpanish ? `GUÍA FOLDÈ · ${localMonth.replace(" ", " DE ")}` : isFrench ? `GUIDE FOLDÈ · ${localMonth}` : `FOLDÈ GUIDE · ${guideMonth}`) : ui.eyebrow;
+  const meta = isSpanish ? { by: "Por", published: "Publicado el", updated: "Actualizado el", read: "min de lectura", toc: "EN ESTA GUÍA", contents: "Índice", sources: "FUENTES Y MÉTODO", how: "Cómo hemos preparado esta guía" } : isFrench ? { by: "Par", published: "Publié le", updated: "Mis à jour le", read: "min de lecture", toc: "DANS CE GUIDE", contents: "Sommaire", sources: "SOURCES ET MÉTHODE", how: "Comment nous avons préparé ce guide" } : { by: "By", published: "Published", updated: "Updated", read: "min read", toc: "IN THIS GUIDE", contents: "Contents", sources: "SOURCES & METHODOLOGY", how: "How we put this guide together" };
   const discoverHref = locale === "en" ? "/" : pagePath(locale, "landing");
   const discoverLabel = isSpanish ? "Ver cómo funcionan las invitaciones digitales FOLDÈ →" : isFrench ? "Découvrir le faire-part numérique FOLDÈ →" : ui.discover;
   const ctaAfter = post.ctaAfter ?? 1;
@@ -107,7 +109,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <nav className={styles.breadcrumb} aria-label={ui.breadcrumb}><Link href={root || "/"}>{ui.home}</Link><span>/</span><Link href={`${root}/blog`}>{ui.journal}</Link><span>/</span><span>{post.keyword}</span></nav>
       <header className={styles.articleHero}>
-        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1>{post.author ? <p className={styles.byline}>By <Link href={post.author.href || "/approach"}>{post.author.name}</Link>{post.author.role ? ` · ${post.author.role}` : ""} · Published <time dateTime={published}>{displayDate(published, locale)}</time>{post.dateModified && post.dateModified !== published ? <> · Updated <time dateTime={post.dateModified}>{displayDate(post.dateModified, locale)}</time></> : null}{post.readingTime ? ` · ${post.readingTime} min read` : ""}</p> : null}<p className={styles.lede}>{post.intro || post.description}</p>{!post.author && <p className={styles.byline}>{byline}</p>}</div>
+        <div><p className={styles.eyebrow}>{eyebrow}</p><h1>{post.title}</h1>{post.author ? <p className={styles.byline}>{meta.by} <Link href={post.author.href || "/approach"}>{post.author.name}</Link>{post.author.role ? ` · ${post.author.role}` : ""} · {meta.published} <time dateTime={published}>{displayDate(published, locale)}</time>{post.dateModified && post.dateModified !== published ? <> · {meta.updated} <time dateTime={post.dateModified}>{displayDate(post.dateModified, locale)}</time></> : null}{post.readingTime ? ` · ${post.readingTime} ${meta.read}` : ""}</p> : null}<p className={styles.lede}>{post.intro || post.description}</p>{!post.author && <p className={styles.byline}>{byline}</p>}</div>
         <div className={styles.heroImage}><Image src={post.heroImage} alt={post.imageAlt} fill priority sizes="(max-width: 900px) 100vw, 50vw" /></div>
       </header>
       {!isOriginal && <ArticleTemplateCatalog locale={locale} />}
@@ -116,7 +118,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
         <article className={styles.articleContent}>
           <section className={styles.quickAnswer} id="quick-answer"><p className={styles.label}>{ui.quick}</p><p>{post.quickAnswer}</p>{!post.tool && <Link href={discoverHref}>{discoverLabel}</Link>}</section>
           {post.tool && <InvitationPreviewTool article={post.slug} {...post.tool} />}
-          {isOriginal && post.sections.length >= 5 && post.toc !== false && <nav className={styles.toc} aria-label="Contents"><p className={styles.label}>IN THIS GUIDE</p><ol>{post.sections.map((section) => <li key={section.heading}><a href={`#${section.id || anchor(section.heading)}`}>{section.heading}</a></li>)}</ol></nav>}
+          {isOriginal && post.sections.length >= 5 && post.toc !== false && <nav className={styles.toc} aria-label={meta.contents}><p className={styles.label}>{meta.toc}</p><ol>{post.sections.map((section) => <li key={section.heading}><a href={`#${section.id || anchor(section.heading)}`}>{section.heading}</a></li>)}</ol></nav>}
           {isOriginal ? (
             post.sections.map((section, index) => (
               <div key={section.heading}>
@@ -136,7 +138,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
           )}
           <div id="folde-final-cta"><ArticleCta locale={locale} variant="end" /></div>
           <section className={styles.faq}><p className={styles.label}>FAQ</p><h2>{isOriginal ? (isSpanish ? "Preguntas frecuentes" : isFrench ? "Questions fréquentes" : "Common questions") : `${post.keyword}: ${ui.questions}`}</h2>{post.faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
-          {isOriginal && post.sources && <section className={styles.sources} id="sources"><p className={styles.label}>{locale === "en" ? "SOURCES & METHODOLOGY" : "SOURCES"}</p><h2>{locale === "en" ? "How we put this guide together" : "Sources"}</h2>{post.methodology && <div dangerouslySetInnerHTML={{ __html: post.methodology }} />}<ul>{post.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
+          {isOriginal && post.sources && <section className={styles.sources} id="sources"><p className={styles.label}>{meta.sources}</p><h2>{meta.how}</h2>{post.methodology && <div dangerouslySetInnerHTML={{ __html: post.methodology }} />}<ul>{post.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
           {!isOriginal && <section className={styles.sources}><p className={styles.label}>{ui.context}</p><h2>{ui.reading}</h2><p>{ui.sourceText}</p><ul>{sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer">{source.label} ↗</a><span>{source.note}</span></li>)}</ul></section>}
         </article>
         <ArticlePreviewAside locale={locale} />
