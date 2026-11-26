@@ -19,6 +19,7 @@ import MediaThumbnail from '@/components/MediaThumbnail';
 import { templateMedia } from '@/lib/template-catalog.mjs';
 import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from '@/lib/signature-catalog.mjs';
 import { InvitationOverview, EditorNav, TemplatePicker } from './DashboardGuide';
+import ReviewPrompt from './ReviewPrompt';
 import guide from './dashboard-guide.module.css';
 import LocalizedSurface from "@/components/LocalizedSurface";
 
@@ -1026,6 +1027,7 @@ function DashboardContent({ locale = "en" }) {
 
       {/* 2. Main Content */}
       <main className="dashboard-main">
+        <ReviewPrompt order={userOrder} locale={locale} />
         <header className="glass-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 2rem', position: 'sticky', top: 0, zIndex: 10, flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
