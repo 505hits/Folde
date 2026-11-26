@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useCallback, useRef } from 
 import { createWeddingWriter } from '@/lib/wedding-writer.mjs';
 import { weddingRequest } from "@/lib/wedding-client";
 import { supabase } from "@/lib/supabase";
+import { trackAuth } from "@/lib/analytics";
 
 const DatabaseContext = createContext();
 export const MIN_PASSWORD_LENGTH = 5;
@@ -22,6 +23,7 @@ export function DatabaseProvider({ children }) {
       // After Google sign-in, return to the page that started it (Supabase may
       // land on the site URL if that page is not in its redirect allow list).
       if (event === 'SIGNED_IN' && typeof window !== 'undefined') {
+        trackAuth(session?.user);
         let target = '';
         try { target = sessionStorage.getItem(OAUTH_RETURN_KEY) || ''; sessionStorage.removeItem(OAUTH_RETURN_KEY); } catch {}
         if (target.startsWith('/') && !target.startsWith('//') && target !== window.location.pathname + window.location.search) {

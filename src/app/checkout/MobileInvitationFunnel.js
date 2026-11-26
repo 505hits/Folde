@@ -7,6 +7,7 @@ import phoneStyles from "./mobile-funnel-phone.module.css";
 import buildingStyles from "./mobile-building.module.css";
 import layoutStyles from "./mobile-funnel-layout.module.css";
 import { GoogleMark, passwordCopy, isEmail, MIN_PASSWORD_LENGTH } from "@/components/CheckoutAuth";
+import { track } from "@/lib/analytics";
 
 const AUTH = {
   en: { google: "Continue with Google", or: "or get a sign-in link by email", link: "Email me a sign-in link", sent: "Check your inbox: we sent a sign-in link to", hint: "Open it to continue. Your choices are saved in the link.", googleError: "Google sign-in could not start. Please use your email instead.", linkError: "We could not send the link. Please check your email address and try again." },
@@ -154,6 +155,11 @@ export default function MobileInvitationFunnel({
   const position = Math.max(1, visibleScreens.indexOf(screen) + 1);
   const nextScreen = (current) => visibleScreens[Math.min(visibleScreens.length - 1, visibleScreens.indexOf(current) + 1)] ?? current + 1;
   const previousScreen = (current) => visibleScreens[Math.max(0, visibleScreens.indexOf(current) - 1)] ?? current - 1;
+  // GA4: one event per screen reached, named so the funnel reads in Explorations.
+  useEffect(() => {
+    const names = { 1: "names", 2: "envelope", 3: "cover", 4: "details", 5: "account" };
+    track("funnel_step", { funnel: "create_invitation", device: "mobile", step_name: names[screen] || `screen_${screen}`, step_number: position, skip_design: skipDesign });
+  }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [building, setBuilding] = useState(false);

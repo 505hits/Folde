@@ -20,6 +20,7 @@ import { templateMedia } from '@/lib/template-catalog.mjs';
 import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from '@/lib/signature-catalog.mjs';
 import { InvitationOverview, EditorNav, TemplatePicker } from './DashboardGuide';
 import ReviewPrompt from './ReviewPrompt';
+import { track } from '@/lib/analytics';
 import guide from './dashboard-guide.module.css';
 import LocalizedSurface from "@/components/LocalizedSurface";
 
@@ -555,6 +556,7 @@ function DashboardContent({ locale = "en" }) {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
+                    track('share', { method: 'copy_link', content_type: 'invitation' });
                     alert("Link copied to clipboard!");
                   }}
                   style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontWeight: 500, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
@@ -1054,6 +1056,7 @@ function DashboardContent({ locale = "en" }) {
                   if (!saved) { setIsPublishing(false); return; }
                 }
                 setIsPublishing(false);
+                track('publish_invitation', { plan: userOrder?.plan || 'Standard', design: selectedTheme || '' });
                 setShowPublishModal(true);
               }}
               className="premium-grad-button"
@@ -1239,6 +1242,7 @@ function DashboardContent({ locale = "en" }) {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(`${window.location.origin}/invite/${clientSlug}`);
+                    track('share', { method: 'copy_link', content_type: 'invitation' });
                   alert("Link copied to clipboard!");
                 }}
                 style={{ background: 'none', border: 'none', color: '#7b906f', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
@@ -2929,6 +2933,7 @@ function ShareTab({ slug }) {
   const handleCopyLink = () => {
     try {
       navigator.clipboard.writeText(shareUrl);
+      track('share', { method: 'copy_link', content_type: 'invitation' });
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     } catch (e) { }
@@ -2982,6 +2987,7 @@ function ShareTab({ slug }) {
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <a
               href={`https://api.whatsapp.com/send?text=${encodeURIComponent('You are warmly invited to our wedding! View details and RSVP online here: ' + shareUrl)}`}
+              onClick={() => track('share', { method: 'whatsapp', content_type: 'invitation' })}
               target="_blank"
               rel="noopener noreferrer"
               style={{ padding: '0.6rem 1rem', backgroundColor: '#25D366', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
@@ -2990,6 +2996,7 @@ function ShareTab({ slug }) {
             </a>
             <a
               href={`mailto:?subject=${encodeURIComponent('Wedding Invitation')}&body=${encodeURIComponent('We would love for you to join us on our special day! View details & RSVP here: ' + shareUrl)}`}
+              onClick={() => track('share', { method: 'email', content_type: 'invitation' })}
               style={{ padding: '0.6rem 1rem', backgroundColor: '#4285F4', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
               ✉️ Email

@@ -8,6 +8,7 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import { translateFr } from "@/lib/fr-ui";
 import { localizeHref, pagePath } from "@/lib/routes.mjs";
+import { track } from "@/lib/analytics";
 
 const carouselItems = [
   { name: 'Luxe Gold', desc: 'Opulent and golden.', video: '/videos/hero/palm-zoom.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026' },
@@ -209,7 +210,7 @@ export default function Home({ locale = 'en' }) {
             <p className="text-lg animate-fade-in-up delay-2">
               {copy.heroText}
             </p>
-            <form action={link('/checkout')} method="get" className={`${styles.mobileHeroStarter} animate-fade-in-up delay-3`}>
+            <form action={link('/checkout')} method="get" onSubmit={() => track('start_invitation', { location: 'home_hero_form' })} className={`${styles.mobileHeroStarter} animate-fade-in-up delay-3`}>
               <strong>{copy.starterTitle}</strong>
               <div className={styles.mobileNameFields}>
                 <label><span>{copy.firstName}</span><input name="partner1" autoComplete="given-name" required placeholder="Anna" /></label>
@@ -220,7 +221,7 @@ export default function Home({ locale = 'en' }) {
               <small>★★★★★ 4.9/5 · {copy.rating}</small>
             </form>
             <div className={`${styles.heroCtas} animate-fade-in-up delay-3`}>
-              <Link href={link('/checkout')} className="btn-primary">{copy.design}<span className={styles.ctaFinger} aria-hidden="true">👇</span></Link>
+              <Link href={link('/checkout')} onClick={() => track('start_invitation', { location: 'home_hero' })} className="btn-primary">{copy.design}<span className={styles.ctaFinger} aria-hidden="true">👇</span></Link>
               <Link href={link('/collections')} className="btn-secondary">{copy.explore}</Link>
             </div>
 
@@ -589,7 +590,7 @@ export default function Home({ locale = 'en' }) {
                 </li>
               </ul>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Link href={link('/checkout')} className="btn-primary">{t('Order Now', 'Crear invitación')}</Link>
+                <Link href={link('/checkout')} onClick={() => track('start_invitation', { location: 'home_dashboard_section' })} className="btn-primary">{t('Order Now', 'Crear invitación')}</Link>
                 <Link href={link('/checkout')} className="btn-secondary">{t('Start Live Preview', 'Abrir la vista previa')}</Link>
               </div>
             </div>

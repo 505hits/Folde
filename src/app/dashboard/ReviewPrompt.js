@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { authenticatedFetch } from '@/lib/wedding-client';
+import { track } from '@/lib/analytics';
 import s from './review-prompt.module.css';
 
 export const TRUSTPILOT_URL = 'https://www.trustpilot.com/evaluate/folde-wedding.com';
@@ -79,6 +80,7 @@ export default function ReviewPrompt({ order, locale = 'en' }) {
   const choose = (value) => {
     setRating(value);
     markRated(id, value);
+    track('review_rating', { rating: value });
     if (value >= 4) { setStep('happy'); send(value).catch(() => {}); } else setStep('sad');
   };
   const later = () => { snooze(id); setOpen(false); };
@@ -117,7 +119,7 @@ export default function ReviewPrompt({ order, locale = 'en' }) {
           <div className={s.result} aria-hidden="true">{'★'.repeat(rating)}</div>
           <h2 id="review-prompt-title" className={s.title}>{t.happyTitle}</h2>
           <p className={s.text}>{t.happyText}</p>
-          <a className={s.primary} href={TRUSTPILOT_URL} target="_blank" rel="noopener noreferrer" onClick={() => window.setTimeout(() => setOpen(false), 400)}>
+          <a className={s.primary} href={TRUSTPILOT_URL} target="_blank" rel="noopener noreferrer" onClick={() => { track('trustpilot_click', { rating }); window.setTimeout(() => setOpen(false), 400); }}>
             <span className={s.tpStar} aria-hidden="true">★</span> {t.happyCta}
           </a>
           <button type="button" className={s.later} onClick={() => setOpen(false)}>{t.later}</button>

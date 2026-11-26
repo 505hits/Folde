@@ -13,6 +13,7 @@ import CheckoutAuth, { GoogleMark, passwordCopy, passwordMessage, isEmail, MIN_P
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
+import { track } from "@/lib/analytics";
 import buildingStyles from "./mobile-building.module.css";
 import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from "@/lib/signature-catalog.mjs";
 
@@ -500,6 +501,7 @@ function CheckoutContent({ locale = "en" }) {
     const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const requestedTemplate = params.get('template');
     const initialTemplate = requestedTemplate || saved;
+    if (requestedTemplate) track('select_item', { item_list_id: 'collections', item_list_name: 'Collections', items: [{ item_id: requestedTemplate, item_name: requestedTemplate, item_category: 'design' }] });
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const resumeToken = params.get('resume');
@@ -1116,9 +1118,17 @@ function CheckoutContent({ locale = "en" }) {
       console.warn('Preview could not be saved.', error);
       throw error;
     }
+    track('generate_lead', { lead_source: 'invitation_preview', design: selectedTheme || '', device: isMobileViewport ? 'mobile' : 'desktop' });
 
     router.push(locale === 'en' ? '/packages' : `/${locale}/packages`);
   };
+  // GA4: desktop progress through the creation funnel (mobile is tracked in MobileInvitationFunnel).
+  useEffect(() => {
+    // Read the viewport directly: the state starts as "desktop" before detection.
+    if (isMobileViewport || window.matchMedia('(max-width: 768px)').matches) return;
+    const stepName = step === 1 ? (desktopPreviewStage === 'email' ? 'account' : desktopPreviewStage === 'building' ? null : 'design') : `step_${step}`;
+    if (stepName) track('funnel_step', { funnel: 'create_invitation', device: 'desktop', step_name: stepName });
+  }, [isMobileViewport, step, desktopPreviewStage]);
   const resumedFunnel = useRef(false);
   useEffect(() => {
     if (!resumeFunnel || !account.name || resumedFunnel.current) return;

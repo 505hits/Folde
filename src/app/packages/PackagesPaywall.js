@@ -8,6 +8,7 @@ import StripeCheckoutSheet from "@/components/StripeCheckoutSheet";
 import { supabase } from '@/lib/supabase';
 import { useDatabase } from '@/context/DatabaseContext';
 import styles from "./offers.module.css";
+import { CURRENCY, PLAN_ITEMS, planItem, track } from "@/lib/analytics";
 
 const content = {
   en: {
@@ -195,6 +196,12 @@ export default function PackagesPaywall({ locale = "en" }) {
 
   const selectedPrice = selected.regularPrice;
 
+  // GA4: the paywall was seen, with both plans as an item list.
+  useEffect(() => {
+    track('view_item_list', { item_list_id: 'pricing', item_list_name: 'Pricing', items: [PLAN_ITEMS.standard, PLAN_ITEMS.expert] });
+  }, []);
+  const trackCheckout = (checkoutType) => track('begin_checkout', { currency: CURRENCY, value: selectedPrice, checkout_type: checkoutType, items: [{ ...planItem(selected.checkoutId), price: selectedPrice }] });
+
   const createCheckoutSession = async (embedded) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Please sign in to continue.");
@@ -236,6 +243,7 @@ export default function PackagesPaywall({ locale = "en" }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
+        track('paywall_sign_in_required', { plan: planItem(selected.checkoutId).item_id });
         setNeedsAuth(true);
         return;
       }
@@ -243,6 +251,7 @@ export default function PackagesPaywall({ locale = "en" }) {
         window.location.replace(locale === "en" ? "/dashboard" : "/" + locale + "/dashboard");
         return;
       }
+      trackCheckout('embedded');
       setEmbeddedCheckout(null);
       setShowPaymentSheet(true);
       const result = await createCheckoutSession(true);
@@ -262,6 +271,7 @@ export default function PackagesPaywall({ locale = "en" }) {
     try {
       const result = await createCheckoutSession(false);
       if (!result.url) throw new Error("Unable to open Stripe Checkout.");
+      trackCheckout('hosted');
       window.location.assign(result.url);
     } catch (error) {
       setPaymentError(error.message || "Unable to open Stripe Checkout.");
@@ -310,7 +320,7 @@ export default function PackagesPaywall({ locale = "en" }) {
               const planCopy = copy.plans[plan.id];
               const active = selectedId === plan.id;
               return (
-                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => { setSelectedId(plan.id); window.localStorage.setItem('checkoutSelectedPlan', plan.id); }}>
+                <button type="button" role="radio" aria-checked={active} className={`${styles.plan} ${active ? styles.planSelected : ""}`} key={plan.id} onClick={() => { setSelectedId(plan.id); window.localStorage.setItem('checkoutSelectedPlan', plan.id); track('select_item', { item_list_id: 'pricing', item_list_name: 'Pricing', items: [planItem(plan.id)] }); }}>
                   {plan.popular && <span className={styles.badge}>{copy.popular}</span>}
                   <span className={styles.radio} aria-hidden="true"><i /></span>
                   <span className={styles.planTop}>

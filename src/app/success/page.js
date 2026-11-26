@@ -5,6 +5,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDatabase } from "@/context/DatabaseContext";
 import { supabase } from '@/lib/supabase';
+import { CURRENCY, planItem, trackOnce } from '@/lib/analytics';
 
 const COPY = {
   en: {
@@ -92,6 +93,14 @@ function SuccessContent({ locale }) {
           localStorage.removeItem('pendingOrder');
         }
 
+        // GA4 purchase, once per Stripe session (GA4 also dedupes on transaction_id).
+        const item = planItem(planId);
+        trackOnce(`purchase-${sessionId}`, 'purchase', {
+          transaction_id: sessionId,
+          value: Number.isFinite(price) ? price : item.price,
+          currency: String(session.currency || CURRENCY).toUpperCase(),
+          items: [{ ...item, price: Number.isFinite(price) ? price : item.price, quantity: 1 }],
+        });
         setOrderData({ name, partnerName, plan, planId, email, slug: orderSlug });
         setStatus('success');
 
