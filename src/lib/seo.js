@@ -4,6 +4,9 @@ import { blogPostsFr } from "@/lib/blog-fr";
 import { blogPostsEs } from "@/lib/blog-es";
 
 const HREFLANG = { en: "en", fr: "fr", es: "es" };
+
+// 1200x630 social preview (phones showing real designs), used by every page without its own image.
+export const OG_IMAGE = { url: `${SITE_URL}/images/og/folde-wedding-og.jpg`, width: 1200, height: 630, alt: "FOLDÈ Wedding digital wedding invitations on a phone" };
 const postsByLocale = { en: blogPosts, fr: blogPostsFr, es: blogPostsEs };
 
 // Canonical + reciprocal hreflang for a marketing page key.
@@ -41,9 +44,13 @@ export const organizationSchema = {
   "@type": "Organization",
   "@id": `${SITE_URL}/#organization`,
   name: "FOLDÈ Wedding",
-  alternateName: "FOLDÈ Design",
+  alternateName: ["FOLDÈ Design", "Folde Wedding"],
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.png`,
+  image: OG_IMAGE.url,
+  description: "FOLDÈ Wedding designs digital wedding invitations: one mobile link with an animated envelope, the couple's details, schedule, map, photo gallery and a built-in RSVP form, managed from a private dashboard. Available in English, French and Spanish.",
+  knowsLanguage: ["en", "fr", "es"],
+  knowsAbout: ["Digital wedding invitations", "Wedding RSVP", "Save the date", "Wedding websites"],
   email: "folde.wedding@gmail.com",
   sameAs: ["https://www.instagram.com/folde.design/"],
 };
@@ -58,7 +65,9 @@ export const websiteSchema = {
   publisher: { "@id": `${SITE_URL}/#organization` },
 };
 
-// Prices mirror src/app/packages/PackagesPaywall.js (regular prices, USD).
+// Prices mirror src/app/packages/PackagesPaywall.js and the Stripe amounts in
+// src/app/api/create-checkout-session/route.js (USD). No rating markup: Google
+// does not allow self-collected reviews to be marked up for your own business.
 export function productSchema({ name, description, url, inLanguage }) {
   return {
     "@context": "https://schema.org",
@@ -67,10 +76,10 @@ export function productSchema({ name, description, url, inLanguage }) {
     description,
     url,
     inLanguage,
-    image: `${SITE_URL}/images/logo.png`,
+    image: OG_IMAGE.url,
     brand: { "@type": "Brand", name: "FOLDÈ Wedding" },
     offers: [
-      { "@type": "Offer", name: "Standard", price: "49.90", priceCurrency: "USD", availability: "https://schema.org/InStock", url: `${SITE_URL}${pagePath(inLanguage.slice(0, 2), "packages")}` },
+      { "@type": "Offer", name: "Standard", price: "29.90", priceCurrency: "USD", availability: "https://schema.org/InStock", url: `${SITE_URL}${pagePath(inLanguage.slice(0, 2), "packages")}` },
       { "@type": "Offer", name: "Expert", price: "149.00", priceCurrency: "USD", availability: "https://schema.org/InStock", url: `${SITE_URL}${pagePath(inLanguage.slice(0, 2), "packages")}` },
     ],
   };

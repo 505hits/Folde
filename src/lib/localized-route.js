@@ -13,7 +13,7 @@ import LandingPage from "@/components/LandingPage";
 import AffiliateLanding from "@/components/affiliates/AffiliateLanding";
 import AffiliateDashboard from "@/components/affiliates/AffiliateDashboard";
 import { PAGE_SLUGS, absolute, blogPath, pagePath } from "@/lib/routes.mjs";
-import { articleAlternates, pageAlternates } from "@/lib/seo";
+import { OG_IMAGE, articleAlternates, pageAlternates } from "@/lib/seo";
 
 const PRIVATE = ["checkout", "dashboard", "success", "affiliate-dashboard"];
 const OG_LOCALE = { fr: "fr_FR", es: "es_ES", en: "en_US" };
@@ -56,8 +56,8 @@ export function localizedMetadata(locale, segments, getPost, pageMetadata) {
     title: { absolute: page.title },
     description: page.description,
     alternates: pageAlternates(locale, route.key),
-    openGraph: { title: page.title, description: page.description, type: "website", siteName: "FOLDÈ Wedding", locale: OG_LOCALE[locale], alternateLocale, url, images: [{ url: absolute("/images/logo.png"), alt: "FOLDÈ Wedding" }] },
-    twitter: { card: "summary_large_image", title: page.title, description: page.description, images: [absolute("/images/logo.png")] },
+    openGraph: { title: page.title, description: page.description, type: "website", siteName: "FOLDÈ Wedding", locale: OG_LOCALE[locale], alternateLocale, url, images: [OG_IMAGE] },
+    twitter: { card: "summary_large_image", title: page.title, description: page.description, images: [OG_IMAGE.url] },
   };
 }
 

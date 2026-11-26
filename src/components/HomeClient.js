@@ -69,7 +69,8 @@ const testimonials = [
 ];
 
 const faqs = [
-  { q: "How long does it take for my invitation to be ready?", a: "Once your information is completed, your custom invitation is ready within 5 to 7 business days, revisions included." },
+  { q: "How long does it take for my invitation to be ready?", a: "With Standard, your invitation is live as soon as you publish it from your dashboard. With Expert, our studio delivers it within 5 to 7 business days after you send your details, revisions included." },
+  { q: "How much does a FOLDÈ invitation cost?", a: "Standard is a one-time $29.90 and Expert, built by our studio, is $149. Both include unlimited guests and the RSVP dashboard, with no subscription. Previewing a design with your names is free." },
   { q: "Can I edit details after sending?", a: "Optionally. Your invitation is dynamic — update your schedule, location, or timings anytime without re-sending the link." },
   { q: "Is there a guest limit?", a: "No limits. All packages include unlimited guests with no extra fees." },
   { q: "Do you support multi-language invitations?", a: "Yes, our packages support multi-language invitations to welcome guests worldwide in their native language." },
@@ -97,7 +98,8 @@ const spanishTestimonials = [
 ];
 
 const spanishFaqs = [
-  { q: '¿Cuánto tardará en estar lista mi invitación?', a: 'Cuando hayáis completado toda la información, vuestra invitación personalizada estará lista en un plazo de 5 a 7 días laborables, con las revisiones incluidas.' },
+  { q: '¿Cuánto tardará en estar lista mi invitación?', a: 'Con Estándar, la invitación está en línea en cuanto la publicáis desde vuestro panel. Con Expert, nuestro estudio la entrega en 5 a 7 días laborables después de recibir vuestros datos, con las revisiones incluidas.' },
+  { q: '¿Cuánto cuesta una invitación FOLDÈ?', a: 'Estándar cuesta un pago único de 29,90 $ y Expert, creada por nuestro estudio, 149 $. Ambas incluyen invitados ilimitados y el panel de confirmaciones, sin suscripción. La vista previa con vuestros nombres es gratuita.' },
   { q: '¿Puedo modificar los datos después de enviarla?', a: 'Sí. La invitación es dinámica: podéis actualizar el horario, el lugar o cualquier detalle sin tener que reenviar el enlace.' },
   { q: '¿Hay un límite de invitados?', a: 'No. Todos los planes incluyen invitados ilimitados sin costes adicionales.' },
   { q: '¿Ofrecéis invitaciones en varios idiomas?', a: 'Sí. Nuestros planes admiten varios idiomas para que cada invitado pueda consultar la información en su lengua.' },
@@ -116,7 +118,8 @@ const frenchTestimonials = [
 ];
 
 const frenchFaqs = [
-  { q: 'Sous quel délai mon invitation sera-t-elle prête ?', a: 'Une fois toutes vos informations transmises, votre invitation personnalisée est prête sous 5 à 7 jours ouvrés, révisions comprises.' },
+  { q: 'Sous quel délai mon invitation sera-t-elle prête ?', a: 'Avec Standard, votre faire-part est en ligne dès que vous le publiez depuis votre tableau de bord. Avec Expert, notre atelier le livre sous 5 à 7 jours ouvrés après réception de vos informations, révisions comprises.' },
+  { q: 'Combien coûte un faire-part FOLDÈ ?', a: 'Standard coûte 29,90 $ en paiement unique et Expert, réalisé par notre atelier, 149 $. Les deux incluent un nombre d’invités illimité et le suivi des RSVP, sans abonnement. L’aperçu avec vos prénoms est gratuit.' },
   { q: 'Puis-je modifier les informations après l’envoi ?', a: 'Oui. Votre invitation est dynamique : vous pouvez mettre à jour le programme, le lieu ou les horaires sans renvoyer le lien.' },
   { q: 'Le nombre d’invités est-il limité ?', a: 'Non. Toutes les formules comprennent un nombre d’invités illimité, sans frais supplémentaires.' },
   { q: 'Proposez-vous des invitations multilingues ?', a: 'Oui. Nos formules prennent en charge plusieurs langues pour accueillir chaque invité dans la langue qui lui convient.' },
@@ -602,6 +605,7 @@ export default function Home({ locale = 'en' }) {
             <h2 className="heading-lg">{t('Frequently Asked Questions', 'Preguntas frecuentes')}</h2>
             <p className="text-lg">{t('Everything you need to know before getting started.', 'Todo lo que necesitáis saber antes de empezar.')}</p>
           </div>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: localizedFaqs.map((faq) => ({ '@type': 'Question', name: faq.q, acceptedAnswer: { '@type': 'Answer', text: faq.a } })) }) }} />
           <div className={styles.faqList}>
             {localizedFaqs.map((faq, i) => (
               <details key={i} className={styles.faqItem}>

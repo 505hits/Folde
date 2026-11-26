@@ -4,7 +4,9 @@ import { blogPostsEs } from "@/lib/blog-es";
 import { PAGE_SLUGS, absolute, blogPath, pagePath } from "@/lib/routes.mjs";
 import { articleAlternates, pageAlternates } from "@/lib/seo";
 
-const LAST_MODIFIED = new Date("2026-10-21");
+// Bump a page's date when its content changes; Google ignores lastmod values that never match reality.
+const LAST_MODIFIED = { home: "2026-11-26", collections: "2026-11-26", packages: "2026-11-26" };
+const DEFAULT_MODIFIED = "2026-10-21";
 
 // Only canonical, indexable 200 URLs, each with its hreflang alternates.
 export default function sitemap() {
@@ -14,7 +16,7 @@ export default function sitemap() {
       if (PAGE_SLUGS[key][locale] === undefined) continue;
       pages.push({
         url: absolute(pagePath(locale, key)),
-        lastModified: LAST_MODIFIED,
+        lastModified: new Date(LAST_MODIFIED[key] || DEFAULT_MODIFIED),
         changeFrequency: key === "home" || key === "blog" ? "weekly" : "monthly",
         priority: key === "home" ? 1 : key === "landing" ? 0.9 : 0.7,
         alternates: { languages: pageAlternates(locale, key).languages },

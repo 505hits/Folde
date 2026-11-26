@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import SiteLayout from "@/components/SiteLayout";
 import { SITE_URL } from "@/lib/routes.mjs";
-import { organizationSchema, websiteSchema } from "@/lib/seo";
+import { OG_IMAGE, organizationSchema, websiteSchema } from "@/lib/seo";
 import { DatabaseProvider } from "@/context/DatabaseContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -21,10 +21,10 @@ export const metadata = {
   icons: { icon: "/icon.png" },
   openGraph: {
     siteName: "FOLDÈ Wedding",
-    images: [{ url: `${SITE_URL}/images/logo.png`, alt: "FOLDÈ Wedding" }],
+    images: [OG_IMAGE],
     type: "website",
   },
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
 };
 
 export default async function RootLayout({ children }) {
