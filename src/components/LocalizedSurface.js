@@ -6,6 +6,8 @@ import { SIGNATURE_TEMPLATES } from "@/lib/signature-catalog.mjs";
 // English stays authoritative in the product components. These rows localize the
 // transactional and authenticated surfaces without changing stored wedding data.
 const rows = [
+  ["Continue →","Continuer →","Continuar →"],
+  ["Change email","Modifier l’e-mail","Cambiar el correo"],
   ["This design opens with its own illustrated scene, so no envelope animation or background video is needed. Choose its music below.", "Ce modèle s’ouvre sur sa propre mise en scène illustrée : pas besoin d’animation d’enveloppe ni de vidéo d’arrière-plan. Choisissez sa musique ci-dessous.", "Este diseño se abre con su propia escena ilustrada: no necesita animación de sobre ni vídeo de fondo. Elige su música a continuación."],
   // Descriptions of the signature designs (dashboard design picker).
   ...SIGNATURE_TEMPLATES.map((template) => [template.desc.en, template.desc.fr, template.desc.es]),

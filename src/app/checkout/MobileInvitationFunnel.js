@@ -135,6 +135,7 @@ export default function MobileInvitationFunnel({
   onGoogle,
   signedIn = false,
   linkSentTo = "",
+  skipDesign = false,
 }) {
   const copy = COPY[locale] || COPY.en;
   const auth = AUTH[locale] || AUTH.en;
@@ -144,6 +145,11 @@ export default function MobileInvitationFunnel({
     try { await onGoogle(); } catch { setError(auth.googleError); setSubmitting(false); }
   };
   const [screen, setScreen] = useState(1);
+  // Designs with their own opening have no envelope or cover to choose.
+  const visibleScreens = skipDesign ? [1, 4, 5] : [1, 2, 3, 4, 5];
+  const position = Math.max(1, visibleScreens.indexOf(screen) + 1);
+  const nextScreen = (current) => visibleScreens[Math.min(visibleScreens.length - 1, visibleScreens.indexOf(current) + 1)] ?? current + 1;
+  const previousScreen = (current) => visibleScreens[Math.max(0, visibleScreens.indexOf(current) - 1)] ?? current - 1;
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [building, setBuilding] = useState(false);
@@ -153,13 +159,20 @@ export default function MobileInvitationFunnel({
   const featuredEnvelopes = useMemo(() => envelopeOptions.filter((item) => item.url && item.id !== "env_custom"), [envelopeOptions]);
   const featuredHeroes = useMemo(() => heroOptions.filter((item) => item.url && item.id !== "hero_custom"), [heroOptions]);
 
+  // When a gallery opens, bring the preselected design (e.g. chosen on the
+  // collections page) to the centre so it is visible straight away.
   useEffect(() => {
-    if (screen !== 3) return;
+    if (screen !== 2 && screen !== 3) return;
+    const rail = screen === 2 ? envelopeRail : heroRail;
+    const selectedId = screen === 2 ? selectedEnvelope : selectedHeroVideo;
     const frameId = requestAnimationFrame(() => {
       stageRef.current?.scrollTo({ top: 0, behavior: "instant" });
-      heroRail.current?.scrollTo({ left: 0, behavior: "instant" });
+      const card = rail.current?.querySelector(`[data-option="${selectedId}"]`);
+      if (card && rail.current) rail.current.scrollTo({ left: card.offsetLeft - (rail.current.clientWidth - card.clientWidth) / 2, behavior: "instant" });
+      else rail.current?.scrollTo({ left: 0, behavior: "instant" });
     });
     return () => cancelAnimationFrame(frameId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
   useEffect(() => {
@@ -186,10 +199,6 @@ export default function MobileInvitationFunnel({
     }
     if (screen === 2) {
       setScreen(3);
-      requestAnimationFrame(() => {
-        stageRef.current?.scrollTo({ top: 0, behavior: "instant" });
-        heroRail.current?.scrollTo({ left: 0, behavior: "instant" });
-      });
       return;
     }
     if (screen === 4) {
@@ -197,7 +206,7 @@ export default function MobileInvitationFunnel({
       setScreen(5);
       return;
     }
-    setScreen((current) => Math.min(5, current + 1));
+    setScreen((current) => Math.min(5, nextScreen(current)));
   };
 
   const selectAndCenter = (id, setter, railRef) => {
@@ -214,13 +223,13 @@ export default function MobileInvitationFunnel({
   return (
     <main className={`${styles.funnel} ${layoutStyles.fullPage}`}>
       <header className={styles.header}>
-        <button type="button" onClick={() => screen === 1 ? history.back() : setScreen((current) => current - 1)} aria-label="Back">←</button>
+        <button type="button" onClick={() => screen === 1 ? history.back() : setScreen((current) => previousScreen(current))} aria-label="Back">←</button>
         <a href={locale === "en" ? "/" : `/${locale}`} className={styles.logo}>FOLDÈ</a>
-        <span>{screen}/5</span>
+        <span>{position}/{visibleScreens.length}</span>
       </header>
 
-      <div className={styles.progress} style={{ gridTemplateColumns: "repeat(5, 1fr)" }} aria-label={`Step ${screen} of 5`}>
-        {[...copy.steps.slice(0, 3), 'Details', copy.steps[3]].map((label, index) => <i key={label} className={index < screen ? styles.done : ""} />)}
+      <div className={styles.progress} style={{ gridTemplateColumns: `repeat(${visibleScreens.length}, 1fr)` }} aria-label={`Step ${position} of ${visibleScreens.length}`}>
+        {visibleScreens.map((value, index) => <i key={value} className={index < position ? styles.done : ""} />)}
       </div>
 
       <section ref={stageRef} className={`${styles.stage} ${(screen === 2 || screen === 3) ? `${styles.stageGallery} ${layoutStyles.galleryStage}` : ""}`}>

@@ -1112,7 +1112,10 @@
 .methodCard:hover, .pricingCard:hover, .testimonialCard:hover { transform: translateY(-4px); box-shadow: 0 26px 50px -28px rgba(60, 40, 20, 0.45), inset 0 0 0 6px rgba(255, 255, 255, 0.55), inset 0 0 0 7px rgba(184, 147, 95, 0.18); }
 .faqItem { box-shadow: none; }
 .methodNum { color: var(--gold); font-style: italic; }
-.pricingCardFeatured { background: linear-gradient(165deg, #fffdf9, #f6ecdf); border-color: rgba(184, 147, 95, 0.45); }
+.pricingCardFeatured { background: radial-gradient(420px 220px at 50% -10%, rgba(214, 170, 110, 0.22), transparent 70%), linear-gradient(165deg, #3b2617, #2c1d13 70%); color: #fbf4ea; border-color: rgba(214, 180, 130, 0.45); box-shadow: 0 30px 60px -30px rgba(40, 25, 12, 0.6), inset 0 0 0 6px rgba(255, 255, 255, 0.03), inset 0 0 0 7px rgba(214, 180, 130, 0.22); }
+.pricingCardFeatured :global(.heading-md), .pricingCardFeatured h3, .pricingCardFeatured .pricingPrice, .pricingCardFeatured li, .pricingCardFeatured p, .pricingCardFeatured strong { color: #fbf4ea; }
+.pricingCardFeatured p { color: rgba(251, 244, 234, 0.78); }
+.pricingCardFeatured .checkIcon { color: #e0bf86; }
 .pricingBadge { background: linear-gradient(105deg, #3a2618, #6b4a2c 50%, #3a2618); background-size: 220% 100%; animation: badgeSheen 6s linear infinite; }
 @keyframes badgeSheen { to { background-position: -220% 0; } }
 .checkIcon { color: var(--gold); }
@@ -1147,4 +1150,19 @@
 
 @media (prefers-reduced-motion: reduce) {
   .heroPhone .phoneFrame, .pricingBadge { animation: none; }
+}
+
+.pricingCardFeatured :global(.btn-primary) { background: #fffaf2 !important; color: #3b2617 !important; border-color: #fffaf2 !important; }
+
+/* Mobile hero: a slightly tighter rhythm so the whole starter form is visible
+   on the first screen. */
+@media (max-width: 900px) {
+  .hero { padding-top: 0.5rem; }
+  .heroInner { padding-top: 0.6rem; gap: 2.2rem; }
+  .heroRating { margin-bottom: 0.85rem; }
+  .heroText h1 { margin-bottom: 0.8rem; }
+  .heroText p { margin-bottom: 1.05rem; line-height: 1.5; }
+  .mobileHeroStarter { gap: 0.7rem; padding: 1rem 1.05rem; }
+  .mobileNameFields input { height: 50px; }
+  .mobileHeroStarter > button { min-height: 54px; }
 }

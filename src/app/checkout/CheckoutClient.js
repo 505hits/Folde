@@ -1170,6 +1170,7 @@ function CheckoutContent({ locale = "en" }) {
         onGoogle={continueWithGoogle}
         signedIn={Boolean(currentUser)}
         linkSentTo={magicLinkSentTo}
+        skipDesign={INTROLESS_IDS.has(selectedTheme)}
       />
     );
   }

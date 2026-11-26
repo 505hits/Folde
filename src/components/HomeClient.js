@@ -254,7 +254,7 @@ export default function Home({ locale = 'en' }) {
                       envelopeBackground="#f2eadf"
                       onEnvelopeDismissed={() => setHeroEnvelopeDismissed(true)}
                       data={{
-                        themeId: "ivory",
+                        themeId: "majestic",
                         partner1: "Anna",
                         partner2: "Tom",
                         date: "SEP 05, 2026",
@@ -262,8 +262,8 @@ export default function Home({ locale = 'en' }) {
                         language: locale,
                         receptionVenue: "",
                         videos: {
-                          envelope: "https://soft-scratch.thedigitalyes.com/video/envelope-open.mp4",
-                          hero: "/videos/hero/palm-zoom.mp4"
+                          envelope: "https://majestic-template.thedigitalyes.com/assets/intro-video-Dhn3t98e.mp4",
+                          hero: "/videos/hero/royal-heritage.mp4"
                         },
                         sections: { showIntro: true, showVenue: true, showSchedule: true, showBoardingPass: false, showRSVP: true, showGallery: true }
                       }}

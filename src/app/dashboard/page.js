@@ -108,14 +108,15 @@ export default function Dashboard({ locale = "en" }) {
 function DashboardContent({ locale = "en" }) {
   const dashboardRootRef = useRef(null);
   const localizedRoute = (path) => locale === 'en' ? path : `/${locale}${path}`;
-  const { ordersLoading, databaseError, mediaUploads, currentUser, login, register, loginWithGoogle, loginWithMagicLink, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
+  const { ordersLoading, databaseError, mediaUploads, currentUser, login, register, loginWithGoogle, logout, guests, orders, eventInfo, setEventInfo, fetchGuests, fetchOrders, revisions = {}, addRevision, publishOrderDetails, saveOrderDetails } = useDatabase();
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', partnerName: '' });
   const [loginError, setLoginError] = useState('');
   const [authSuccessMsg, setAuthSuccessMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMagicLinkSending, setIsMagicLinkSending] = useState(false);
+  // Sign-in happens in two steps: email first, then the password.
+  const [passwordStep, setPasswordStep] = useState(false);
   const [activeTab, setActiveTab] = useState('invitation');
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -234,6 +235,12 @@ function DashboardContent({ locale = "en" }) {
       setAuthSuccessMsg('');
       setIsSubmitting(true);
 
+      if (!passwordStep) {
+        if (!/^\S+@\S+\.\S+$/.test(loginForm.email || '')) { setLoginError('Please enter your email address.'); setIsSubmitting(false); return; }
+        setPasswordStep(true);
+        setIsSubmitting(false);
+        return;
+      }
       try {
         if (authMode === 'login') {
           const result = await login(loginForm.email, loginForm.password);
@@ -265,28 +272,6 @@ function DashboardContent({ locale = "en" }) {
       const result = await loginWithGoogle();
       if (!result.success) {
         setLoginError(result.error || 'Google sign-in failed.');
-      }
-    };
-
-    const handleMagicLink = async () => {
-      if (!loginForm.email) {
-        setLoginError('Please enter your email address first.');
-        return;
-      }
-      setLoginError('');
-      setAuthSuccessMsg('');
-      setIsMagicLinkSending(true);
-      try {
-        const result = await loginWithMagicLink(loginForm.email);
-        if (!result.success) {
-          setLoginError(result.error || 'Failed to send magic link.');
-        } else {
-          setAuthSuccessMsg('A magic sign-in link has been sent to your email!');
-        }
-      } catch (err) {
-        setLoginError('Failed to send magic link.');
-      } finally {
-        setIsMagicLinkSending(false);
       }
     };
 
@@ -385,7 +370,7 @@ function DashboardContent({ locale = "en" }) {
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-            {authMode === 'signup' && (
+            {authMode === 'signup' && passwordStep && (
               <>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <div style={{ flex: 1 }}>
@@ -418,23 +403,29 @@ function DashboardContent({ locale = "en" }) {
                 type="email"
                 required
                 placeholder="you@example.com"
+                autoComplete="email"
+                readOnly={passwordStep}
                 value={loginForm.email}
                 onChange={e => setLoginForm({ ...loginForm, email: e.target.value })}
                 style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
               />
             </div>
 
+            {passwordStep && (
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Password</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#444', marginBottom: '0.35rem' }}>Password</label><button type="button" onClick={() => { setPasswordStep(false); setLoginError(''); }} style={{ background: 'none', border: 'none', padding: 0, color: '#b08968', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Change email</button></div>
               <input
                 type="password"
                 required
+                autoFocus
+                autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
                 placeholder="••••••••"
                 value={loginForm.password}
                 onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
                 style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid #e0dcd7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
               />
             </div>
+            )}
 
             {loginError && (
               <div style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '0.65rem 0.85rem', borderRadius: '10px', fontSize: '0.84rem', border: '1px solid #fecaca' }}>
@@ -458,24 +449,9 @@ function DashboardContent({ locale = "en" }) {
                 opacity: isSubmitting ? 0.7 : 1, transition: 'opacity 0.2s', marginTop: '0.25rem'
               }}
             >
-              {isSubmitting ? 'Loading...' : authMode === 'login' ? 'Sign in →' : 'Create account →'}
+              {isSubmitting ? 'Loading...' : !passwordStep ? 'Continue →' : authMode === 'login' ? 'Sign in →' : 'Create account →'}
             </button>
 
-            {authMode === 'login' && (
-              <button
-                type="button"
-                onClick={handleMagicLink}
-                disabled={isMagicLinkSending}
-                style={{
-                  width: '100%', padding: '0.65rem', borderRadius: '10px', border: '1px solid #e0dcd7',
-                  backgroundColor: '#faf8f5', color: '#5C3A1E', fontSize: '0.84rem', fontWeight: 600,
-                  cursor: isMagicLinkSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
-                  transition: 'background-color 0.2s', marginTop: '0.1rem'
-                }}
-              >
-                {isMagicLinkSending ? 'Sending...' : '✨ Send me a magic link (passwordless)'}
-              </button>
-            )}
           </form>
           <p style={{ textAlign: 'center', marginTop: '1rem' }}><Link href="/forgot-password">Forgot password / Set up password</Link></p>
 
