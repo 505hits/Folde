@@ -1,0 +1,86 @@
+/* Nacre — sculpted plaster, mother-of-pearl, slate blue ink. */
+
+.root {
+  --bg: #f3ede3;
+  --ink: #3d4a66;
+  --soft: #7f8798;
+  --accent: #a88f5c;
+  --line: rgba(61, 74, 102, 0.22);
+  --card: #f8f3ea;
+  --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --script: 'Monsieur La Doulaise', 'Snell Roundhand', cursive;
+  --sans: 'Jost', 'Avenir Next', 'Helvetica Neue', sans-serif;
+  --title-size: clamp(2.2rem, 12.5cqw, 3.6rem);
+  --btn-gap: var(--bg);
+  --btn-inner: var(--ink);
+  --venue-radius: 50%;
+  --shot-radius: 999px 999px 2cqw 2cqw;
+  --map-filter: grayscale(0.85) sepia(0.12) contrast(0.95);
+}
+
+/* ---------- Opening: names set inside the sculpted cartouche ---------- */
+.root .opening { aspect-ratio: 720 / 1280; background: #ddd2c2; }
+.root .openingArt { filter: brightness(1.04); }
+.root .openingInner { position: absolute; inset: 30% 13% 31% 13%; }
+.root .names { font-size: clamp(2.6rem, 15.5cqw, 4.6rem); line-height: 0.95; padding: 0 3cqw; }
+.root .amp { font-size: clamp(1rem, 5cqw, 1.5rem); line-height: 1.1; }
+.root .openingDate { margin-top: 4cqw; color: var(--ink); }
+.root .openingPlace { margin-top: 2.5cqw !important; }
+
+/* ---------- Story: an oval card laid on living nacre ---------- */
+.root .story { padding: 16cqw 7cqw; background: var(--a-shell) center / cover; }
+.root .story::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0) 62%); background-size: 260% 100%; mix-blend-mode: soft-light; animation: sheen 9s ease-in-out infinite; }
+@keyframes sheen { 0%, 100% { background-position: 120% 0; } 50% { background-position: -20% 0; } }
+.root .storyCard { padding: 22cqw 9cqw 20cqw; border-radius: 50% / 34%; background: var(--card); box-shadow: 0 0 0 1px #d9c9a6, 0 0 0 1.6cqw rgba(248, 243, 234, 0.72), 0 0 0 calc(1.6cqw + 1px) #d9c9a6, 0 10cqw 18cqw -8cqw rgba(60, 50, 40, 0.5); }
+.root .story .title { font-family: var(--script); font-size: clamp(2.6rem, 15cqw, 4.4rem); line-height: 1; }
+.root .signature { color: var(--ink); }
+
+/* ---------- Countdown: plaster plaque on blue linen ---------- */
+.root .count { background: #84929d; --count-ink: #3d4a66; --count-w: 50%; padding-block: 18cqw; }
+.root .count .kicker { color: rgba(255, 255, 255, 0.82); }
+.root .count .title { color: #fff; }
+.root .count .flourish { color: #fff; margin-top: 2cqw; font-family: var(--serif); font-style: italic; font-size: clamp(1.2rem, 6cqw, 1.7rem); }
+.root .countFrame { margin-block: -3cqw; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 20%, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 20%, #000 80%, transparent 100%); }
+.root .count::before, .root .gifts::before { content: ''; position: absolute; inset: 0; z-index: 0; opacity: 0.55; background-image: repeating-linear-gradient(0deg, rgba(40, 55, 70, 0.2) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 3px); }
+
+/* ---------- Venue ---------- */
+.root .venue .title { font-family: var(--script); font-size: clamp(2.6rem, 15cqw, 4.4rem); line-height: 1; }
+.root .venueRim { inset: -3cqw; border-color: #cdb98d; box-shadow: 0 0 0 1cqw var(--bg), 0 0 0 calc(1cqw + 1px) #cdb98d; }
+.root .venueFrame { margin-top: 4cqw; margin-bottom: 12cqw; }
+
+/* ---------- Schedule: under a sculpted swag ---------- */
+.root .schedule { background: #efe8dc; padding-top: 0; }
+.root .scheduleTop { margin-bottom: -22cqw; filter: drop-shadow(0 2cqw 2.4cqw rgba(90, 70, 40, 0.28)); }
+.root .schedule .title { font-family: var(--script); font-size: clamp(2.8rem, 16cqw, 4.8rem); line-height: 0.95; }
+
+/* ---------- Dress code: double-line arch ---------- */
+.root .dressCard { padding: 16cqw 6cqw 12cqw; border: 1px solid var(--ink); border-radius: 44cqw 44cqw 0 0; box-shadow: inset 0 0 0 1cqw var(--bg), inset 0 0 0 calc(1cqw + 1px) var(--line); }
+.root .dress .flourish { color: var(--ink); }
+
+/* ---------- Cards ---------- */
+.root .stay { background: #efe8dc; }
+.root .stay .title, .root .menu .title, .root .gallery .title, .root .guestSection .title { font-family: var(--script); font-size: clamp(2.6rem, 15cqw, 4.4rem); line-height: 1; }
+.root .stayCard { border: 0; background: var(--card); box-shadow: 0 0 0 1px #d9c9a6, inset 0 0 0 1.4cqw var(--card), inset 0 0 0 calc(1.4cqw + 1px) #e2d6ba, 0 8cqw 14cqw -10cqw rgba(60, 50, 40, 0.5); }
+.root .shot { box-shadow: 0 0 0 1px #d9c9a6, 0 0 0 1.4cqw var(--card), 0 0 0 calc(1.4cqw + 1px) #d9c9a6, 0 8cqw 12cqw -8cqw rgba(60, 50, 40, 0.5); }
+.root .reel { gap: 8cqw; padding-top: 6cqw; }
+
+/* ---------- Gifts: the blue linen again ---------- */
+.root .gifts { background: #84929d; padding-inline: 6cqw; }
+.root .giftCard { padding: 14cqw 7cqw; background: var(--card); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), inset 0 0 0 1.4cqw var(--card), inset 0 0 0 calc(1.4cqw + 1px) #d9c9a6, 0 10cqw 16cqw -10cqw rgba(30, 40, 60, 0.7); }
+.root .giftCard .title { font-family: var(--script); font-size: clamp(2.4rem, 14cqw, 4rem); line-height: 1; }
+
+/* ---------- RSVP: slate blue ---------- */
+.root .rsvp { background: #46587a; padding-inline: 5cqw; }
+.root .rsvp .title { color: #f8f3ea; letter-spacing: 0.08em; }
+.root .rsvp .sub, .root .rsvp .small { color: rgba(248, 243, 234, 0.75); }
+.root .rsvpCard { box-shadow: inset 0 0 0 1.4cqw var(--card), inset 0 0 0 calc(1.4cqw + 1px) #d9c9a6, 0 14cqw 22cqw -12cqw rgba(10, 18, 36, 0.8); }
+
+/* ---------- Finale: the seal ---------- */
+.root .finale { padding-top: 22cqw; }
+.root .finaleArt { width: 34cqw; margin: 8cqw auto 0; filter: drop-shadow(0 2cqw 2.5cqw rgba(90, 70, 40, 0.35)); animation: sealFloat 7s ease-in-out infinite; }
+@keyframes sealFloat { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-1.5cqw); } }
+.root .finaleNames { font-size: clamp(2.8rem, 16cqw, 4.8rem); }
+
+@media (prefers-reduced-motion: reduce) {
+  .root .story::before, .root .finaleArt { animation: none; }
+}

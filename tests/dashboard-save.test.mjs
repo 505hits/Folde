@@ -4,6 +4,7 @@ import {dashboardLocale} from '../src/lib/dashboard-locale.mjs';
 import {selectHero} from '../src/lib/wedding-media.mjs';
 import {templateMedia} from '../src/lib/template-catalog.mjs';
 import {mediaPosters} from '../src/lib/media-posters.mjs';
+import {SIGNATURE_TEMPLATES} from '../src/lib/signature-catalog.mjs';
 import {existsSync} from 'node:fs';
 import {loadRoute,mockDatabase,request,ok,order} from './load-route.mjs';
 test('a large photo draft uses a short revision filter and keeps the stored photo, moved to storage',async()=>{
@@ -35,8 +36,9 @@ test('switching from a photo or AI image to video removes the old visual overrid
  const initial={partner1:'Keep',gallery:['keep.jpg'],customHeroImage:'old.jpg',images:{hero:'old.jpg',dress:'keep.jpg',scratchCover:'old-cover.jpg'},videos:{envelope:'keep.mp4'}};
  const selected=selectHero(initial,'/videos/hero/sea-view.mp4');assert.equal(selected.customHeroImage,null);assert.equal(selected.images.hero,null);assert.equal(selected.videos.hero,'/videos/hero/sea-view.mp4');assert.equal(selected.videos.envelope,'keep.mp4');assert.deepEqual(selected.gallery,['keep.jpg']);assert.equal(selectHero(selected,'new.png').images.hero,'new.png');
 });
-test('all 36 dashboard designs have an actual media source and a bundled static preview',()=>{
- assert.equal(Object.keys(templateMedia).length,36);
+test('all 36 classic and 11 signature dashboard designs have an actual media source and a bundled static preview',()=>{
+ assert.equal(SIGNATURE_TEMPLATES.length,11);
+ assert.equal(Object.keys(templateMedia).length,36+SIGNATURE_TEMPLATES.length);
  for(const [id,media] of Object.entries(templateMedia)){
   assert.ok(media.hero,`${id} hero`);assert.ok(media.envelope,`${id} envelope`);
   assert.ok(mediaPosters[media.hero],`${id} poster`);

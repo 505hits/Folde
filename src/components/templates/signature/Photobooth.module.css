@@ -1,0 +1,56 @@
+/* Ivory Photobooth — gilded frame, satin bow and a printing photo strip. */
+
+.root {
+  --bg: #efede8;
+  --ink: #5c5546;
+  --soft: #8d8676;
+  --accent: #9c7e4e;
+  --line: rgba(92, 85, 70, 0.2);
+  --card: #f8f6f2;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --script: 'Pinyon Script', 'Snell Roundhand', cursive;
+  --sans: 'Cormorant Garamond', Georgia, serif;
+  --title-font: 'Pinyon Script', cursive;
+  --title-size: clamp(2.4rem, 13.5cqw, 3.9rem);
+  --solid-bg: #5c5546;
+  --solid-ink: #f8f6f2;
+  --btn-radius: 0;
+  --venue-radius: 1cqw;
+  --shot-radius: 0;
+  font-weight: 400;
+}
+.root .kicker { letter-spacing: 0.26em; }
+.root .shot { border: 2cqw solid #fff; border-bottom-width: 8cqw; filter: grayscale(1) contrast(1.05); }
+.root .stayCard, .root .giftCard, .root .dressCard { border: 1px solid #c8b48c; box-shadow: inset 0 0 0 1.4cqw var(--card), inset 0 0 0 calc(1.4cqw + 1px) #d9c9a8; }
+
+.booth { position: relative; overflow: hidden; padding: 14cqw 6cqw 14cqw; text-align: center; background: radial-gradient(110% 70% at 50% 30%, #f6f4ef, #e7e3db 80%); }
+.booth button { font: inherit; -webkit-tap-highlight-color: transparent; }
+.boothKicker { margin: 0; font: 500 clamp(0.6rem, 2.7cqw, 0.76rem)/1 var(--serif); letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink); }
+.boothNames { margin-top: 3cqw; font: 400 clamp(2.4rem, 13cqw, 3.8rem)/1.05 var(--script); color: #6f6650; }
+.boothNames em { font-style: normal; font-size: 0.8em; }
+
+.frameWrap { position: relative; width: 56cqw; margin: 12cqw auto 0; transform-origin: 50% -10cqw; animation: hang 6s ease-in-out infinite; }
+@keyframes hang { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+.bow { position: absolute; left: 50%; top: -15cqw; width: 30cqw; transform: translateX(-50%); z-index: 5; filter: drop-shadow(0 1cqw 1.4cqw rgba(0, 0, 0, 0.2)); }
+.ribbon { position: absolute; left: 50%; top: -6cqw; width: 2px; height: 9cqw; background: #e9e1cf; z-index: 1; }
+.frame { position: relative; aspect-ratio: 266 / 694; filter: drop-shadow(0 4cqw 4cqw rgba(60, 45, 20, 0.28)); }
+.frameImg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+.backing { position: absolute; left: 20%; right: 20%; top: 13%; bottom: 12%; background: #cbbb9b; background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 3px), radial-gradient(120% 80% at 50% 30%, #d8caad, #bfae8c); box-shadow: inset 0 0 4cqw rgba(60, 45, 20, 0.35); }
+.slot { position: absolute; left: 30%; right: 30%; top: 17.5%; height: 1.6%; border-radius: 1cqw; background: linear-gradient(#2c261c, #514632); box-shadow: inset 0 0.4cqw 0.6cqw rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.35); z-index: 2; }
+
+/* The strip prints out of the slot: a clipped wrapper, the strip slides down */
+.printer { position: absolute; left: 31%; right: 31%; top: 18.4%; bottom: 13%; overflow: hidden; z-index: 2; }
+.strip { position: relative; display: flex; flex-direction: column; gap: 1.6cqw; width: 100%; padding: 1.8cqw 1.8cqw 0; border: 0; background: #fbfaf7; cursor: pointer; box-shadow: 0 1.5cqw 2cqw rgba(0, 0, 0, 0.25); transform: translateY(-101%); transition: transform 3.4s steps(9, jump-end) 0.6s; }
+.frameWrap[data-in='true'] .strip { transform: translateY(0); }
+.frameShot { display: block; aspect-ratio: 1 / 1.05; overflow: hidden; }
+.frameShot img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08) brightness(1.04); }
+.stripCaption { display: block; padding: 2.2cqw 0 3cqw; font: 400 clamp(0.62rem, 3cqw, 0.86rem)/1.2 var(--script); color: #6f6650; }
+.stripCaption small { display: block; margin-top: 0.8cqw; font: 500 clamp(0.36rem, 1.6cqw, 0.46rem)/1 var(--serif); letter-spacing: 0.2em; text-transform: uppercase; color: var(--soft); }
+
+.openBtn { margin-top: 10cqw; padding: 1em 2.4em; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; font: 500 clamp(0.62rem, 2.8cqw, 0.78rem)/1 var(--serif); letter-spacing: 0.24em; text-transform: uppercase; transition: background-color 0.4s ease, color 0.4s ease; }
+.openBtn:hover { background: var(--ink); color: var(--card); }
+
+@media (prefers-reduced-motion: reduce) {
+  .frameWrap { animation: none; }
+  .strip { transform: none; transition: none; }
+}

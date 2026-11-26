@@ -1,0 +1,99 @@
+/* Love Letter — open envelope, save-the-date, polaroids and a playable vinyl. */
+
+.paletteScope { width: 100%; }
+.paletteScope .root {
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --script: 'Pinyon Script', 'Snell Roundhand', cursive;
+  --sans: 'Cormorant Garamond', Georgia, serif;
+  --mono: 'Courier Prime', 'Courier New', monospace;
+  --title-font: 'Pinyon Script', cursive;
+  --title-size: clamp(2.4rem, 13.5cqw, 3.9rem);
+  --btn-radius: 0;
+  --venue-radius: 999px 999px 0 0;
+  --shot-radius: 0;
+  font-weight: 400;
+}
+.paletteScope[data-palette='olive'] .root { --bg: #f4f1ea; --ink: #5a1420; --soft: #707355; --accent: #55602f; --line: rgba(85, 96, 47, 0.28); --card: #fbf9f4; --deep: #55602f; --deep-ink: #f6f2e8; --solid-bg: #55602f; --solid-ink: #f6f2e8; }
+.paletteScope[data-palette='burgundy'] .root { --bg: #fbf8f4; --ink: #5a1420; --soft: #8a6b6e; --accent: #5a1420; --line: rgba(90, 20, 32, 0.24); --card: #fffdfa; --deep: #5a1420; --deep-ink: #f8efe9; --solid-bg: #5a1420; --solid-ink: #f8efe9; }
+.paletteScope[data-palette='brown'] .root { --bg: #f5ede2; --ink: #4a2f1d; --soft: #8b7461; --accent: #a8814f; --line: rgba(74, 47, 29, 0.24); --card: #fcf8f1; --deep: #4a2f1d; --deep-ink: #f6e9d6; --solid-bg: #4a2f1d; --solid-ink: #f6e9d6; }
+.paletteScope[data-palette='noir'] .root { --bg: #f4f2ee; --ink: #1c1c1c; --soft: #6d6b67; --accent: #1c1c1c; --line: rgba(28, 28, 28, 0.22); --card: #ffffff; --deep: #1c1c1c; --deep-ink: #f4f2ee; --solid-bg: #1c1c1c; --solid-ink: #f4f2ee; }
+.root .kicker { font-family: var(--serif); letter-spacing: 0.24em; }
+.root .eventText strong, .root .countNum { font-family: var(--mono); }
+
+/* ============ Scene ============ */
+.letterScene { position: relative; overflow: hidden; background: var(--bg); color: var(--ink); text-align: center; }
+.letterScene button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.letterScene img { display: block; max-width: 100%; }
+.sceneHead { padding: 12cqw 6cqw 0; }
+.kickerSmall { margin: 0; font: 500 clamp(0.56rem, 2.5cqw, 0.72rem)/1.4 var(--serif); letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink); }
+.sceneNames { margin: 2cqw 0 0; font: 400 clamp(2.2rem, 12cqw, 3.5rem)/1.05 var(--script); color: var(--ink); }
+.sceneNames em { font-style: normal; font-size: 0.8em; }
+
+/* The stage: the pocket is drawn last so everything else sits inside it */
+.stage { position: relative; height: 112cqw; margin-top: 2cqw; }
+.contents { position: absolute; inset: 0; }
+.pocket { position: absolute; left: 4cqw; right: 4cqw; bottom: 4cqw; width: calc(100% - 8cqw); z-index: 5; filter: drop-shadow(0 -0.6cqw 1.2cqw rgba(0, 0, 0, 0.25)) drop-shadow(0 3cqw 3cqw rgba(0, 0, 0, 0.2)); }
+.seal { position: absolute; left: 50%; bottom: 31cqw; width: 19cqw; aspect-ratio: 1; transform: translateX(-50%); background: center / contain no-repeat; display: grid; place-items: center; z-index: 6; filter: drop-shadow(0 1cqw 1.2cqw rgba(0, 0, 0, 0.35)); }
+.seal i { display: inline-flex; gap: 0.05em; font: 400 clamp(0.9rem, 5cqw, 1.4rem)/1 var(--script); font-style: normal; color: rgba(0, 0, 0, 0.42); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28), 0 -1px 0 rgba(0, 0, 0, 0.3); }
+.letterScene[data-palette='noir'] .seal i { color: rgba(255, 255, 255, 0.18); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.12); }
+.seal em { font-style: normal; font-size: 0.7em; }
+
+/* the items rise in sequence once the stage is visible */
+.saveCard, .snap, .vinyl { position: absolute; border: 0; padding: 0; cursor: pointer; background: none; transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease; }
+.stage[data-in='false'] .saveCard, .stage[data-in='false'] .snap, .stage[data-in='false'] .vinyl { transform: translateY(46cqw) rotate(0deg); }
+.saveCard:hover, .snap:hover { filter: brightness(1.03); }
+
+.saveCard { left: 7cqw; top: 6cqw; width: 48cqw; aspect-ratio: 5 / 7; transform: rotate(-7deg); z-index: 3; transition-delay: 0.15s; filter: drop-shadow(0 2cqw 2.4cqw rgba(0, 0, 0, 0.25)); }
+.saveInner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6cqw 3cqw; background: var(--card); box-shadow: inset 0 0 0 2.4cqw var(--card), inset 0 0 0 calc(2.4cqw + 1px) var(--accent), inset 0 0 0 calc(2.4cqw + 3px) var(--card), inset 0 0 0 calc(2.4cqw + 4px) var(--accent); }
+.letterScene[data-palette='burgundy'] .saveInner, .letterScene[data-palette='olive'] .saveInner { box-shadow: inset 0 0 0 2.6cqw #5a1420, inset 0 0 0 calc(2.6cqw + 2px) var(--card), inset 0 0 0 calc(2.6cqw + 3px) #5a1420; }
+.saveInner small { font: 500 clamp(0.48rem, 2.2cqw, 0.64rem)/1 var(--serif); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink); margin-bottom: 3cqw; }
+.saveInner strong { font: 400 clamp(1.4rem, 7.6cqw, 2.2rem)/1.05 var(--script); color: var(--ink); overflow-wrap: anywhere; }
+.saveInner em { font: 400 clamp(1rem, 5cqw, 1.4rem)/1.2 var(--script); font-style: normal; color: var(--ink); }
+.saveInner b { margin-top: 3cqw; font: 500 clamp(0.9rem, 4.6cqw, 1.3rem)/1 var(--serif); letter-spacing: 0.08em; color: var(--ink); }
+
+.snap { width: 30cqw; aspect-ratio: 4 / 5; padding: 1.8cqw 1.8cqw 6cqw; background: #fdfcf9; box-shadow: 0 2cqw 3cqw rgba(0, 0, 0, 0.22); z-index: 2; }
+.snap img { width: 100%; height: 100%; object-fit: cover; }
+.snapOne { right: 9cqw; top: 2cqw; transform: rotate(8deg); transition-delay: 0.35s; }
+.snapTwo { right: 16cqw; top: 26cqw; transform: rotate(-5deg); transition-delay: 0.5s; z-index: 3; }
+
+.vinyl { right: 7cqw; top: 46cqw; width: 34cqw; aspect-ratio: 1; transform: rotate(0deg); transition-delay: 0.7s; z-index: 4; display: grid; place-items: center; }
+.disc { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, transparent 0 31%, rgba(255, 255, 255, 0.05) 31.5%, transparent 32%), repeating-radial-gradient(circle, #141414 0 1.2px, #232323 1.2px 2.4px), #151515; box-shadow: 0 2cqw 3cqw rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.06); display: grid; place-items: center; animation: spin 4.5s linear infinite; animation-play-state: paused; }
+.disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 30deg, transparent 0 12%, rgba(255, 255, 255, 0.14) 16%, transparent 22% 62%, rgba(255, 255, 255, 0.1) 66%, transparent 72%); }
+.vinyl[data-playing='true'] .disc { animation-play-state: running; }
+.vinylLabel { position: relative; width: 36%; aspect-ratio: 1; border-radius: 50%; background: var(--deep); display: grid; place-items: center; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2); z-index: 1; }
+.vinylLabel::after { content: ''; position: absolute; width: 10%; aspect-ratio: 1; border-radius: 50%; background: var(--bg); }
+.vinylLabel i { font: 400 clamp(0.5rem, 2.4cqw, 0.68rem)/1 var(--script); font-style: normal; color: var(--deep-ink); transform: translateY(-110%); }
+.vinylText { position: relative; z-index: 2; margin-top: 48%; padding: 0.4em 0.9em; border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: #1c1c1c; font: 600 clamp(0.42rem, 1.9cqw, 0.56rem)/1 var(--serif); letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 0.6cqw 1.4cqw rgba(0, 0, 0, 0.2); }
+.vinyl[data-playing='false'] .vinylText { animation: pulse 2.4s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+
+.flowers { position: absolute; z-index: 7; pointer-events: none; filter: drop-shadow(0 1.5cqw 1.6cqw rgba(0, 0, 0, 0.22)); animation: sway 7s ease-in-out infinite; }
+.flowersLeft { left: -6cqw; bottom: 1cqw; width: 42cqw; transform: rotate(-12deg); transform-origin: 50% 100%; }
+.flowersRight { right: -10cqw; bottom: 30cqw; width: 30cqw; transform: rotate(150deg) scaleX(-1); animation-delay: -3.5s; opacity: 0.95; }
+.letterScene[data-palette='brown'] .flowersLeft, .letterScene[data-palette='noir'] .flowersLeft { width: 60cqw; left: -14cqw; bottom: -2cqw; transform: rotate(-24deg); }
+.letterScene[data-palette='brown'] .flowersRight, .letterScene[data-palette='noir'] .flowersRight { width: 40cqw; }
+@keyframes sway { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+
+/* Countdown and call to action */
+.until { padding: 6cqw 7cqw 14cqw; }
+.clock { display: flex; justify-content: center; align-items: flex-start; gap: 1.6cqw; margin-top: 4cqw; }
+.clockCell { display: flex; flex-direction: column; align-items: center; gap: 1.4cqw; }
+.clockNum { font: 400 clamp(1.7rem, 9.5cqw, 2.8rem)/1 var(--mono); color: #6f6f6f; }
+.clockCell small { font: 500 clamp(0.42rem, 1.9cqw, 0.56rem)/1 var(--serif); letter-spacing: 0.16em; text-transform: uppercase; color: var(--soft); }
+.colon { font: 400 clamp(1.5rem, 8cqw, 2.3rem)/1 var(--mono); color: #8a8a8a; }
+.place { margin: 7cqw 0 0; font: 500 clamp(1.2rem, 6.4cqw, 1.8rem)/1.2 var(--serif); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+.follow { margin-top: 2cqw; font: 400 clamp(1.4rem, 7.6cqw, 2.2rem)/1.2 var(--script); color: var(--ink); }
+.outline { margin-top: 6cqw; padding: 1.1em 2.2em; border: 1px solid var(--ink); background: transparent; cursor: pointer; font: 500 clamp(0.6rem, 2.7cqw, 0.74rem)/1 var(--serif); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); transition: background-color 0.4s ease, color 0.4s ease, letter-spacing 0.5s ease; }
+.outline:hover { background: var(--ink); color: var(--bg); letter-spacing: 0.28em; }
+
+.monogramBand { display: grid; place-items: center; padding: 12cqw 0; background: var(--deep); }
+.monogram { position: relative; width: 34cqw; aspect-ratio: 3 / 4; border: 1px solid var(--deep-ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; gap: 0; color: var(--deep-ink); font: 400 clamp(2rem, 11cqw, 3.2rem)/1 var(--script); }
+.monogram::before { content: ''; position: absolute; inset: 1.6cqw; border: 1px solid var(--deep-ink); border-radius: 50%; opacity: 0.6; }
+.monogram span:first-child { transform: translate(18%, -18%); }
+.monogram span:last-child { transform: translate(-18%, 22%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .flowers, .vinylText { animation: none; }
+  .stage[data-in='false'] .saveCard, .stage[data-in='false'] .snap, .stage[data-in='false'] .vinyl { transform: none; }
+}

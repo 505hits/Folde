@@ -2,9 +2,10 @@
 
 import React, { use } from 'react';
 import { useRouter } from 'next/navigation';
+import { SIGNATURE_TEMPLATES } from '@/lib/signature-catalog.mjs';
 import BordeauxTemplate from '../../../components/templates/BordeauxTemplate';
 
-const templates = [
+const classicTemplates = [
   { id: 'champagne', name: 'Luxe Gold', tag: 'ROMANTIC', desc: 'Opulent and golden.', video: '/videos/hero/palm-zoom.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde' },
   { id: 'ivory', name: 'Pearl', tag: 'MINIMAL', desc: 'Luminous and serene.', video: '/videos/hero/sea-view.mp4', envelope: '/videos/ivory-veil.mp4', partner1: 'Arthur', partner2: 'Chloé' },
   { id: 'bordeaux', name: 'Velvet Noir', tag: 'ELEGANT', desc: 'Bold and timeless.', video: '/videos/hero/kissing-couple.mp4', envelope: '/videos/bordeaux.mp4', partner1: 'Alexandre', partner2: 'Éléonore' },
@@ -42,6 +43,18 @@ const templates = [
   { id: 'excellence', name: 'Excellence', tag: 'ELEGANT', desc: 'Architectural florals with champagne refinement.', video: '/videos/sage.mp4', envelope: '/videos/sage.mp4', partner1: 'Cristina', partner2: 'Josh', date: 'NOV 21, 2026' },
 ];
 
+const templates = [...SIGNATURE_TEMPLATES.map((tpl) => ({ ...tpl, video: tpl.hero, isImage: /\.(png|jpe?g|webp)$/i.test(tpl.hero) })), ...classicTemplates];
+
+// Illustrated designs show a live countdown, so the demo date must stay in the future.
+function upcomingDemoDate(label) {
+  const date = new Date(label);
+  if (Number.isNaN(date.getTime())) return label;
+  const now = new Date();
+  while (date <= now) date.setFullYear(date.getFullYear() + 1);
+  // ISO form parses as UTC everywhere, so the label never slips by a day.
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 export default function TemplateDetailPage({ params }) {
   const router = useRouter();
   const { id } = use(params);
@@ -76,7 +89,7 @@ export default function TemplateDetailPage({ params }) {
           themeId: tpl.id,
           partner1: tpl.partner1,
           partner2: tpl.partner2,
-          date: tpl.date || 'MAY 27, 2026',
+          date: tpl.signature ? upcomingDemoDate(tpl.date) : (tpl.date || 'MAY 27, 2026'),
           videos: {
             envelope: tpl.envelope,
             hero: tpl.isImage ? null : tpl.video

@@ -1,0 +1,96 @@
+/* Jardin Brodé — hand embroidery on natural linen. */
+
+.root {
+  --bg: #dad2c6;
+  --ink: #4b5241;
+  --soft: #7b7c6c;
+  --accent: #a9727c;
+  --line: rgba(75, 82, 65, 0.3);
+  --card: #efe9df;
+  --serif: 'Libre Caslon Display', 'Libre Caslon Text', 'Adobe Caslon Pro', Georgia, serif;
+  --script: 'Libre Caslon Text', Georgia, serif;
+  --sans: 'Libre Caslon Text', Georgia, serif;
+  --title-size: clamp(2rem, 11cqw, 3.2rem);
+  --count-cols: 2;
+  --count-w: 30%;
+  --venue-radius: 999px 999px 2cqw 2cqw;
+  --shot-radius: 3cqw;
+  --btn-radius: 999px;
+  --solid-bg: #6f7d62;
+  --solid-ink: #f3ede2;
+  --btn-line: #6f7d62;
+  --btn-ink: #4b5241;
+  --map-filter: grayscale(0.5) sepia(0.25);
+  font-weight: 400;
+}
+
+/* Woven linen over every flat area, so artwork edges melt into the cloth. */
+.root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(120, 105, 85, 0.16) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 1px, transparent 1px 3px);
+}
+.root > * { position: relative; z-index: 1; }
+
+.root .kicker, .root .small, .root .sub { font-style: italic; letter-spacing: 0.04em; text-transform: none; font-size: clamp(0.85rem, 3.8cqw, 1.02rem); }
+.root .signature, .root .flourish { font-style: italic; font-size: clamp(1.25rem, 6.4cqw, 1.8rem); color: var(--accent); }
+.root .artInner img { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 82%, transparent 100%); }
+
+/* ---------- Opening: pearl-tied curtains drawn back ---------- */
+.root .opening { min-height: 112cqw; }
+.root .openingArt { inset: 0 0 auto 0; height: 56.25cqw; background-size: 100% 100%; -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%); mask-image: linear-gradient(180deg, #000 60%, transparent 100%); animation: curtain 2.4s var(--ease) both; transform-origin: 50% 0; }
+@keyframes curtain { from { transform: scaleX(1.5); opacity: 0; } }
+.root .openingInner { padding: 28cqw 14cqw 14cqw; }
+.root .names { font-family: var(--serif); font-size: clamp(2.3rem, 13cqw, 3.8rem); line-height: 1.08; }
+.root .amp { font-family: var(--serif); font-style: normal; font-size: clamp(1.6rem, 9cqw, 2.6rem); line-height: 1.15; color: var(--ink); }
+.root .openingDate { color: var(--soft); }
+.root .openingDate span { border-color: var(--accent); }
+.root .openingPlace { color: var(--accent); }
+
+/* ---------- Story under the wisteria ---------- */
+.root .story { padding-top: 0; }
+.root .storyArt { margin-bottom: -16cqw; }
+.root .storyArt img { -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); mask-image: linear-gradient(180deg, #000 55%, transparent 100%); }
+
+/* ---------- Countdown inside an embroidered border ---------- */
+.root .count { padding-top: 6cqw; }
+.root .countTop { margin-bottom: 2cqw; }
+.root .countFrame { margin-top: -4cqw; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); }
+.root .countRow { gap: 3cqw 2cqw; margin-top: 4cqw; }
+.root .countNum { font-size: clamp(1.5rem, 8.6cqw, 2.5rem); }
+.root .countCell > span:last-child { font-style: italic; letter-spacing: 0.02em; text-transform: none; font-size: clamp(0.6rem, 2.7cqw, 0.76rem); opacity: 1; }
+
+/* ---------- Stitched frames ---------- */
+.root .venueRim { border: 1.5px dashed var(--accent); inset: -3cqw; border-radius: 999px 999px 4cqw 4cqw; }
+.root .stayCard, .root .dressCard, .root .giftCard, .root .courses { padding: 10cqw 6cqw; background: rgba(243, 237, 226, 0.6); border: 0; border-radius: 4cqw; outline: 1.5px dashed var(--accent); outline-offset: -2.4cqw; }
+.root .dressPhoto { border-radius: 3cqw; outline: 1.5px dashed var(--accent); outline-offset: 1.8cqw; }
+.root .shot { outline: 1.5px dashed var(--accent); outline-offset: 1.6cqw; }
+.root .reel { gap: 9cqw; padding-top: 7cqw; }
+.root .eventDot { border-radius: 0; rotate: 45deg; }
+.root .eventText em { font-style: italic; letter-spacing: 0.03em; text-transform: none; font-size: clamp(0.85rem, 3.8cqw, 1rem); }
+.root .rail { width: 0; background: none; border-left: 1.5px dashed var(--line); }
+.root .rail i { width: 0; background: none; border-left: 1.5px dashed var(--accent); margin-left: -1.5px; }
+
+/* ---------- Schedule / RSVP under a rose garland ---------- */
+.root .schedule, .root .rsvp { padding-top: 6cqw; }
+.root .scheduleTop, .root .rsvpTop { margin-bottom: 6cqw; }
+.root .rsvpCard { border-radius: 4cqw; outline: 1.5px dashed var(--accent); outline-offset: -2.4cqw; }
+.root .label { letter-spacing: 0.04em; text-transform: none; font-style: italic; font-size: clamp(0.78rem, 3.4cqw, 0.92rem); }
+.root .btn, .root .btnSolid, .root .btnGhost, .root .submit { letter-spacing: 0.14em; }
+
+/* ---------- Finale: the embroidered manor ---------- */
+.root .finale { padding-bottom: 10cqw; }
+.root .finaleNames { font-family: var(--serif); font-size: clamp(2rem, 11cqw, 3.2rem); }
+.root .finaleArt { margin-top: 2cqw; }
+.root .finaleArt img { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%); mask-image: linear-gradient(180deg, transparent 0, #000 30%); }
+.root .badge { margin-top: 8cqw; }
+
+@media (prefers-reduced-motion: reduce) {
+  .root .openingArt { animation: none; }
+}

@@ -1,10 +1,51 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import { SIGNATURE_TEMPLATES } from "@/lib/signature-catalog.mjs";
 
 // English stays authoritative in the product components. These rows localize the
 // transactional and authenticated surfaces without changing stored wedding data.
 const rows = [
+  ["This design opens with its own illustrated scene, so no envelope animation or background video is needed. Choose its music below.", "Ce modèle s’ouvre sur sa propre mise en scène illustrée : pas besoin d’animation d’enveloppe ni de vidéo d’arrière-plan. Choisissez sa musique ci-dessous.", "Este diseño se abre con su propia escena ilustrada: no necesita animación de sobre ni vídeo de fondo. Elige su música a continuación."],
+  // Descriptions of the signature designs (dashboard design picker).
+  ...SIGNATURE_TEMPLATES.map((template) => [template.desc.en, template.desc.fr, template.desc.es]),
+  ["Current design","Modèle actuel","Diseño actual"],
+  ["Change design","Changer de modèle","Cambiar de diseño"],
+  ["📱 Preview","📱 Aperçu","📱 Vista previa"],
+  ["Your invitation is ready","Votre faire-part est prêt","Tu invitación está lista"],
+  ["Your invitation is taking shape","Votre faire-part prend forme","Tu invitación va tomando forma"],
+  ["Publish it and share the link with your guests.","Publiez-le et partagez le lien avec vos invités.","Publícala y comparte el enlace con tus invitados."],
+  ["Complete the steps below. Every change is saved automatically.","Complétez les étapes ci-dessous. Chaque modification est enregistrée automatiquement.","Completa los pasos siguientes. Cada cambio se guarda automáticamente."],
+  ["Design chosen","Modèle choisi","Diseño elegido"],
+  ["Your names","Vos prénoms","Vuestros nombres"],
+  ["Date & venue","Date et lieu","Fecha y lugar"],
+  ["Programme","Programme","Programa"],
+  ["Your photos","Vos photos","Vuestras fotos"],
+  ["Music","Musique","Música"],
+  ["Your story","Votre histoire","Vuestra historia"],
+  ["Share with guests","Partager aux invités","Compartir con los invitados"],
+  ["Design","Modèle","Diseño"],
+  ["Names & date","Prénoms et date","Nombres y fecha"],
+  ["Photos","Photos","Fotos"],
+  ["Opening & music","Ouverture et musique","Apertura y música"],
+  ["Texts","Textes","Textos"],
+  ["Sections","Sections","Secciones"],
+  ["Switch design at any time: your names, texts, photos and guest answers are kept.","Changez de modèle quand vous voulez : vos prénoms, textes, photos et réponses des invités sont conservés.","Cambia de diseño cuando quieras: se conservan vuestros nombres, textos, fotos y respuestas de los invitados."],
+  ["All designs","Tous les modèles","Todos los diseños"],
+  ["Signature","Signature","Signature"],
+  ["Classic","Classiques","Clásicos"],
+  ["Search a design","Rechercher un modèle","Buscar un diseño"],
+  ["✦ Signature","✦ Signature","✦ Signature"],
+  ["Current","Actuel","Actual"],
+  ["In use","Utilisé","En uso"],
+  ["Use this design","Choisir ce modèle","Usar este diseño"],
+  ["Demo ↗","Démo ↗","Demo ↗"],
+  ["Show all designs","Voir tous les modèles","Ver todos los diseños"],
+  ["No design matches this search.","Aucun modèle ne correspond à cette recherche.","Ningún diseño coincide con esta búsqueda."],
+  ["Design applied","Modèle appliqué","Diseño aplicado"],
+  ["Your texts, photos and guests are kept.","Vos textes, photos et invités sont conservés.","Se conservan tus textos, fotos e invitados."],
+  ["Design family","Famille de modèles","Familia de diseños"],
+  ["Invitation editor","Éditeur du faire-part","Editor de la invitación"],
   ['Uploading images...','Envoi des images…','Subiendo imágenes…'],
   ['Invitation Design','Modèle d’invitation','Diseño de la invitación'],
   ['Choose a complete design, then personalize every detail below.','Choisissez un modèle, puis personnalisez chaque détail ci-dessous.','Elige un diseño y personaliza cada detalle a continuación.'],

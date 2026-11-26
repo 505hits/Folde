@@ -1,0 +1,61 @@
+/* Twilight Meadow — painted wildflowers, sage ink, italic serif. */
+
+.root {
+  --bg: #e4e0d4;
+  --ink: #4f5a33;
+  --soft: #6f7562;
+  --accent: #6f7a4b;
+  --line: rgba(79, 90, 51, 0.25);
+  --card: #efece3;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --script: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --title-font: 'Cormorant Garamond', serif;
+  --title-size: clamp(2.3rem, 12.5cqw, 3.6rem);
+  --solid-bg: #6f7a4b;
+  --solid-ink: #f4f1e8;
+  --btn-radius: 2cqw;
+  --choice-radius: 2cqw;
+  --venue-radius: 3cqw;
+  --shot-radius: 2cqw;
+}
+.root .title, .root .signature, .root .flourish { font-style: italic; font-weight: 300; }
+.root .kicker { font-weight: 600; letter-spacing: 0.22em; color: var(--ink); }
+
+/* Opening: the painting fills the screen, text in the sky */
+.root .opening { min-height: 150cqw; display: flex; }
+.root .openingArt { background-size: cover; background-position: 48% 50%; animation: drift 24s ease-in-out infinite alternate; }
+.root .openingArt::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(40, 45, 30, 0.35) 0%, rgba(40, 45, 30, 0.08) 45%, rgba(228, 224, 212, 0) 75%, var(--bg) 100%); }
+@keyframes drift { from { transform: scale(1.08) translateX(-2%); } to { transform: scale(1.14) translateX(2%); } }
+.root .openingInner { width: 100%; padding: 22cqw 7cqw 0; justify-content: flex-start; }
+.root .opening .kicker { color: #fdf8ea; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35); }
+.root .names { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(2.8rem, 15cqw, 4.4rem); line-height: 0.95; color: #fdf8ea; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.3); }
+.root .amp { color: #f2dc9b; font-size: clamp(1.6rem, 8cqw, 2.4rem); }
+.root .openingDate { color: #fdf8ea; font-weight: 600; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
+.root .openingDate span { border-color: rgba(253, 248, 234, 0.6); }
+.root .openingPlace { color: #fdf8ea; font-family: var(--sans); font-style: normal; font-weight: 600; font-size: clamp(0.6rem, 2.7cqw, 0.76rem); letter-spacing: 0.22em; text-transform: uppercase; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
+
+/* Countdown inside the painted oval */
+.root .countFrame { background-size: contain; background-position: center; aspect-ratio: 16 / 9; --count-ink: #fdf8ea; --count-w: 58%; }
+.root .countNum { text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45); font-style: italic; }
+.root .countCell > span:last-child { color: #fdf8ea; opacity: 1; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); }
+
+/* Painted wildflower dividers */
+.root .scheduleTop, .root .rsvpTop { margin: 0 -8cqw 4cqw; }
+.root .schedule, .root .rsvp { padding-top: 0; }
+.root .artInner img { mix-blend-mode: multiply; }
+
+/* Cards: soft rounded sage outline, like the reference form */
+.root .rsvpCard, .root .stayCard, .root .dressCard, .root .giftCard { border: 1.5px solid var(--accent); border-radius: 5cqw; background: rgba(239, 236, 227, 0.85); box-shadow: none; }
+.root .input { font-style: normal; border: 1px solid var(--line); border-radius: 2cqw; padding: 0.7em 0.8em; background: rgba(255, 255, 255, 0.4); }
+.root .choice { background: rgba(111, 122, 75, 0.12); border-color: transparent; }
+.root .label { text-transform: none; letter-spacing: 0.02em; font-size: clamp(0.72rem, 3.2cqw, 0.86rem); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .root .openingArt { animation: none; }
+}
+
+/* The painted oval sits on white paper: blend it into the page */
+.root .countFrame { background: none; isolation: auto; }
+.root .countFrame::before { content: ''; position: absolute; inset: 0; background: var(--a-count) center / contain no-repeat; mix-blend-mode: multiply; }
+.root .countRow { position: relative; z-index: 1; }

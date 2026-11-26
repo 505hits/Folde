@@ -145,3 +145,9 @@ export const templateMedia = {
     "envelope": "https://kdcyugwruypwrmtllswt.supabase.co/storage/v1/object/public/invitation-assets/98032531-8029-42fd-8ba2-3f50d3ab7f3a/opening-animation-1777314873141.mp4"
   }
 };
+
+// Illustrated signature designs share the same media lookup.
+import { SIGNATURE_TEMPLATES } from './signature-catalog.mjs';
+for (const template of SIGNATURE_TEMPLATES) {
+  templateMedia[template.id] = { hero: template.hero, envelope: template.envelope };
+}

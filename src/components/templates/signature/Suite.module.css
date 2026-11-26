@@ -1,0 +1,183 @@
+/* Suite — stationery flat-lay. Two palettes: mocha and burgundy. */
+
+.paletteScope { width: 100%; }
+
+.paletteScope[data-palette='mocha'] .root {
+  --bg: #e9e4dc;
+  --ink: #4a3426;
+  --soft: #8a7766;
+  --accent: #a8814f;
+  --line: rgba(74, 52, 38, 0.2);
+  --card: #f6f1e8;
+  --deep: #4a3426;
+  --deep-ink: #f3e9da;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --script: 'Pinyon Script', 'Snell Roundhand', cursive;
+  --sans: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --title-font: 'Italiana', 'Cormorant Garamond', serif;
+  --solid-bg: #4a3426;
+  --solid-ink: #f3e9da;
+  --btn-radius: 999px;
+  --venue-radius: 999px 999px 2cqw 2cqw;
+  --shot-radius: 1cqw;
+}
+.paletteScope[data-palette='burgundy'] .root {
+  --bg: #e7e3e0;
+  --ink: #6b1626;
+  --soft: #8d6a6f;
+  --accent: #6b1626;
+  --line: rgba(107, 22, 38, 0.2);
+  --card: #fbf8f5;
+  --deep: #6b1626;
+  --deep-ink: #fbf1ee;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --script: 'Pinyon Script', 'Snell Roundhand', cursive;
+  --sans: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --title-font: 'Pinyon Script', cursive;
+  --title-size: clamp(2.4rem, 14cqw, 4rem);
+  --solid-bg: #6b1626;
+  --solid-ink: #fbf1ee;
+  --btn-radius: 999px;
+  --venue-radius: 50%;
+  --shot-radius: 1cqw;
+}
+.root .kicker { letter-spacing: 0.3em; }
+.root .story, .root .stay, .root .menu, .root .gifts { background: transparent; }
+
+/* ============ The table ============ */
+.table {
+  position: relative;
+  padding: 10cqw 6cqw 14cqw;
+  background-color: var(--bg);
+  background-image: var(--paper, none);
+  background-size: 120% auto;
+  background-position: center top;
+  overflow: hidden;
+}
+.table[data-palette='burgundy'] { background-image: radial-gradient(120% 60% at 50% 0%, #f3efec, #e5e0dc 70%); }
+.table button { all: unset; display: block; width: 100%; height: 100%; cursor: pointer; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+.table button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.table img { display: block; max-width: 100%; }
+.table > *, .row > * { position: relative; }
+
+/* Every object floats a little when touched */
+.namesCard, .dateCard, .detailsCard, .coasterRsvp, .trayRsvp, .polaroid, .ovalFrame { transition-property: opacity, transform, filter; }
+.namesCard:hover, .dateCard:hover, .detailsCard:hover, .coasterRsvp:hover, .trayRsvp:hover, .polaroid:hover, .ovalFrame:hover { transform: rotate(var(--rot)) translateY(-1.6cqw) scale(1.02); transition-duration: 0.5s; }
+
+/* 1 — envelope */
+.envelope { width: 80cqw; margin: 0 auto; aspect-ratio: 586 / 672; filter: drop-shadow(0 3cqw 3cqw rgba(40, 25, 15, 0.28)); z-index: 2; }
+.envelopeImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.pocketClip { position: absolute; inset: 0; clip-path: polygon(0 -40%, 100% -40%, 100% 41%, 50% 74%, 0 41%); }
+.letter {
+  position: absolute; left: 13%; right: 13%; top: 11%; height: 56%;
+  padding: 9% 7% 0; box-sizing: border-box; text-align: center;
+  background: var(--card); color: var(--ink);
+  box-shadow: 0 -0.5cqw 2cqw rgba(0, 0, 0, 0.18);
+  transform: translateY(46%);
+  transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.7s;
+}
+.table[data-palette='burgundy'] .letter { outline: 1px solid rgba(107, 22, 38, 0.35); outline-offset: -2cqw; }
+.envelope[data-in='true'] .letter { transform: translateY(0); }
+.letterKicker { font: 500 clamp(0.5rem, 2.3cqw, 0.66rem)/1.3 var(--sans); letter-spacing: 0.26em; text-transform: uppercase; color: var(--soft); margin: 0; }
+.letterNames { margin: 3cqw 0 0; font: 400 clamp(1.6rem, 9cqw, 2.6rem)/1 var(--script); color: var(--ink); }
+.letterNames em { display: block; font: italic 400 0.55em/1.3 var(--serif); }
+.envelopeSeal { position: absolute; left: 50%; top: 73%; width: 21%; aspect-ratio: 1; transform: translate(-50%, -50%); background: center / contain no-repeat; display: grid; place-items: center; filter: drop-shadow(0 1cqw 1.2cqw rgba(0, 0, 0, 0.35)); z-index: 3; }
+.envelopeSeal i, .dateSeal i { font: 400 clamp(0.8rem, 4.4cqw, 1.25rem)/1 var(--script); font-style: normal; color: rgba(60, 35, 10, 0.55); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35), 0 -1px 0 rgba(0, 0, 0, 0.25); display: inline-flex; gap: 0.05em; }
+.table[data-palette='burgundy'] .envelopeSeal i, .table[data-palette='burgundy'] .dateSeal i { color: rgba(40, 0, 8, 0.55); text-shadow: 0 1px 0 rgba(255, 160, 170, 0.35), 0 -1px 0 rgba(0, 0, 0, 0.4); }
+.envelopeSeal em { font-style: normal; font-size: 0.7em; }
+.flowers { position: absolute; pointer-events: none; filter: drop-shadow(0 1.5cqw 1.5cqw rgba(40, 25, 15, 0.25)); animation: sway 7s ease-in-out infinite; transform-origin: 30% 80%; }
+.flowersEnvelope { width: 52%; left: -16%; bottom: 8%; transform: rotate(-18deg); z-index: 4; }
+.flowersPhotos { width: 44%; right: -12%; bottom: -10%; transform: rotate(160deg); z-index: 4; animation-delay: -3s; }
+@keyframes sway { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+
+/* rows */
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 5cqw; align-items: center; margin-top: 7cqw; }
+
+/* 2 — names card with a scalloped edge */
+.namesCard { --s: 3.4cqw; aspect-ratio: 4 / 5; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.22)); }
+.namesCard button {
+  padding: calc(var(--s) * 0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: #f4f0ea; color: var(--ink);
+  -webkit-mask: radial-gradient(calc(var(--s) * 0.56) at 50% 50%, #000 97%, #0000) 0 0 / var(--s) var(--s) round, linear-gradient(#000 0 0) content-box;
+  mask: radial-gradient(calc(var(--s) * 0.56) at 50% 50%, #000 97%, #0000) 0 0 / var(--s) var(--s) round, linear-gradient(#000 0 0) content-box;
+}
+.namesCard small { font: 500 clamp(0.42rem, 1.9cqw, 0.56rem)/1.4 var(--sans); letter-spacing: 0.22em; text-transform: uppercase; color: var(--soft); margin-bottom: 2.4cqw; }
+.namesCard strong { font: 400 clamp(1.2rem, 6.6cqw, 1.9rem)/1.05 var(--title-font); color: var(--ink); overflow-wrap: anywhere; }
+.namesCard em { font: italic 400 clamp(0.9rem, 4.6cqw, 1.3rem)/1.3 var(--script); color: var(--accent); }
+
+/* date card — dark paper, twine and a seal */
+.dateCard { aspect-ratio: 4 / 5; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.3)); }
+.dateCard button { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 6cqw 3cqw 4cqw; text-align: center; background: var(--deep); color: var(--deep-ink); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.table[data-palette='mocha'] .dateCard button { background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 6px); }
+.table[data-palette='burgundy'] .dateCard button { background: #f8f4ef; color: var(--ink); }
+.bigDate { display: flex; flex-direction: column; align-items: center; }
+.bigDate strong { font: 400 clamp(2.4rem, 14cqw, 3.8rem)/0.9 var(--title-font); }
+.bigDate span { font: 400 clamp(1.1rem, 6cqw, 1.7rem)/1.1 var(--title-font); }
+.bigDate small { margin-top: 1cqw; font: 500 clamp(0.5rem, 2.2cqw, 0.64rem)/1 var(--sans); letter-spacing: 0.3em; }
+.twine { position: absolute; left: -5%; right: -5%; top: 64%; height: 1.6cqw; border-top: 1px solid rgba(243, 233, 218, 0.7); border-bottom: 1px solid rgba(243, 233, 218, 0.55); transform: rotate(-2deg); }
+.table[data-palette='burgundy'] .twine { border-color: rgba(107, 22, 38, 0.7); }
+.dateSeal { position: absolute; left: 50%; top: 65%; width: 24%; aspect-ratio: 1; transform: translate(-50%, -50%); background: center / contain no-repeat; display: grid; place-items: center; filter: drop-shadow(0 0.8cqw 1cqw rgba(0, 0, 0, 0.35)); }
+.dateMeta { position: absolute; left: 6%; right: 6%; bottom: 5%; font: 500 clamp(0.4rem, 1.8cqw, 0.52rem)/1.4 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; }
+
+.calendar { width: 100%; }
+.calTitle { margin: 0 0 1.6cqw; font: 400 clamp(1rem, 5.6cqw, 1.6rem)/1 var(--script); text-transform: none; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.6cqw 0; font: 500 clamp(0.36rem, 1.7cqw, 0.5rem)/1.9 var(--sans); }
+.calGrid b { font-weight: 600; opacity: 0.6; }
+.calGrid span { position: relative; }
+.calGrid span[data-on='true'] { font-weight: 700; }
+.calGrid svg { position: absolute; left: 50%; top: 50%; width: 220%; aspect-ratio: 1; transform: translate(-50%, -50%); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 110; stroke-dashoffset: 110; transition: stroke-dashoffset 1.4s ease 1s; }
+.dateCard[data-in='true'] .calGrid svg { stroke-dashoffset: 0; }
+
+/* 3 — details card with a bow */
+.detailsCard { aspect-ratio: 5 / 4; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.22)); }
+.detailsCard button { --s: 2.2cqw; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: calc(var(--s) * 0.5); padding-bottom: calc(var(--s) * 0.5); background: #f7f3ec; color: var(--ink); text-align: center;
+  -webkit-mask: radial-gradient(calc(var(--s) * 0.6) at 50% 50%, #000 97%, #0000) 0 0 / var(--s) var(--s) round, linear-gradient(#000 0 0) content-box;
+  mask: radial-gradient(calc(var(--s) * 0.6) at 50% 50%, #000 97%, #0000) 0 0 / var(--s) var(--s) round, linear-gradient(#000 0 0) content-box;
+  box-shadow: inset 0 0 0 calc(var(--s) * 1.6) #fff;
+}
+.detailsCard button { justify-content: flex-start !important; }
+.detailsCard button > strong { margin-top: 4cqw; }
+.detailsCard strong { font: 400 clamp(1.4rem, 8cqw, 2.3rem)/1 var(--title-font); }
+.detailsCard small { margin-top: 1cqw; font: 500 clamp(0.42rem, 1.9cqw, 0.56rem)/1 var(--sans); letter-spacing: 0.22em; text-transform: uppercase; color: var(--soft); }
+.bow { position: absolute; left: 50%; bottom: -34%; width: 50%; transform: translateX(-50%) rotate(-4deg); filter: drop-shadow(0 1cqw 1cqw rgba(0, 0, 0, 0.3)); pointer-events: none; }
+
+/* RSVP — gold coaster (mocha) or a card on a silver tray (burgundy) */
+.coasterRsvp, .trayRsvp { aspect-ratio: 1; }
+.coasterRsvp button, .trayRsvp button { position: relative; display: grid; place-items: center; }
+.coaster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.3)); }
+.tray { position: absolute; left: -12%; right: -12%; top: 18%; width: 124%; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.3)); }
+.rsvpText { position: relative; display: flex; flex-direction: column; align-items: center; color: #fffaf0; text-shadow: 0 1px 2px rgba(60, 35, 10, 0.45); }
+.rsvpText small { font: italic 400 clamp(0.8rem, 4cqw, 1.15rem)/1 var(--script); }
+.rsvpText strong { font: 400 clamp(1.8rem, 10cqw, 2.9rem)/1 var(--script); }
+.trayRsvp .rsvpText { margin-top: 6cqw; padding: 3cqw 5cqw; background: #6b1626; box-shadow: 0 1cqw 2cqw rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.25); transform: rotate(-4deg); }
+
+/* 4 — photographs */
+.photoRow { margin-top: 10cqw; }
+.polaroid { aspect-ratio: 4 / 5; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.28)); }
+.polaroid button { display: flex; flex-direction: column; padding: 2.4cqw 2.4cqw 0; background: #fbfaf6; }
+.polaroid img { width: 100%; flex: 1; min-height: 0; object-fit: cover; filter: saturate(0.85) contrast(1.03); }
+.polaroid small, .polaroid strong { display: block; text-align: center; padding: 2cqw 0 2.4cqw; color: var(--ink); }
+.polaroid small { font: 500 clamp(0.4rem, 1.8cqw, 0.52rem)/1 var(--sans); letter-spacing: 0.2em; text-transform: uppercase; }
+.polaroid strong { font: 400 clamp(1rem, 5.4cqw, 1.5rem)/1 var(--title-font); }
+.ovalFrame { aspect-ratio: 557 / 699; filter: drop-shadow(0 2cqw 2cqw rgba(40, 25, 15, 0.25)); }
+.ovalFrame button { position: relative; }
+.ovalPhoto { position: absolute; left: 21%; right: 21%; top: 19%; bottom: 12%; width: 58%; height: 69%; object-fit: cover; border-radius: 50%; }
+.ovalImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+
+/* 5 — sign-off */
+.signoff { margin-top: 14cqw; text-align: center; }
+.lineArt { width: 42cqw; margin: 0 auto; }
+.lineArt img { width: 100%; }
+.withLove { margin: 5cqw 0 0; font: 500 clamp(0.52rem, 2.3cqw, 0.66rem)/1 var(--sans); letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink); }
+.signNames { margin-top: 2cqw; font: 400 clamp(2rem, 11cqw, 3.2rem)/1.1 var(--title-font); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .flowers { animation: none; }
+  .letter { transform: none; transition: none; }
+}
+
+/* calendar card: twine and seal sit below the month grid */
+.table[data-palette='burgundy'] .twine { top: 81%; }
+.table[data-palette='burgundy'] .dateSeal { top: 81%; width: 17%; }
+.table[data-palette='burgundy'] .dateMeta { bottom: 2.5%; }
+.table[data-palette='burgundy'] .dateCard button { padding-top: 4cqw; }

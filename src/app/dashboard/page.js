@@ -17,6 +17,9 @@ import { dashboardLocale } from '@/lib/dashboard-locale.mjs';
 import { selectHero } from '@/lib/wedding-media.mjs';
 import MediaThumbnail from '@/components/MediaThumbnail';
 import { templateMedia } from '@/lib/template-catalog.mjs';
+import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from '@/lib/signature-catalog.mjs';
+import { InvitationOverview, EditorNav, TemplatePicker } from './DashboardGuide';
+import guide from './dashboard-guide.module.css';
 import LocalizedSurface from "@/components/LocalizedSurface";
 
 const HoverVideoThumbnail = ({ url, fallbackColor }) => {
@@ -1090,13 +1093,13 @@ function DashboardContent({ locale = "en" }) {
         {databaseError && <p role="alert" style={{ color: '#b91c1c', padding: '1rem' }}>{databaseError}</p>}
         <div className="dashboard-content-wrapper" style={{ maxWidth: '980px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 
-          <div className="dashboard-tip" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+          {activeTab !== 'invitation' && <div className="dashboard-tip" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0dcd7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
             <div style={{ fontSize: '1.3rem', color: '#5C3A1E' }}>💡</div>
             <div>
               <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#5C3A1E', marginBottom: '0.15rem' }}>Pro Tip for Your Guests</div>
               <div style={{ fontSize: '0.82rem', color: '#666' }}>Couples who customize their background music and photos several months in advance see the highest guest engagement and RSVP response rates.</div>
             </div>
-          </div>
+          </div>}
 
           {activeTab === 'invitation' && (
             <InvitationTab
@@ -1109,6 +1112,7 @@ function DashboardContent({ locale = "en" }) {
               plan={userOrder?.plan || 'Standard'}
               orderId={userOrder?.id || ''}
               triggerReplayEnvelope={() => setEnvelopeKey(prev => prev + 1)}
+              onGoToTab={setActiveTab}
             />
           )}
           {activeTab === 'aistudio' && (
@@ -1141,14 +1145,15 @@ function DashboardContent({ locale = "en" }) {
       </main>
 
       {/* 3. Right Preview Panel */}
-      <aside className="dashboard-preview" data-preserve-language>
+      <button type="button" className={guide.previewFab} onClick={() => document.getElementById('dashboard-preview')?.scrollIntoView({ behavior: 'smooth' })}>📱 Preview</button>
+      <aside id="dashboard-preview" className="dashboard-preview" data-preserve-language>
         <div className="preview-container">
 
           {/* Subtle Ambient Background Glow */}
           <div style={{ position: 'absolute', width: '250px', height: '250px', borderRadius: '50%', backgroundColor: 'rgba(176,137,104,0.06)', filter: 'blur(60px)', top: '15%', left: '15%', zIndex: 0, pointerEvents: 'none' }}></div>
           <div style={{ position: 'absolute', width: '280px', height: '280px', borderRadius: '50%', backgroundColor: 'rgba(92,58,30,0.04)', filter: 'blur(80px)', bottom: '15%', right: '10%', zIndex: 0, pointerEvents: 'none' }}></div>
 
-          <button
+          {!INTROLESS_IDS.has(clientEventInfo.themeId || selectedTheme) && <button
             onClick={() => setEnvelopeKey(prev => prev + 1)}
             style={{
               marginBottom: '1.5rem',
@@ -1181,7 +1186,7 @@ function DashboardContent({ locale = "en" }) {
             }}
           >
             <span>✉️</span> Replay Envelope Opening
-          </button>
+          </button>}
 
           {/* Premium Smartphone Mockup (2026 thin bezel) */}
           <div className="dashboard-phone-frame" style={{
@@ -1276,7 +1281,7 @@ function DashboardContent({ locale = "en" }) {
   );
 }
 
-function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId, triggerReplayEnvelope }) {
+function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTheme, setSelectedTheme, plan, orderId, triggerReplayEnvelope, onGoToTab }) {
   const { saveOrderDetails, setMediaUploads } = useDatabase();
 
   const defaultTabInfo = {
@@ -1592,6 +1597,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
   };
 
   const AVAILABLE_TEMPLATES = [
+    ...SIGNATURE_TEMPLATES.map((tpl) => ({ id: tpl.id, name: tpl.name, desc: tpl.desc.en, envelope: tpl.envelope, hero: tpl.hero, color: tpl.color, thumb: tpl.thumb, thumbFit: tpl.thumbFit, signature: true })),
     { id: 'bordeaux', name: 'Bordeaux Elegant', desc: 'A modern, dramatic, and elegant celebration' },
     { id: 'champagne', name: 'Champagne / Luxe Gold', desc: 'Royal sophistication with golden warmth' },
     { id: 'ivory', name: 'Ivory / Pearl', desc: 'Pure and delicate, a timeless classic' },
@@ -1717,6 +1723,14 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
     { id: 'sound_custom', name: 'Custom Upload', url: 'custom', desc: 'Upload your own audio file' },
   ];
 
+  // Illustrated designs have their own opening: no envelope or hero to pick.
+  const introless = INTROLESS_IDS.has(local.themeId || selectedTheme);
+
+  // Signature designs show their illustration; classic ones their hero frame.
+  const renderTemplateThumb = (template) => template.thumb
+    ? <img src={template.thumb} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: template.thumbFit || 'contain', padding: template.thumbFit === 'cover' ? 0 : '12%', boxSizing: 'border-box', display: 'block' }} />
+    : renderMediaStartingFrame(templateMedia[template.id]?.hero || template.hero, template.name, template.color || '#E9DFD4', 'hero', template.id);
+
   const applyTemplate = (selected) => {
     const template = {...selected,...(templateMedia[selected.id] || {})};
     const updated = selectHero({
@@ -1742,40 +1756,26 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {uploadError && <p role="alert" style={{color:'#b91c1c'}}>{uploadError}</p>}
-      <div style={sectionStyle}>
-        <div style={{ marginBottom: '1.25rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)' }}>Invitation Design</h2>
-          <p style={{ fontSize: '0.82rem', color: '#666', margin: '0.3rem 0 0' }}>Choose a complete design, then personalize every detail below.</p>
-        </div>
-        <div className="hide-scrollbar" style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.6rem', WebkitOverflowScrolling: 'touch' }}>
-          {AVAILABLE_TEMPLATES.map(template => {
-            const activeTemplate = (local.themeId || selectedTheme) === template.id;
-            return (
-              <button
-                key={template.id}
-                type="button"
-                onClick={() => applyTemplate(template)}
-                style={{
-                  flex: '0 0 158px', textAlign: 'left', padding: '0.65rem', cursor: 'pointer',
-                  borderRadius: '16px', background: activeTemplate ? '#F7F0E8' : '#fff',
-                  border: activeTemplate ? '2px solid #8A5A35' : '1px solid #E6DED6',
-                  boxShadow: activeTemplate ? '0 8px 22px rgba(92,58,30,.12)' : 'none', fontFamily: 'inherit'
-                }}
-              >
-                <span style={{ display: 'block', height: '64px', borderRadius: '11px', marginBottom: '0.65rem', background: `linear-gradient(145deg, ${template.color || '#E9DFD4'}, #FFF8F0)`, overflow: 'hidden' }}>
-                  {renderMediaStartingFrame(templateMedia[template.id]?.hero || template.hero, template.name, template.color || '#E9DFD4', 'hero', template.id)}
-                </span>
-                <strong style={{ display: 'block', color: '#3D2B1F', fontSize: '0.82rem', marginBottom: '0.2rem' }}>{template.name}</strong>
-                <span style={{ display: 'block', color: '#75685E', fontSize: '0.68rem', lineHeight: 1.35 }}>{template.desc}</span>
-              </button>
-            );
-          })}
-        </div>
+      {uploadError && <p role="alert" style={{color:'#b91c1c', order: -1}}>{uploadError}</p>}
+      <InvitationOverview
+        local={local}
+        templateName={(AVAILABLE_TEMPLATES.find(t => t.id === (local.themeId || selectedTheme)) || {}).name || 'Your design'}
+        thumb={renderTemplateThumb(AVAILABLE_TEMPLATES.find(t => t.id === (local.themeId || selectedTheme)) || { id: local.themeId || selectedTheme, name: 'Design' })}
+        previewHref={`/invite/${slug}?preview=true`}
+        onShare={() => onGoToTab?.('share')}
+      />
+      <EditorNav />
+      <div id="edit-design" style={{ ...sectionStyle, order: 2 }}>
+        <TemplatePicker
+          templates={AVAILABLE_TEMPLATES}
+          activeId={local.themeId || selectedTheme}
+          onApply={applyTemplate}
+          renderThumb={renderTemplateThumb}
+        />
       </div>
 
       {/* Visible Sections */}
-      <div style={sectionStyle}>
+      <div id="edit-sections" style={{ ...sectionStyle, order: 14 }}>
         <div style={{ marginBottom: '1.25rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#5C3A1E', margin: 0, fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>👁️</span> Website Sections & Visibility
@@ -1860,10 +1860,13 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Media & Videos */}
-      <div style={sectionStyle}>
+      <div id="edit-media" style={{ ...sectionStyle, order: 10 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
           {/* Envelope Video Selection */}
+          {introless ? (
+            <p style={{ margin: 0, padding: '1rem 1.2rem', borderRadius: '14px', background: '#f7f0e8', color: '#5c3a1e', fontSize: '0.85rem', lineHeight: 1.5 }}>This design opens with its own illustrated scene, so no envelope animation or background video is needed. Choose its music below.</p>
+          ) : (
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> Envelope Design Template
@@ -1913,9 +1916,10 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
               ) : null
             }
           </div>
+          )}
 
           {/* Hero Video Selection */}
-          <div>
+          <div style={introless ? { display: 'none' } : undefined}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
               <span>🎨</span> Hero Design Template
             </h2>
@@ -2113,7 +2117,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Dress Code */}
-      <div style={sectionStyle}>
+      <div style={{ ...sectionStyle, order: 7 }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>👔 Dress Code</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
@@ -2164,7 +2168,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Memories Gallery */}
-      <div style={sectionStyle}>
+      <div id="edit-photos" style={{ ...sectionStyle, order: 8 }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Memories (Slider)</h2>
         <div style={{ marginBottom: '1rem' }}>
           <StyledFileInput
@@ -2200,7 +2204,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Guest Gallery */}
-      <div style={sectionStyle}>
+      <div style={{ ...sectionStyle, order: 9 }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Guest Photo Gallery</h2>
         <div style={{ marginBottom: '1rem' }}>
           <StyledFileInput
@@ -2236,7 +2240,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
 
-      <div style={sectionStyle}>
+      <div id="edit-texts" style={{ ...sectionStyle, order: 11 }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '0.4rem', fontFamily: 'var(--font-heading)' }}>Story & Invitation Copy</h2>
         <p style={{ fontSize: '0.82rem', color: '#746A61', margin: '0 0 1.4rem' }}>These texts inherit the selected design by default. Add your own wording whenever you want.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -2267,18 +2271,18 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
 
 
 
-      <div style={sectionStyle}>
+      <div style={{ ...sectionStyle, order: 12 }}>
         <h2>Design-specific wording</h2>
         <p>These fields apply to the selected invitation language. Personal names and your own text are kept as entered.</p>
         {['storyOrnament','storyEyebrow','storyTitle','storyText','introTitle','introText','countdownEyebrow','countdownTitle','venueTitle','scheduleTitle','menuTitle','galleryTitle','giftTitle','giftText','giftButton'].map(field => <label key={field} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{field.replace(/([A-Z])/g,' $1').toLowerCase().replace(/^./,letter=>letter.toUpperCase())}<textarea style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.[field] ?? ''} onChange={e => handleChange('localizedContent',{...(local.localizedContent || {}),[local.language || 'en']:{...(local.localizedContent?.[local.language || 'en'] || {}),[field]:e.target.value}})} placeholder="Use the translated design default" /></label>)}
       </div>
-      <details style={sectionStyle}>
+      <details style={{ ...sectionStyle, order: 13 }}>
         <summary style={{cursor:'pointer',fontWeight:600}}>All section labels and form wording</summary>
         <p>Customize labels for the selected language. Leave a field empty to use its translation.</p>
         {Object.entries(getTranslation(local.language || 'en')).map(([key, fallback]) => <label key={key} style={{...labelStyle,display:'block',marginBottom:'1rem'}}>{key.replace(/([A-Z])/g,' $1')}<input style={inputStyle} value={local.localizedContent?.[local.language || 'en']?.labels?.[key] || ''} placeholder={fallback} onChange={e => { const lang = local.language || 'en'; const content = local.localizedContent?.[lang] || {}; const labels = {...(content.labels || {})}; if (e.target.value) labels[key] = e.target.value; else delete labels[key]; handleChange('localizedContent',{...(local.localizedContent || {}),[lang]:{...content,labels}}); }} /></label>)}
       </details>
       {/* Wedding Details */}
-      <div style={sectionStyle}>
+      <div id="edit-details" style={{ ...sectionStyle, order: 3 }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>Basic Details</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -2406,7 +2410,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Schedule / Timeline */}
-      <div style={sectionStyle}>
+      <div id="edit-program" style={{ ...sectionStyle, order: 4 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>⏰ Schedule & Timeline</h2>
           <button
@@ -2438,7 +2442,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Accommodations */}
-      <div style={sectionStyle}>
+      <div style={{ ...sectionStyle, order: 5 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🏨 Accommodations & Hotels</h2>
           <button
@@ -2469,7 +2473,7 @@ function InvitationTab({ eventInfo, slug, setEventInfo, allEventInfo, selectedTh
       </div>
 
       {/* Menu */}
-      <div style={sectionStyle}>
+      <div style={{ ...sectionStyle, order: 6 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#5C3A1E', fontFamily: 'var(--font-heading)' }}>🍽️ Wedding Menu</h2>
           <button

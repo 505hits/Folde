@@ -5,12 +5,15 @@ import Hls from 'hls.js';
 import { useDatabase } from '@/context/DatabaseContext';
 import ScratchCanvas from '../ScratchCanvas';
 import ScratchReveal from '../ScratchReveal';
-import { localizedSignature, weddingDateLabel, templateCopy, localizedStockLabel } from '@/lib/template-copy.mjs';
+import { localizedSignature, weddingDateLabel, weddingCalendarDate, templateCopy, localizedStockLabel } from '@/lib/template-copy.mjs';
 import FlipCountdown from '../FlipCountdown';
 import ShakeConfetti from '../ShakeConfetti';
 import { getTranslation } from '@/lib/translations';
 import styles from './BordeauxTemplate.module.css';
 import { resolveTemplateMedia } from '@/lib/template-media.mjs';
+import { resolveSignatureDesign } from './signature';
+import { SIGNATURE_THEME_COLORS, INTROLESS_IDS } from '@/lib/signature-catalog.mjs';
+import FoldeCredit from '../FoldeCredit';
 
 // Hook for scroll animations
 function useScrollAnimation() {
@@ -497,7 +500,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   // Valeurs par défaut si `data` est vide
   const t = { ...(data || {}), ...(data?.localizedContent?.[data?.language || 'en'] || {}) };
   const themeId = t.themeId || data?.themeId || "royalbordeaux";
-  const theme = themes[themeId] || themes.royalbordeaux;
+  const theme = themes[themeId] || SIGNATURE_THEME_COLORS[themeId] || themes.royalbordeaux;
   const signature = localizedSignature(signatureContent[themeId], data?.language);
   // Custom story and gift content is available on every invitation design.
   const sectionSignature = signature || { ...(templateCopy[data?.language] || templateCopy.en), ornament: '✦' };
@@ -514,7 +517,7 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   const partner2 = t.partner2 || "Isabelle";
   const showPartner2 = t.showPartner2 !== false;
   const dateStr = t.date || "MAY 27, 2026";
-  const parsedDate = new Date(dateStr);
+  const parsedDate = weddingCalendarDate(dateStr);
   const targetDate = Number.isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString().slice(0, 10);
   const ceremonyVenue = t.ceremonyVenue || "Ocean front beach House";
   const receptionVenue = t.receptionVenue || t.ceremonyVenue || (t.previewMode ? '' : "South Dixie Highway, Homestead, Miami-Dade County, Florida, 33030, United States");
@@ -619,6 +622,59 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
     if (onEnvelopeDismissed) onEnvelopeDismissed();
   };
 
+  // Illustrated designs (own themeIds) render their own body instead of the
+  // classic sections below. Classic themeIds never reach this branch.
+  const SignatureBody = resolveSignatureDesign(themeId);
+  const musicSrc = data?.bgMusicUrl || data?.musicUrl || sounds.bgMusic;
+  // Designs with their own envelope composition skip the overlay and hero.
+  const introless = INTROLESS_IDS.has(themeId);
+  const introDone = envelopeDismissed || introless;
+  const music = {
+    available: Boolean(musicSrc),
+    playing: isPlayingAudio && !isMuted,
+    toggle: () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (isPlayingAudio && !isMuted) { setIsMuted(true); return; }
+      audio.play().catch(() => {});
+      setIsPlayingAudio(true);
+      setIsMuted(false);
+    },
+  };
+  const defaultGallery = [
+    "/images/couple_beach_sunset_1782995185709.png",
+    "/images/couple_elegant_dinner_1782995195329.png",
+    "/images/couple_forest_walk_1782995203954.png",
+    "/images/couple_cafe_smile_1782995212728.png"
+  ];
+  const signatureCtx = SignatureBody ? {
+    t, copy, labels, lang: data?.language || 'en', themeId, music,
+    partner1, partner2, showPartner2, dateStr, targetDate, ceremonyVenue, receptionVenue,
+    timeline, accommodations, menu, sections, images,
+    gallery: gallery && gallery.length > 0 ? gallery : defaultGallery,
+    guestGallery, guestUploadUrl, guestGalleryUrl,
+    story: {
+      eyebrow: t.storyEyebrow || sectionSignature.eyebrow,
+      title: t.storyTitle || sectionSignature.storyTitle,
+      text: t.storyText || sectionSignature.storyText,
+      giftTitle: t.giftTitle || sectionSignature.giftTitle,
+      giftText: t.giftText || sectionSignature.giftText,
+    },
+    showGifts: Boolean(signature || t.giftTitle || t.giftText || t.giftLink) && sections.showGifts !== false,
+    preview: embedded || editMode,
+    rsvp: {
+      firstName: rsvpFirstName, setFirstName: setRsvpFirstName,
+      lastName: rsvpLastName, setLastName: setRsvpLastName,
+      email: rsvpEmail, setEmail: setRsvpEmail,
+      attending: rsvpAttending, setAttending: setRsvpAttending,
+      accompanied: accompaniedStatus, setAccompanied: setAccompaniedStatus,
+      plusOneName: rsvpPlusOneName, setPlusOneName: setRsvpPlusOneName,
+      meal: rsvpMeal, setMeal: setRsvpMeal,
+      submitted: rsvpSubmitted, submitting: rsvpSubmitting, error: rsvpError,
+      onSubmit: handleRsvpSubmit,
+    },
+  } : null;
+
   const getPosterForUrl = (url, fallback = '/images/bordeaux.png') => {
     if (!url) return fallback;
     if (url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) return url;
@@ -673,13 +729,13 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
   };
 
   return (
-    <div className={styles.main} lang={data?.language || 'en'} dir={data?.language === 'ar' ? 'rtl' : 'ltr'} style={{ ...styleVariables, height: envelopeDismissed ? 'auto' : (heroHeight || '100%'), minHeight: heroHeight || '100%' }}>
+    <div className={styles.main} lang={data?.language || 'en'} dir={data?.language === 'ar' ? 'rtl' : 'ltr'} style={{ ...styleVariables, height: introDone ? 'auto' : (heroHeight || '100%'), minHeight: heroHeight || '100%' }}>
       {/* Dynamic Font Loader */}
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !envelopeDismissed ? 'hidden' : undefined, height: !envelopeDismissed ? (heroHeight || '100%') : undefined, minHeight: !envelopeDismissed ? (heroHeight || '100%') : undefined }}>
+      <div className={styles.container} style={{ backgroundColor: theme.bgColor, position: 'relative', overflow: !introDone ? 'hidden' : (SignatureBody ? 'clip' : undefined), height: !introDone ? (heroHeight || '100%') : undefined, minHeight: !introDone ? (heroHeight || '100%') : undefined }}>
 
         {/* ================= ENVELOPE OVERLAY ================= */}
-        {!envelopeDismissed && (
+        {!introDone && (
           <div
             className={`${styles.envelopeOverlay} ${envelopeOpen ? styles.opening : ''} ${envelopeDismissed ? styles.dismissed : ''}`}
             onClick={handleEnvelopeClick}
@@ -711,7 +767,10 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </div>
         )}
 
+        {introless && musicSrc && <audio ref={audioRef} src={musicSrc} loop muted={isMuted} />}
+
         {/* ================= HERO SECTION ================= */}
+        {!introless && (
         <section className={styles.hero} onClick={() => setHeroVideoActive(true)} style={{ height: heroHeight, minHeight: heroHeight, cursor: 'pointer' }}>
 
           {/* Background Audio */}
@@ -805,7 +864,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
             )}
           </button>
         </section>
+        )}
 
+        {SignatureBody ? React.createElement(SignatureBody, { ctx: signatureCtx }) : (<>
         {(signature || t.storyTitle || t.storyText) && (
           <section style={{
             position: 'relative', overflow: 'hidden', textAlign: 'center',
@@ -1257,19 +1318,9 @@ function BordeauxTemplate({ data, editMode = false, autoPlaySimulation = false, 
           </section>
         )}
 
-        {/* ================= VIRAL BADGE ================= */}
-        <div style={{ padding: '2.5rem 1rem 3.5rem', textAlign: 'center', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-          <a href="https://folde-wedding.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', color: '#888', transition: 'color 0.3s ease', margin: '0 auto' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#1a1a1a'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
-          >
-            <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontStyle: 'italic', letterSpacing: '1px' }}>
-              FOLDÈ Design
-            </span>
-            <span style={{ height: '1px', width: '20px', backgroundColor: 'currentColor', opacity: 0.5 }}></span>
-          </a>
-        </div>
+        {/* ================= FOLDÈ CREDIT ================= */}
+        <FoldeCredit language={data?.language || 'en'} themeId={themeId} accent={theme.primary} />
+        </>)}
 
       </div>
     </div>

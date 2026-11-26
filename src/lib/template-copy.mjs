@@ -38,6 +38,7 @@ export function calendarDate(value) {
  const date=new Date(value);
  return Number.isNaN(date.getTime()) ? date : new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 }
+export const weddingCalendarDate = calendarDate;
 export function weddingDateLabel(value,language='en') {
  const date=calendarDate(value);
  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(language || 'en',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);

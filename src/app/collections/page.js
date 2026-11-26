@@ -6,8 +6,9 @@ import TemplateHeroPreview from "../../components/TemplateHeroPreview";
 import BordeauxTemplate from "../../components/templates/BordeauxTemplate";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SIGNATURE_TEMPLATES } from "@/lib/signature-catalog.mjs";
 
-const templates = [
+const classicTemplates = [
   { id: 'champagne', name: 'Luxe Gold', tag: 'ROMANTIC', desc: 'Opulent and golden.', video: '/videos/hero/palm-zoom.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026', popular: false },
   { id: 'ivory', name: 'Pearl', tag: 'MINIMAL', desc: 'Luminous and serene.', video: '/videos/hero/sea-view.mp4', envelope: '/videos/ivory-veil.mp4', partner1: 'Arthur', partner2: 'Chloé', date: 'MAY 27, 2026', popular: false },
   { id: 'bordeaux', name: 'Velvet Noir', tag: 'ELEGANT', desc: 'Bold and timeless.', video: '/videos/hero/kissing-couple.mp4', envelope: '/videos/bordeaux.mp4', partner1: 'Alexandre', partner2: 'Éléonore', date: 'MAY 27, 2026', popular: true, link: '/kissing-couple-wedding-invitation' },
@@ -45,7 +46,13 @@ const templates = [
   { id: 'excellence', name: 'Excellence', tag: 'ELEGANT', desc: 'Architectural florals with champagne refinement.', video: '/videos/sage.mp4', envelope: '/videos/sage.mp4', partner1: 'Cristina', partner2: 'Josh', date: 'NOV 21, 2026', popular: true, isNew: true },
 ];
 
-const FEATURED_TEMPLATE_IDS = ['rosas', 'atelierindigo', 'orange', 'editorial', 'excellence', 'cisnes', 'bloom', 'romanticgarden', 'pressedlovecomo', 'tropical', 'softscratch'];
+// Illustrated signature designs lead the catalogue.
+const templates = [
+  ...SIGNATURE_TEMPLATES.map((tpl) => ({ ...tpl, desc: tpl.desc.en, video: tpl.hero, isImage: /\.(png|jpe?g|webp)$/i.test(tpl.hero) })),
+  ...classicTemplates,
+];
+
+const FEATURED_TEMPLATE_IDS = [...SIGNATURE_TEMPLATES.map((tpl) => tpl.id), 'rosas', 'atelierindigo', 'orange', 'editorial', 'excellence', 'cisnes', 'bloom', 'romanticgarden', 'pressedlovecomo', 'tropical', 'softscratch'];
 const orderedTemplates = [...templates].sort((a, b) => {
   const aIndex = FEATURED_TEMPLATE_IDS.indexOf(a.id);
   const bIndex = FEATURED_TEMPLATE_IDS.indexOf(b.id);
@@ -53,6 +60,7 @@ const orderedTemplates = [...templates].sort((a, b) => {
 });
 
 const spanishDescriptions = {
+  ...Object.fromEntries(SIGNATURE_TEMPLATES.map((tpl) => [tpl.id, tpl.desc.es])),
   champagne: 'Opulenta y dorada.', ivory: 'Luminosa y serena.', bordeaux: 'Audaz y atemporal.', sage: 'Botánica y fresca.',
   terracotta: 'Cálida y radiante.', chocolate: 'Intensa y llena de carácter.', royalbordeaux: 'Majestuosa y distinguida.',
   royalblue: 'Inspirada en el océano y refinada.', rosebow: 'Una romántica apertura con lazo.', majestic: 'Una entrada solemne y grandiosa.',
@@ -69,9 +77,10 @@ const spanishDescriptions = {
   excellence: 'Flores arquitectónicas con una elegancia color champán.',
 };
 
-const spanishTagLabels = { All: 'Todas', Popular: 'Populares', Elegant: 'Elegantes', Romantic: 'Románticas', Warm: 'Cálidas', New: 'Nuevas' };
-const frenchTagLabels = { All: 'Toutes', Popular: 'Populaires', Elegant: 'Élégantes', Romantic: 'Romantiques', Warm: 'Chaleureuses', New: 'Nouveautés' };
+const spanishTagLabels = { Signature: 'Signature', All: 'Todas', Popular: 'Populares', Elegant: 'Elegantes', Romantic: 'Románticas', Warm: 'Cálidas', New: 'Nuevas' };
+const frenchTagLabels = { Signature: 'Signature', All: 'Toutes', Popular: 'Populaires', Elegant: 'Élégantes', Romantic: 'Romantiques', Warm: 'Chaleureuses', New: 'Nouveautés' };
 const frenchDescriptions = {
+  ...Object.fromEntries(SIGNATURE_TEMPLATES.map((tpl) => [tpl.id, tpl.desc.fr])),
   cisnes: 'Une romance élégante entre cygnes.', bloom: 'L’amour en pleine floraison.', romanticgarden: 'Un jardin floral enchanté.', pressedlovecomo: 'L’élégance du lac de Côme.', tropical: 'Un paradis tropical vibrant.', softscratch: 'Une révélation tout en douceur.', floral: 'Un écrin de fleurs délicates.', dolcevita: 'La côte italienne baignée de soleil.', webgencytemplate5: 'Un luxe contemporain aux détails botaniques.', tildatemplate2: 'Un minimalisme sombre aux accents dorés.', pressedloveteatro: 'Un lever de rideau théâtral et opulent.', pressedlovethevenue: 'Une célébration dans une villa de destination.', pressedlovesweetlove: 'Pêche, crème et tendresse romantique.', pressedlovefloral: 'Des pétales délicats et un jardin en fleurs.', pressedlovebigentrance: 'Une entrée cinématographique au sceau doré.',
   rosas: 'Des roses veloutées dans un bordeaux profond.', atelierindigo: 'Un ivoire éditorial aux détails indigo raffinés.', orange: 'Une terracotta solaire à la chaleur méditerranéenne.', editorial: 'Une typographie moderne sur un papier ivoire épuré.', excellence: 'Des fleurs architecturales à l’élégance champagne.'
 };
@@ -91,11 +100,12 @@ export default function Templates({ locale = 'en' }) {
   const SelectIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>;
   const CloseIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
-  const tags = ['All', 'Popular', 'Elegant', 'Romantic', 'Warm', 'New'];
+  const tags = ['All', 'Signature', 'Popular', 'Elegant', 'Romantic', 'Warm', 'New'];
 
   const filtered = filter === 'All' ? orderedTemplates
     : filter === 'Popular' ? orderedTemplates.filter(t => t.popular)
       : filter === 'New' ? orderedTemplates.filter(t => t.isNew)
+      : filter === 'Signature' ? orderedTemplates.filter(t => t.signature)
       : orderedTemplates.filter(t => t.tag.toLowerCase() === filter.toLowerCase());
 
   const handleSelectAndContinue = (id) => {
@@ -110,6 +120,7 @@ export default function Templates({ locale = 'en' }) {
 
   return (
     <div style={{ backgroundColor: '#FAF9F6', minHeight: '100vh', fontFamily: 'var(--font-body)', color: '#3D2B1F' }}>
+      <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet" />
       <style>{`
         .tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
         .tpl-card { border-radius: 16px; overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 12px rgba(0,0,0,0.03); transition: transform 0.25s, box-shadow 0.25s; cursor: pointer; }
@@ -122,6 +133,17 @@ export default function Templates({ locale = 'en' }) {
         .tpl-actions button:hover { background: #faf8f5; }
         .tpl-actions button:first-child { border-right: 1px solid #f0ede9; }
         .tpl-badge { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(176,137,104,0.12); color: #b08968; margin-left: 0.5rem; vertical-align: middle; }
+        .tpl-poster { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(120% 80% at 50% 20%, #fbf7f1, color-mix(in srgb, var(--tpl-color) 22%, #efe7dc)); overflow: hidden; }
+        .tpl-poster img { display: block; transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+        .tpl-poster-contain { width: 82%; max-height: 64%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(40,25,15,0.25)); }
+        .tpl-poster-photo { position: absolute; left: 50%; top: 18%; width: 24%; height: 44%; transform: translateX(-50%); object-fit: cover; filter: grayscale(1); }
+        .tpl-poster-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .tpl-card:hover .tpl-poster img { transform: scale(1.06) rotate(-1.5deg); }
+        .tpl-poster-names { position: relative; margin-top: 8%; padding: 0.3rem 0.8rem; font-family: 'Pinyon Script', 'Snell Roundhand', cursive; font-size: 1.35rem; line-height: 1.1; color: var(--tpl-color); background: rgba(255,253,248,0.82); border-radius: 999px; }
+        .tpl-poster-cover + .tpl-poster-names { position: absolute; bottom: 9%; margin: 0; }
+        .tpl-poster-names em { font-style: normal; margin: 0 0.25em; font-size: 0.85em; }
+        .tpl-popular.tpl-signature { left: 12px; right: auto; background: linear-gradient(105deg, #3d2b1f, #8a6a3f 50%, #3d2b1f); background-size: 200% 100%; animation: tplShine 4s linear infinite; }
+        @keyframes tplShine { to { background-position: -200% 0; } }
         .tpl-popular { position: absolute; top: 12px; right: 12px; background: #b08968; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px; z-index: 2; letter-spacing: 0.5px; }
         .tpl-preview-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; z-index: 2; }
         @media (max-width: 900px) { .tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; } }
@@ -174,7 +196,7 @@ export default function Templates({ locale = 'en' }) {
               borderWidth: '1px'
             }}>
               <div className="tpl-img-wrap">
-                {t.popular && <div className="tpl-popular">⭐ {isSpanish ? 'DESTACADA' : isFrench ? 'POPULAIRE' : 'POPULAR'}</div>}
+                {t.signature ? <div className="tpl-popular tpl-signature">✦ {isSpanish ? 'NUEVA · SIGNATURE' : isFrench ? 'NOUVEAU · SIGNATURE' : 'NEW · SIGNATURE'}</div> : t.popular && <div className="tpl-popular">⭐ {isSpanish ? 'DESTACADA' : isFrench ? 'POPULAIRE' : 'POPULAR'}</div>}
                 <button aria-label={isSpanish ? `Ver una vista previa de ${t.name}` : isFrench ? `Voir un aperçu de ${t.name}` : `Preview ${t.name}`} className="tpl-preview-btn" onClick={(e) => openPreview(e, t)}><PreviewIcon /></button>
                 <div
                   className="tpl-phone"
@@ -184,6 +206,13 @@ export default function Templates({ locale = 'en' }) {
                 >
                   <div className="tpl-notch"></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden', WebkitMaskImage: '-webkit-radial-gradient(white, black)', maskImage: 'radial-gradient(white, black)', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
+                    {t.signature ? (
+                      <div className="tpl-poster" style={{ '--tpl-color': t.color }}>
+                        {t.id === 'photobooth' && <img src="/images/couple_beach_sunset_1782995185709.png" alt="" className="tpl-poster-photo" />}
+                        <img src={t.thumb} alt="" loading="lazy" className={t.thumbFit === 'cover' ? 'tpl-poster-cover' : 'tpl-poster-contain'} />
+                        <span className="tpl-poster-names">{t.partner1}<em>&amp;</em>{t.partner2}</span>
+                      </div>
+                    ) : (
                     <TemplateHeroPreview
                       partner1={t.partner1}
                       partner2={t.partner2}
@@ -197,6 +226,7 @@ export default function Templates({ locale = 'en' }) {
                        preloadEnvelopeFrame
                        language={locale}
                     />
+                    )}
                   </div>
                 </div>
               </div>

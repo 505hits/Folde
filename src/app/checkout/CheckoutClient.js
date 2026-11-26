@@ -14,6 +14,7 @@ import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
 import buildingStyles from "./mobile-building.module.css";
+import { SIGNATURE_TEMPLATES, INTROLESS_IDS } from "@/lib/signature-catalog.mjs";
 
 
 const FUNNEL_RESUME_KEY = 'folde-checkout-google-resume';
@@ -25,6 +26,7 @@ const AUTH_COPY = {
 
 const themes = [
   { id: 'bordeaux', name: 'Bordeaux' },
+  ...SIGNATURE_TEMPLATES.map((tpl) => ({ id: tpl.id, name: tpl.name })),
   { id: 'champagne', name: 'Champagne' },
   { id: 'ivory', name: 'Ivory' },
   { id: 'sage', name: 'Sage' },
@@ -206,6 +208,7 @@ const SECTION_OPTIONS = [
 ];
 
 const TEMPLATE_PRESETS = {
+  ...Object.fromEntries(SIGNATURE_TEMPLATES.map((tpl) => [tpl.id, { envelope: tpl.envelopeId, hero: tpl.heroId }])),
   bordeaux: { envelope: 'env_bordeaux', hero: 'hero_couple' },
   champagne: { envelope: 'env_golden_palace', hero: 'hero_palm' },
   ivory: { envelope: 'env_ivory_veil', hero: 'hero_seaview' },
@@ -1638,7 +1641,7 @@ function CheckoutContent({ locale = "en" }) {
                 </div>
 
                 {/* Envelope Selection Card */}
-                <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <div className="preview-form-card" style={{ ...(INTROLESS_IDS.has(selectedTheme) ? { display: 'none' } : {}), backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
@@ -1677,7 +1680,7 @@ function CheckoutContent({ locale = "en" }) {
                 </div>
 
                 {/* Hero Video Selection Card */}
-                <div className="preview-form-card" style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <div className="preview-form-card" style={{ ...(INTROLESS_IDS.has(selectedTheme) ? { display: 'none' } : {}), backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#5C3A1E', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" /><line x1="7" y1="2" x2="7" y2="22" /><line x1="17" y1="2" x2="17" y2="22" /><line x1="2" y1="12" x2="22" y2="12" /><line x1="2" y1="7" x2="7" y2="7" /><line x1="2" y1="17" x2="7" y2="17" /><line x1="17" y1="17" x2="22" y2="17" /><line x1="17" y1="7" x2="22" y2="7" /></svg>
