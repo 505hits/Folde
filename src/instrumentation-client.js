@@ -11,6 +11,7 @@ initBotId({
     '/api/send-preview',
     '/api/send-order',
     '/api/send-revision',
+    '/api/send-feedback',
     '/api/create-checkout-session',
     '/api/affiliate',
     '/api/affiliate/click',
