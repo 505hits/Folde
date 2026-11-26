@@ -130,7 +130,7 @@ const homeCopy = {
   en: {
     ratingAria: 'Rated 4.9 out of 5 by more than 500 happy couples', rating: 'Chosen by 500+ happy couples',
     heroTitle: 'Premium Digital Wedding Invitations & Live Guest Tracking', heroText: 'FOLDÈ crafts bespoke digital wedding invitations with integrated RSVPs, photo galleries, and real-time guest management.',
-    design: 'Start Your Invitation', starterTitle: 'Start your invitation', firstName: 'Your first name', partnerName: "Your partner’s first name", explore: 'Explore Collections', from: 'From €29.90', tracking: 'Smart RSVP Tracking', unlimited: 'Unlimited Guests', concierge: 'Personal Concierge',
+    design: 'Start Your Invitation', starterTitle: 'Start your invitation', firstName: 'Your first name', partnerName: "Your partner’s first name", explore: 'Explore Collections', from: 'From $29.90', tracking: 'Smart RSVP Tracking', unlimited: 'Unlimited Guests', concierge: 'Personal Concierge',
     collections: 'Collections', universes: 'Explore Our Exclusive Design Universes', universesText: 'Each collection is a distinct aesthetic universe — crafted to tell your unique love story.', viewAll: 'View All Collections',
     chooseDesign: 'Choose This Design',
     process: 'Our Process', processTitle: 'From Vision to Masterpiece, Step by Step', processText: 'A tailored journey where your ideas become an unforgettable experience.',
@@ -139,7 +139,7 @@ const homeCopy = {
   es: {
     ratingAria: 'Valoración de 4,9 sobre 5 por más de 500 parejas satisfechas', rating: 'Elegida por más de 500 parejas felices',
     heroTitle: 'Invitaciones digitales de boda premium y gestión de invitados en tiempo real', heroText: 'FOLDÈ crea invitaciones digitales de boda a medida con confirmación de asistencia, galerías de fotos y gestión de invitados en tiempo real.',
-    design: 'Empezar vuestra invitación', starterTitle: 'Empezad vuestra invitación', firstName: 'Tu nombre', partnerName: 'El nombre de tu pareja', explore: 'Explorar colecciones', from: 'Desde 29,90 €', tracking: 'Confirmaciones inteligentes', unlimited: 'Invitados ilimitados', concierge: 'Atención personalizada',
+    design: 'Empezar vuestra invitación', starterTitle: 'Empezad vuestra invitación', firstName: 'Tu nombre', partnerName: 'El nombre de tu pareja', explore: 'Explorar colecciones', from: 'Desde 29,90 $', tracking: 'Confirmaciones inteligentes', unlimited: 'Invitados ilimitados', concierge: 'Atención personalizada',
     collections: 'Colecciones', universes: 'Explorad nuestros universos de diseño exclusivos', universesText: 'Cada colección propone un universo estético propio, creado para contar vuestra historia de amor.', viewAll: 'Ver todas las colecciones',
     chooseDesign: 'Elegir este diseño',
     process: 'Nuestro proceso', processTitle: 'De la visión a una pieza única, paso a paso', processText: 'Un recorrido a medida en el que vuestras ideas se convierten en una experiencia inolvidable.',
@@ -148,7 +148,7 @@ const homeCopy = {
   fr: {
     ratingAria: 'Note de 4,9 sur 5 attribuée par plus de 500 couples', rating: 'Choisi par plus de 500 couples heureux',
     heroTitle: 'Faire-part de mariage numériques haut de gamme et suivi des invités en direct', heroText: 'FOLDÈ crée des faire-part de mariage numériques sur mesure avec RSVP intégré, galerie photo et gestion des invités en temps réel.',
-    design: 'Commencer votre invitation', starterTitle: 'Commencez votre invitation', firstName: 'Votre prénom', partnerName: 'Prénom de votre partenaire', explore: 'Explorer les collections', from: 'À partir de 29,90 €', tracking: 'Suivi RSVP intelligent', unlimited: 'Invités illimités', concierge: 'Conciergerie personnelle',
+    design: 'Commencer votre invitation', starterTitle: 'Commencez votre invitation', firstName: 'Votre prénom', partnerName: 'Prénom de votre partenaire', explore: 'Explorer les collections', from: 'À partir de 29,90 $', tracking: 'Suivi RSVP intelligent', unlimited: 'Invités illimités', concierge: 'Conciergerie personnelle',
     collections: 'Collections', universes: 'Explorez nos univers graphiques exclusifs', universesText: 'Chaque collection propose un univers esthétique singulier, conçu pour raconter votre histoire d’amour.', viewAll: 'Voir toutes les collections',
     chooseDesign: 'Choisir ce design',
     process: 'Notre méthode', processTitle: 'De votre vision à une création unique, étape par étape', processText: 'Un parcours sur mesure qui transforme vos idées en une expérience inoubliable.',
@@ -426,7 +426,7 @@ export default function Home({ locale = 'en' }) {
               <div>
                 <h3 className="heading-md">Standard</h3>
                  <p className="text-sm" style={{ marginTop: '0.5rem' }}>{t('Everything you need for an elegant, personalized invitation.', 'Todo lo necesario para una invitación elegante y personalizada.')}</p>
-                <div className={styles.pricingPrice}><del>49.90 €</del> 29.90 € <small>-40%</small></div>
+                <div className={styles.pricingPrice}><del>$49.90</del> $29.90 <small>-40%</small></div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('Select from exclusive design universes', 'Elegid entre universos de diseño exclusivos')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Personalized with your colors & details', 'Personalización con vuestros colores y datos')}</li>
@@ -444,7 +444,7 @@ export default function Home({ locale = 'en' }) {
               <div>
                 <h3 className="heading-md">{t('Custom', 'Expert')}</h3>
                 <p className="text-sm" style={{ marginTop: '0.5rem' }}>{t('100% bespoke "Fait main" questionnaire onboarding, team review & site validation.', 'Cuestionario inicial completamente personalizado, revisión del equipo y validación del sitio.')}</p>
-                <div className={styles.pricingPrice}>149.00 €</div>
+                <div className={styles.pricingPrice}>$149.00</div>
                 <ul className={styles.pricingList}>
                   <li><span className={styles.checkIcon}>✓</span> {t('100% bespoke questionnaire onboarding', 'Cuestionario inicial completamente personalizado')}</li>
                   <li><span className={styles.checkIcon}>✓</span> {t('Hand-crafted ("Fait main") art direction', 'Dirección artística creada a medida')}</li>
@@ -460,7 +460,7 @@ export default function Home({ locale = 'en' }) {
             </div>
           </div>
           <div className={styles.pricingAddons}>
-            <p className="text-sm"><strong>{t('Optional Add-ons:', 'Complementos opcionales:')}</strong> {t('Video Cover — €19 · Custom Music — €19 · Additional Language — €19 · Multi-group Management — €29', 'Portada de vídeo — 19 € · Música personalizada — 19 € · Idioma adicional — 19 € · Gestión de varios grupos — 29 €')}</p>
+            <p className="text-sm"><strong>{t('Optional Add-ons:', 'Complementos opcionales:')}</strong> {t('Video Cover — $19 · Custom Music — $19 · Additional Language — $19 · Multi-group Management — $29', 'Portada de vídeo — 19 $ · Música personalizada — 19 $ · Idioma adicional — 19 $ · Gestión de varios grupos — 29 $')}</p>
           </div>
         </div>
       </section>
@@ -628,7 +628,7 @@ export default function Home({ locale = 'en' }) {
       <section className={styles.finalCta}>
         <div className="container" style={{ textAlign: 'center' }}>
           <h2 className="heading-lg">{t('Bring Your Invitation to Life', 'Dad vida a vuestra invitación')}</h2>
-          <p className="text-lg" style={{ marginTop: '0.5rem' }}>{t('Bespoke digital creations starting at €29.90', 'Creaciones digitales a medida desde 29,90 €')}</p>
+          <p className="text-lg" style={{ marginTop: '0.5rem' }}>{t('Bespoke digital creations starting at $29.90', 'Creaciones digitales a medida desde 29,90 $')}</p>
           <Link href={link('/checkout')} className={`btn-primary ${styles.finalCtaButton}`}>{t('Design Your Invitation', 'Diseñar vuestra invitación')}</Link>
         </div>
       </section>
