@@ -6,6 +6,7 @@ import { weddingRequest } from "@/lib/wedding-client";
 import { supabase } from "@/lib/supabase";
 
 const DatabaseContext = createContext();
+export const MIN_PASSWORD_LENGTH = 5;
 const OAUTH_RETURN_KEY = 'folde-oauth-return';
 
 export function DatabaseProvider({ children }) {
@@ -67,6 +68,26 @@ export function DatabaseProvider({ children }) {
       return { success: true };
     } catch {
       return { success: false, error: 'Unable to sign in. Please try again.' };
+    }
+  };
+
+  // One step for the checkout: sign in with the password, or create the
+  // account with it when the email is new. Only rule: more than 4 characters.
+  const signInOrCreate = async (email, password, metadata) => {
+    const address = email?.trim() || '';
+    if (!password || password.length < MIN_PASSWORD_LENGTH) return { success: false, code: 'short' };
+    try {
+      const signIn = await supabase.auth.signInWithPassword({ email: address, password });
+      if (signIn.data?.session) return { success: true };
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const signUp = await supabase.auth.signUp({ email: address, password, options: { emailRedirectTo: `${origin}/dashboard`, ...(metadata ? { data: metadata } : {}) } });
+      if (signUp.data?.session) return { success: true, created: true };
+      // Supabase answers an existing email with a user that has no identity.
+      if (signUp.data?.user && !signUp.data.user.identities?.length) return { success: false, code: 'wrong-password' };
+      if (signUp.data?.user) return { success: false, code: 'confirm-email' };
+      return { success: false, code: 'error', error: signUp.error?.message || signIn.error?.message };
+    } catch (error) {
+      return { success: false, code: 'error', error: error?.message };
     }
   };
 
@@ -277,7 +298,7 @@ export function DatabaseProvider({ children }) {
   return (
     <DatabaseContext.Provider value={{
       // Auth
-      currentUser, users, register, login, loginWithGoogle, loginWithMagicLink, logout,
+      currentUser, users, register, login, signInOrCreate, loginWithGoogle, loginWithMagicLink, logout,
       // Orders
       orders, setOrders, createOrder, updateOrderStatus, saveOrderDetails, publishOrderDetails, fetchOrders, mediaUploads, setMediaUploads,
       // Guests

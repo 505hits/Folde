@@ -6,7 +6,7 @@ import styles from "./mobile-funnel.module.css";
 import phoneStyles from "./mobile-funnel-phone.module.css";
 import buildingStyles from "./mobile-building.module.css";
 import layoutStyles from "./mobile-funnel-layout.module.css";
-import { GoogleMark } from "@/components/CheckoutAuth";
+import { GoogleMark, passwordCopy, isEmail, MIN_PASSWORD_LENGTH } from "@/components/CheckoutAuth";
 
 const AUTH = {
   en: { google: "Continue with Google", or: "or get a sign-in link by email", link: "Email me a sign-in link", sent: "Check your inbox: we sent a sign-in link to", hint: "Open it to continue. Your choices are saved in the link.", googleError: "Google sign-in could not start. Please use your email instead.", linkError: "We could not send the link. Please check your email address and try again." },
@@ -30,7 +30,7 @@ const COPY = {
     heroTitle: "Choose your invitation cover",
     heroText: "Swipe through the designs and select the atmosphere that feels like you.",
     emailTitle: "Your preview is ready",
-    emailText: "Enter your email to save your choices and receive a link to continue later.",
+    emailText: "Enter your email to save your choices and find your invitation anytime.",
     email: "you@example.com",
     continue: "Continue",
     choose: "Use this design",
@@ -60,7 +60,7 @@ const COPY = {
     heroTitle: "Choisissez la couverture de l’invitation",
     heroText: "Faites défiler les designs et choisissez l’univers qui vous ressemble.",
     emailTitle: "Votre aperçu est prêt",
-    emailText: "Indiquez votre e-mail pour enregistrer vos choix et recevoir un lien de reprise.",
+    emailText: "Indiquez votre e-mail pour enregistrer vos choix et retrouver votre invitation à tout moment.",
     email: "vous@exemple.com",
     continue: "Continuer",
     choose: "Choisir ce design",
@@ -90,7 +90,7 @@ const COPY = {
     heroTitle: "Elegid la portada de la invitación",
     heroText: "Deslizad los diseños y elegid el ambiente que más os represente.",
     emailTitle: "Vuestra vista previa está lista",
-    emailText: "Introducid vuestro e-mail para guardar las opciones y recibir un enlace.",
+    emailText: "Introducid vuestro e-mail para guardar las opciones y recuperar la invitación cuando queráis.",
     email: "vosotros@ejemplo.com",
     continue: "Continuar",
     choose: "Elegir este diseño",
@@ -145,6 +145,10 @@ export default function MobileInvitationFunnel({
     try { await onGoogle(); } catch { setError(auth.googleError); setSubmitting(false); }
   };
   const [screen, setScreen] = useState(1);
+  // Email first, then the password (sign in, or account created on the spot).
+  const [password, setPassword] = useState("");
+  const [passwordStep, setPasswordStep] = useState(false);
+  const pw = passwordCopy(locale);
   // Designs with their own opening have no envelope or cover to choose.
   const visibleScreens = skipDesign ? [1, 4, 5] : [1, 2, 3, 4, 5];
   const position = Math.max(1, visibleScreens.indexOf(screen) + 1);
@@ -185,13 +189,15 @@ export default function MobileInvitationFunnel({
     setError("");
     if (screen === 1 && !previewDate) return setError(copy.errorDate);
     if (screen === 5) {
-      if (!/^\S+@\S+\.\S+$/.test(account.email || "")) return setError(copy.errorEmail);
+      if (!isEmail(account.email)) return setError(copy.errorEmail);
+      if (!signedIn && !passwordStep) { setPasswordStep(true); return; }
+      if (!signedIn && password.length < MIN_PASSWORD_LENGTH) return setError(pw.short);
       setSubmitting(true);
       try {
-        await onComplete(account.email.trim());
+        await onComplete(account.email.trim(), password);
       } catch (saveError) {
         console.warn("Preview save failed.", saveError);
-        setError(signedIn ? copy.saveError : auth.linkError);
+        setError(signedIn ? copy.saveError : (saveError?.message || pw.short));
       } finally {
         setSubmitting(false);
       }
@@ -307,7 +313,12 @@ export default function MobileInvitationFunnel({
                 <button type="button" className={styles.googleButton} onClick={google} disabled={submitting}><GoogleMark />{auth.google}</button>
                 <p aria-hidden="true" className={styles.authDivider}><span />{auth.or}<span /></p>
               </>}
-              <label><span>Email</span><input type="email" autoComplete="email" value={account.email} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder={copy.email} /></label>
+              <label><span>Email</span><input type="email" autoComplete="email" readOnly={passwordStep && !signedIn} value={account.email} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder={copy.email} /></label>
+              {passwordStep && !signedIn && <>
+                <label><span>{pw.password}</span><input type="password" autoFocus autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="•••••" /></label>
+                <small style={{ lineHeight: 1.45 }}>{pw.hint}</small>
+                <button type="button" onClick={() => { setPasswordStep(false); setPassword(""); setError(""); }} style={{ justifySelf: "start", padding: 0, border: 0, background: "none", color: "#8a5a35", fontWeight: 700, fontSize: ".82rem" }}>{pw.change}</button>
+              </>}
             </>)}
             <small>◇ {copy.private}</small>
           </div>
@@ -319,7 +330,7 @@ export default function MobileInvitationFunnel({
         <div className={phoneStyles.footerInner}>
           <div className={phoneStyles.socialProof}><strong>★★★★★ 4.9/5</strong><span>{copy.proof}</span></div>
           <button type="button" onClick={validateAndContinue} disabled={submitting}>
-            {submitting ? "…" : screen === 5 ? (signedIn ? copy.pricing : auth.link) : copy.continue}<span aria-hidden="true">→</span>
+            {submitting ? "…" : screen === 5 ? (signedIn || passwordStep ? copy.pricing : copy.continue) : copy.continue}<span aria-hidden="true">→</span>
           </button>
         </div>
       </footer>}

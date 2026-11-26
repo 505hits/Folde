@@ -248,8 +248,8 @@ function DashboardContent({ locale = "en" }) {
             setLoginError(result.error || 'An error occurred while signing in.');
           }
         } else {
-          if (!loginForm.email || !loginForm.password) {
-            setLoginError('Please fill in all required fields.');
+          if (!loginForm.email || !loginForm.password || loginForm.password.length < 5) {
+            setLoginError(loginForm.password && loginForm.password.length < 5 ? 'Your password needs at least 5 characters.' : 'Please fill in all required fields.');
             setIsSubmitting(false);
             return;
           }

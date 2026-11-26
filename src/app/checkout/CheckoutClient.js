@@ -9,7 +9,7 @@ import BordeauxTemplate from "@/components/templates/BordeauxTemplate";
 import { getFirstFramePoster } from "@/components/TemplateHeroPreview";
 import LocalizedSurface, { interfaceText } from "@/components/LocalizedSurface";
 import { authenticatedFetch, weddingRequest } from '@/lib/wedding-client';
-import CheckoutAuth, { GoogleMark } from '@/components/CheckoutAuth';
+import CheckoutAuth, { GoogleMark, passwordCopy, passwordMessage, isEmail, MIN_PASSWORD_LENGTH } from '@/components/CheckoutAuth';
 import { hasPaidAccess } from '@/lib/purchase-access.mjs';
 import InvitationDetails from '@/components/InvitationDetails';
 import MobileInvitationFunnel from "./MobileInvitationFunnel";
@@ -363,7 +363,7 @@ export default function CheckoutClient({ locale = "en" }) {
 
 function CheckoutContent({ locale = "en" }) {
   const router = useRouter();
-  const { currentUser, register, login, loginWithGoogle, createOrder, saveOrderDetails } = useDatabase();
+  const { currentUser, register, login, loginWithGoogle, signInOrCreate, createOrder, saveOrderDetails } = useDatabase();
 
   // Flow: 1=Package, 2=Preview+Personalize, 3=Email+Pay → /success
   // Premium/Custom: 1=Package, 2=Preview, 3=Email+Pay → 4=Wedding form → send email → done
@@ -375,6 +375,9 @@ function CheckoutContent({ locale = "en" }) {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [desktopPreviewStage, setDesktopPreviewStage] = useState('editing');
   const [desktopSaving, setDesktopSaving] = useState(false);
+  // Email first, then the password (sign in, or account created on the spot).
+  const [desktopPassword, setDesktopPassword] = useState('');
+  const [desktopPasswordStep, setDesktopPasswordStep] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].id);
@@ -1046,9 +1049,15 @@ function CheckoutContent({ locale = "en" }) {
     }).catch(() => { settled = true; setResuming(false); window.clearTimeout(fallback); });
     return () => { window.cancelAnimationFrame(frame); window.clearTimeout(fallback); };
   }, []);
-  const completeMobileFunnel = async (email) => {
-    const {data:{session}}=await supabase.auth.getSession();
-    if(!session){await sendFunnelLink(email);return;}
+  const completeMobileFunnel = async (email, password) => {
+    let {data:{session}}=await supabase.auth.getSession();
+    if(!session){
+      saveFunnelDraft();
+      const result = await signInOrCreate(email, password, { name: account.name || '', partner_name: account.partnerName || '' });
+      if(!result.success) throw new Error(passwordMessage(result, locale));
+      ({data:{session}} = await supabase.auth.getSession());
+      if(!session) throw new Error(passwordMessage({ code: 'confirm-email' }, locale));
+    }
     if(await hasPaidAccess(session)){router.replace(localizedRoute('/dashboard'));return;}
     email=session.user.email;
     const finalAccount = { ...account, email };
@@ -1177,17 +1186,19 @@ function CheckoutContent({ locale = "en" }) {
 
   if (!isMobileViewport && step === 1 && desktopPreviewStage !== 'editing') {
     const emailCopy = locale === 'fr'
-      ? { title: 'Votre aperçu est prêt', text: 'Indiquez votre e-mail pour enregistrer vos choix et recevoir le lien de votre invitation.', button: 'ENREGISTRER ET VOIR LES FORMULES' }
+      ? { title: 'Votre aperçu est prêt', text: 'Indiquez votre e-mail pour enregistrer vos choix et retrouver votre invitation à tout moment.', button: 'ENREGISTRER ET VOIR LES FORMULES' }
       : locale === 'es'
-        ? { title: 'Vuestra vista previa está lista', text: 'Introducid vuestro e-mail para guardar las opciones y recibir el enlace de la invitación.', button: 'GUARDAR Y VER LOS PLANES' }
-        : { title: 'Your preview is ready', text: 'Enter your email to save your choices and receive your invitation preview link.', button: 'SAVE PREVIEW & SEE PACKAGES' };
+        ? { title: 'Vuestra vista previa está lista', text: 'Introducid vuestro e-mail para guardar las opciones y recuperar la invitación cuando queráis.', button: 'GUARDAR Y VER LOS PLANES' }
+        : { title: 'Your preview is ready', text: 'Enter your email to save your choices and find your invitation anytime.', button: 'SAVE PREVIEW & SEE PACKAGES' };
     const submitDesktopPreview = async (event) => {
       event.preventDefault();
       setAuthError('');
-      if (!/^\S+@\S+\.\S+$/.test(account.email || '')) return setAuthError('Please enter a valid email address.');
+      if (!isEmail(account.email)) return setAuthError(passwordCopy(locale).invalidEmail);
+      if (!currentUser && !desktopPasswordStep) { setDesktopPasswordStep(true); return; }
+      if (!currentUser && desktopPassword.length < MIN_PASSWORD_LENGTH) return setAuthError(passwordCopy(locale).short);
       setDesktopSaving(true);
-      try { await completeMobileFunnel(account.email.trim()); }
-      catch { setAuthError('We could not send your sign-in link. Please try again.'); }
+      try { await completeMobileFunnel(account.email.trim(), desktopPassword); }
+      catch (error) { setAuthError(error?.message || passwordCopy(locale).short); }
       setDesktopSaving(false);
     };
     const authCopy = AUTH_COPY[locale] || AUTH_COPY.en;
@@ -1219,9 +1230,14 @@ function CheckoutContent({ locale = "en" }) {
               <button type="button" onClick={desktopGoogle} disabled={desktopSaving} style={{ width: '100%', minHeight: 58, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, border: '1px solid #d9cbbb', borderRadius: 999, color: '#1a1a1a', background: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}><GoogleMark />{authCopy.google}</button>
               <p aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1.1rem 0', color: '#8a7867', fontSize: '.8rem' }}><span style={{ flex: 1, height: 1, background: '#e3d6c8' }} />{authCopy.or}<span style={{ flex: 1, height: 1, background: '#e3d6c8' }} /></p>
             </>}
-            <input type="email" autoFocus autoComplete="email" value={account.email || ''} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder="you@example.com" style={{ ...inputStyle, height: 62, marginBottom: '1rem' }} />
+            <input type="email" autoFocus autoComplete="email" readOnly={desktopPasswordStep && !currentUser} value={account.email || ''} onChange={(event) => setAccount((value) => ({ ...value, email: event.target.value }))} placeholder="you@example.com" style={{ ...inputStyle, height: 62, marginBottom: '1rem' }} />
+            {desktopPasswordStep && !currentUser && <div style={{ textAlign: 'left', marginBottom: '1rem' }}>
+              <input type="password" autoFocus autoComplete="current-password" value={desktopPassword} onChange={(event) => setDesktopPassword(event.target.value)} placeholder={passwordCopy(locale).password} aria-label={passwordCopy(locale).password} style={{ ...inputStyle, height: 62 }} />
+              <small style={{ display: 'block', marginTop: '.5rem', color: '#806f62', lineHeight: 1.5 }}>{passwordCopy(locale).hint}</small>
+              <button type="button" onClick={() => { setDesktopPasswordStep(false); setDesktopPassword(''); setAuthError(''); }} style={{ marginTop: '.4rem', padding: 0, border: 0, background: 'none', color: '#8a5a35', fontWeight: 700, cursor: 'pointer', font: 'inherit', fontSize: '.85rem' }}>{passwordCopy(locale).change}</button>
+            </div>}
             {authError && <p role="alert" style={{ color: '#a33b32', margin: '0 0 .75rem', fontSize: '.84rem' }}>{authError}</p>}
-            <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : currentUser ? emailCopy.button : authCopy.link} →</button>
+            <button type="submit" disabled={desktopSaving} style={{ width: '100%', minHeight: 58, border: 0, borderRadius: 999, color: '#fffaf3', background: 'linear-gradient(110deg,#3c2519,#704626)', fontWeight: 800, cursor: 'pointer' }}>{desktopSaving ? '…' : currentUser || desktopPasswordStep ? emailCopy.button : passwordCopy(locale).continue.toUpperCase()} →</button>
             </>)}
             <small style={{ display: 'block', marginTop: '.9rem', color: '#8b796b' }}>Private, secure and editable at any time.</small>
           </form>
