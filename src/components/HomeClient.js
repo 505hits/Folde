@@ -9,6 +9,7 @@ import TemplateHeroPreview from "@/components/TemplateHeroPreview";
 import { translateFr } from "@/lib/fr-ui";
 import { localizeHref, pagePath } from "@/lib/routes.mjs";
 import { track } from "@/lib/analytics";
+import SocialVideos from "@/components/SocialVideos";
 
 const carouselItems = [
   { name: 'Luxe Gold', desc: 'Opulent and golden.', video: '/videos/hero/palm-zoom.mp4', envelope: '/videos/golden-palace.mp4', partner1: 'Gabriel', partner2: 'Mathilde', date: 'MAY 27, 2026' },
@@ -540,6 +541,9 @@ export default function Home({ locale = 'en' }) {
           </div>
         </div>
       </section>
+
+      {/* ===================== AS SEEN ON INSTAGRAM / SHORTS ===================== */}
+      <SocialVideos locale={locale} />
 
       {/* ===================== TESTIMONIALS ===================== */}
       <section className={styles.testimonialsSection}>
