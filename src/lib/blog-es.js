@@ -1,6 +1,7 @@
 import { templatedPostsEn } from "@/lib/blog";
 import { POST_SLUGS } from "@/lib/routes.mjs";
 import { originalPostsEs } from "@/lib/articles-es";
+import { originalPostsEsWave2 } from "@/lib/articles-es-wave2";
 
 const seeds = {
   "wedding-invitations-with-floral-design": {
@@ -173,9 +174,15 @@ const translatedPostsEs = templatedPostsEn.map((post) => {
   };
 }).filter(Boolean);
 
+const allOriginalsEs = [...originalPostsEsWave2, ...originalPostsEs];
+const originalSlugsEs = new Set(allOriginalsEs.map((post) => post.slug));
+// Each article shows the invitation tool high on the page (right after the quick answer).
+const withTool = (post) => ({ ...post, tool: { variant: "invitation" } });
+
 export const blogPostsEs = [
-  ...originalPostsEs.map((post) => ({ ...post, original: true, indexable: true })),
-  ...translatedPostsEs,
+  ...allOriginalsEs.map((post) => withTool({ ...post, original: true, indexable: true })),
+  // A Spanish original written for the same topic replaces its translation.
+  ...translatedPostsEs.filter((post) => !originalSlugsEs.has(post.slug)).map(withTool),
 ];
 
 export const currentSourcesEs = [

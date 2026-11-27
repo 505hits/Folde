@@ -16,9 +16,16 @@ export const PAGE_SLUGS = {
   landing: { fr: "faire-part-mariage-numerique", es: "invitaciones-de-boda-digitales" },
 };
 
-// Blog posts that exist in several languages, keyed by the English slug.
+// Blog posts that cover the same topic in several languages, keyed by the
+// English slug. A version can be a translation or an article written natively
+// for that language: hreflang links them as long as each one is indexable.
 // A locale missing here means the post does not exist in that language.
 export const POST_SLUGS = {
+  "wedding-invitation-wording-examples": { en: "wedding-invitation-wording-examples", fr: "textes-faire-part-mariage", es: "textos-invitaciones-de-boda" },
+  "civil-wedding-invitations": { en: "civil-wedding-invitations", fr: "faire-part-mariage-civil", es: "invitaciones-boda-civil" },
+  "how-to-make-a-wedding-invitation-online": { en: "how-to-make-a-wedding-invitation-online", fr: "creer-faire-part-mariage-en-ligne", es: "como-hacer-invitaciones-de-boda-online" },
+  "rustic-wedding-invitations": { en: "rustic-wedding-invitations", fr: "faire-part-mariage-champetre", es: "invitaciones-de-boda-rusticas" },
+  "wedding-rsvp-cards": { en: "wedding-rsvp-cards", fr: "carton-reponse-mariage", es: "confirmacion-asistencia-boda" },
   "wedding-invitations-with-floral-design": { en: "wedding-invitations-with-floral-design", fr: "faire-part-mariage-fleuri", es: "invitaciones-de-boda-con-flores" },
   "wedding-invitations-with-rsvp": { en: "wedding-invitations-with-rsvp", fr: "faire-part-mariage-avec-rsvp", es: "invitaciones-de-boda-con-confirmacion" },
   "destination-wedding-invitations": { en: "destination-wedding-invitations", fr: "faire-part-mariage-a-l-etranger", es: "invitaciones-boda-de-destino" },

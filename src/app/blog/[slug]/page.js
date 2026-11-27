@@ -117,7 +117,7 @@ export default async function BlogArticle({ params, locale = "en" }) {
       <div className={styles.articleLayout}>
         <article className={styles.articleContent}>
           <section className={styles.quickAnswer} id="quick-answer"><p className={styles.label}>{ui.quick}</p><p>{post.quickAnswer}</p>{!post.tool && <Link href={discoverHref}>{discoverLabel}</Link>}</section>
-          {post.tool && <InvitationPreviewTool article={post.slug} {...post.tool} />}
+          {post.tool && <InvitationPreviewTool article={post.slug} locale={locale} {...post.tool} />}
           {isOriginal && post.sections.length >= 5 && post.toc !== false && <nav className={styles.toc} aria-label={meta.contents}><p className={styles.label}>{meta.toc}</p><ol>{post.sections.map((section) => <li key={section.heading}><a href={`#${section.id || anchor(section.heading)}`}>{section.heading}</a></li>)}</ol></nav>}
           {isOriginal ? (
             post.sections.map((section, index) => (

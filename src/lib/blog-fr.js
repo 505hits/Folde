@@ -153,10 +153,13 @@ const translatedPostsFr = templatedPostsEn.map((base) => {
 const allOriginalsFr = [...originalPostsFrWave2, ...originalPostsFr];
 const originalSlugsFr = new Set(allOriginalsFr.map((post) => post.slug));
 
+// Each article shows the invitation tool high on the page (right after the quick answer).
+const withTool = (post) => ({ ...post, tool: { variant: "invitation" } });
+
 export const blogPostsFr = [
-  ...allOriginalsFr.map((post) => ({ ...post, original: true, indexable: true })),
+  ...allOriginalsFr.map((post) => withTool({ ...post, original: true, indexable: true })),
   // A French original written for the same topic replaces its translation.
-  ...translatedPostsFr.filter((post) => !originalSlugsFr.has(post.slug)),
+  ...translatedPostsFr.filter((post) => !originalSlugsFr.has(post.slug)).map(withTool),
 ];
 
 export const currentSourcesFr = [

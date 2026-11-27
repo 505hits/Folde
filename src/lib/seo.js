@@ -1,4 +1,4 @@
-import { SITE_URL, PAGE_SLUGS, absolute, blogPath, pagePath } from "@/lib/routes.mjs";
+import { SITE_URL, PAGE_SLUGS, POST_SLUGS, absolute, blogPath, pagePath } from "@/lib/routes.mjs";
 import { blogPosts } from "@/lib/blog";
 import { blogPostsFr } from "@/lib/blog-fr";
 import { blogPostsEs } from "@/lib/blog-es";
@@ -19,22 +19,24 @@ export function pageAlternates(locale, key) {
   return { canonical: absolute(pagePath(locale, key)), languages };
 }
 
-// Only indexable translations of the same article are listed, so every
-// hreflang target is a 200, self-canonical, indexable URL that links back.
+// Equivalent articles come from POST_SLUGS. Only versions that exist and are
+// indexable are listed, so every hreflang target is a 200, self-canonical,
+// indexable URL that links back (each version computes the same group).
+export function articleGroup(locale, slug) {
+  return Object.values(POST_SLUGS).find((group) => group[locale] === slug) || null;
+}
+
 export function articleAlternates(locale, post) {
   const canonical = absolute(blogPath(locale, post.slug));
   if (post.indexable === false) return { canonical };
+  const group = articleGroup(locale, post.slug);
   const languages = {};
-  if (post.original) {
-    languages[HREFLANG[locale]] = canonical;
-    return { canonical, languages };
-  }
-  const enSlug = post.enSlug || post.slug;
   for (const loc of ["en", "fr", "es"]) {
-    const match = postsByLocale[loc].find((item) => (item.enSlug || item.slug) === enSlug && !item.original);
+    const slug = loc === locale ? post.slug : group?.[loc];
+    const match = slug && postsByLocale[loc].find((item) => item.slug === slug);
     if (match && match.indexable !== false) languages[HREFLANG[loc]] = absolute(blogPath(loc, match.slug));
   }
-  if (Object.keys(languages).length < 2) return { canonical };
+  if (Object.keys(languages).length < 2) return { canonical, languages };
   if (languages.en) languages["x-default"] = languages.en;
   return { canonical, languages };
 }

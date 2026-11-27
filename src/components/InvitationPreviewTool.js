@@ -5,7 +5,15 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { trackBlog } from "@/lib/blog-track";
 import TemplateHeroPreview from "@/components/TemplateHeroPreview";
+import { localizeHref } from "@/lib/routes.mjs";
 import styles from "./article-tools.module.css";
+
+// Interface text of the invitation tool, per article language.
+const TOOL_COPY = {
+  en: { label: "TRY IT WITH YOUR NAMES", title: "What could your invitation look like?", subtitle: "Type your names and pick a design. These are the same designs as on our collections page, shown exactly as guests see them.", first: "First partner", second: "Second partner", firstPh: "Emma", secondPh: "Lucas", date: "Wedding date", optional: "(optional)", design: "Design", cta: "Create my invitation", note: "Free to preview. Your names carry over to the editor; nothing is saved from this page.", opening: "▶ Watch the envelope opening", caption: (name, tag) => `${name} · ${tag} design from the FOLDÈ collection.`, strip: "Put it in a real FOLDÈ design", fallbackDate: "SEP 19, 2026" },
+  fr: { label: "ESSAYEZ AVEC VOS PRÉNOMS", title: "À quoi ressemblerait votre faire-part ?", subtitle: "Tapez vos prénoms et choisissez un design : ce sont les mêmes que sur notre page modèles, tels que vos invités les verront.", first: "Votre prénom", second: "Prénom de votre partenaire", firstPh: "Claire", secondPh: "Thomas", date: "Date du mariage", optional: "(facultatif)", design: "Design", cta: "Créer mon faire-part", note: "Aperçu gratuit. Vos prénoms sont repris dans l’éditeur ; rien n’est enregistré depuis cette page.", opening: "▶ Voir l’ouverture de l’enveloppe", caption: (name) => `${name}, un design de la collection FOLDÈ.`, strip: "Dans un vrai design FOLDÈ", fallbackDate: "JUN 12, 2027" },
+  es: { label: "PROBADLO CON VUESTROS NOMBRES", title: "¿Cómo quedaría vuestra invitación?", subtitle: "Escribid vuestros nombres y elegid un diseño: son los mismos de nuestra página de plantillas, tal como los verán vuestros invitados.", first: "Tu nombre", second: "Nombre de tu pareja", firstPh: "Lucía", secondPh: "Javier", date: "Fecha de la boda", optional: "(opcional)", design: "Diseño", cta: "Crear mi invitación", note: "Vista previa gratuita. Vuestros nombres pasan al editor; desde esta página no se guarda nada.", opening: "▶ Ver la apertura del sobre", caption: (name) => `${name}, un diseño de la colección FOLDÈ.`, strip: "En un diseño real de FOLDÈ", fallbackDate: "JUN 12, 2027" },
+};
 
 // The first six designs of the /collections page, with the same names, tags
 // and media. The preview renders them with the same component as that page.
@@ -18,13 +26,13 @@ export const TOOL_STYLES = [
   { id: "bloom", name: "Bloom", tag: "Natural", video: "https://savethedate-bloom.thedigitalyes.com/__l5e/assets-v1/1bdda2ef-38b6-474c-a5cf-b37eaabdb36f/hero-video.mp4", envelope: "https://savethedate-bloom.thedigitalyes.com/video/envelope-open.mp4", thumb: "/images/envelope-posters/bloom.webp" },
 ];
 
-function DesignStrip({ article, variant, label = "Put it in a real FOLDÈ design" }) {
+function DesignStrip({ article, variant, label = "Put it in a real FOLDÈ design", locale = "en" }) {
   return (
     <div className={styles.designStrip}>
       <p>{label}</p>
       <div>
         {TOOL_STYLES.slice(0, 4).map((item) => (
-          <Link key={item.id} href={`/checkout?template=${item.id}`} onClick={() => trackBlog("blog_tool_click", { article, variant, template: item.id })}>
+          <Link key={item.id} href={localizeHref(locale, `/checkout?template=${item.id}`)} onClick={() => trackBlog("blog_tool_click", { article, variant, template: item.id })}>
             <Image src={item.thumb} alt="" width={72} height={96} />
             <span>{item.name}</span>
           </Link>
@@ -69,7 +77,8 @@ function useToolTracking(article, variant) {
   return { ref, interact };
 }
 
-function InvitationVariant({ article, title, subtitle }) {
+function InvitationVariant({ article, title, subtitle, locale = "en" }) {
+  const t = TOOL_COPY[locale] || TOOL_COPY.en;
   const [partner1, setPartner1] = useState("");
   const [partner2, setPartner2] = useState("");
   const [date, setDate] = useState("");
@@ -78,21 +87,21 @@ function InvitationVariant({ article, title, subtitle }) {
   const [playing, setPlaying] = useState(false);
   const [opening, setOpening] = useState(false);
   const { ref, interact } = useToolTracking(article, "invitation");
-  const shownDate = formatDate(date) || "SEP 19, 2026";
+  const shownDate = formatDate(date) || t.fallbackDate;
 
   return (
     <section id="folde-tool" ref={ref} className={styles.tool} aria-labelledby="folde-tool-title">
       <div className={styles.toolForm}>
-        <p className={styles.toolLabel}>TRY IT WITH YOUR NAMES</p>
-        <h2 id="folde-tool-title" className={styles.toolTitle}>{title || "What could your invitation look like?"}</h2>
-        <p className={styles.toolSubtitle}>{subtitle || "Type your names and pick a design. These are the same designs as on our collections page, shown exactly as guests see them."}</p>
+        <p className={styles.toolLabel}>{t.label}</p>
+        <h2 id="folde-tool-title" className={styles.toolTitle}>{title || t.title}</h2>
+        <p className={styles.toolSubtitle}>{subtitle || t.subtitle}</p>
         <div className={styles.nameRow}>
-          <label>First partner<input value={partner1} maxLength={40} placeholder="Emma" onChange={(e) => { interact(); setPartner1(clean(e.target.value)); }} /></label>
-          <label>Second partner<input value={partner2} maxLength={40} placeholder="Lucas" onChange={(e) => { interact(); setPartner2(clean(e.target.value)); }} /></label>
+          <label>{t.first}<input value={partner1} maxLength={40} placeholder={t.firstPh} onChange={(e) => { interact(); setPartner1(clean(e.target.value)); }} /></label>
+          <label>{t.second}<input value={partner2} maxLength={40} placeholder={t.secondPh} onChange={(e) => { interact(); setPartner2(clean(e.target.value)); }} /></label>
         </div>
-        <label className={styles.dateField}>Wedding date <span>(optional)</span><input type="date" value={date} onChange={(e) => { interact(); setDate(e.target.value); }} /></label>
+        <label className={styles.dateField}>{t.date} <span>{t.optional}</span><input type="date" value={date} onChange={(e) => { interact(); setDate(e.target.value); }} /></label>
         <fieldset className={styles.moods}>
-          <legend>Design</legend>
+          <legend>{t.design}</legend>
           {TOOL_STYLES.map((item) => (
             <button type="button" key={item.id} aria-pressed={item.id === styleId} className={item.id === styleId ? styles.moodActive : ""} onClick={() => { interact(); setStyleId(item.id); setOpening(false); setPlaying(true); }}>
               <span className={styles.moodSwatch}><Image src={item.thumb} alt="" width={44} height={44} /></span>
@@ -100,17 +109,17 @@ function InvitationVariant({ article, title, subtitle }) {
             </button>
           ))}
         </fieldset>
-        <Link className={styles.toolButton} href={checkoutHref(style.id, partner1, partner2)} onClick={() => trackBlog("blog_tool_click", { article, variant: "invitation", template: style.id })}>
-          Create my invitation
+        <Link className={styles.toolButton} href={localizeHref(locale, checkoutHref(style.id, partner1, partner2))} onClick={() => trackBlog("blog_tool_click", { article, variant: "invitation", template: style.id, locale })}>
+          {t.cta}
         </Link>
-        <p className={styles.toolNote}>Free to preview. Your names carry over to the editor; nothing is saved from this page.</p>
+        <p className={styles.toolNote}>{t.note}</p>
       </div>
       <figure className={styles.toolPreview} aria-live="polite">
         <div className={styles.phone} onMouseEnter={() => setPlaying(true)} onClick={() => setPlaying(true)}>
           <TemplateHeroPreview
             key={`${style.id}-${opening ? "envelope" : "hero"}`}
-            partner1={partner1.trim() || "Emma"}
-            partner2={partner2.trim() || "Lucas"}
+            partner1={partner1.trim() || t.firstPh}
+            partner2={partner2.trim() || t.secondPh}
             date={shownDate}
             videoSrc={style.video}
             envelopeSrc={style.envelope}
@@ -118,13 +127,13 @@ function InvitationVariant({ article, title, subtitle }) {
             showEnvelope={opening}
             active={playing}
             preloadEnvelopeFrame
-            language="en"
+            language={locale}
           />
         </div>
         <button type="button" className={styles.openingButton} onClick={() => { interact(); setOpening(true); setPlaying(true); }}>
-          ▶ Watch the envelope opening
+          {t.opening}
         </button>
-        <figcaption>{style.name} · {style.tag.toLowerCase()} design from the FOLDÈ collection.</figcaption>
+        <figcaption>{t.caption(style.name, style.tag.toLowerCase())}</figcaption>
       </figure>
     </section>
   );
@@ -289,8 +298,8 @@ function WordingVariant({ article, event = "wedding", title, subtitle }) {
   );
 }
 
-export default function InvitationPreviewTool({ variant = "invitation", article, event, title, subtitle }) {
+export default function InvitationPreviewTool({ variant = "invitation", article, event, title, subtitle, locale = "en" }) {
   if (variant === "rsvp") return <RsvpVariant article={article} title={title} subtitle={subtitle} />;
   if (variant === "wording") return <WordingVariant article={article} event={event} title={title} subtitle={subtitle} />;
-  return <InvitationVariant article={article} title={title} subtitle={subtitle} />;
+  return <InvitationVariant article={article} title={title} subtitle={subtitle} locale={locale} />;
 }
